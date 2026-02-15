@@ -16,6 +16,8 @@ namespace CE::Core {
 	public:
 		void Run();
 	};
+
+	Application* CreateApplication();
 }
 
 #endif //CELESTIALENGINE_APPLICATION_HPP

@@ -11,8 +11,10 @@
 	#else
 		#define CE_API __declspec(dllimport)
 	#endif
-#else
+#elif defined(CE_PLATFORM_MACOS) || defined(CE_PLATFORM_LINUX)
 	#define CE_API __attribute__((visibility("default")))
+#else
+	#error CelestialEngine supports only Windows, MacOS and Linux
 #endif
 
 #endif //CELESTIALENGINE_COREAPI_HPP
