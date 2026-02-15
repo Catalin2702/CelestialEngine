@@ -5,19 +5,21 @@
 #include <print>
 
 namespace CE::Core {
-	Application::Application() {
-		std::println("Application created");
-	}
 
-	Application::~Application() {
-		std::println("Application destructed");
-	}
+Application::Application() {
+	std::println("Application created");
+}
 
-	void Application::Run() {
-		std::println("Start Run");
-		int loop = 20;
-		while (loop > 0)
-			loop--;
-		std::println("Stop Run");
-	}
+Application::~Application() {
+	std::println("Application destructed");
+}
+
+void Application::Run() {
+	std::println("Start Run");
+	int loop = 20;
+	while (loop > 0)
+		loop--;
+	std::println("Stop Run");
+}
+
 }

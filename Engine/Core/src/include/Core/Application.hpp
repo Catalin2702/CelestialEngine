@@ -8,16 +8,19 @@
 #include <Core/Core.hpp>
 
 namespace CE::Core {
-	class CE_API Application {
-	public:
-		Application();
-		virtual ~Application();
 
-	public:
-		void Run();
-	};
+class CE_API Application {
+public:
+	Application();
 
-	Application* CreateApplication();
+	virtual ~Application();
+
+public:
+	virtual void Run();
+};
+
+Application *CreateApplication();
+
 }
 
 #endif //CELESTIALENGINE_APPLICATION_HPP

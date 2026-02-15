@@ -7,10 +7,12 @@
 
 #ifdef CE_API
 
-extern CE::Core::Application* CE::Core::CreateApplication();
+namespace CeCore = CE::Core;
+
+extern CeCore::Application* CeCore::CreateApplication();
 
 int main() {
-	auto app = CE::Core::CreateApplication();
+	auto app = CeCore::CreateApplication();
 	app->Run();
 	delete app;
 }

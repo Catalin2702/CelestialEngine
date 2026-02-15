@@ -1,7 +1,9 @@
 #include <CelestialEngine.hpp>
 #include <print>
 
-class SandBox: public CE::Core::Application {
+namespace CeCore = CE::Core;
+
+class SandBox: public CeCore::Application {
 public:
 	SandBox() {
 		std::println("Sandbox created");
@@ -11,6 +13,6 @@ public:
 	}
 };
 
-CE::Core::Application* CE::Core::CreateApplication() {
+CeCore::Application* CeCore::CreateApplication() {
 	return new SandBox();
 }
