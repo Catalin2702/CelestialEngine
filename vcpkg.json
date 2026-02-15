@@ -1,0 +1,6 @@
+{
+	"name": "engine",
+	"version-string": "0.0.1",
+	"description": "A course project for learning game engine",
+	"dependencies": []
+}

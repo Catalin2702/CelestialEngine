@@ -1,0 +1,35 @@
+# --- Binaries ---
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.app
+
+# --- Build Directories ---
+[Bb]uild/
+.[Bb]uild/
+[Dd]ebug/
+.[Dd]ebug/
+[Rr]elease/
+.[Rr]elease/
+bin/
+obj/
+
+# --- IDE ---
+.vscode/
+.vs/
+*.sln
+*.vcxproj
+*.user
+.idea/
+*.swp
+*.swo
+
+# --- Log & Temp ---
+*.log
+*.tmp
+.cache/
