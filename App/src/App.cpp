@@ -1,6 +1,7 @@
-#include <Core/Test.hpp>
+#include <CelestialEngine.hpp>
 
 int main() {
-	Core::PrintWelcome();
+	CE::Core::Application app;
+	app.Run();
 	return 0;
 }

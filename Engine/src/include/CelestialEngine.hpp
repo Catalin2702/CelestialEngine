@@ -1,0 +1,10 @@
+//
+// Created by Catalin Chirosca on 2026-02-15.
+//
+
+#ifndef CELESTIALENGINE_CELESTIALENGINE_HPP
+#define CELESTIALENGINE_CELESTIALENGINE_HPP
+
+#include <Core/Application.hpp>
+
+#endif //CELESTIALENGINE_CELESTIALENGINE_HPP
