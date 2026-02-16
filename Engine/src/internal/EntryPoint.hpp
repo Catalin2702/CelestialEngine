@@ -11,14 +11,18 @@
 
 namespace CeCore = CE::Core;
 namespace CeLog = CE::Tools::Log;
+namespace CeTime = CE::Tools::Time;
 
 
 int main() {
-	CeLog::Log::Init();
-	const auto app = CeCore::CreateApplication();
-	app->Run();
-	CeLog::Log::Terminate();
-	delete app;
+	{
+		CeTime::Timer timer;
+		CeLog::Log::Init();
+		const auto app = CeCore::CreateApplication();
+		app->Run();
+		CeLog::Log::Terminate();
+		delete app;
+	}
 }
 
 #endif

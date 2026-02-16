@@ -23,7 +23,7 @@ public:
 		Application::Run();
 		const Events::MouseButtonPressedEvent event{1280};
 		if (event.IsInCategory(Events::EventCategoryMouse)) {
-			CE_TRACE(event);
+			CE_INFO(event);
 		}
 		if (event.IsInCategory(Events::EventCategoryMouseButton)) {
 			CE_TRACE(event);

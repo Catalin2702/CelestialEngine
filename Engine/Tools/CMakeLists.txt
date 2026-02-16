@@ -1,9 +1,11 @@
 set(HEADERS
 	src/include/Tools/Log/Log.hpp
+	src/include/Tools/Time/Timer.hpp
 )
 
 set(SOURCES
 	src/source/Tools/Log/Log.cpp
+	src/source/Tools/Time/Timer.cpp
 )
 
 find_package(spdlog CONFIG REQUIRED)

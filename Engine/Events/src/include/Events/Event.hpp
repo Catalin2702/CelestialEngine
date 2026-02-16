@@ -55,7 +55,7 @@ class CE_API Event {
 	friend class EventDispatcher;
 
 public:
-	virtual ~Event();
+	virtual ~Event() = default;
 
 public:
 	[[nodiscard]] virtual EventType GetEventType() const = 0;

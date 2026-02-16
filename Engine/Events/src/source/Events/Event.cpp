@@ -8,8 +8,6 @@
 
 namespace CE::Events {
 
-Event::~Event() {}
-
 EventDispatcher::EventDispatcher(Event &event): _event(event) {}
 
 }
