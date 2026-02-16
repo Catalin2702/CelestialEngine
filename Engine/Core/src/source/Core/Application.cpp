@@ -1,7 +1,8 @@
 //
 // Created by Catalin Chirosca on 2026-02-15.
 //
-#include <Core/Application.hpp>
+
+#include "Core/Application.hpp"
 #include <print>
 
 namespace CE::Core {

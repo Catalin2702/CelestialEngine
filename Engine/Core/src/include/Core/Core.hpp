@@ -2,6 +2,8 @@
 // Created by Catalin Chirosca on 2026-02-15.
 //
 
+#pragma once
+
 #ifndef CELESTIALENGINE_COREAPI_HPP
 #define CELESTIALENGINE_COREAPI_HPP
 

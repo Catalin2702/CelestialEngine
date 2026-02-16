@@ -1,7 +1,3 @@
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg_link/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-endif()
-
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -13,6 +9,9 @@ if (NOT TARGET CE_Config)
 	target_compile_definitions(CE_Config INTERFACE
 		$<$<CONFIG:Debug>:
 		DEBUG_BUILD
+		>
+		$<$<CONFIG:Release>:
+		RELEASE_BUILD
 		>
 
 		$<$<PLATFORM_ID:Windows>:

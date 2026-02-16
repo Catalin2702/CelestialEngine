@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 4.1)
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg_link/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+endif()
+
+cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
@@ -6,10 +10,11 @@ project(CelestialEngine LANGUAGES CXX VERSION 0.0.1)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
-	src/EntryPoint.hpp
+	src/internal/EntryPoint.hpp
 )
 
 add_subdirectory(Core)
+add_subdirectory(Tools)
 
 add_library(CelestialEngine SHARED
 	${HEADERS}
@@ -20,8 +25,10 @@ set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(CelestialEngine
 	PRIVATE CE_Config
 	PUBLIC CE_Core
+	PUBLIC CE_Tools
 )
 
-target_include_directories(CelestialEngine PUBLIC
-	src/include
+target_include_directories(CelestialEngine
+	PUBLIC src/include
+	PUBLIC src/internal
 )

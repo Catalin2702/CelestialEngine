@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 4.1)
-
-project(CE_Core LANGUAGES CXX VERSION 0.0.1)
-
 set(HEADERS
 	src/include/Core/Core.hpp
 	src/include/Core/Application.hpp

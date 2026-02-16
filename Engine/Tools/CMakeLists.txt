@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 4.1)
+set(HEADERS
+	src/include/Tools/Log/Log.hpp
+)
 
-project(CE_Tools LANGUAGES CXX VERSION 0.0.1)
+set(SOURCES
+	src/source/Tools/Log/Log.cpp
+)
 
-set(HEADERS)
-
-set(SOURCES)
+find_package(spdlog CONFIG REQUIRED)
 
 add_library(CE_Tools SHARED
 	${HEADERS}
@@ -13,6 +15,12 @@ add_library(CE_Tools SHARED
 
 set_target_properties(CE_Tools PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CE_Tools PRIVATE
-	CE_Config
+target_link_libraries(CE_Tools
+	PRIVATE CE_Config
+	PUBLIC spdlog::spdlog
+)
+
+target_include_directories(CE_Tools PUBLIC
+	src/include
+	../Core/src/include
 )
