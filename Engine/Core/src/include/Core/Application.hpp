@@ -10,6 +10,16 @@
 #include "Core/Core.hpp"
 #include "Events/Event.hpp"
 
+#include <memory>
+
+
+namespace CE::Window {
+
+class Window;
+
+}
+
+
 namespace CE::Core {
 
 class CE_API Application {
@@ -20,6 +30,10 @@ public:
 
 public:
 	virtual void Run();
+
+private:
+	std::unique_ptr<Window::Window> _window;
+	bool _running;
 };
 
 Application *CreateApplication();

@@ -4,9 +4,22 @@
 	"description": "A course project for learning game engine",
 	"builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
 	"dependencies": [
+		"spdlog",
+		"glfw3",
+		"glew"
+	],
+	"overrides": [
 		{
 			"name": "spdlog",
-			"version>=": "1.17.0"
+			"version": "1.17.0"
+		},
+		{
+			"name": "glfw3",
+			"version": "3.4#1"
+		},
+		{
+			"name": "glew",
+			"version": "2.3.1"
 		}
 	]
 }

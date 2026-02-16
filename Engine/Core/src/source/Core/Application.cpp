@@ -3,24 +3,31 @@
 //
 
 #include "Core/Application.hpp"
+#include "Window/InterfaceWindow.hpp"
 
-#include <print>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 
 namespace CeEvents = CE::Events;
+namespace CeWindow = CE::Window;
 
 namespace CE::Core {
 
 Application::Application() {
-	std::println("Application created");
+	_window = std::unique_ptr<CeWindow::Window>(CeWindow::Window::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
+	_running = true;
 }
 
 Application::~Application() {
-	std::println("Application destructed");
 }
 
 void Application::Run() {
-	std::println("Run");
+	while (_running) {
+		glClearColor(1, 0, 1, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+		_window->OnUpdate();
+	}
 }
 
 }

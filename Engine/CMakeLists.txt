@@ -16,6 +16,7 @@ set(HEADERS
 add_subdirectory(Core)
 add_subdirectory(Events)
 add_subdirectory(Tools)
+add_subdirectory(Window)
 
 add_library(CelestialEngine SHARED
 	${HEADERS}
@@ -28,6 +29,7 @@ target_link_libraries(CelestialEngine
 	PUBLIC CE_Core
 	PUBLIC CE_Events
 	PUBLIC CE_Tools
+	PUBLIC CE_Window
 )
 
 target_include_directories(CelestialEngine
