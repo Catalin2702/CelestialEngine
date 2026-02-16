@@ -12,7 +12,7 @@ std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 
 void Log::Init() {
-#ifndef DIST_BUILD
+#ifndef CE_BUILD
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 	s_CoreLogger = spdlog::stdout_color_mt("CelestialLogger");
 	s_ClientLogger = spdlog::stdout_color_mt("AppLogger");
@@ -25,7 +25,7 @@ void Log::Init() {
 }
 
 void Log::Terminate() {
-#ifndef DIST_BUILD
+#ifndef CE_BUILD
 	if (s_CoreLogger)
 		s_CoreLogger.reset();
 	if (s_ClientLogger)

@@ -8,15 +8,15 @@ if (NOT TARGET CE_Config)
 
 	target_compile_definitions(CE_Config INTERFACE
 		$<$<CONFIG:Debug>:
-		DEBUG_BUILD
+		CE_DEBUG
 		DEBUG
 		>
 		$<$<CONFIG:Release>:
-		RELEASE_BUILD
+		CE_RELEASE
 		NDEBUG
 		>
 		$<$<CONFIG:Dist>:
-		DIST_BUILD
+		CE_BUILD
 		NDEBUG
 		>
 

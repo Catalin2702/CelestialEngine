@@ -30,7 +30,7 @@ private:
 
 }
 
-#if defined(RELEASE_BUILD) || defined(DIST_BUILD)
+#if defined(CE_RELEASE) || defined(CE_BUILD)
 	#define CE_CORE_TRACE(...)
 	#define CE_CORE_INFO(...)
 
@@ -48,7 +48,7 @@ private:
 		CE::Tools::Log::Log::GetClientLogger()->info(__VA_ARGS__)
 #endif
 
-#ifdef DIST_BUILD
+#ifdef CE_BUILD
 	#define CE_CORE_WARN(...)
 	#define CE_CORE_ERROR(...)
 	#define CE_CORE_CRITICAL(...)
