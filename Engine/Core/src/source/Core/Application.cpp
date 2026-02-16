@@ -17,9 +17,7 @@ Application::~Application() {
 
 void Application::Run() {
 	std::println("Start Run");
-	int loop = 20;
-	while (loop > 0)
-		loop--;
+	while (true);
 	std::println("Stop Run");
 }
 

@@ -1,7 +1,7 @@
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
 
 if (NOT TARGET CE_Config)
 	add_library(CE_Config INTERFACE)
@@ -9,9 +9,15 @@ if (NOT TARGET CE_Config)
 	target_compile_definitions(CE_Config INTERFACE
 		$<$<CONFIG:Debug>:
 		DEBUG_BUILD
+		DEBUG
 		>
 		$<$<CONFIG:Release>:
 		RELEASE_BUILD
+		NDEBUG
+		>
+		$<$<CONFIG:Dist>:
+		DIST_BUILD
+		NDEBUG
 		>
 
 		$<$<PLATFORM_ID:Windows>:
@@ -46,6 +52,9 @@ if (NOT TARGET CE_Config)
 		-g
 		>
 		$<$<CONFIG:Release>:
+		-O3
+		>
+		$<$<CONFIG:Dist>:
 		-O3
 		>
 	)

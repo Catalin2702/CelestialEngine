@@ -17,6 +17,7 @@
 [Rr]elease/
 .[Rr]elease/
 bin/
+Binaries/
 obj/
 
 # --- IDE ---

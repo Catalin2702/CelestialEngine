@@ -17,6 +17,8 @@ extern CeCore::Application* CeCore::CreateApplication();
 int main() {
 	CeLog::Log::Init();
 	CE_INFO("Hi var={0}", 5);
+	CE_CORE_CRITICAL("Cazzo!");
+	CeLog::Log::Terminate();
 	const auto app = CeCore::CreateApplication();
 	app->Run();
 	delete app;

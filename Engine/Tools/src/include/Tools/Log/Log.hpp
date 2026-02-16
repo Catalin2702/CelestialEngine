@@ -18,6 +18,7 @@ namespace CE::Tools::Log {
 class CE_API Log {
 public:
 	static void Init();
+	static void Terminate();
 
 	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return s_CoreLogger; }
 	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {return s_ClientLogger; }
@@ -29,7 +30,7 @@ private:
 
 }
 
-#ifdef RELEASE_BUILD
+#if defined(RELEASE_BUILD) || defined(DIST_BUILD)
 	#define CE_CORE_TRACE(...)
 	#define CE_CORE_INFO(...)
 
@@ -47,19 +48,29 @@ private:
 		CE::Tools::Log::Log::GetClientLogger()->info(__VA_ARGS__)
 #endif
 
-#define CE_CORE_WARN(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
-CE::Tools::Log::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define CE_CORE_ERROR(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
-CE::Tools::Log::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define CE_CORE_CRITICAL(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
-CE::Tools::Log::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#ifdef DIST_BUILD
+	#define CE_CORE_WARN(...)
+	#define CE_CORE_ERROR(...)
+	#define CE_CORE_CRITICAL(...)
+	#define CE_WARN(...)
+	#define CE_ERROR(...)
+	#define CE_CRITICAL(...)
+#else
+	#define CE_CORE_WARN(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
+	CE::Tools::Log::Log::GetCoreLogger()->warn(__VA_ARGS__)
+	#define CE_CORE_ERROR(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
+	CE::Tools::Log::Log::GetCoreLogger()->error(__VA_ARGS__)
+	#define CE_CORE_CRITICAL(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CelestialLogger is not initialized");\
+	CE::Tools::Log::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 
-#define CE_WARN(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
-CE::Tools::Log::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define CE_ERROR(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
-CE::Tools::Log::Log::GetClientLogger()->error(__VA_ARGS__)
-#define CE_CRITICAL(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
-CE::Tools::Log::Log::GetClientLogger()->critical(__VA_ARGS__)
+	#define CE_WARN(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
+	CE::Tools::Log::Log::GetClientLogger()->warn(__VA_ARGS__)
+	#define CE_ERROR(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
+	CE::Tools::Log::Log::GetClientLogger()->error(__VA_ARGS__)
+	#define CE_CRITICAL(...) assert(CE::Tools::Log::Log::GetClientLogger() && "AppLogger is not initialized");\
+	CE::Tools::Log::Log::GetClientLogger()->critical(__VA_ARGS__)
+#endif
+
 
 #endif //WORKSPACE_LOG_HPP
