@@ -4,12 +4,12 @@ include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
 project(CE_App LANGUAGES CXX VERSION 0.0.1)
 
-set(CE_SOURCES
+set(SOURCES
 	src/app.cpp
 )
 
 add_executable(CE_App
-	${CE_SOURCES}
+	${SOURCES}
 )
 
 set_target_properties(CE_App PROPERTIES LINKER_LANGUAGE CXX)

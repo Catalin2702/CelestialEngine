@@ -4,7 +4,7 @@ include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
 project(CelestialEngine LANGUAGES CXX VERSION 0.0.1)
 
-set(CE_HEADERS
+set(HEADERS
 	src/include/CelestialEngine.hpp
 	src/EntryPoint.hpp
 )
@@ -12,7 +12,7 @@ set(CE_HEADERS
 add_subdirectory(Core)
 
 add_library(CelestialEngine SHARED
-	${CE_HEADERS}
+	${HEADERS}
 )
 
 set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)

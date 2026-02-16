@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 4.1)
 
 project(CE_Core LANGUAGES CXX VERSION 0.0.1)
 
-set(CORE_HEADERS
+set(HEADERS
 	src/include/Core/Core.hpp
 	src/include/Core/Application.hpp
 )
 
-set(CORE_SOURCES
+set(SOURCES
 	src/source/Core/Application.cpp
 )
 
 add_library(CE_Core SHARED
-	${CORE_HEADERS}
-	${CORE_SOURCES}
+	${HEADERS}
+	${SOURCES}
 )
 
 set_target_properties(CE_Core PROPERTIES LINKER_LANGUAGE CXX)
