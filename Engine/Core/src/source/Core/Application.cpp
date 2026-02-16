@@ -3,7 +3,11 @@
 //
 
 #include "Core/Application.hpp"
+
 #include <print>
+
+
+namespace CeEvents = CE::Events;
 
 namespace CE::Core {
 
@@ -16,9 +20,7 @@ Application::~Application() {
 }
 
 void Application::Run() {
-	std::println("Start Run");
-	while (true);
-	std::println("Stop Run");
+	std::println("Run");
 }
 
 }

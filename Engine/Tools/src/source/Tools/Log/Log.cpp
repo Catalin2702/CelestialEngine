@@ -8,28 +8,28 @@
 
 namespace CE::Tools::Log {
 
-std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
-std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
+std::shared_ptr<spdlog::logger> Log::_s_coreLogger;
+std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
 
 void Log::Init() {
 #ifndef CE_BUILD
 	spdlog::set_pattern("%^[%T] %n: %v%$");
-	s_CoreLogger = spdlog::stdout_color_mt("CelestialLogger");
-	s_ClientLogger = spdlog::stdout_color_mt("AppLogger");
+	_s_coreLogger = spdlog::stdout_color_mt("CelestialLogger");
+	_s_clientLogger = spdlog::stdout_color_mt("AppLogger");
 
-	if (s_CoreLogger)
-		s_CoreLogger->set_level(spdlog::level::trace);
-	if (s_ClientLogger)
-		s_ClientLogger->set_level(spdlog::level::trace);
+	if (_s_coreLogger)
+		_s_coreLogger->set_level(spdlog::level::trace);
+	if (_s_clientLogger)
+		_s_clientLogger->set_level(spdlog::level::trace);
 #endif
 }
 
 void Log::Terminate() {
 #ifndef CE_BUILD
-	if (s_CoreLogger)
-		s_CoreLogger.reset();
-	if (s_ClientLogger)
-		s_ClientLogger.reset();
+	if (_s_coreLogger)
+		_s_coreLogger.reset();
+	if (_s_clientLogger)
+		_s_clientLogger.reset();
 #endif
 }
 

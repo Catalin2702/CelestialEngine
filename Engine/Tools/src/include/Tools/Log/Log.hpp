@@ -12,6 +12,7 @@
 #include <cassert>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 namespace CE::Tools::Log {
 
@@ -20,12 +21,12 @@ public:
 	static void Init();
 	static void Terminate();
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return s_CoreLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {return s_ClientLogger; }
+	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return _s_coreLogger; }
+	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {return _s_clientLogger; }
 
 private:
-	static std::shared_ptr<spdlog::logger> s_CoreLogger;
-	static std::shared_ptr<spdlog::logger> s_ClientLogger;
+	static std::shared_ptr<spdlog::logger> _s_coreLogger;
+	static std::shared_ptr<spdlog::logger> _s_clientLogger;
 };
 
 }

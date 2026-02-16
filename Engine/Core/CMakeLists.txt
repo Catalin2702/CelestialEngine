@@ -20,6 +20,7 @@ target_link_libraries(CE_Core PRIVATE
 
 target_include_directories(CE_Core PUBLIC
 	src/include
+	../Events/src/include
 )
 
 target_compile_definitions(CE_Core PRIVATE CE_CORE_EXPORTS)

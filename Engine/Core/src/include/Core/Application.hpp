@@ -7,7 +7,8 @@
 #ifndef CELESTIALENGINE_APPLICATION_HPP
 #define CELESTIALENGINE_APPLICATION_HPP
 
-#include <Core/Core.hpp>
+#include "Core/Core.hpp"
+#include "Events/Event.hpp"
 
 namespace CE::Core {
 
