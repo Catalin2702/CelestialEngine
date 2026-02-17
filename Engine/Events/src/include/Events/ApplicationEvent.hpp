@@ -8,6 +8,7 @@
 #define CE_EVENTS_APPLICATIONEVENT_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Define/Event.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
