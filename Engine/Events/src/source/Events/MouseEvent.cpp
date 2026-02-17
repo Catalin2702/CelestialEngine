@@ -6,28 +6,33 @@
 
 #include <sstream>
 
-CE::Events::MouseMovedEvent::MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
 
-std::string CE::Events::MouseMovedEvent::ToString() const {
+namespace CE::Events {
+
+MouseMovedEvent::MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
+
+std::string MouseMovedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "MouseMovedEvent: " << _x << ", " << _y;
 	return ss.str();
 }
 
-CE::Events::MouseButtonEvent::MouseButtonEvent(const int button): _button(button) {}
+MouseButtonEvent::MouseButtonEvent(const int button): _button(button) {}
 
-CE::Events::MouseButtonPressedEvent::MouseButtonPressedEvent(const int button): MouseButtonEvent(button) {}
+MouseButtonPressedEvent::MouseButtonPressedEvent(const int button): MouseButtonEvent(button) {}
 
-std::string CE::Events::MouseButtonPressedEvent::ToString() const {
+std::string MouseButtonPressedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "MouseButtonPressedEvent: " << _button;
 	return ss.str();
 }
 
-CE::Events::MouseButtonReleasedEvent::MouseButtonReleasedEvent(const int button): MouseButtonEvent(button) {}
+MouseButtonReleasedEvent::MouseButtonReleasedEvent(const int button): MouseButtonEvent(button) {}
 
-std::string CE::Events::MouseButtonReleasedEvent::ToString() const {
+std::string MouseButtonReleasedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "MouseButtonReleasedEvent: " << _button;
 	return ss.str();
+}
+
 }

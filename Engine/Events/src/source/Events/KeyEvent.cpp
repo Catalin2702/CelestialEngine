@@ -6,21 +6,26 @@
 
 #include <sstream>
 
-CE::Events::KeyEvent::KeyEvent(const int keycode): _keyCode(keycode) {}
 
-CE::Events::KeyPressedEvent::KeyPressedEvent(const int keycode, const int repeatCount):
+namespace CE::Events {
+
+KeyEvent::KeyEvent(const int keycode): _keyCode(keycode) {}
+
+KeyPressedEvent::KeyPressedEvent(const int keycode, const int repeatCount):
 	KeyEvent(keycode), _repeatCount(repeatCount) {}
 
-std::string CE::Events::KeyPressedEvent::ToString() const {
+std::string KeyPressedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "KeyPressedEvent: " << _keyCode << " (" << _repeatCount << " repeats)";
 	return ss.str();
 }
 
-CE::Events::KeyReleasedEvent::KeyReleasedEvent(const int keycode): KeyEvent(keycode) {}
+KeyReleasedEvent::KeyReleasedEvent(const int keycode): KeyEvent(keycode) {}
 
-std::string CE::Events::KeyReleasedEvent::ToString() const {
+std::string KeyReleasedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "KeyReleasedEvent: " << _keyCode;
 	return ss.str();
+}
+
 }

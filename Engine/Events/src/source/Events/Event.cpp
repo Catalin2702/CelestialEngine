@@ -4,7 +4,6 @@
 
 #include "Events/Event.hpp"
 
-#include <print>
 
 namespace CE::Events {
 
