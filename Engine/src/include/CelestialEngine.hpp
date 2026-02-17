@@ -11,6 +11,13 @@
 #include <Core/Application.hpp>
 // -----------------------------------------------
 
+// ---- Event ------------------------------------
+#include <Events/ApplicationEvent.hpp>
+#include <Events/Event.hpp>
+#include <Events/KeyEvent.hpp>
+#include <Events/MouseEvent.hpp>
+// -----------------------------------------------
+
 // ---- Log --------------------------------------
 #include <Tools/Log/Log.hpp>
 // -----------------------------------------------

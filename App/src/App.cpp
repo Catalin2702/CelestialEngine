@@ -1,7 +1,4 @@
 #include <CelestialEngine.hpp>
-#include <Events/ApplicationEvent.hpp>
-#include <Events/MouseEvent.hpp>
-#include <Tools/Log/Log.hpp>
 
 #include <print>
 
