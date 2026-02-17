@@ -14,21 +14,6 @@ public:
 	~SandBox() override {
 		std::println("Sandbox destructed");
 	}
-	
-public:
-	void Run() override {
-		Application::Run();
-		const Events::MouseButtonPressedEvent event{1280};
-		if (event.IsInCategory(Events::EventCategoryMouse)) {
-			CE_INFO(event);
-		}
-		if (event.IsInCategory(Events::EventCategoryMouseButton)) {
-			CE_TRACE(event);
-		}
-		if (event.IsInCategory(Events::EventCategoryInput)) {
-			CE_TRACE(event);
-		}
-	}
 };
 
 Core::Application* Core::CreateApplication() {
