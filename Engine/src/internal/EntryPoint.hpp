@@ -16,7 +16,7 @@ namespace CeTime = CE::Tools::Time;
 
 int main() {
 	{
-		CeTime::Timer timer;
+		[[maybe_unused]] CeTime::Timer timer;
 		CeLog::Log::Init();
 		const auto app = CeCore::CreateApplication();
 		app->Run();

@@ -14,6 +14,7 @@
 namespace CE::Tools::Time {
 
 class Timer {
+#ifndef CE_DIST
 public:
 	Timer();
 	~Timer();
@@ -26,6 +27,7 @@ private:
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _start;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _end;
+#endif
 };
 
 }

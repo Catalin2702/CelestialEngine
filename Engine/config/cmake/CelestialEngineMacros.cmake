@@ -16,7 +16,7 @@ if (NOT TARGET CE_Config)
 		NDEBUG
 		>
 		$<$<CONFIG:Dist>:
-		CE_BUILD
+		CE_DIST
 		NDEBUG
 		>
 

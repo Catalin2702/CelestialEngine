@@ -6,7 +6,7 @@
 #ifndef CE_DEFINE_LOG_HPP
 #define CE_DEFINE_LOG_HPP
 
-#if defined(CE_RELEASE) || defined(CE_BUILD)
+#if defined(CE_RELEASE) || defined(CE_DIST)
 	#define CE_CORE_TRACE(...)
 	#define CE_CORE_INFO(...)
 
@@ -24,7 +24,7 @@
 		CE::Tools::Log::Log::GetClientLogger()->info(__VA_ARGS__)
 #endif
 
-#ifdef CE_BUILD
+#ifdef CE_DIST
 	#define CE_CORE_WARN(...)
 	#define CE_CORE_ERROR(...)
 	#define CE_CORE_CRITICAL(...)

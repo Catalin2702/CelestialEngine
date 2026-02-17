@@ -8,6 +8,7 @@
 
 namespace CE::Tools::Time {
 
+#ifndef CE_DIST
 Timer::Timer() {
 	Start();
 }
@@ -33,6 +34,6 @@ void Timer::PrintResult() {
 
 	std::println("Duration: {0} - ({1} ms)", duration, ms);
 }
+#endif
 
 }
-
