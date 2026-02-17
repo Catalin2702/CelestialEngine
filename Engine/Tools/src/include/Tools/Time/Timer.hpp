@@ -5,8 +5,8 @@
 #pragma once
 
 
-#ifndef WORKSPACE_TIMER_HPP
-#define WORKSPACE_TIMER_HPP
+#ifndef CE_TOOLS_TIMER_HPP
+#define CE_TOOLS_TIMER_HPP
 
 #include <chrono>
 
@@ -30,4 +30,4 @@ private:
 
 }
 
-#endif //WORKSPACE_TIMER_HPP
+#endif //CE_TOOLS_TIMER_HPP

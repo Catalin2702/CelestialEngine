@@ -4,9 +4,10 @@
 
 #pragma once
 
-#ifndef WORKSPACE_APPLICATIONEVENT_HPP
-#define WORKSPACE_APPLICATIONEVENT_HPP
+#ifndef CE_EVENTS_APPLICATIONEVENT_HPP
+#define CE_EVENTS_APPLICATIONEVENT_HPP
 
+#include "Define/DynamicLinker.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
@@ -72,4 +73,4 @@ public:
 
 }
 
-#endif //WORKSPACE_APPLICATIONEVENT_HPP
+#endif //CE_EVENTS_APPLICATIONEVENT_HPP

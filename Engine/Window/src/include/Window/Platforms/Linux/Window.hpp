@@ -4,7 +4,7 @@
 
 #pragma once
 
-#ifndef WORKSPACE_WINDOW_HPP
-#define WORKSPACE_WINDOW_HPP
+#ifndef CE_LINUX_WINDOW_HPP
+#define CE_LINUX_WINDOW_HPP
 
-#endif //WORKSPACE_WINDOW_HPP
+#endif //CE_LINUX_WINDOW_HPP

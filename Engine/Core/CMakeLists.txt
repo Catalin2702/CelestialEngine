@@ -18,6 +18,8 @@ set_target_properties(CE_Core PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(CE_Core
 	PRIVATE CE_Config
+	PRIVATE CE_Define
+	PRIVATE CE_Tools
 	PRIVATE CE_Window
 )
 

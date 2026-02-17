@@ -4,9 +4,10 @@
 
 #pragma once
 
-#ifndef WORKSPACE_KEYEVENT_HPP
-#define WORKSPACE_KEYEVENT_HPP
+#ifndef CE_EVENTS_KEYEVENT_HPP
+#define CE_EVENTS_KEYEVENT_HPP
 
+#include "Define/DynamicLinker.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
@@ -53,4 +54,4 @@ public:
 
 }
 
-#endif //WORKSPACE_KEYEVENT_HPP
+#endif //CE_EVENTS_KEYEVENT_HPP

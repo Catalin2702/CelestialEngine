@@ -14,6 +14,7 @@ set(HEADERS
 )
 
 add_subdirectory(Core)
+add_subdirectory(Define)
 add_subdirectory(Events)
 add_subdirectory(Tools)
 add_subdirectory(Window)
@@ -27,6 +28,7 @@ set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(CelestialEngine
 	PRIVATE CE_Config
 	PUBLIC CE_Core
+	PUBLIC CE_Define
 	PUBLIC CE_Events
 	PUBLIC CE_Tools
 	PUBLIC CE_Window

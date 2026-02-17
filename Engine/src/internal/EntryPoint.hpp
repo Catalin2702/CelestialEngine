@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef WORKSPACE_ENTRYPOINT_HPP
-#define WORKSPACE_ENTRYPOINT_HPP
+#ifndef CE_ENTRYPOINT_HPP
+#define CE_ENTRYPOINT_HPP
 
 #ifdef CE_API
 
@@ -27,4 +27,4 @@ int main() {
 
 #endif
 
-#endif //WORKSPACE_ENTRYPOINT_HPP
+#endif //CE_ENTRYPOINT_HPP

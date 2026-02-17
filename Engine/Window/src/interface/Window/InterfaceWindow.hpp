@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Core/Core.hpp"
+#include "Define/DynamicLinker.hpp"
 
 #include <functional>
 #include <string>

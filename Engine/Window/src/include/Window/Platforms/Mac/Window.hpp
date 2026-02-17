@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef WORKSPACE_WINDOW_HPP
-#define WORKSPACE_WINDOW_HPP
+#ifndef CE_MAC_WINDOW_HPP
+#define CE_MAC_WINDOW_HPP
 
 #include "../interface/Window/InterfaceWindow.hpp"
 
@@ -52,4 +52,4 @@ private:
 
 }
 
-#endif //WORKSPACE_WINDOW_HPP
+#endif //CE_MAC_WINDOW_HPP

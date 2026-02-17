@@ -4,9 +4,10 @@
 
 #pragma once
 
-#ifndef WORKSPACE_MOUSEEVENT_HPP
-#define WORKSPACE_MOUSEEVENT_HPP
+#ifndef CE_EVENTS_MOUSEEVENT_HPP
+#define CE_EVENTS_MOUSEEVENT_HPP
 
+#include "Define/DynamicLinker.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
@@ -82,4 +83,4 @@ public:
 
 }
 
-#endif //WORKSPACE_MOUSEEVENT_HPP
+#endif //CE_EVENTS_MOUSEEVENT_HPP

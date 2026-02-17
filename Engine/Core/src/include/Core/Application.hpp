@@ -4,10 +4,10 @@
 
 #pragma once
 
-#ifndef CELESTIALENGINE_APPLICATION_HPP
-#define CELESTIALENGINE_APPLICATION_HPP
+#ifndef CE_CORE_APPLICATION_HPP
+#define CE_CORE_APPLICATION_HPP
 
-#include "Core/Core.hpp"
+#include "Define/DynamicLinker.hpp"
 #include "Events/Event.hpp"
 
 #include <memory>
@@ -16,7 +16,6 @@
 namespace CE::Window {
 
 class Window;
-
 }
 
 
@@ -41,3 +40,4 @@ Application *CreateApplication();
 }
 
 #endif //CELESTIALENGINE_APPLICATION_HPP
+#endif //CE_CORE_APPLICATION_HPP

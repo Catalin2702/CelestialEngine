@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef CELESTIALENGINE_CELESTIALENGINE_HPP
-#define CELESTIALENGINE_CELESTIALENGINE_HPP
+#ifndef CE_CELESTIALENGINE_HPP
+#define CE_CELESTIALENGINE_HPP
 
 // ---- Use in CelestialEngine applications ------
 #include <Core/Application.hpp>
@@ -25,4 +25,4 @@
 #include <EntryPoint.hpp>
 // -----------------------------------------------
 
-#endif //CELESTIALENGINE_CELESTIALENGINE_HPP
+#endif //CE_CELESTIALENGINE_HPP

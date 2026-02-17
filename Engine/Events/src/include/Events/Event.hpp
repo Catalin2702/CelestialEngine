@@ -4,10 +4,12 @@
 
 #pragma once
 
-#ifndef WORKSPACE_EVENT_HPP
-#define WORKSPACE_EVENT_HPP
+#ifndef CE_EVENTS_EVENT_HPP
+#define CE_EVENTS_EVENT_HPP
 
-#include "Core/Core.hpp"
+#include "Define/DynamicLinker.hpp"
+#include "Define/Event.hpp"
+#include "Define/Type.hpp"
 
 #include <functional>
 #include <string>
@@ -97,15 +99,6 @@ inline std::string format_as(const Event &event) {
 
 }
 
-
-#define EVENT_CLASS_TYPE(type)\
-	static EventType GetStaticType() { return EventType::type; }\
-	virtual EventType GetEventType() const override { return GetStaticType(); }\
-	inline virtual const char* GetName() const override { return #type; }
-
-#define EVENT_CLASS_CATEGORY(category)\
-	virtual int GetCategoryFlags() const override {return category; }
-
 #include "../template/Events/Event.tpp"
 
-#endif //WORKSPACE_EVENT_HPP
+#endif //CE_EVENTS_EVENT_HPP
