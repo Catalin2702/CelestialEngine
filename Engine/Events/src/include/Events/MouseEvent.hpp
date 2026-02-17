@@ -15,7 +15,7 @@
 
 namespace CE::Events {
 
-class CE_API MouseMovedEvent : public Event {
+class CE_API MouseMovedEvent final : public Event {
 public:
 	MouseMovedEvent(float x, float y);
 
@@ -31,7 +31,7 @@ private:
 };
 
 
-class CE_API MouseScrolledEvent : public Event {
+class CE_API MouseScrolledEvent final : public Event {
 public:
 	MouseScrolledEvent(float xOffset, float yOffset);
 
@@ -61,7 +61,7 @@ protected:
 };
 
 
-class CE_API MouseButtonPressedEvent : public MouseButtonEvent {
+class CE_API MouseButtonPressedEvent final : public MouseButtonEvent {
 public:
 	MouseButtonPressedEvent(int button);
 
@@ -71,7 +71,7 @@ public:
 };
 
 
-class CE_API MouseButtonReleasedEvent : public MouseButtonEvent {
+class CE_API MouseButtonReleasedEvent final : public MouseButtonEvent {
 public:
 	MouseButtonReleasedEvent(int button);
 

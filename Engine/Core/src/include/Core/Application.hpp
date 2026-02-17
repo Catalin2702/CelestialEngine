@@ -8,18 +8,21 @@
 #define CE_CORE_APPLICATION_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Events/Event.hpp"
 
 #include <memory>
 
 
-namespace CE::Window {
+namespace CE {
 
+namespace Events {
+class Event;
+class WindowCloseEvent;
+}
+namespace Window {
 class Window;
 }
 
-
-namespace CE::Core {
+namespace Core {
 
 class CE_API Application {
 public:
@@ -29,6 +32,8 @@ public:
 
 public:
 	virtual void Run();
+	virtual void OnEvent(Events::Event& event);
+	virtual bool OnWindowClose(const Events::WindowCloseEvent& event);
 
 private:
 	std::unique_ptr<Window::Window> _window;
@@ -39,5 +44,6 @@ Application *CreateApplication();
 
 }
 
-#endif //CELESTIALENGINE_APPLICATION_HPP
+}
+
 #endif //CE_CORE_APPLICATION_HPP

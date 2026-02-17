@@ -10,8 +10,9 @@
 #include "../interface/Window/InterfaceWindow.hpp"
 
 #include <string>
-#include <GLFW/glfw3.h>
 
+
+struct GLFWwindow;
 
 namespace CE::Window {
 
@@ -37,6 +38,7 @@ public:
 	[[nodiscard]] inline bool IsVSync() const override { return _data.VSync; }
 	
 	void SetEventCallback(const EventCallbackFn& callback) override;
+	void SetWindowCallbacks() override;
 	void SetWidth(unsigned int width) override;
 	void SetHeight(unsigned int height) override;
 	void SetVSync(bool enabled) override;

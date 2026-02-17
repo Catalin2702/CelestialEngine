@@ -9,7 +9,8 @@
 
 namespace CE::Events {
 
-MouseMovedEvent::MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
+MouseMovedEvent::MouseMovedEvent(const float x, const float y):
+	_x(x), _y(y) {}
 
 std::string MouseMovedEvent::ToString() const {
 	std::stringstream ss;
@@ -17,7 +18,17 @@ std::string MouseMovedEvent::ToString() const {
 	return ss.str();
 }
 
-MouseButtonEvent::MouseButtonEvent(const int button): _button(button) {}
+MouseScrolledEvent::MouseScrolledEvent(const float xOffset, const float yOffset):
+	_xOffset(xOffset), _yOffset(yOffset) {}
+
+std::string MouseScrolledEvent::ToString() const {
+	std::stringstream ss;
+	ss << "MouseScrolledEvent: " << _xOffset << ", " << _yOffset;
+	return ss.str();
+}
+
+MouseButtonEvent::MouseButtonEvent(const int button):
+	_button(button) {}
 
 MouseButtonPressedEvent::MouseButtonPressedEvent(const int button): MouseButtonEvent(button) {}
 
