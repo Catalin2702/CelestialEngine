@@ -50,6 +50,7 @@ target_link_libraries(CE_Window
 	PRIVATE CE_Tools
 	PUBLIC glfw
 	PUBLIC GLEW::GLEW
+	PUBLIC CE_MetalCpp
 )
 
 target_include_directories(CE_Window PUBLIC
@@ -58,4 +59,6 @@ target_include_directories(CE_Window PUBLIC
 	../Define/src/include
 	../Events/src/include
 	../Tools/src/include
+
+	../Vendor/Apple/Metal/MetalCpp/src/include
 )
