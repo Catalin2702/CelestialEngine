@@ -18,6 +18,9 @@ class Event;
 
 namespace CE::Window {
 
+using EventCallbackFn = std::function<void(CE::Events::Event&)>;
+
+
 struct WindowProps {
 public:
 	std::string title;
@@ -29,10 +32,16 @@ public:
 	WindowProps(std::string title, unsigned int width, unsigned int height, bool VSync);
 };
 
-class CE_API Window {
-public:
-	using EventCallbackFn = std::function<void(CE::Events::Event&)>;
 
+struct WindowData {
+	std::string title;
+	unsigned int width, height;
+	bool VSync;
+	EventCallbackFn eventCallback;
+};
+
+
+class CE_API Window {
 public:
 	virtual ~Window() = default;
 

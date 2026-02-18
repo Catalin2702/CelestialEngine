@@ -16,6 +16,7 @@ set_target_properties(CE_MetalCpp PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(CE_MetalCpp
 	PRIVATE CE_Config
+
 	PUBLIC ${APPKIT_LIBRARY}
 	PUBLIC ${FOUNDATION_LIBRARY}
 	PUBLIC ${METAL_LIBRARY}

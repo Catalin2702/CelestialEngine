@@ -1,4 +1,5 @@
 set(HEADERS
+	src/include/Utils/Window.hpp
 )
 
 set(INTERFACES
@@ -11,10 +12,12 @@ set(SOURCES
 
 if(APPLE)
 	list(APPEND HEADERS
-		src/include/Window/Platforms/Mac/Window.hpp
+		#src/include/Window/Platforms/Mac/Window.hpp
+		src/include/Window/Platforms/Mac/MetalViewport.hpp
 	)
 	list(APPEND SOURCES
-		src/source/Window/Platforms/Mac/Window.cpp
+		#src/source/Window/Platforms/Mac/Window.cpp
+		src/source/Window/Platforms/Mac/MetalViewport.cpp
 	)
 elseif(WIN32)
 	list(APPEND HEADERS

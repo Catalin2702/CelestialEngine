@@ -9,22 +9,12 @@
 
 #include "../interface/Window/InterfaceWindow.hpp"
 
-#include <string>
-
 
 struct GLFWwindow;
 
 namespace CE::Window {
 
 class PlatformWindow final : public Window {
-
-	struct WindowData {
-		std::string title;
-		unsigned int width, height;
-		bool VSync;
-		EventCallbackFn eventCallback;
-	};
-
 public:
 	PlatformWindow(const WindowProps& windowProps);
 	~PlatformWindow() override;

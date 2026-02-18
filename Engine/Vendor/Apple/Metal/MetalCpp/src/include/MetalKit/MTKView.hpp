@@ -41,8 +41,8 @@ namespace MTK
 	{
 		public:
 			virtual						~ViewDelegate() { }
-			virtual void				drawInMTKView( class View* pView ) { }
-			virtual void				drawableSizeWillChange( class View* pView, CGSize size ) { }
+			virtual void				drawInMTKView([[maybe_unused]] class View* pView ) { }
+			virtual void				drawableSizeWillChange( [[maybe_unused]] class View* pView, [[maybe_unused]] CGSize size ) { }
 	};
 
 	class View : public NS::Referencing< MTK::View, NS::View >
@@ -156,7 +156,7 @@ _NS_INLINE void MTK::View::setDelegate( const MTK::ViewDelegate* pDelegate )
 
 	// drawInMTKView:
 
-	void (*drawDispatch)( NS::Value*, SEL, id ) = []( NS::Value* pSelf, SEL _cmd, id pMTKView ){
+	void (*drawDispatch)( NS::Value*, SEL, id ) = []( NS::Value* pSelf, [[maybe_unused]] SEL _cmd, id pMTKView ){
 		auto pDel = reinterpret_cast< MTK::ViewDelegate* >( pSelf->pointerValue() );
 #ifdef __OBJC__
         pDel->drawInMTKView( (__bridge MTK::View *)pMTKView );
