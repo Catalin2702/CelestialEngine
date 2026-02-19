@@ -8,11 +8,45 @@ set(SOURCES
 	src/app.cpp
 )
 
-add_executable(CE_App
-	${SOURCES}
-)
+# Create macOS bundle to avoid system warnings
+if(APPLE)
+	add_executable(CE_App MACOSX_BUNDLE
+		${SOURCES}
+	)
 
-set_target_properties(CE_App PROPERTIES LINKER_LANGUAGE CXX)
+	# Set bundle properties
+	set_target_properties(CE_App PROPERTIES
+		MACOSX_BUNDLE_BUNDLE_NAME "CelestialEngine App"
+		MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+		MACOSX_BUNDLE_EXECUTABLE_NAME "CE_App"
+		MACOSX_BUNDLE_GUI_IDENTIFIER "com.celestialengine.app"
+		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+		LINKER_LANGUAGE CXX
+	)
+
+	# Copy Info.plist to bundle (fallback se MACOSX_BUNDLE_INFO_PLIST non funziona)
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Info.plist"
+		COMMENT "Copying Info.plist to bundle"
+	)
+
+	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND codesign --force --sign -
+			--entitlements "${CMAKE_CURRENT_SOURCE_DIR}/Entitlements.plist"
+			--deep "$<TARGET_BUNDLE_DIR:CE_App>"
+		COMMENT "Code signing CE_App with entitlements"
+	)
+else()
+	add_executable(CE_App
+		${SOURCES}
+	)
+
+	set_target_properties(CE_App PROPERTIES LINKER_LANGUAGE CXX)
+endif()
 
 target_link_libraries(CE_App PRIVATE
 	CE_Config
