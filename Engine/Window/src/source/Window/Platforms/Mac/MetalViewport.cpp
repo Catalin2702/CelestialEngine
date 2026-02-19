@@ -17,8 +17,6 @@
 
 #include <AppKit/AppKit.hpp>
 #include <Metal/Metal.hpp>
-#include <MetalKit/MetalKit.hpp>
-#include <QuartzCore/CAMetalLayer.h>
 #include <QuartzCore/CAMetalLayer.hpp>
 
 
@@ -39,20 +37,23 @@ MetalViewport::~MetalViewport() {
 void MetalViewport::OnUpdate() {
 	glfwPollEvents();
 
-	if (not _view or not _commandQueue)
+	if (not _metalLayer or not _commandQueue)
 		return;
 
 	const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-	// Get the current drawable from MTKView
-	const auto drawable = _view->currentDrawable();
+	// Get the next drawable from CAMetalLayer
+	const auto drawable = _metalLayer->nextDrawable();
 	if (not drawable)
 		return;
 
-	// Get render pass descriptor from MTK::View
-	const auto renderPassDescriptor = _view->currentRenderPassDescriptor();
-	if (not renderPassDescriptor)
-		return;
+	// Create render pass descriptor manually
+	const auto renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
+	colorAttachment->setTexture(drawable->texture());
+	colorAttachment->setLoadAction(MTL::LoadActionClear);
+	colorAttachment->setClearColor(MTL::ClearColor::Make(1.0, 0.0, 0.6, 1.0));
+	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
 	const auto commandBuffer = _commandQueue->commandBuffer();
 
@@ -64,6 +65,8 @@ void MetalViewport::OnUpdate() {
 	commandBuffer->presentDrawable(drawable);
 
 	commandBuffer->commit();
+
+	renderPassDescriptor->release();
 }
 
 void MetalViewport::SetEventCallback(const EventCallbackFn &callback) {
@@ -152,10 +155,16 @@ void MetalViewport::SetWindowCallbacks() {
 
 void MetalViewport::SetWidth(const unsigned int width) {
 	_data.width = width;
+	if (_metalLayer) {
+		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
+	}
 }
 
 void MetalViewport::SetHeight(const unsigned int height) {
 	_data.height = height;
+	if (_metalLayer) {
+		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
+	}
 }
 
 void MetalViewport::SetVSync(const bool enabled) {
@@ -164,11 +173,13 @@ void MetalViewport::SetVSync(const bool enabled) {
 		return;
 	}
 	_data.VSync = enabled;
-	if (_data.VSync and _view and _metalWindow) {
-		// Get monitor's refresh rate
-		const int refreshRate = GetDisplayRefreshRate(_metalWindow.get());
-		_view->setPreferredFramesPerSecond(refreshRate);
-		CE_CORE_INFO("VSync enabled with {0} FPS (monitor refresh rate)", refreshRate);
+	if (_metalLayer) {
+		_metalLayer->setDisplaySyncEnabled(_data.VSync);
+		if (_data.VSync) {
+			CE_CORE_INFO("VSync enabled");
+		} else {
+			CE_CORE_INFO("VSync disabled");
+		}
 	}
 }
 
@@ -228,37 +239,28 @@ void MetalViewport::_InitWindow() {
 
 	_metalWindow = NS::TransferPtr(static_cast<NS::Window*>(cocoaWindow));
 
+	// Get GLFW's content view
 	void* contentView = GetCocoaContentView(cocoaWindow);
 	if (not contentView) {
 		CE_CORE_ERROR("Could not get content view from GLFW window!");
 		exit(EXIT_FAILURE);
 	}
 
+	// Create CAMetalLayer
 	_metalLayer = NS::TransferPtr(CA::MetalLayer::layer());
 	if (not _metalLayer) {
-		CE_CORE_ERROR("Could not create MetalLayer!");
+		CE_CORE_ERROR("Could not create CAMetalLayer!");
 		exit(EXIT_FAILURE);
 	}
 
+	// Configure Metal layer
 	_metalLayer->setDevice(_metalDevice.get());
 	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
 	_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
 
-	// Set Metal layer as content layer for GLFW
+	// Set Metal layer as the layer for GLFW's content view
+	// This doesn't replace the view, just sets its backing layer
 	SetCocoaViewLayer(contentView, _metalLayer.get());
-
-	const CGRect frame = CGRectMake(0, 0, _data.width, _data.height);
-	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _metalDevice.get()));
-	if (not _view) {
-		CE_CORE_ERROR("Could not create MTKView!");
-		exit(EXIT_FAILURE);
-	}
-
-	_view->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-	_view->setClearColor(MTL::ClearColor::Make(1., 0., .6, 1.));
-
-	// Set MTK::View as window's content view
-	SetCocoaWindowContentView(cocoaWindow, _view.get());
 }
 
 void MetalViewport::_Shutdown() {

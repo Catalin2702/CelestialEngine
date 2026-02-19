@@ -19,9 +19,6 @@ struct GLFWwindow;
 namespace CA {
 class MetalLayer;
 }
-namespace MTK {
-class View;
-}
 namespace MTL {
 class CommandQueue;
 class Device;
@@ -65,7 +62,6 @@ private:
 	NS::SharedPtr<MTL::Device> _metalDevice;
 	NS::SharedPtr<NS::Window> _metalWindow;
 	NS::SharedPtr<CA::MetalLayer> _metalLayer;
-	NS::SharedPtr<MTK::View> _view;
 };
 
 }

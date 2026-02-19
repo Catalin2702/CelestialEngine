@@ -36,6 +36,24 @@ void SetCocoaWindowContentView(void* cocoaWindow, void* cocoaView) {
     [window setContentView:view];
 }
 
+void AddSubviewToContentView(void* cocoaWindow, void* subview) {
+    if (!cocoaWindow || !subview)
+        return;
+
+    NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+    NSView* contentView = [window contentView];
+    NSView* newSubview = (__bridge NSView*)subview;
+
+    if (!contentView)
+        return;
+
+    [newSubview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+
+    [newSubview setFrame:[contentView bounds]];
+
+    [contentView addSubview:newSubview];
+}
+
 int GetDisplayRefreshRate(void* cocoaWindow) {
     if (!cocoaWindow)
         return 60; // Default fallback
@@ -50,7 +68,6 @@ int GetDisplayRefreshRate(void* cocoaWindow) {
     if (!screen)
         return 60; // Default fallback
 
-    // Usa maximumFramesPerSecond disponibile da macOS 10.15+
     if (@available(macOS 10.15, *)) {
         NSInteger maxFPS = [screen maximumFramesPerSecond];
         if (maxFPS > 0) {
@@ -58,8 +75,6 @@ int GetDisplayRefreshRate(void* cocoaWindow) {
         }
     }
 
-    // Fallback per versioni più vecchie o se maximumFramesPerSecond fallisce
-    // Prova a usare il mode del display
     NSDictionary* description = [screen deviceDescription];
     CGDirectDisplayID displayID = [[description objectForKey:@"NSScreenNumber"] unsignedIntValue];
 

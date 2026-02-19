@@ -169,7 +169,7 @@ void WindowsViewport::Shutdown() {
 	_window = nullptr;
 }
 
-Window *Window::CreateWindow(const WindowProps &windowProps) {
+InterfaceViewport *InterfaceViewport::CreateWindow(const WindowProps &windowProps) {
 	return new WindowsViewport(windowProps);
 }
 
