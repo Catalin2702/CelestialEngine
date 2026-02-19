@@ -3,6 +3,7 @@
 //
 
 #include "Window/Platforms/Mac/MetalViewport.hpp"
+#include "Window/Platforms/Mac/MetalViewportHelper.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -38,26 +39,30 @@ MetalViewport::~MetalViewport() {
 void MetalViewport::OnUpdate() {
 	glfwPollEvents();
 
-	auto color = MTL::ClearColor::Make(0, 0, 0, 1);
+	if (not _view or not _commandQueue)
+		return;
 
-	const auto autoReleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+	const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-	color.red = color.red > 1.0 ? 0.0 : color.red + 0.01;
+	// Get the current drawable from MTKView
+	const auto drawable = _view->currentDrawable();
+	if (not drawable)
+		return;
 
-	auto surface = _metalLayer->nextDrawable();
+	// Get render pass descriptor from MTK::View
+	const auto renderPassDescriptor = _view->currentRenderPassDescriptor();
+	if (not renderPassDescriptor)
+		return;
 
-	auto pass = MTL::RenderPassDescriptor::renderPassDescriptor();
+	const auto commandBuffer = _commandQueue->commandBuffer();
 
-	auto passColorAttachment0 = pass->colorAttachments()->object(0);
-	passColorAttachment0->setClearColor(color);
-	passColorAttachment0->setLoadAction(MTL::LoadActionClear);
-	passColorAttachment0->setStoreAction(MTL::StoreActionStore);
-	passColorAttachment0->setTexture(surface->texture());
+	// Create render command encoder with render pass descriptor
+	const auto encoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
-	auto commandBuffer = _commandQueue->commandBuffer();
-	auto encoder = commandBuffer->renderCommandEncoder(pass);
 	encoder->endEncoding();
-	commandBuffer->presentDrawable(surface);
+
+	commandBuffer->presentDrawable(drawable);
+
 	commandBuffer->commit();
 }
 
@@ -159,6 +164,12 @@ void MetalViewport::SetVSync(const bool enabled) {
 		return;
 	}
 	_data.VSync = enabled;
+	if (_data.VSync and _view and _metalWindow) {
+		// Ottieni il refresh rate del monitor
+		const int refreshRate = GetDisplayRefreshRate(_metalWindow.get());
+		_view->setPreferredFramesPerSecond(refreshRate);
+		CE_CORE_INFO("VSync enabled with {0} FPS (monitor refresh rate)", refreshRate);
+	}
 }
 
 void MetalViewport::_Init(const WindowProps &windowProps) {
@@ -198,8 +209,6 @@ void MetalViewport::_InitWindow() {
 		s_GLFWInitialized = true;
 	}
 
-	const CGRect frame = {{100.0, 100.0}, {static_cast<double>(_data.width), static_cast<double>(_data.height)}};
-
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	_glfwWindow.reset(glfwCreateWindow(
 		static_cast<int>(_data.width),
@@ -208,12 +217,20 @@ void MetalViewport::_InitWindow() {
 		nullptr,
 		nullptr
 	));
-	glfwMakeContextCurrent(_glfwWindow.get());
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 
-	_metalWindow = NS::TransferPtr(reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(_glfwWindow.get())));
-	if (not _metalWindow) {
-		CE_CORE_ERROR("Could not create MetalWindow!");
+	// Get native Cocoa window from GLFW
+	void* cocoaWindow = glfwGetCocoaWindow(_glfwWindow.get());
+	if (not cocoaWindow) {
+		CE_CORE_ERROR("Could not get Cocoa window from GLFW!");
+		exit(EXIT_FAILURE);
+	}
+
+	_metalWindow = NS::TransferPtr(static_cast<NS::Window*>(cocoaWindow));
+
+	void* contentView = GetCocoaContentView(cocoaWindow);
+	if (not contentView) {
+		CE_CORE_ERROR("Could not get content view from GLFW window!");
 		exit(EXIT_FAILURE);
 	}
 
@@ -224,20 +241,32 @@ void MetalViewport::_InitWindow() {
 	}
 
 	_metalLayer->setDevice(_metalDevice.get());
+	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+	_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
 
+	// Set Metal layer as content layer for GLFW
+	SetCocoaViewLayer(contentView, _metalLayer.get());
+
+
+	const CGRect frame = CGRectMake(0, 0, _data.width, _data.height);
 	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _metalDevice.get()));
 	if (not _view) {
-		CE_CORE_ERROR("Could not create View!");
+		CE_CORE_ERROR("Could not create MTKView!");
 		exit(EXIT_FAILURE);
 	}
-	_view->setLayer(_metalLayer.get());
+
+	_view->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+	_view->setClearColor(MTL::ClearColor::Make(1., 0., .6, 1.));
+
+	// Set MTK::View as window's content view
+	SetCocoaWindowContentView(cocoaWindow, _view.get());
 }
 
 void MetalViewport::_Shutdown() {
 	_glfwWindow.reset();
 }
 
-Window* Window::CreateWindow(const WindowProps &windowProps) {
+InterfaceViewport* InterfaceViewport::CreateWindow(const WindowProps &windowProps) {
 	return new MetalViewport(windowProps);
 }
 

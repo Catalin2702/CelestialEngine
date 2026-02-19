@@ -41,9 +41,9 @@ struct WindowData {
 };
 
 
-class CE_API Window {
+class CE_API InterfaceViewport {
 public:
-	virtual ~Window() = default;
+	virtual ~InterfaceViewport() = default;
 
 public:
 	virtual void OnUpdate() = 0;
@@ -59,7 +59,7 @@ public:
 	virtual void SetHeight(unsigned int height) = 0;
 	virtual void SetVSync(bool enabled) = 0;
 
-	static Window* CreateWindow(const WindowProps& windowProps);
+	static InterfaceViewport* CreateWindow(const WindowProps& windowProps);
 };
 
 }

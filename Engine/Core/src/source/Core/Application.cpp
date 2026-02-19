@@ -17,7 +17,7 @@ namespace CeWindow = CE::Window;
 namespace CE::Core {
 
 Application::Application() {
-	_window = std::unique_ptr<CeWindow::Window>(CeWindow::Window::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
+	_window = std::unique_ptr<CeWindow::InterfaceViewport>(CeWindow::InterfaceViewport::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
 	_window->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }

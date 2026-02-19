@@ -19,18 +19,20 @@ struct GLFWwindow;
 namespace CA {
 class MetalLayer;
 }
+namespace MTK {
+class View;
+}
 namespace MTL {
 class CommandQueue;
 class Device;
 }
 namespace NS {
-class View;
 class Window;
 }
 
 namespace CE::Window {
 
-class MetalViewport final : public Window {
+class MetalViewport final : public InterfaceViewport {
 public:
 	MetalViewport(const WindowProps& windowProps);
 	~MetalViewport() override;
@@ -63,7 +65,7 @@ private:
 	NS::SharedPtr<MTL::Device> _metalDevice;
 	NS::SharedPtr<NS::Window> _metalWindow;
 	NS::SharedPtr<CA::MetalLayer> _metalLayer;
-	NS::SharedPtr<NS::View> _view;
+	NS::SharedPtr<MTK::View> _view;
 };
 
 }

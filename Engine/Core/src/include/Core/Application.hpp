@@ -19,7 +19,7 @@ class Event;
 class WindowCloseEvent;
 }
 namespace Window {
-class Window;
+class InterfaceViewport;
 }
 
 namespace Core {
@@ -36,7 +36,7 @@ public:
 	virtual bool OnWindowClose(const Events::WindowCloseEvent& event);
 
 private:
-	std::unique_ptr<Window::Window> _window;
+	std::unique_ptr<Window::InterfaceViewport> _window;
 	bool _running;
 };
 

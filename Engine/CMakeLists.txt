@@ -19,7 +19,9 @@ add_subdirectory(Events)
 add_subdirectory(Tools)
 add_subdirectory(Window)
 
-add_subdirectory(Vendor/Apple/Metal/MetalCpp)
+if(APPLE)
+	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
+endif()
 
 add_library(CelestialEngine SHARED
 	${HEADERS}
@@ -34,9 +36,13 @@ target_link_libraries(CelestialEngine
 	PUBLIC CE_Events
 	PUBLIC CE_Tools
 	PUBLIC CE_Window
-
-	PUBLIC CE_MetalCpp
 )
+
+if(APPLE)
+	target_link_libraries(CelestialEngine
+		PUBLIC CE_MetalCpp
+	)
+endif()
 
 target_include_directories(CelestialEngine
 	PUBLIC src/include
