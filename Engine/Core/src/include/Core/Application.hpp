@@ -28,7 +28,7 @@ class CE_API Application {
 public:
 	Application();
 
-	virtual ~Application();
+	virtual ~Application() = default;
 
 public:
 	virtual void Run();

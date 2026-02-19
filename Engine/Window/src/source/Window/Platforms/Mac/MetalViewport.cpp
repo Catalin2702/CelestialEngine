@@ -165,7 +165,7 @@ void MetalViewport::SetVSync(const bool enabled) {
 	}
 	_data.VSync = enabled;
 	if (_data.VSync and _view and _metalWindow) {
-		// Ottieni il refresh rate del monitor
+		// Get monitor's refresh rate
 		const int refreshRate = GetDisplayRefreshRate(_metalWindow.get());
 		_view->setPreferredFramesPerSecond(refreshRate);
 		CE_CORE_INFO("VSync enabled with {0} FPS (monitor refresh rate)", refreshRate);
@@ -247,7 +247,6 @@ void MetalViewport::_InitWindow() {
 	// Set Metal layer as content layer for GLFW
 	SetCocoaViewLayer(contentView, _metalLayer.get());
 
-
 	const CGRect frame = CGRectMake(0, 0, _data.width, _data.height);
 	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _metalDevice.get()));
 	if (not _view) {
@@ -266,7 +265,7 @@ void MetalViewport::_Shutdown() {
 	_glfwWindow.reset();
 }
 
-InterfaceViewport* InterfaceViewport::CreateWindow(const WindowProps &windowProps) {
+InterfaceViewport* InterfaceViewport::CreateWindow(const WindowProps& windowProps) {
 	return new MetalViewport(windowProps);
 }
 

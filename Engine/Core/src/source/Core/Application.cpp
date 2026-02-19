@@ -20,8 +20,6 @@ Application::Application() {
 	_running = true;
 }
 
-Application::~Application() {}
-
 void Application::Run() {
 	while (_running) {
 		_window->OnUpdate();
