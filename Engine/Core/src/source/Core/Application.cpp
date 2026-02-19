@@ -8,8 +8,6 @@
 #include "Tools/Log/Log.hpp"
 #include "Window/InterfaceWindow.hpp"
 
-#include <GL/glew.h>
-
 
 namespace CeEvents = CE::Events;
 namespace CeWindow = CE::Window;
@@ -17,7 +15,7 @@ namespace CeWindow = CE::Window;
 namespace CE::Core {
 
 Application::Application() {
-	_window = std::unique_ptr<CeWindow::Window>(CeWindow::Window::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
+	_window = std::unique_ptr<CeWindow::InterfaceViewport>(CeWindow::InterfaceViewport::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
 	_window->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }
@@ -26,8 +24,6 @@ Application::~Application() {}
 
 void Application::Run() {
 	while (_running) {
-		glClearColor(1, 0, 1, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
 		_window->OnUpdate();
 	}
 }

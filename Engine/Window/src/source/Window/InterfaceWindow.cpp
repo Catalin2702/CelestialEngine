@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "../interface/Window/InterfaceWindow.hpp"
+#include "Window/InterfaceWindow.hpp"
 
 
 namespace CE::Window {
