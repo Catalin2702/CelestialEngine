@@ -1,10 +1,14 @@
 set(HEADERS
 	src/include/Core/Core.hpp
 	src/include/Core/Application.hpp
+	src/include/Layers/Layer.hpp
+	src/include/Layers/LayerStack.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
+	src/source/Layers/Layer.cpp
+	src/source/Layers/LayerStack.cpp
 )
 
 find_package(glfw3 CONFIG REQUIRED)

@@ -41,21 +41,15 @@ if (NOT TARGET CE_Config)
 		-Wextra
 		-Werror
 		>
+
 		$<$<CXX_COMPILER_ID:MSVC>:
+		$<$<CONFIG:Debug>:/MDd>
+		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:/MD>
 		/W4
 		/WX
 		/permissive-
-		>
-
-		$<$<CONFIG:Debug>:
-		-O0
-		-g
-		>
-		$<$<CONFIG:Release>:
-		-O3
-		>
-		$<$<CONFIG:Dist>:
-		-O3
+		/Zi        # Genera PDB per il debug anche in Release
+		/EHsc      # Gestione eccezioni standard
 		>
 	)
 endif ()

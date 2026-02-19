@@ -5,6 +5,7 @@
 #include "Core/Application.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/Event.hpp"
+#include "Layers/Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/InterfaceWindow.hpp"
 
@@ -20,24 +21,40 @@ Application::Application() {
 	_running = true;
 }
 
+Application::~Application() = default;
+
 void Application::Run() {
 	while (_running) {
+		for (const auto layer: _layerStack) {
+			layer->OnUpdate();
+		}
 		_window->OnUpdate();
 	}
 }
 
 void Application::OnEvent(Events::Event& event) {
-	if (event.GetEventType() != CeEvents::EventType::MouseMoved) {
-		CE_TRACE(event);
-	}
 	CeEvents::EventDispatcher eventDispatcher(event);
 	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(Application::OnWindowClose));
+
+	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
+		(*--it)->OnEvent(event);
+		if (event.IsHandled())
+			break;
+	}
 }
 
 bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	_running = false;
-	CE_INFO("Window closed");
+	CE_CORE_INFO("Window closed");
 	return true;
+}
+
+void Application::PushLayer(Layers::Layer *layer) {
+	_layerStack.PushLayer(layer);
+}
+
+void Application::PushOverlay(Layers::Layer *overlay) {
+	_layerStack.PopOverlay(overlay);
 }
 
 }
