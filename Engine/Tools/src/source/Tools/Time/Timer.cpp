@@ -3,8 +3,7 @@
 //
 
 #include "Tools/Time/Timer.hpp"
-
-#include <print>
+#include "Tools/Log/Log.hpp"
 
 namespace CE::Tools::Time {
 
@@ -26,13 +25,13 @@ void Timer::Stop() {
 	_end = std::chrono::high_resolution_clock::now();
 }
 
-void Timer::PrintResult() {
+void Timer::PrintResult() const {
 	const auto start = std::chrono::time_point_cast<std::chrono::milliseconds>(_start).time_since_epoch().count();
 	const auto end = std::chrono::time_point_cast<std::chrono::milliseconds>(_end).time_since_epoch().count();
 	const auto duration = end - start;
-	const double ms = duration * 0.001;
+	const double ms = static_cast<double>(duration) * 0.001;
 
-	std::println("Duration: {0} - ({1} ms)", duration, ms);
+	CE_CORE_TRACE("Timer duration: {0} - ({1} ms)", duration, ms);
 }
 #endif
 

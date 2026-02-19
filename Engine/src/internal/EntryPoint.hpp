@@ -15,14 +15,14 @@ namespace CeTime = CE::Tools::Time;
 
 
 int main() {
+	CeLog::Log::Init();
 	{
 		[[maybe_unused]] CeTime::Timer timer;
-		CeLog::Log::Init();
 		const auto app = CeCore::CreateApplication();
 		app->Run();
-		CeLog::Log::Terminate();
 		delete app;
 	}
+	CeLog::Log::Terminate();
 }
 
 #endif

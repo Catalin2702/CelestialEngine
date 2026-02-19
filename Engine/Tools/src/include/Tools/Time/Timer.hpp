@@ -22,7 +22,7 @@ public:
 private:
 	void Start();
 	void Stop();
-	void PrintResult();
+	void PrintResult() const;
 
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _start;
