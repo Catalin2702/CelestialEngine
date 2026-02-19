@@ -1,6 +1,5 @@
 #include <CelestialEngine.hpp>
 
-#include <print>
 
 namespace Core = CE::Core;
 namespace Events = CE::Events;
