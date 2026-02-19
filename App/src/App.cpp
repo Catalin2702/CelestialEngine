@@ -9,10 +9,10 @@ namespace Log = CE::Tools::Log;
 class SandBox final: public Core::Application {
 public:
 	SandBox() {
-		std::println("Sandbox created");
+		CE_CORE_INFO("Sandbox created");
 	}
 	~SandBox() override {
-		std::println("Sandbox destructed");
+		CE_CORE_INFO("Sandbox destructed");
 	}
 };
 
