@@ -2,7 +2,7 @@
 // Created by Catalin Chirosca on 2026-02-16.
 //
 
-#include "Window/Platforms/Mac/Window.hpp"
+#include "Window/Platforms/Windows/WindowsViewport.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -17,25 +17,25 @@ namespace CE::Window {
 
 static bool s_GLFWInitialized = false;
 
-PlatformWindow::PlatformWindow(const WindowProps &windowProps)
+WindowsViewport::WindowsViewport(const WindowProps &windowProps)
 {
 	Init(windowProps);
 }
 
-PlatformWindow::~PlatformWindow() {
+WindowsViewport::~WindowsViewport() {
 	Shutdown();
 }
 
-void PlatformWindow::OnUpdate() {
+void WindowsViewport::OnUpdate() {
 	glfwPollEvents();
 	glfwSwapBuffers(_window);
 }
 
-void PlatformWindow::SetEventCallback(const EventCallbackFn &callback) {
+void WindowsViewport::SetEventCallback(const EventCallbackFn &callback) {
 	_data.eventCallback = callback;
 }
 
-void PlatformWindow::SetWindowCallbacks() {
+void WindowsViewport::SetWindowCallbacks() {
 	if (not _window)
 		return;
 
@@ -115,15 +115,15 @@ void PlatformWindow::SetWindowCallbacks() {
 	});
 }
 
-void PlatformWindow::SetWidth(const unsigned int width) {
+void WindowsViewport::SetWidth(const unsigned int width) {
 	_data.width = width;
 }
 
-void PlatformWindow::SetHeight(const unsigned int height) {
+void WindowsViewport::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
 
-void PlatformWindow::SetVSync(const bool enabled) {
+void WindowsViewport::SetVSync(const bool enabled) {
 	if (not s_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
@@ -132,7 +132,7 @@ void PlatformWindow::SetVSync(const bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
 }
 
-void PlatformWindow::Init(const WindowProps &windowProps) {
+void WindowsViewport::Init(const WindowProps &windowProps) {
 	_data.title = windowProps.title;
 	_data.width = windowProps.width;
 	_data.height = windowProps.height;
@@ -164,13 +164,13 @@ void PlatformWindow::Init(const WindowProps &windowProps) {
 	SetWindowCallbacks();
 }
 
-void PlatformWindow::Shutdown() {
+void WindowsViewport::Shutdown() {
 	glfwDestroyWindow(_window);
 	_window = nullptr;
 }
 
 Window *Window::CreateWindow(const WindowProps &windowProps) {
-	return new PlatformWindow(windowProps);
+	return new WindowsViewport(windowProps);
 }
 
 }

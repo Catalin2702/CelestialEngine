@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef CE_MAC_WINDOW_HPP
-#define CE_MAC_WINDOW_HPP
+#ifndef CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
+#define CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 
 #include "../interface/Window/InterfaceWindow.hpp"
 
@@ -14,10 +14,10 @@ struct GLFWwindow;
 
 namespace CE::Window {
 
-class PlatformWindow final : public Window {
+class WindowsViewport final : public InterfaceViewport {
 public:
-	PlatformWindow(const WindowProps& windowProps);
-	~PlatformWindow() override;
+	WindowsViewport(const WindowProps& windowProps);
+	~WindowsViewport() override;
 
 public:
 	void OnUpdate() override;
@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif //CE_MAC_WINDOW_HPP
+#endif //CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
