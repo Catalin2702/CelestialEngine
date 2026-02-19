@@ -10,6 +10,7 @@ set(INTERNALS)
 
 set(SOURCES
 	src/source/Window/InterfaceWindow.cpp
+	src/source/Utils/Window.cpp
 )
 
 if(APPLE)
@@ -63,6 +64,7 @@ target_link_libraries(CE_Window
 
 target_include_directories(CE_Window PUBLIC
 	src/include
+	src/interface
 	src/internal
 	../Core/src/include
 	../Define/src/include

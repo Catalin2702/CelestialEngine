@@ -7,7 +7,7 @@
 #ifndef CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 #define CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 
-#include "../interface/Window/InterfaceWindow.hpp"
+#include "Window/InterfaceWindow.hpp"
 
 
 struct GLFWwindow;

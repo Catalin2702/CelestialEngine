@@ -8,8 +8,6 @@
 #include "Tools/Log/Log.hpp"
 #include "Window/InterfaceWindow.hpp"
 
-#include <GL/glew.h>
-
 
 namespace CeEvents = CE::Events;
 namespace CeWindow = CE::Window;

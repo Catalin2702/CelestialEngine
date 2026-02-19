@@ -3,11 +3,11 @@
 //
 
 #include "Window/Platforms/Mac/MetalViewport.hpp"
-#include "Window/Platforms/Mac/MetalViewportHelper.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Window/Platforms/Mac/MetalViewportHelper.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

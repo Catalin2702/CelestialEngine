@@ -7,8 +7,8 @@
 #ifndef CE_WINDOW_MAC_METALVIEWPORT_HPP
 #define CE_WINDOW_MAC_METALVIEWPORT_HPP
 
-#include "../interface/Window/InterfaceWindow.hpp"
 #include "Utils/Window.hpp"
+#include "Window/InterfaceWindow.hpp"
 
 #include <memory>
 #include <AppKit/AppKit.hpp>

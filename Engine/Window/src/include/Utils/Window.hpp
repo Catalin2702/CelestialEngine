@@ -7,7 +7,7 @@
 #ifndef CE_WINDOW_UTILS_WINDOW_HPP
 #define CE_WINDOW_UTILS_WINDOW_HPP
 
-#include <GLFW/glfw3.h>
+#include <memory>
 
 
 struct GLFWwindow;
@@ -15,10 +15,7 @@ struct GLFWwindow;
 namespace CE::Window {
 
 struct GLFWwindowDestructor {
-	void operator()(GLFWwindow* window) const {
-		if (window)
-			glfwDestroyWindow(window);
-	}
+	void operator()(GLFWwindow* window) const;
 };
 
 using GLFWWindowPtr = std::unique_ptr<GLFWwindow, GLFWwindowDestructor>;
