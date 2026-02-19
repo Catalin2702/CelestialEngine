@@ -67,8 +67,8 @@ namespace NS::Private::Class {
 _APPKIT_PRIVATE_DEF_CLS( NSApplication );
 _APPKIT_PRIVATE_DEF_CLS( NSRunningApplication );
 _APPKIT_PRIVATE_DEF_CLS( NSView );
-_APPKIT_PRIVATE_DEF_CLS( NSOpenPanel);
-_APPKIT_PRIVATE_DEF_CLS( NSSavePanel);
+_APPKIT_PRIVATE_DEF_CLS( NSOpenPanel );
+_APPKIT_PRIVATE_DEF_CLS( NSSavePanel );
 _APPKIT_PRIVATE_DEF_CLS( NSWindow );
 _APPKIT_PRIVATE_DEF_CLS( NSMenu );
 _APPKIT_PRIVATE_DEF_CLS( NSMenuItem );
@@ -134,6 +134,18 @@ _APPKIT_PRIVATE_DEF_SEL( initWithFrame_,
 _APPKIT_PRIVATE_DEF_SEL( initWithTitle_,
 						"initWithTitle:" );
 
+_APPKIT_PRIVATE_DEF_SEL( setLayer_,
+						"setLayer:" );
+
+_APPKIT_PRIVATE_DEF_SEL( setOpaque_,
+						"setOpaque:" );
+
+_APPKIT_PRIVATE_DEF_SEL( setWantsLayer_,
+						"setWantsLayer:" );
+
+_APPKIT_PRIVATE_DEF_SEL( contentView,
+						"contentView" );
+
 _APPKIT_PRIVATE_DEF_SEL( setContentView_,
 						"setContentView:" );
 
@@ -152,22 +164,17 @@ _APPKIT_PRIVATE_DEF_SEL( setSubmenu_,
 _APPKIT_PRIVATE_DEF_SEL( setTitle_,
 						"setTitle:" );
 
-_APPKIT_PRIVATE_DEF_SEL( layer_,
-                         "layer");
-
-_APPKIT_PRIVATE_DEF_SEL( setLayer_,
-                        "setLayer:" );
-
 _APPKIT_PRIVATE_DEF_SEL( windows,
 						"windows" );
 
 _APPKIT_PRIVATE_DEF_SEL( openPanel_,
-                        "openPanel");
+						"openPanel" );
 
-_APPKIT_PRIVATE_DEF_SEL(beginSheetModalForWindow_completionHandler_,
-    "beginSheetModalForWindow:completionHandler:");
+_APPKIT_PRIVATE_DEF_SEL( beginSheetModalForWindow_completionHandler_,
+						"beginSheetModalForWindow:completionHandler:" );
 
-_APPKIT_PRIVATE_DEF_SEL(urls_, "URLs");
+_APPKIT_PRIVATE_DEF_SEL( urls_,
+						"URLs" );
 
 }
 
