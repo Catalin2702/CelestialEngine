@@ -4,6 +4,7 @@
 
 #include "Window/Platforms/Mac/MetalViewport.hpp"
 #include "Events/ApplicationEvent.hpp"
+#include "Events/Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
@@ -26,8 +27,8 @@ namespace CE::Window {
 
 static bool s_GLFWInitialized = false;
 
-MetalViewport::MetalViewport(const WindowProps &windowProps) {
-	_Init(windowProps);
+MetalViewport::MetalViewport(const CeTypeWindow::WindowProps &windowProps): _data(windowProps.title, windowProps.width, windowProps.height, windowProps.VSync) {
+	_Init();
 }
 
 MetalViewport::~MetalViewport() {
@@ -69,7 +70,7 @@ void MetalViewport::OnUpdate() {
 	renderPassDescriptor->release();
 }
 
-void MetalViewport::SetEventCallback(const EventCallbackFn &callback) {
+void MetalViewport::SetEventCallback(const EventCallbackFn& callback) {
 	_data.eventCallback = callback;
 }
 
@@ -78,7 +79,7 @@ void MetalViewport::SetWindowCallbacks() {
 		return;
 
 	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
 			CeEvents::WindowResizeEvent event{data->width, data->height};
@@ -87,14 +88,14 @@ void MetalViewport::SetWindowCallbacks() {
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::WindowCloseEvent event;
 			data->eventCallback(event);
 		}
 	});
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					CeEvents::KeyPressedEvent keyPressedEvent{key, 0};
@@ -113,14 +114,13 @@ void MetalViewport::SetWindowCallbacks() {
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
 	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					CeEvents::MouseButtonPressedEvent mouseButtonPressedEvent(button);
@@ -132,21 +132,20 @@ void MetalViewport::SetWindowCallbacks() {
 					data->eventCallback(mouseButtonReleasedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
-	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, double xOffset, double yOffset) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->eventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->eventCallback(mouseMovedEvent);
 		}
@@ -175,20 +174,11 @@ void MetalViewport::SetVSync(const bool enabled) {
 	_data.VSync = enabled;
 	if (_metalLayer) {
 		_metalLayer->setDisplaySyncEnabled(_data.VSync);
-		if (_data.VSync) {
-			CE_CORE_INFO("VSync enabled");
-		} else {
-			CE_CORE_INFO("VSync disabled");
-		}
+		CE_CORE_INFO("VSync {0}", _data.VSync ? "enabled" : "disabòed");
 	}
 }
 
-void MetalViewport::_Init(const WindowProps &windowProps) {
-	_data.title = windowProps.title;
-	_data.width = windowProps.width;
-	_data.height = windowProps.height;
-	_data.VSync = windowProps.VSync;
-
+void MetalViewport::_Init() {
 	_InitDevice();
 	_InitWindow();
 	SetVSync(_data.VSync);
@@ -265,10 +255,6 @@ void MetalViewport::_InitWindow() {
 
 void MetalViewport::_Shutdown() {
 	_glfwWindow.reset();
-}
-
-InterfaceViewport* InterfaceViewport::CreateWindow(const WindowProps& windowProps) {
-	return new MetalViewport(windowProps);
 }
 
 }

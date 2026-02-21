@@ -18,7 +18,7 @@ namespace CE::Layers {
 class Layer;
 
 class CE_API LayerStack {
-using Container = std::vector<Layer*>;
+using StackContainer = std::vector<Layer*>;
 	
 public:
 	LayerStack();
@@ -30,11 +30,11 @@ public:
 	Layer* PopLayer(Layer* layer);
 	Layer* PopOverlay(Layer* overlay);
 
-	inline Container::iterator begin() { return _layers.begin(); }
-	inline Container::iterator end() { return _layers.end(); }
+	StackContainer::iterator begin() { return _layers.begin(); }
+	StackContainer::iterator end() { return _layers.end(); }
 private:
-	Container _layers;
-	Container::iterator _layerInsert;
+	StackContainer _layers;
+	StackContainer::iterator _layerInsert;
 };
 
 }

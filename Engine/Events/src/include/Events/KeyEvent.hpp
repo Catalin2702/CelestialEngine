@@ -17,7 +17,7 @@ namespace CE::Events {
 
 class CE_API KeyEvent : public Event {
 public:
-	[[nodiscard]] inline int GetKeyCode() const { return _keyCode; }
+	[[nodiscard]] int GetKeyCode() const { return _keyCode; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
@@ -34,7 +34,7 @@ public:
 	KeyPressedEvent(int keycode, int repeatCount);
 
 public:
-	[[nodiscard]] inline int GetRepeatCount() const { return _repeatCount; }
+	[[nodiscard]] int GetRepeatCount() const { return _repeatCount; }
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(KeyPressed)

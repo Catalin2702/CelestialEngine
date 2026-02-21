@@ -15,7 +15,7 @@ namespace CE::Layers {
 
 class CE_API Layer {
 public:
-	Layer([[maybe_unused]] std::string name = "Layer");
+	Layer([[maybe_unused]] const std::string& name = "Layer");
 	virtual ~Layer() = default;
 
 public:

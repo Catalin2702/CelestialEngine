@@ -9,20 +9,15 @@
 
 #ifdef CE_API
 
-namespace CeCore = CE::Core;
-namespace CeLog = CE::Tools::Log;
-namespace CeTime = CE::Tools::Time;
-
-
-int main() {
-	CeLog::Log::Init();
+int main(const int argc, char* argv[]) {
+	Log::Log::Init();
 	{
-		[[maybe_unused]] CeTime::Timer timer;
-		const auto app = CeCore::CreateApplication();
+		[[maybe_unused]] Time::Timer timer;
+		const auto app = Core::CreateApplication(CMD::GetWindowProps(argc, argv));
 		app->Run();
 		delete app;
 	}
-	CeLog::Log::Terminate();
+	Log::Log::Terminate();
 }
 
 #endif

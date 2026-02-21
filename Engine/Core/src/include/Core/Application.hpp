@@ -9,6 +9,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Layers/LayerStack.hpp"
+#include "Types/Window/WindowProps.hpp"
 
 #include <memory>
 
@@ -26,11 +27,15 @@ namespace Window {
 class InterfaceViewport;
 }
 
+namespace CeTypeWindow = Types::Window;
+
 namespace Core {
 
 class CE_API Application {
 public:
 	Application();
+	Application(const CeTypeWindow::WindowProps& windowProps);
+	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync);
 
 	virtual ~Application();
 
@@ -42,13 +47,18 @@ public:
 	void PushLayer(Layers::Layer* layer);
 	void PushOverlay(Layers::Layer* overlay);
 
+protected:
+	void _Init(const CeTypeWindow::WindowProps& windowProps);
+
 private:
 	std::unique_ptr<Window::InterfaceViewport> _window;
-	bool _running;
+	bool _running = false;
 	Layers::LayerStack _layerStack;
 };
 
-Application *CreateApplication();
+Application* CreateApplication();
+Application* CreateApplication(const CeTypeWindow::WindowProps& windowProps);
+Application* CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync);
 
 }
 

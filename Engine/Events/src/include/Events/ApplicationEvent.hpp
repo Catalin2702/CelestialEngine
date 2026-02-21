@@ -21,8 +21,8 @@ public:
 	WindowResizeEvent(unsigned int width, unsigned int height);
 
 public:
-	[[nodiscard]] inline unsigned int GetWidth() const { return _width;}
-	[[nodiscard]] inline unsigned int GetHeight() const { return _height; }
+	[[nodiscard]] unsigned int GetWidth() const { return _width;}
+	[[nodiscard]] unsigned int GetHeight() const { return _height; }
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(WindowResize)

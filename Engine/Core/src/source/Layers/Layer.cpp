@@ -7,9 +7,9 @@
 
 namespace CE::Layers {
 
-Layer::Layer([[maybe_unused]] std::string name) {
+Layer::Layer([[maybe_unused]] const std::string& name) {
 #ifdef CE_DEBUG
-	_name = std::move(name);
+	_name = name;
 #endif
 }
 

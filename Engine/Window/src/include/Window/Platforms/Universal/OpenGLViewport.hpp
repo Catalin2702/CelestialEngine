@@ -7,25 +7,28 @@
 #ifndef CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 #define CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 
+#include "Types/Window/WindowProps.hpp"
 #include "Window/InterfaceWindow.hpp"
 
 
 struct GLFWwindow;
 
+namespace CeTypeWindow = CE::Types::Window;
+
 namespace CE::Window {
 
-class WindowsViewport final : public InterfaceViewport {
+class OpenGLViewport final : public InterfaceViewport {
 public:
-	WindowsViewport(const WindowProps& windowProps);
-	~WindowsViewport() override;
+	OpenGLViewport(const CeTypeWindow::WindowProps& windowProps);
+	~OpenGLViewport() override;
 
 public:
 	void OnUpdate() override;
 
 public:
-	[[nodiscard]] inline unsigned int GetWidth() const override { return _data.width; }
-	[[nodiscard]] inline unsigned int GetHeight() const override { return _data.height; }
-	[[nodiscard]] inline bool IsVSync() const override { return _data.VSync; }
+	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
+	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
+	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
 	
 	void SetEventCallback(const EventCallbackFn& callback) override;
 	void SetWindowCallbacks() override;
@@ -34,12 +37,12 @@ public:
 	void SetVSync(bool enabled) override;
 
 private:
-	void Init(const WindowProps& windowProps);
-	void Shutdown();
+	void _Init();
+	void _Shutdown();
 
 private:
 	GLFWwindow* _window = nullptr;
-	WindowData _data;
+	EventWindowData _data;
 };
 
 }

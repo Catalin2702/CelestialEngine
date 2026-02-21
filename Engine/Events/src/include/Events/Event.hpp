@@ -63,11 +63,11 @@ public:
 	[[nodiscard]] virtual EventType GetEventType() const = 0;
 	[[nodiscard]] virtual const char* GetName() const = 0;
 	[[nodiscard]] virtual int GetCategoryFlags() const = 0;
-	[[nodiscard]] inline virtual std::string ToString() const { return GetName(); }
+	[[nodiscard]] virtual std::string ToString() const { return GetName(); }
 
 public:
-	[[nodiscard]] inline bool IsInCategory(const EventCategory category) const { return GetCategoryFlags() & category; }
-	[[nodiscard]] inline bool IsHandled() const { return _handled; }
+	[[nodiscard]] bool IsInCategory(const EventCategory category) const { return GetCategoryFlags() & category; }
+	[[nodiscard]] bool IsHandled() const { return _handled; }
 
 protected:
 	bool _handled = false;

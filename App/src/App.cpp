@@ -1,11 +1,6 @@
 #include <CelestialEngine.hpp>
 
 
-namespace Core = CE::Core;
-namespace Events = CE::Events;
-namespace Log = CE::Tools::Log;
-namespace Layers = CE::Layers;
-
 class ExampleLayer : public Layers::Layer {
 public:
 	ExampleLayer(): Layer("ExampleLayer") {}
@@ -27,6 +22,12 @@ public:
 	SandBox() {
 		PushLayer(new ExampleLayer());
 	}
+	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {
+		PushLayer(new ExampleLayer());
+	}
+	SandBox(const std::string &title, const unsigned int width, const unsigned int height, const bool VSync): Application(title, width, height, VSync) {
+		PushLayer(new ExampleLayer());
+	}
 	~SandBox() override {
 		CE_CORE_INFO("Sandbox destructed");
 	}
@@ -34,4 +35,12 @@ public:
 
 Core::Application* Core::CreateApplication() {
 	return new SandBox();
+}
+
+Core::Application* CE::Core::CreateApplication(const CeTypeWindow::WindowProps& windowProps) {
+	return new SandBox(windowProps);
+}
+
+Core::Application* Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync) {
+	return new SandBox(title, width, height, VSync);
 }

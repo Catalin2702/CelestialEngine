@@ -6,7 +6,7 @@
 	"dependencies": [
 		"spdlog",
 		"glfw3",
-		"glew"
+		"glad"
 	],
 	"overrides": [
 		{
@@ -18,8 +18,8 @@
 			"version": "3.4#1"
 		},
 		{
-			"name": "glew",
-			"version": "2.3.1"
+			"name": "glad",
+			"version": "0.1.36"
 		}
 	]
 }

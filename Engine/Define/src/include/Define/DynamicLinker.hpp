@@ -19,7 +19,7 @@
 	#error CelestialEngine supports only Windows, MacOS and Linux
 #endif
 
-#define BIND_EVENT_FN_NO_PARAMS(x) std::bind(&x, this)
-#define BIND_EVENT_FN_ONE_PARAM(x) std::bind(&x, this, std::placeholders::_1)
+#define BIND_EVENT_FN_NO_PARAMS(x) [this]() { return x(); }
+#define BIND_EVENT_FN_ONE_PARAM(x) [this](auto&& arg) { return x(std::forward<decltype(arg)>(arg)); }
 
 #endif //CE_DEFINE_DYNAMICLINKER_HPP

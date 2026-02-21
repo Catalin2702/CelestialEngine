@@ -17,8 +17,8 @@ target_link_libraries(CE_Define
 	PRIVATE CE_Config
 )
 
+target_compile_definitions(CE_Define PRIVATE CE_DEFINE_EXPORTS)
+
 target_include_directories(CE_Define PUBLIC
 	src/include
 )
-
-target_compile_definitions(CE_Define PRIVATE CE_DEFINE_EXPORTS)

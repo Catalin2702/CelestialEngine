@@ -8,17 +8,26 @@
 #include "Layers/Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/InterfaceWindow.hpp"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "Window/Platforms/Universal/OpenGLViewport.hpp"
 
+#ifdef CE_PLATFORM_MACOS
+#include "Window/Platforms/Mac/MetalViewport.hpp"
+#endif
 
-namespace CeEvents = CE::Events;
-namespace CeWindow = CE::Window;
 
 namespace CE::Core {
 
 Application::Application() {
-	_window = std::unique_ptr<CeWindow::InterfaceViewport>(CeWindow::InterfaceViewport::CreateWindow(CeWindow::WindowProps("CelestialEngine", 1280, 720, true)));
-	_window->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
-	_running = true;
+	_Init({"CelestialEngine", 1280, 720, true});
+}
+
+Application::Application(const CeTypeWindow::WindowProps& windowProps) {
+	_Init(windowProps);
+}
+
+Application::Application(const std::string &title, const unsigned int width, const unsigned int height, const bool VSync) {
+	_Init({title, width, height, VSync});
 }
 
 Application::~Application() = default;
@@ -33,7 +42,7 @@ void Application::Run() {
 }
 
 void Application::OnEvent(Events::Event& event) {
-	CeEvents::EventDispatcher eventDispatcher(event);
+	Events::EventDispatcher eventDispatcher(event);
 	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(Application::OnWindowClose));
 
 	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
@@ -55,6 +64,18 @@ void Application::PushLayer(Layers::Layer *layer) {
 
 void Application::PushOverlay(Layers::Layer *overlay) {
 	_layerStack.PopOverlay(overlay);
+}
+
+void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
+	_window = std::unique_ptr<Window::InterfaceViewport>(
+		Window::InterfaceViewport::CreateWindow<Window::MetalViewport>(windowProps)
+	);
+	if (not _window) {
+		CE_CORE_ERROR("Can't initialize the window");
+		exit(EXIT_FAILURE);
+	}
+	_window->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
+	_running = true;
 }
 
 }

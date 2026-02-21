@@ -17,6 +17,7 @@ add_subdirectory(Core)
 add_subdirectory(Define)
 add_subdirectory(Events)
 add_subdirectory(Tools)
+add_subdirectory(Types)
 add_subdirectory(Window)
 
 if(APPLE)
@@ -35,6 +36,7 @@ target_link_libraries(CelestialEngine
 	PUBLIC CE_Define
 	PUBLIC CE_Events
 	PUBLIC CE_Tools
+	PUBLIC CE_Types
 	PUBLIC CE_Window
 )
 

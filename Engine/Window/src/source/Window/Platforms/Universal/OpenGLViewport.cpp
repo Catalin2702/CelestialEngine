@@ -2,128 +2,128 @@
 // Created by Catalin Chirosca on 2026-02-16.
 //
 
-#include "Window/Platforms/Windows/WindowsViewport.hpp"
+#include "Window/Platforms/Universal/OpenGLViewport.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/Window/WindowProps.hpp"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
-namespace CeEvents = CE::Events;
 
 namespace CE::Window {
 
 static bool s_GLFWInitialized = false;
 
-WindowsViewport::WindowsViewport(const WindowProps &windowProps)
+OpenGLViewport::OpenGLViewport(const CeTypeWindow::WindowProps &windowProps): _data(windowProps.title, windowProps.width, windowProps.height, windowProps.VSync)
 {
-	Init(windowProps);
+	_Init();
 }
 
-WindowsViewport::~WindowsViewport() {
-	Shutdown();
+OpenGLViewport::~OpenGLViewport() {
+	_Shutdown();
 }
 
-void WindowsViewport::OnUpdate() {
+void OpenGLViewport::OnUpdate() {
+	glClearColor(1, 0, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glfwPollEvents();
 	glfwSwapBuffers(_window);
 }
 
-void WindowsViewport::SetEventCallback(const EventCallbackFn &callback) {
+void OpenGLViewport::SetEventCallback(const EventCallbackFn &callback) {
 	_data.eventCallback = callback;
 }
 
-void WindowsViewport::SetWindowCallbacks() {
+void OpenGLViewport::SetWindowCallbacks() {
 	if (not _window)
 		return;
 
 	glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, const int width, const int height) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
-			CeEvents::WindowResizeEvent event{data->width, data->height};
+			Events::WindowResizeEvent event{data->width, data->height};
 			data->eventCallback(event);
 		}
 	});
 
 	glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::WindowCloseEvent event;
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+			Events::WindowCloseEvent event;
 			data->eventCallback(event);
 		}
 	});
 
 	glfwSetKeyCallback(_window, [](GLFWwindow* window, const int key, const int, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					CeEvents::KeyPressedEvent keyPressedEvent{key, 0};
+					Events::KeyPressedEvent keyPressedEvent{key, 0};
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
 
 				case GLFW_RELEASE: {
-					CeEvents::KeyReleasedEvent keyReleasedEvent{key};
+					Events::KeyReleasedEvent keyReleasedEvent{key};
 					data->eventCallback(keyReleasedEvent);
 					break;
 				}
 
 				case GLFW_REPEAT: {
-					CeEvents::KeyPressedEvent keyPressedEvent{key, 1};
+					Events::KeyPressedEvent keyPressedEvent{key, 1};
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
 	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, const int button, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					CeEvents::MouseButtonPressedEvent mouseButtonPressedEvent(button);
+					Events::MouseButtonPressedEvent mouseButtonPressedEvent(button);
 					data->eventCallback(mouseButtonPressedEvent);
 					break;
 				}
 				case GLFW_RELEASE: {
-					CeEvents::MouseButtonReleasedEvent mouseButtonReleasedEvent(button);
+					Events::MouseButtonReleasedEvent mouseButtonReleasedEvent(button);
 					data->eventCallback(mouseButtonReleasedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
-	glfwSetScrollCallback(_window, [](GLFWwindow* window, double xOffset, double yOffset) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
+	glfwSetScrollCallback(_window, [](GLFWwindow* window, const double xOffset, const double yOffset) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+			Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->eventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_window, [](GLFWwindow* window, const double xPos, const double yPos) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+			Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->eventCallback(mouseMovedEvent);
 		}
 	});
 }
 
-void WindowsViewport::SetWidth(const unsigned int width) {
+void OpenGLViewport::SetWidth(const unsigned int width) {
 	_data.width = width;
 }
 
-void WindowsViewport::SetHeight(const unsigned int height) {
+void OpenGLViewport::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
 
-void WindowsViewport::SetVSync(const bool enabled) {
+void OpenGLViewport::SetVSync(const bool enabled) {
 	if (not s_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
@@ -132,11 +132,7 @@ void WindowsViewport::SetVSync(const bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
 }
 
-void WindowsViewport::Init(const WindowProps &windowProps) {
-	_data.title = windowProps.title;
-	_data.width = windowProps.width;
-	_data.height = windowProps.height;
-	_data.VSync = windowProps.VSync;
+void OpenGLViewport::_Init() {
 
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}", _data.title, _data.width, _data.height, _data.VSync);
 
@@ -149,6 +145,11 @@ void WindowsViewport::Init(const WindowProps &windowProps) {
 		});
 		s_GLFWInitialized = true;
 	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	_window = glfwCreateWindow(
 		static_cast<int>(_data.width),
@@ -164,13 +165,9 @@ void WindowsViewport::Init(const WindowProps &windowProps) {
 	SetWindowCallbacks();
 }
 
-void WindowsViewport::Shutdown() {
+void OpenGLViewport::_Shutdown() {
 	glfwDestroyWindow(_window);
 	_window = nullptr;
-}
-
-InterfaceViewport *InterfaceViewport::CreateWindow(const WindowProps &windowProps) {
-	return new WindowsViewport(windowProps);
 }
 
 }
