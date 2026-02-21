@@ -9,6 +9,10 @@
 *.out
 *.app
 
+# --- Build System ---
+vcpkg_link
+vcpkg_link/
+
 # --- Build Directories ---
 [Bb]uild/
 .[Bb]uild/
