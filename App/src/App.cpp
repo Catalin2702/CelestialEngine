@@ -9,12 +9,16 @@ public:
 		CE_INFO("ExampleLayer::Update");
 	}
 
-	void OnEvent([[maybe_unused]] const Events::Event &event) override {
+	void OnEvent([[maybe_unused]] Events::Event &event) override {
 		CE_INFO("{0}", event);
 	}
 
-	void OnAttach() override {}
-	void OnDetach() override {}
+	void OnAttach() override {
+		CE_WARN("{0} attached.", GetName());
+	}
+	void OnDetach() override {
+		CE_WARN("{0} detached.", GetName());
+	}
 };
 
 class SandBox final: public Core::Application {

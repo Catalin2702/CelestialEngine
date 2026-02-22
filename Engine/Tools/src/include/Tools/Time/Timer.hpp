@@ -14,7 +14,7 @@
 namespace CE::Tools::Time {
 
 class Timer {
-#if CE_DEBUG
+#ifdef CE_DEBUG
 public:
 	Timer();
 	~Timer();

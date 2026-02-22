@@ -16,8 +16,10 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 	unsigned int height = 720;
 	bool VSync = true;
 
-	for (int i = 0; i < argc; ++i) {
-		std::string arg = Manipulation::ToLowerCase(argv[i]);
+	// Start from 1 to skip executable path
+	for (int i = 1; i < argc; ++i) {
+		// ReSharper disable once CppTooWideScopeInitStatement
+		const std::string arg = Manipulation::ToLowerCase(argv[i]);
 
 		if ((arg == "--title" or arg == "-t") and i + 1 < argc) {
 			title = argv[++i];
@@ -29,10 +31,12 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 			height = std::stoi(argv[++i]);
 		}
 		else if ((arg == "--vsync" or arg == "-v") and i + 1 < argc) {
-			VSync = argv[++i];
+			const std::string vsyncArg = Manipulation::ToLowerCase(argv[++i]);
+			VSync = (vsyncArg == "true" || vsyncArg == "1");
 		}
-		else
-			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
+		else {
+			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i++]);
+		}
 	}
 	return {title, width, height, VSync};
 }

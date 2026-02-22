@@ -174,7 +174,7 @@ void MetalViewport::SetVSync(const bool enabled) {
 	_data.VSync = enabled;
 	if (_metalLayer) {
 		_metalLayer->setDisplaySyncEnabled(_data.VSync);
-		CE_CORE_INFO("VSync {0}", _data.VSync ? "enabled" : "disabòed");
+		CE_CORE_INFO("VSync {0}", _data.VSync ? "enabled" : "disabled");
 	}
 }
 
