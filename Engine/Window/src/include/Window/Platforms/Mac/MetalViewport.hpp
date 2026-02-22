@@ -7,7 +7,8 @@
 #ifndef CE_WINDOW_MAC_METALVIEWPORT_HPP
 #define CE_WINDOW_MAC_METALVIEWPORT_HPP
 
-#include "Utils/Window.hpp"
+#include "Types/Window/WindowProps.hpp"
+#include "Types/Window/WindowDestructor.hpp"
 #include "Window/InterfaceWindow.hpp"
 
 #include <memory>
@@ -19,9 +20,6 @@ struct GLFWwindow;
 namespace CA {
 class MetalLayer;
 }
-namespace MTK {
-class View;
-}
 namespace MTL {
 class CommandQueue;
 class Device;
@@ -30,11 +28,13 @@ namespace NS {
 class Window;
 }
 
+namespace CeTypeWindow = CE::Types::Window;
+
 namespace CE::Window {
 
 class MetalViewport final : public InterfaceViewport {
 public:
-	MetalViewport(const WindowProps& windowProps);
+	MetalViewport(const CeTypeWindow::WindowProps& windowProps);
 	~MetalViewport() override;
 
 public:
@@ -52,20 +52,19 @@ public:
 	void SetVSync(bool enabled) override;
 
 private:
-	void _Init(const WindowProps& windowProps);
+	void _Init();
 	void _InitDevice();
 	void _InitWindow();
 	void _Shutdown();
 
 
 private:
-	WindowData _data;
+	EventWindowData _data;
+	CeTypeWindow::GLFWwindowPtr _glfwWindow;
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue;
-	GLFWWindowPtr _glfwWindow;
 	NS::SharedPtr<MTL::Device> _metalDevice;
 	NS::SharedPtr<NS::Window> _metalWindow;
 	NS::SharedPtr<CA::MetalLayer> _metalLayer;
-	NS::SharedPtr<MTK::View> _view;
 };
 
 }

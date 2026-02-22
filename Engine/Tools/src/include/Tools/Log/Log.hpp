@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <spdlog/spdlog.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <spdlog/fmt/ostr.h>
 
 namespace CE::Tools::Log {
@@ -21,8 +22,8 @@ public:
 	static void Init();
 	static void Terminate();
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return _s_coreLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {return _s_clientLogger; }
+	static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return _s_coreLogger; }
+	static std::shared_ptr<spdlog::logger>& GetClientLogger() {return _s_clientLogger; }
 
 private:
 	static std::shared_ptr<spdlog::logger> _s_coreLogger;

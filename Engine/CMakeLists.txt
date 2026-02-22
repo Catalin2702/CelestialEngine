@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.0.1)
+project(CelestialEngine LANGUAGES CXX VERSION 0.0.2)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
@@ -17,6 +17,7 @@ add_subdirectory(Core)
 add_subdirectory(Define)
 add_subdirectory(Events)
 add_subdirectory(Tools)
+add_subdirectory(Types)
 add_subdirectory(Window)
 
 if(APPLE)
@@ -35,6 +36,7 @@ target_link_libraries(CelestialEngine
 	PUBLIC CE_Define
 	PUBLIC CE_Events
 	PUBLIC CE_Tools
+	PUBLIC CE_Types
 	PUBLIC CE_Window
 )
 

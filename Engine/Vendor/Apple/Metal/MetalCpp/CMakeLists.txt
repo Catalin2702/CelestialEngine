@@ -27,7 +27,7 @@ target_link_libraries(CE_MetalCpp
 )
 
 target_compile_options(CE_MetalCpp
-	PUBLIC -ObjC++
+	PUBLIC -ObjC++ -fno-objc-arc
 )
 
 target_include_directories(CE_MetalCpp PUBLIC

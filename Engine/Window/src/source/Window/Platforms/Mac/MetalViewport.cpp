@@ -4,6 +4,7 @@
 
 #include "Window/Platforms/Mac/MetalViewport.hpp"
 #include "Events/ApplicationEvent.hpp"
+#include "Events/Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
@@ -17,8 +18,6 @@
 
 #include <AppKit/AppKit.hpp>
 #include <Metal/Metal.hpp>
-#include <MetalKit/MetalKit.hpp>
-#include <QuartzCore/CAMetalLayer.h>
 #include <QuartzCore/CAMetalLayer.hpp>
 
 
@@ -28,8 +27,8 @@ namespace CE::Window {
 
 static bool s_GLFWInitialized = false;
 
-MetalViewport::MetalViewport(const WindowProps &windowProps) {
-	_Init(windowProps);
+MetalViewport::MetalViewport(const CeTypeWindow::WindowProps &windowProps): _data(windowProps.title, windowProps.width, windowProps.height, windowProps.VSync) {
+	_Init();
 }
 
 MetalViewport::~MetalViewport() {
@@ -39,20 +38,23 @@ MetalViewport::~MetalViewport() {
 void MetalViewport::OnUpdate() {
 	glfwPollEvents();
 
-	if (not _view or not _commandQueue)
+	if (not _metalLayer or not _commandQueue)
 		return;
 
 	const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-	// Get the current drawable from MTKView
-	const auto drawable = _view->currentDrawable();
+	// Get the next drawable from CAMetalLayer
+	const auto drawable = _metalLayer->nextDrawable();
 	if (not drawable)
 		return;
 
-	// Get render pass descriptor from MTK::View
-	const auto renderPassDescriptor = _view->currentRenderPassDescriptor();
-	if (not renderPassDescriptor)
-		return;
+	// Create render pass descriptor manually
+	const auto renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
+	colorAttachment->setTexture(drawable->texture());
+	colorAttachment->setLoadAction(MTL::LoadActionClear);
+	colorAttachment->setClearColor(MTL::ClearColor::Make(1.0, 0.0, 0.6, 1.0));
+	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
 	const auto commandBuffer = _commandQueue->commandBuffer();
 
@@ -64,9 +66,11 @@ void MetalViewport::OnUpdate() {
 	commandBuffer->presentDrawable(drawable);
 
 	commandBuffer->commit();
+
+	renderPassDescriptor->release();
 }
 
-void MetalViewport::SetEventCallback(const EventCallbackFn &callback) {
+void MetalViewport::SetEventCallback(const EventCallbackFn& callback) {
 	_data.eventCallback = callback;
 }
 
@@ -75,7 +79,7 @@ void MetalViewport::SetWindowCallbacks() {
 		return;
 
 	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
 			CeEvents::WindowResizeEvent event{data->width, data->height};
@@ -84,14 +88,14 @@ void MetalViewport::SetWindowCallbacks() {
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::WindowCloseEvent event;
 			data->eventCallback(event);
 		}
 	});
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					CeEvents::KeyPressedEvent keyPressedEvent{key, 0};
@@ -110,14 +114,13 @@ void MetalViewport::SetWindowCallbacks() {
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
 	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					CeEvents::MouseButtonPressedEvent mouseButtonPressedEvent(button);
@@ -129,21 +132,20 @@ void MetalViewport::SetWindowCallbacks() {
 					data->eventCallback(mouseButtonReleasedEvent);
 					break;
 				}
-				default:
-					return;
+				default:;
 			}
 		}
 	});
 
-	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, double xOffset, double yOffset) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->eventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
-		if (const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			CeEvents::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->eventCallback(mouseMovedEvent);
 		}
@@ -152,10 +154,16 @@ void MetalViewport::SetWindowCallbacks() {
 
 void MetalViewport::SetWidth(const unsigned int width) {
 	_data.width = width;
+	if (_metalLayer) {
+		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
+	}
 }
 
 void MetalViewport::SetHeight(const unsigned int height) {
 	_data.height = height;
+	if (_metalLayer) {
+		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
+	}
 }
 
 void MetalViewport::SetVSync(const bool enabled) {
@@ -164,20 +172,13 @@ void MetalViewport::SetVSync(const bool enabled) {
 		return;
 	}
 	_data.VSync = enabled;
-	if (_data.VSync and _view and _metalWindow) {
-		// Get monitor's refresh rate
-		const int refreshRate = GetDisplayRefreshRate(_metalWindow.get());
-		_view->setPreferredFramesPerSecond(refreshRate);
-		CE_CORE_INFO("VSync enabled with {0} FPS (monitor refresh rate)", refreshRate);
+	if (_metalLayer) {
+		_metalLayer->setDisplaySyncEnabled(_data.VSync);
+		CE_CORE_INFO("VSync {0}", _data.VSync ? "enabled" : "disabled");
 	}
 }
 
-void MetalViewport::_Init(const WindowProps &windowProps) {
-	_data.title = windowProps.title;
-	_data.width = windowProps.width;
-	_data.height = windowProps.height;
-	_data.VSync = windowProps.VSync;
-
+void MetalViewport::_Init() {
 	_InitDevice();
 	_InitWindow();
 	SetVSync(_data.VSync);
@@ -228,45 +229,32 @@ void MetalViewport::_InitWindow() {
 
 	_metalWindow = NS::TransferPtr(static_cast<NS::Window*>(cocoaWindow));
 
+	// Get GLFW's content view
 	void* contentView = GetCocoaContentView(cocoaWindow);
 	if (not contentView) {
 		CE_CORE_ERROR("Could not get content view from GLFW window!");
 		exit(EXIT_FAILURE);
 	}
 
+	// Create CAMetalLayer
 	_metalLayer = NS::TransferPtr(CA::MetalLayer::layer());
 	if (not _metalLayer) {
-		CE_CORE_ERROR("Could not create MetalLayer!");
+		CE_CORE_ERROR("Could not create CAMetalLayer!");
 		exit(EXIT_FAILURE);
 	}
 
+	// Configure Metal layer
 	_metalLayer->setDevice(_metalDevice.get());
 	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
 	_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
 
-	// Set Metal layer as content layer for GLFW
+	// Set Metal layer as the layer for GLFW's content view
+	// This doesn't replace the view, just sets its backing layer
 	SetCocoaViewLayer(contentView, _metalLayer.get());
-
-	const CGRect frame = CGRectMake(0, 0, _data.width, _data.height);
-	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _metalDevice.get()));
-	if (not _view) {
-		CE_CORE_ERROR("Could not create MTKView!");
-		exit(EXIT_FAILURE);
-	}
-
-	_view->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-	_view->setClearColor(MTL::ClearColor::Make(1., 0., .6, 1.));
-
-	// Set MTK::View as window's content view
-	SetCocoaWindowContentView(cocoaWindow, _view.get());
 }
 
 void MetalViewport::_Shutdown() {
 	_glfwWindow.reset();
-}
-
-InterfaceViewport* InterfaceViewport::CreateWindow(const WindowProps& windowProps) {
-	return new MetalViewport(windowProps);
 }
 
 }

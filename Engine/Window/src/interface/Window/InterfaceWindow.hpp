@@ -5,41 +5,19 @@
 #pragma once
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Window/WindowProps.hpp"
 
-#include <functional>
-#include <string>
+#include <memory>
 
 
 namespace CE::Events {
-
 class Event;
-
 }
 
 namespace CE::Window {
 
-using EventCallbackFn = std::function<void(CE::Events::Event&)>;
-
-
-struct WindowProps {
-public:
-	std::string title;
-	unsigned int width;
-	unsigned int height;
-	bool VSync;
-
-public:
-	WindowProps(std::string title, unsigned int width, unsigned int height, bool VSync);
-};
-
-
-struct WindowData {
-	std::string title;
-	unsigned int width, height;
-	bool VSync;
-	EventCallbackFn eventCallback;
-};
-
+using EventWindowData = Types::Window::WindowData<Events::Event>;
+using EventCallbackFn = Types::Window::CallbackFn<Events::Event>;
 
 class CE_API InterfaceViewport {
 public:
@@ -59,7 +37,11 @@ public:
 	virtual void SetHeight(unsigned int height) = 0;
 	virtual void SetVSync(bool enabled) = 0;
 
-	static InterfaceViewport* CreateWindow(const WindowProps& windowProps);
+	template<std::derived_from<InterfaceViewport> T>
+	static InterfaceViewport* CreateWindow(const Types::Window::WindowProps& windowProps) {
+		auto window = std::make_unique<T>(windowProps);
+		return window.release();
+	}
 };
 
 }

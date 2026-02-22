@@ -7,6 +7,8 @@
 #ifndef CE_CELESTIALENGINE_HPP
 #define CE_CELESTIALENGINE_HPP
 
+// ReSharper disable CppUnusedIncludeDirective
+
 // ---- Use in CelestialEngine applications ------
 #include <Core/Application.hpp>
 // -----------------------------------------------
@@ -18,15 +20,29 @@
 #include <Events/MouseEvent.hpp>
 // -----------------------------------------------
 
-// ---- Log --------------------------------------
-#include <Tools/Log/Log.hpp>
+// ---- Layer ------------------------------------
+#include <Layers/Layer.hpp>
 // -----------------------------------------------
 
-
-// ---- Time -------------------------------------
+// ---- Tools ------------------------------------
+#include <Tools/CMD/Window.hpp>
+#include <Tools/Log/Log.hpp>
 #include <Tools/Time/Timer.hpp>
 // -----------------------------------------------
 
+// ---- Types ------------------------------------
+#include <Types/Window/WindowProps.hpp>
+// -----------------------------------------------
+
+// ---- Name spaces ------------------------------
+namespace CMD = CE::Tools::CMD;
+namespace Core = CE::Core;
+namespace Events = CE::Events;
+namespace Log = CE::Tools::Log;
+namespace Layers = CE::Layers;
+namespace Time = CE::Tools::Time;
+namespace TypeWindow = CE::Types::Window;
+// -----------------------------------------------
 
 // ---- Entry Point ------------------------------
 #include <EntryPoint.hpp>

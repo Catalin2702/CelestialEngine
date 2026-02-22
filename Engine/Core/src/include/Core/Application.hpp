@@ -8,6 +8,8 @@
 #define CE_CORE_APPLICATION_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Layers/LayerStack.hpp"
+#include "Types/Window/WindowProps.hpp"
 
 #include <memory>
 
@@ -18,29 +20,45 @@ namespace Events {
 class Event;
 class WindowCloseEvent;
 }
+namespace Layers {
+class Layer;
+}
 namespace Window {
 class InterfaceViewport;
 }
+
+namespace CeTypeWindow = Types::Window;
 
 namespace Core {
 
 class CE_API Application {
 public:
 	Application();
+	Application(const CeTypeWindow::WindowProps& windowProps);
+	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync);
 
-	virtual ~Application() = default;
+	virtual ~Application();
 
 public:
 	virtual void Run();
 	virtual void OnEvent(Events::Event& event);
 	virtual bool OnWindowClose(const Events::WindowCloseEvent& event);
 
+	void PushLayer(Layers::Layer* layer);
+	void PushOverlay(Layers::Layer* overlay);
+
+protected:
+	void _Init(const CeTypeWindow::WindowProps& windowProps);
+
 private:
 	std::unique_ptr<Window::InterfaceViewport> _window;
-	bool _running;
+	bool _running = false;
+	Layers::LayerStack _layerStack;
 };
 
-Application *CreateApplication();
+Application* CreateApplication();
+Application* CreateApplication(const CeTypeWindow::WindowProps& windowProps);
+Application* CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync);
 
 }
 

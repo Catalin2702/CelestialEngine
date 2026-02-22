@@ -7,7 +7,7 @@
 
 namespace CE::Tools::Time {
 
-#ifndef CE_DIST
+#ifdef CE_DEBUG
 Timer::Timer() {
 	Start();
 }
