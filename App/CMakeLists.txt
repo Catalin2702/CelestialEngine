@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_App LANGUAGES CXX VERSION 0.0.1)
+project(CE_App LANGUAGES CXX VERSION 0.0.2)
 
 set(SOURCES
 	src/app.cpp
@@ -28,7 +28,7 @@ if(APPLE)
 		LINKER_LANGUAGE CXX
 	)
 
-	# Copy Info.plist to bundle (fallback se MACOSX_BUNDLE_INFO_PLIST non funziona)
+	# Copy Info.plist to bundle (fallback if MACOSX_BUNDLE_INFO_PLIST doesn't work)
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"

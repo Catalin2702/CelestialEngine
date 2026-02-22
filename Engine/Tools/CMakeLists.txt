@@ -33,5 +33,6 @@ target_include_directories(CE_Tools PUBLIC
 	src/include
 	../Core/src/include
 	../Define/src/include
+	../Types/src/include
 	../Window/src/include
 )

@@ -25,17 +25,37 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 			title = argv[++i];
 		}
 		else if ((arg == "--width" or arg == "-w") and i + 1 < argc) {
-			width = std::stoi(argv[++i]);
+			try {
+				width = static_cast<unsigned int>(std::stoi(argv[++i]));
+			}
+			catch ([[maybe_unused]] const std::invalid_argument& invalidArgument) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], invalidArgument.what());
+				exit(EXIT_FAILURE);
+			}
+			catch ([[maybe_unused]] const std::out_of_range& ofRange) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], ofRange.what());
+				exit(EXIT_FAILURE);
+			}
 		}
 		else if ((arg == "--height" or arg == "-h") and i + 1 < argc) {
-			height = std::stoi(argv[++i]);
+			try {
+				height = static_cast<unsigned int>(std::stoi(argv[++i]));
+			}
+			catch ([[maybe_unused]] const std::invalid_argument& invalidArgument) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], invalidArgument.what());
+				exit(EXIT_FAILURE);
+			}
+			catch ([[maybe_unused]] const std::out_of_range& ofRange) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], ofRange.what());
+				exit(EXIT_FAILURE);
+			}
 		}
 		else if ((arg == "--vsync" or arg == "-v") and i + 1 < argc) {
 			const std::string vsyncArg = Manipulation::ToLowerCase(argv[++i]);
 			VSync = (vsyncArg == "true" || vsyncArg == "1");
 		}
 		else {
-			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i++]);
+			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
 		}
 	}
 	return {title, width, height, VSync};

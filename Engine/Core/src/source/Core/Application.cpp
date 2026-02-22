@@ -68,7 +68,7 @@ void Application::PushLayer(Layers::Layer *layer) {
 }
 
 void Application::PushOverlay(Layers::Layer *overlay) {
-	_layerStack.PushLayer(overlay);
+	_layerStack.PushOverlay(overlay);
 }
 
 void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {

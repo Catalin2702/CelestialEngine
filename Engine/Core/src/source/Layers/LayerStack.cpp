@@ -35,7 +35,12 @@ void LayerStack::PopLayer(Layer* layer) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {
 		layer->OnDetach();
 		_layers.erase(it);
-		--_layerInsert;
+		const bool erasedBeforeInsert = (it < _layerInsert);
+		layer->OnDetach();
+		_layers.erase(it);
+		if (erasedBeforeInsert) {
+			--_layerInsert;
+		}
 	}
 }
 
