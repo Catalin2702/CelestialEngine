@@ -5,20 +5,12 @@ class ExampleLayer : public Layers::Layer {
 public:
 	ExampleLayer(): Layer("ExampleLayer") {}
 
-	void OnUpdate() override {
-		CE_INFO("ExampleLayer::Update");
-	}
+	void OnUpdate() override {}
 
-	void OnEvent([[maybe_unused]] Events::Event &event) override {
-		CE_INFO("{0}", event);
-	}
+	void OnEvent([[maybe_unused]] Events::Event &event) override {}
 
-	void OnAttach() override {
-		CE_WARN("{0} attached.", GetName());
-	}
-	void OnDetach() override {
-		CE_WARN("{0} detached.", GetName());
-	}
+	void OnAttach() override {}
+	void OnDetach() override {}
 };
 
 class SandBox final: public Core::Application {
@@ -32,9 +24,7 @@ public:
 	SandBox(const std::string &title, const unsigned int width, const unsigned int height, const bool VSync): Application(title, width, height, VSync) {
 		PushLayer(new ExampleLayer());
 	}
-	~SandBox() override {
-		CE_CORE_INFO("Sandbox destructed");
-	}
+	~SandBox() override = default;
 };
 
 Core::Application* Core::CreateApplication() {
