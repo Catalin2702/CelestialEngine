@@ -7,7 +7,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
-#include <string>
+#include <memory>
 
 
 namespace CE::Events {
@@ -39,7 +39,8 @@ public:
 
 	template<std::derived_from<InterfaceViewport> T>
 	static InterfaceViewport* CreateWindow(const Types::Window::WindowProps& windowProps) {
-		return new T(windowProps);
+		auto window = std::make_unique<T>(windowProps);
+		return window.release();
 	}
 };
 

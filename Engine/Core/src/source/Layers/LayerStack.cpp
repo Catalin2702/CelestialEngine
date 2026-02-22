@@ -31,23 +31,19 @@ void LayerStack::PushOverlay(Layer* overlay) {
 	overlay->OnAttach();
 }
 
-Layer* LayerStack::PopLayer(Layer* layer) {
+void LayerStack::PopLayer(Layer* layer) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {
 		layer->OnDetach();
 		_layers.erase(it);
 		--_layerInsert;
-		return layer;
 	}
-	return nullptr;
 }
 
-Layer* LayerStack::PopOverlay(Layer* overlay) {
+void LayerStack::PopOverlay(Layer* overlay) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), overlay); it != _layers.end()) {
 		overlay->OnDetach();
 		_layers.erase(it);
-		return overlay;
 	}
-	return nullptr;
 }
 
 }

@@ -1,4 +1,5 @@
 #include <CelestialEngine.hpp>
+#include <memory>
 
 
 class ExampleLayer : public Layers::Layer {
@@ -16,25 +17,34 @@ public:
 class SandBox final: public Core::Application {
 public:
 	SandBox() {
-		PushLayer(new ExampleLayer());
+		_Init();
 	}
 	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {
-		PushLayer(new ExampleLayer());
+		_Init();
 	}
 	SandBox(const std::string &title, const unsigned int width, const unsigned int height, const bool VSync): Application(title, width, height, VSync) {
-		PushLayer(new ExampleLayer());
+		_Init();
 	}
 	~SandBox() override = default;
+
+private:
+	void _Init() {
+		auto layer = std::make_unique<ExampleLayer>();
+		PushLayer(layer.release());
+	}
 };
 
 Core::Application* Core::CreateApplication() {
-	return new SandBox();
+	auto app = std::make_unique<SandBox>();
+	return app.release();
 }
 
-Core::Application* CE::Core::CreateApplication(const CeTypeWindow::WindowProps& windowProps) {
-	return new SandBox(windowProps);
+Core::Application* Core::CreateApplication(const CeTypeWindow::WindowProps& windowProps) {
+	auto app = std::make_unique<SandBox>(windowProps);
+	return app.release();
 }
 
 Core::Application* Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync) {
-	return new SandBox(title, width, height, VSync);
+	auto app = std::make_unique<SandBox>(title, width, height, VSync);
+	return app.release();
 }

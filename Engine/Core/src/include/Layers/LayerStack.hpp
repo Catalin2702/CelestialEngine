@@ -27,8 +27,8 @@ public:
 public:
 	void PushLayer(Layer* layer);
 	void PushOverlay(Layer* overlay);
-	Layer* PopLayer(Layer* layer);
-	Layer* PopOverlay(Layer* overlay);
+	void PopLayer(Layer* layer);
+	void PopOverlay(Layer* overlay);
 
 	StackContainer::iterator begin() { return _layers.begin(); }
 	StackContainer::iterator end() { return _layers.end(); }

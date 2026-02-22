@@ -8,11 +8,16 @@
 #include "Layers/Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/InterfaceWindow.hpp"
-// ReSharper disable once CppUnusedIncludeDirective
 #include "Window/Platforms/Universal/OpenGLViewport.hpp"
 
 #ifdef CE_PLATFORM_MACOS
 #include "Window/Platforms/Mac/MetalViewport.hpp"
+#endif
+
+#ifdef CE_PLATFORM_MACOS
+using Viewport = CE::Window::MetalViewport;
+#else
+using Viewport = CE::Window::OpenGLViewport;
 #endif
 
 
@@ -68,7 +73,7 @@ void Application::PushOverlay(Layers::Layer *overlay) {
 
 void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
 	_window = std::unique_ptr<Window::InterfaceViewport>(
-		Window::InterfaceViewport::CreateWindow<Window::MetalViewport>(windowProps)
+		Window::InterfaceViewport::CreateWindow<Viewport>(windowProps)
 	);
 	if (not _window) {
 		CE_CORE_ERROR("Can't initialize the window");
