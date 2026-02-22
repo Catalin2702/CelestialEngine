@@ -10,6 +10,9 @@ set(SOURCES
 
 # Create macOS bundle to avoid system warnings
 if(APPLE)
+	# Set the Asset Catalog for the app icon
+	set(ASSET_CATALOG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Assets.xcassets")
+
 	add_executable(CE_App MACOSX_BUNDLE
 		${SOURCES}
 	)
@@ -31,6 +34,18 @@ if(APPLE)
 			"${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
 			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Info.plist"
 		COMMENT "Copying Info.plist to bundle"
+	)
+
+	# Compile Asset Catalog and copy to bundle
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources"
+		COMMAND xcrun actool "${ASSET_CATALOG}"
+			--compile "$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources"
+			--platform macosx
+			--minimum-deployment-target 10.15
+			--app-icon AppIcon
+			--output-partial-info-plist "${CMAKE_CURRENT_BINARY_DIR}/AppIcon-Info.plist"
+		COMMENT "Compiling Asset Catalog"
 	)
 
 	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)

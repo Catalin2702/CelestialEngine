@@ -38,3 +38,7 @@ obj/
 *.log
 *.tmp
 .cache/
+
+# --- Resources ---
+App/Resources/CelestialEngine.icns
+App/Resources/Assets.xcassets/AppIcon.appiconset/*.png
