@@ -2,15 +2,15 @@ set(HEADERS
 	src/include/Core/Application.hpp
 	src/include/Layers/Layer.hpp
 	src/include/Layers/LayerStack.hpp
+	src/include/Layers/ImGuiLayer.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
 	src/source/Layers/Layer.cpp
 	src/source/Layers/LayerStack.cpp
+	src/source/Layers/ImGuiLayer.cpp
 )
-
-find_package(glfw3 CONFIG REQUIRED)
 
 add_library(CE_Core SHARED
 	${HEADERS}
@@ -26,6 +26,9 @@ target_link_libraries(CE_Core
 	PRIVATE CE_Tools
 	PRIVATE CE_Types
 	PRIVATE CE_Window
+
+	PRIVATE imgui::imgui
+	PRIVATE spdlog::spdlog
 )
 
 target_compile_definitions(CE_Core PRIVATE CE_CORE_EXPORTS)

@@ -5,8 +5,6 @@ set(HEADERS
 	src/include/Define/Event.hpp
 )
 
-find_package(glfw3 CONFIG REQUIRED)
-
 add_library(CE_Define SHARED
 	${HEADERS}
 )

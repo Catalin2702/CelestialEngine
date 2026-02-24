@@ -31,9 +31,6 @@ elseif(WIN32)
 	)
 endif()
 
-find_package(glfw3 CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
-
 add_library(CE_Window SHARED
 	${HEADERS}
 	${INTERFACES}
@@ -50,9 +47,11 @@ target_link_libraries(CE_Window
 	PRIVATE CE_Tools
 	PRIVATE CE_Types
 
-	PUBLIC glfw
-	PUBLIC glad::glad
 	PUBLIC CE_MetalCpp
+
+	PRIVATE glad::glad
+	PRIVATE glfw
+	PRIVATE spdlog::spdlog
 )
 
 target_include_directories(CE_Window PUBLIC

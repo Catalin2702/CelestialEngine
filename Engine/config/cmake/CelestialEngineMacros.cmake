@@ -39,7 +39,7 @@ if (NOT TARGET CE_Config)
 		$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
 		-Wall
 		-Wextra
-		-Werror
+		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:-Werror>
 		>
 
 		$<$<CXX_COMPILER_ID:MSVC>:

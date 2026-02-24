@@ -4,22 +4,27 @@
 	"description": "A course project for learning game engine",
 	"builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
 	"dependencies": [
-		"spdlog",
+		"glad",
 		"glfw3",
-		"glad"
+		"imgui",
+		"spdlog"
 	],
 	"overrides": [
 		{
-			"name": "spdlog",
-			"version": "1.17.0"
+			"name": "glad",
+			"version": "0.1.36"
 		},
 		{
 			"name": "glfw3",
 			"version": "3.4#1"
 		},
 		{
-			"name": "glad",
-			"version": "0.1.36"
+			"name": "imgui",
+			"version": "1.91.9"
+		},
+		{
+			"name": "spdlog",
+			"version": "1.17.0"
 		}
 	]
 }

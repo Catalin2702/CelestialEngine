@@ -12,8 +12,6 @@ set(SOURCES
 	src/source/Tools/Time/Timer.cpp
 )
 
-find_package(spdlog CONFIG REQUIRED)
-
 add_library(CE_Tools SHARED
 	${HEADERS}
 	${SOURCES}
@@ -26,7 +24,7 @@ target_link_libraries(CE_Tools
 	PRIVATE CE_Define
 	PRIVATE CE_Types
 
-	PUBLIC spdlog::spdlog
+	PRIVATE spdlog::spdlog
 )
 
 target_include_directories(CE_Tools PUBLIC

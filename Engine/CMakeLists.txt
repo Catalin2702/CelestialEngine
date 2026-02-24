@@ -3,6 +3,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 cmake_minimum_required(VERSION 3.21)
+set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release) # Set DIST as release build
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
@@ -12,6 +13,11 @@ set(HEADERS
 	src/include/CelestialEngine.hpp
 	src/internal/EntryPoint.hpp
 )
+
+find_package(glad CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(Core)
 add_subdirectory(Define)
@@ -38,6 +44,8 @@ target_link_libraries(CelestialEngine
 	PUBLIC CE_Tools
 	PUBLIC CE_Types
 	PUBLIC CE_Window
+
+	PUBLIC spdlog::spdlog
 )
 
 if(APPLE)
