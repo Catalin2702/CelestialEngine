@@ -160,6 +160,10 @@ void OpenGLViewport::_Init() {
 	);
 
 	glfwMakeContextCurrent(_window);
+	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
+		CE_CORE_ERROR("Error to initialize GLAD");
+		exit(EXIT_FAILURE);
+	}
 	glfwSetWindowUserPointer(_window, &_data);
 	SetVSync(_data.VSync);
 	SetWindowCallbacks();
