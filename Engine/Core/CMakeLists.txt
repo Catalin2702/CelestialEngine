@@ -2,14 +2,16 @@ set(HEADERS
 	src/include/Core/Application.hpp
 	src/include/Layers/Layer.hpp
 	src/include/Layers/LayerStack.hpp
-	src/include/Layers/ImGuiLayer.hpp
+	src/include/Layers/ImGuiOpenGlLayer.hpp
+	src/include/Layers/ImGuiMetalLayer.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
 	src/source/Layers/Layer.cpp
 	src/source/Layers/LayerStack.cpp
-	src/source/Layers/ImGuiLayer.cpp
+	src/source/Layers/ImGuiOpenGlLayer.cpp
+	src/source/Layers/ImGuiMetalLayer.cpp
 )
 
 add_library(CE_Core SHARED

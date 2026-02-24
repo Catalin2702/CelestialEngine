@@ -6,7 +6,14 @@
 	"dependencies": [
 		"glad",
 		"glfw3",
-		"imgui",
+		{
+			"name": "imgui",
+			"features": [
+				"glfw-binding",
+				"metal-binding",
+				"opengl3-binding"
+			]
+		},
 		"spdlog"
 	],
 	"overrides": [

@@ -31,6 +31,8 @@ private:
 	void _Init() {
 		auto layer = std::make_unique<ExampleLayer>();
 		PushLayer(layer.release());
+		auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+		PushOverlay(overlay.release());
 	}
 };
 

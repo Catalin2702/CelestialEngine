@@ -44,6 +44,7 @@ public:
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
 	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
+	[[nodiscard]] void* GetNativeWindow() const override { return _metalWindow.get(); }
 
 	void SetEventCallback(const EventCallbackFn& callback) override;
 	void SetWindowCallbacks() override;

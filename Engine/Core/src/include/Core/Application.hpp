@@ -47,6 +47,10 @@ public:
 	void PushLayer(Layers::Layer* layer);
 	void PushOverlay(Layers::Layer* overlay);
 
+public:
+	[[nodiscard]] static Application& Get() { return *_instance; }
+	[[nodiscard]] Window::InterfaceViewport* GetWindow() const { return _window.get(); }
+
 protected:
 	void _Init(const CeTypeWindow::WindowProps& windowProps);
 
@@ -54,6 +58,7 @@ private:
 	std::unique_ptr<Window::InterfaceViewport> _window;
 	bool _running = false;
 	Layers::LayerStack _layerStack;
+	static Application* _instance;
 };
 
 Application* CreateApplication();

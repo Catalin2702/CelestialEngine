@@ -15,7 +15,7 @@
 #endif
 
 #ifdef CE_PLATFORM_MACOS
-using Viewport = CE::Window::MetalViewport;
+using Viewport = CE::Window::OpenGLViewport;
 #else
 using Viewport = CE::Window::OpenGLViewport;
 #endif
@@ -23,7 +23,10 @@ using Viewport = CE::Window::OpenGLViewport;
 
 namespace CE::Core {
 
+Application* Application::_instance = nullptr;
+
 Application::Application() {
+	assert(_instance == nullptr && "Application already exists!");
 	_Init({"CelestialEngine", 1280, 720, true});
 }
 
@@ -72,6 +75,7 @@ void Application::PushOverlay(Layers::Layer *overlay) {
 }
 
 void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
+	_instance = this;
 	_window = std::unique_ptr<Window::InterfaceViewport>(
 		Window::InterfaceViewport::CreateWindow<Viewport>(windowProps)
 	);
