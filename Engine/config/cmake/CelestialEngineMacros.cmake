@@ -37,19 +37,18 @@ if (NOT TARGET CE_Config)
 
 	target_compile_options(CE_Config INTERFACE
 		$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
-		-Wall
-		-Wextra
-		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:-Werror>
+		$<$<CONFIG:Debug>:-O0 -g -Wall -Wextra -Werror>
+		$<$<CONFIG:Release>:-O2>
+		$<$<CONFIG:Dist>:-O3 -ffast-math>
+		-march=native
 		>
 
 		$<$<CXX_COMPILER_ID:MSVC>:
-		$<$<CONFIG:Debug>:/MDd>
-		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:/MD>
+		$<$<CONFIG:Debug>:/MDd /Od /Zi>
+		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:/MD /O2>
 		/W4
 		/WX
 		/permissive-
-		/Zi        # Genera PDB per il debug anche in Release
-		/EHsc      # Gestione eccezioni standard
 		>
 	)
 endif ()

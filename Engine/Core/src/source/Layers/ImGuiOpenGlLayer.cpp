@@ -7,6 +7,7 @@
 #include "Layers/ImGuiOpenGlLayer.hpp"
 #include "Tools/Log/Log.hpp"
 
+#include <glad/glad.h>
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -84,9 +85,23 @@ void ImGuiOpenGlLayer::OnUpdate() {
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 
+	// Clear the buffer before rendering
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Test Window");
+	ImGui::Text("Hello from ImGui with Metal!");
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+	if (ImGui::Button("Click Me!")) {
+		CE_CORE_INFO("Button clicked!");
+	}
+	ImGui::End();
 
 	static bool show = true;
 	ImGui::ShowDemoWindow(&show);

@@ -217,6 +217,12 @@ void MetalViewport::_InitWindow() {
 	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
 	_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
 
+	// Optimize for triple buffering (reduces latency)
+	_metalLayer->setMaximumDrawableCount(3);
+
+	// Allow next drawable to be acquired while the previous frame is still rendering
+	_metalLayer->setAllowsNextDrawableTimeout(false);
+
 	// Set Metal layer as the layer for GLFW's content view
 	// This doesn't replace the view, just sets its backing layer
 	Bridge::SetCocoaViewLayer(contentView, _metalLayer.get());
