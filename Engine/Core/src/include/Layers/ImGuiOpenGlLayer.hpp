@@ -9,6 +9,12 @@
 
 #include "Layers/Layer.hpp"
 
+struct GLFWwindow;
+
+namespace CE::Window {
+class OpenGLViewport;
+}
+
 
 namespace CE::Layers {
 
@@ -24,6 +30,8 @@ public:
 
 private:
 	float _time = 0.0f;
+	GLFWwindow* _glfwWindow = nullptr;
+	Window::OpenGLViewport* _viewport = nullptr;
 };
 
 }

@@ -22,6 +22,7 @@
 
 // ---- Layer ------------------------------------
 #include <Layers/Layer.hpp>
+#include <Layers/ImGuiMetalLayer.hpp>
 #include <Layers/ImGuiOpenGlLayer.hpp>
 // -----------------------------------------------
 

@@ -5,7 +5,8 @@
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 
-extern "C" {
+
+namespace CE::Bridge {
 
 void* GetCocoaContentView(void* cocoaWindow) {
     if (!cocoaWindow)
@@ -92,3 +93,4 @@ int GetDisplayRefreshRate(void* cocoaWindow) {
 }
 
 }
+

@@ -15,7 +15,7 @@
 #endif
 
 #ifdef CE_PLATFORM_MACOS
-using Viewport = CE::Window::OpenGLViewport;
+using Viewport = CE::Window::MetalViewport;
 #else
 using Viewport = CE::Window::OpenGLViewport;
 #endif
@@ -45,7 +45,7 @@ void Application::Run() {
 		for (const auto layer: _layerStack) {
 			layer->OnUpdate();
 		}
-		_window->OnUpdate();
+		_viewport->OnUpdate();
 	}
 }
 
@@ -76,14 +76,14 @@ void Application::PushOverlay(Layers::Layer *overlay) {
 
 void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
 	_instance = this;
-	_window = std::unique_ptr<Window::InterfaceViewport>(
+	_viewport = std::unique_ptr<Window::InterfaceViewport>(
 		Window::InterfaceViewport::CreateWindow<Viewport>(windowProps)
 	);
-	if (not _window) {
+	if (not _viewport) {
 		CE_CORE_ERROR("Can't initialize the window");
 		exit(EXIT_FAILURE);
 	}
-	_window->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
+	_viewport->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }
 

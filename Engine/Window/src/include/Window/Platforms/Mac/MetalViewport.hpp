@@ -7,8 +7,8 @@
 #ifndef CE_WINDOW_MAC_METALVIEWPORT_HPP
 #define CE_WINDOW_MAC_METALVIEWPORT_HPP
 
-#include "Types/Window/WindowProps.hpp"
 #include "Types/Window/WindowDestructor.hpp"
+#include "Types/Window/WindowProps.hpp"
 #include "Window/InterfaceWindow.hpp"
 
 #include <memory>
@@ -44,7 +44,12 @@ public:
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
 	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
-	[[nodiscard]] void* GetNativeWindow() const override { return _metalWindow.get(); }
+	[[nodiscard]] GLFWwindow* GetGLFWwindow() const override { return _glfwWindow.get(); }
+	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _commandQueue.get(); }
+	[[nodiscard]] MTL::Device* GetDevice() const { return _metalDevice.get(); }
+	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const { return _metalLayer.get(); }
+	[[nodiscard]] NS::Window* GetMetalWindow() const { return _metalWindow.get(); }
+
 
 	void SetEventCallback(const EventCallbackFn& callback) override;
 	void SetWindowCallbacks() override;
@@ -64,8 +69,8 @@ private:
 	CeTypeWindow::GLFWwindowPtr _glfwWindow;
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue;
 	NS::SharedPtr<MTL::Device> _metalDevice;
-	NS::SharedPtr<NS::Window> _metalWindow;
 	NS::SharedPtr<CA::MetalLayer> _metalLayer;
+	NS::SharedPtr<NS::Window> _metalWindow;
 };
 
 }

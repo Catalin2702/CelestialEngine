@@ -15,12 +15,15 @@ add_library(CE_Types SHARED
 	${SOURCES}
 )
 
-set_target_properties(CE_Types PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(CE_Types PROPERTIES
+	LINKER_LANGUAGE CXX
+)
 
 target_link_libraries(CE_Types
-	PRIVATE CE_Config
-	PRIVATE CE_Define
-	PRIVATE glfw
+	CE_Config
+	CE_Define
+
+	glfw
 )
 
 target_include_directories(CE_Types PUBLIC

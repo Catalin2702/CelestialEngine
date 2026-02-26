@@ -17,15 +17,20 @@ add_library(CE_Tools SHARED
 	${SOURCES}
 )
 
-set_target_properties(CE_Tools PROPERTIES LINKER_LANGUAGE CXX)
-
-target_link_libraries(CE_Tools
-	PRIVATE CE_Config
-	PRIVATE CE_Define
-	PRIVATE CE_Types
-
-	PRIVATE spdlog::spdlog
+set_target_properties(CE_Tools PROPERTIES
+	LINKER_LANGUAGE CXX
 )
+
+target_link_libraries(CE_Tools PUBLIC
+	CE_Config
+	CE_Define
+	CE_Types
+)
+
+# Link spdlog only for Debug and Release builds, not for Dist
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
+	target_link_libraries(CE_Tools PUBLIC spdlog::spdlog)
+endif()
 
 target_include_directories(CE_Tools PUBLIC
 	src/include

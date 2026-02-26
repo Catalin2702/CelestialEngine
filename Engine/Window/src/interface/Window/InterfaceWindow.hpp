@@ -9,6 +9,8 @@
 
 #include <memory>
 
+struct GLFWwindow;
+
 
 namespace CE::Events {
 class Event;
@@ -30,7 +32,7 @@ public:
 	[[nodiscard]] virtual unsigned int GetWidth() const = 0;
 	[[nodiscard]] virtual unsigned int GetHeight() const = 0;
 	[[nodiscard]] virtual bool IsVSync() const = 0;
-	[[nodiscard]] virtual void* GetNativeWindow() const = 0;
+	[[nodiscard]] virtual GLFWwindow* GetGLFWwindow() const = 0;
 
 	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 	virtual void SetWindowCallbacks() = 0;

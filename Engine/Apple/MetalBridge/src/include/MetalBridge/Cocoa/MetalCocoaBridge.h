@@ -4,12 +4,11 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_MAC_METALVIEWPORTHELPER_H
-#define CE_WINDOW_MAC_METALVIEWPORTHELPER_H
+#ifndef CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
+#define CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+namespace CE::Bridge {
 
 // Get Cocoa window's content view
 void* GetCocoaContentView(void* cocoaWindow);
@@ -26,8 +25,6 @@ void AddSubviewToContentView(void* cocoaWindow, void* subview);
 // Get the refresh rate of the display containing the window
 int GetDisplayRefreshRate(void* cocoaWindow);
 
-#ifdef __cplusplus
 }
-#endif
 
-#endif //CE_WINDOW_MAC_METALVIEWPORTHELPER_H
+#endif //CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H

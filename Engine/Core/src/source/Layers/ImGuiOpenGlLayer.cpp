@@ -2,12 +2,12 @@
 // Created by Catalin Chirosca on 2026-02-24.
 //
 
+#include "Window/Platforms/Universal/OpenGLViewport.hpp"
 #include "Core/Application.hpp"
 #include "Layers/ImGuiOpenGlLayer.hpp"
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Tools/Log/Log.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include <glad/glad.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
@@ -51,9 +51,18 @@ void ImGuiOpenGlLayer::OnAttach() {
 	io.AddKeyEvent(ImGuiKey_Z, true);
 
 	const auto& app = Core::Application::Get();
+	_viewport = dynamic_cast<Window::OpenGLViewport*>(app.GetViewport());
+	if (not _viewport) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGLViewport viewport!");
+		exit(EXIT_FAILURE);
+	}
+	_glfwWindow = _viewport->GetGLFWwindow();
+	if (not _glfwWindow) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
+		exit(EXIT_FAILURE);
+	}
 
-	const auto window = static_cast<GLFWwindow*>(app.GetWindow()->GetNativeWindow());
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, true);
 
 	ImGui_ImplOpenGL3_Init("#version 410");
 	unsigned char* pixels;
@@ -68,11 +77,10 @@ void ImGuiOpenGlLayer::OnDetach() {
 }
 
 void ImGuiOpenGlLayer::OnUpdate() {
-	const auto window = dynamic_cast<Window::OpenGLViewport*>(Core::Application::Get().GetWindow());
 	const auto time = static_cast<float>(glfwGetTime());
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = {static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight())};
+	io.DisplaySize = {static_cast<float>(_viewport->GetWidth()), static_cast<float>(_viewport->GetHeight())};
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 

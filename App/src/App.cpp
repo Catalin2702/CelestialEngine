@@ -1,6 +1,12 @@
 #include <CelestialEngine.hpp>
 #include <memory>
 
+#ifdef CE_PLATFORM_MACOS
+using ImGuiLayer = Layers::ImGuiMetalLayer;
+#else
+using ImGuiLayer = Layers::ImGuiOpenGlLayer;
+#endif
+
 
 class ExampleLayer : public Layers::Layer {
 public:
@@ -31,7 +37,7 @@ private:
 	void _Init() {
 		auto layer = std::make_unique<ExampleLayer>();
 		PushLayer(layer.release());
-		auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+		auto overlay = std::make_unique<ImGuiLayer>();
 		PushOverlay(overlay.release());
 	}
 };

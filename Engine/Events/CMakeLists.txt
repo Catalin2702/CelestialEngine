@@ -24,9 +24,9 @@ add_library(CE_Events SHARED
 
 set_target_properties(CE_Events PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CE_Events
-	PRIVATE CE_Config
-	PRIVATE CE_Define
+target_link_libraries(CE_Events PUBLIC
+	CE_Config
+	CE_Define
 )
 
 target_include_directories(CE_Events PUBLIC

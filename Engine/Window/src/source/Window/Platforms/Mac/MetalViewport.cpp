@@ -8,7 +8,7 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Window/Platforms/Mac/MetalViewportHelper.h"
+#include "MetalBridge/Cocoa/MetalCocoaBridge.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -37,37 +37,6 @@ MetalViewport::~MetalViewport() {
 
 void MetalViewport::OnUpdate() {
 	glfwPollEvents();
-
-	if (not _metalLayer or not _commandQueue)
-		return;
-
-	const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-
-	// Get the next drawable from CAMetalLayer
-	const auto drawable = _metalLayer->nextDrawable();
-	if (not drawable)
-		return;
-
-	// Create render pass descriptor manually
-	const auto renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
-	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
-	colorAttachment->setTexture(drawable->texture());
-	colorAttachment->setLoadAction(MTL::LoadActionClear);
-	colorAttachment->setClearColor(MTL::ClearColor::Make(1.0, 0.0, 0.6, 1.0));
-	colorAttachment->setStoreAction(MTL::StoreActionStore);
-
-	const auto commandBuffer = _commandQueue->commandBuffer();
-
-	// Create render command encoder with render pass descriptor
-	const auto encoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
-
-	encoder->endEncoding();
-
-	commandBuffer->presentDrawable(drawable);
-
-	commandBuffer->commit();
-
-	renderPassDescriptor->release();
 }
 
 void MetalViewport::SetEventCallback(const EventCallbackFn& callback) {
@@ -230,7 +199,7 @@ void MetalViewport::_InitWindow() {
 	_metalWindow = NS::TransferPtr(static_cast<NS::Window*>(cocoaWindow));
 
 	// Get GLFW's content view
-	void* contentView = GetCocoaContentView(cocoaWindow);
+	void* contentView = Bridge::GetCocoaContentView(cocoaWindow);
 	if (not contentView) {
 		CE_CORE_ERROR("Could not get content view from GLFW window!");
 		exit(EXIT_FAILURE);
@@ -250,7 +219,7 @@ void MetalViewport::_InitWindow() {
 
 	// Set Metal layer as the layer for GLFW's content view
 	// This doesn't replace the view, just sets its backing layer
-	SetCocoaViewLayer(contentView, _metalLayer.get());
+	Bridge::SetCocoaViewLayer(contentView, _metalLayer.get());
 }
 
 void MetalViewport::_Shutdown() {

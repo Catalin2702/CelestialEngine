@@ -49,13 +49,13 @@ public:
 
 public:
 	[[nodiscard]] static Application& Get() { return *_instance; }
-	[[nodiscard]] Window::InterfaceViewport* GetWindow() const { return _window.get(); }
+	[[nodiscard]] Window::InterfaceViewport* GetViewport() const { return _viewport.get(); }
 
 protected:
 	void _Init(const CeTypeWindow::WindowProps& windowProps);
 
 private:
-	std::unique_ptr<Window::InterfaceViewport> _window;
+	std::unique_ptr<Window::InterfaceViewport> _viewport;
 	bool _running = false;
 	Layers::LayerStack _layerStack;
 	static Application* _instance;

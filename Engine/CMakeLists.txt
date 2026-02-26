@@ -28,6 +28,7 @@ add_subdirectory(Window)
 
 if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
+	add_subdirectory(Apple/MetalBridge)
 endif()
 
 add_library(CelestialEngine SHARED
@@ -36,21 +37,25 @@ add_library(CelestialEngine SHARED
 
 set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CelestialEngine
-	PRIVATE CE_Config
-	PUBLIC CE_Core
-	PUBLIC CE_Define
-	PUBLIC CE_Events
-	PUBLIC CE_Tools
-	PUBLIC CE_Types
-	PUBLIC CE_Window
-
-	PUBLIC spdlog::spdlog
+target_link_libraries(CelestialEngine PUBLIC
+	CE_Config
+	CE_Core
+	CE_Define
+	CE_Events
+	CE_Tools
+	CE_Types
+	CE_Window
 )
 
+# Link spdlog only for Debug and Release builds, not for Dist
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
+	target_link_libraries(CelestialEngine PUBLIC spdlog::spdlog)
+endif()
+
 if(APPLE)
-	target_link_libraries(CelestialEngine
-		PUBLIC CE_MetalCpp
+	target_link_libraries(CelestialEngine PUBLIC
+		CE_MetalCpp
+		CE_MetalBridge
 	)
 endif()
 
