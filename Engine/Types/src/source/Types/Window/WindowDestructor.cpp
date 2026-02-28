@@ -14,6 +14,11 @@
 
 namespace CE::Types::Window {
 
+/**
+ * @brief Destroys the GLFW window
+ * @param window Pointer to the GLFW window to destroy
+ * @details Calls glfwDestroyWindow to properly clean up the window resources
+ */
 void GLFWwindowDestructor::operator()(GLFWwindow *window) const {
 	if (window)
 		glfwDestroyWindow(window);

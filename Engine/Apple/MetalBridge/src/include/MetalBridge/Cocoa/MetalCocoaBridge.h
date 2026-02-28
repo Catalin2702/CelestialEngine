@@ -12,22 +12,54 @@
 #ifndef CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
 #define CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
 
-
+/**
+ * @namespace CE::Bridge
+ * @brief Bridge functions for integrating Metal with Cocoa windows
+ * @details Provides C++ functions to interact with Objective-C/Cocoa APIs for setting up
+ *          Metal rendering in GLFW windows on macOS. These functions handle the conversion
+ *          between C++ and Objective-C objects.
+ */
 namespace CE::Bridge {
 
-// Get Cocoa window's content view
+/**
+ * @brief Gets the content view of a Cocoa window
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @return void* Pointer to the content NSView
+ * @details Retrieves the main content view of a Cocoa window where rendering occurs
+ */
 void* GetCocoaContentView(void* cocoaWindow);
 
-// Set Metal layer as content layer for GLFW
+/**
+ * @brief Sets a Metal layer as the backing layer for a Cocoa view
+ * @param cocoaView Pointer to NSView (as void*)
+ * @param metalLayer Pointer to CAMetalLayer (as void*)
+ * @details Configures the view to use the Metal layer for rendering, replacing
+ *          the default Core Animation layer
+ */
 void SetCocoaViewLayer(void* cocoaView, void* metalLayer);
 
-// Set the content view of a Cocoa window
+/**
+ * @brief Sets the content view of a Cocoa window
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @param cocoaView Pointer to NSView to set as content view (as void*)
+ * @details Replaces the window's content view with the specified view
+ */
 void SetCocoaWindowContentView(void* cocoaWindow, void* cocoaView);
 
-// Add a subview to the content view
+/**
+ * @brief Adds a subview to the window's content view
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @param subview Pointer to NSView to add as subview (as void*)
+ * @details Adds a subview to the content view's view hierarchy
+ */
 void AddSubviewToContentView(void* cocoaWindow, void* subview);
 
-// Get the refresh rate of the display containing the window
+/**
+ * @brief Gets the refresh rate of the display containing the window
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @return int Refresh rate in Hz (e.g., 60, 120)
+ * @details Queries the display's nominal refresh rate, useful for VSync settings
+ */
 int GetDisplayRefreshRate(void* cocoaWindow);
 
 }

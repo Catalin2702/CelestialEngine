@@ -21,17 +21,60 @@ class OpenGLViewport;
 }
 
 
+/**
+ * @namespace CE::Layers
+ * @brief Layer system for organizing application logic into stackable components
+ * @details Provides the ImGuiOpenGlLayer class, a concrete implementation of I_ImGuiLayer
+ *          that integrates ImGui with OpenGL for rendering on Windows and Linux. This layer
+ *          handles initialization, rendering, and input events specific to ImGui interactions
+ *          in an OpenGL context. It caches pointers to the OpenGL viewport and GLFW window
+ *          to optimize performance by avoiding repeated lookups every frame.
+ */
 namespace CE::Layers {
 
-class ImGuiOpenGlLayer final : public I_ImGuiLayer {
+/**
+ * @class ImGuiOpenGlLayer
+ * @brief ImGui layer implementation for OpenGL rendering
+ * @details Concrete implementation of I_ImGuiLayer that uses OpenGL for rendering
+ *          ImGui interfaces. This is the cross-platform implementation that works
+ *          on Windows, Linux, and macOS. It integrates ImGui with OpenGL viewports
+ *          and handles all input events through GLFW.
+ */
+class ImGuiOpenGlLayer final: public I_ImGuiLayer {
 public:
+	/**
+	 * @brief Constructor
+	 * @details Creates an ImGui OpenGL layer with default initialization
+	 */
 	ImGuiOpenGlLayer();
 
 public:
+	/**
+	 * @brief Called when the layer is attached to the layer stack
+	 * @details Initializes ImGui context, sets up OpenGL rendering backend,
+	 *          configures ImGui for GLFW input, and caches viewport pointers
+	 */
 	void OnAttach() override;
+
+	/**
+	 * @brief Called when the layer is detached from the layer stack
+	 * @details Shuts down ImGui OpenGL backend, GLFW backend, and destroys ImGui context
+	 */
 	void OnDetach() override;
+
+	/**
+	 * @brief Called every frame to render ImGui
+	 * @details Sets up new frame, renders ImGui demo window (if enabled),
+	 *          and submits rendering commands to OpenGL
+	 */
 	void OnUpdate() override;
 
+	/**
+	 * @brief Handles and dispatches events to appropriate handlers
+	 * @param event Reference to the event to process
+	 * @return bool True if the event was handled
+	 * @details Uses EventDispatcher to route events to specific handler methods
+	 */
 	bool OnEvent(Events::I_Event& event) override;
 
 protected:
@@ -47,9 +90,9 @@ protected:
 	bool OnWindowResized(Events::WindowResizeEvent& event) override;
 
 private:
-	float _time = 0.0f;
-	GLFWwindow* _glfwWindow = nullptr;
-	Window::OpenGLViewport* _viewport = nullptr;
+	float _time = 0.0f;								///< Time accumulator for frame timing
+	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
+	Window::OpenGLViewport* _viewport = nullptr;	///< Cached OpenGL viewport pointer
 };
 
 }

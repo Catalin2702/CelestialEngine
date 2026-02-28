@@ -14,6 +14,20 @@
 
 #ifdef CE_API
 
+/**
+ * @brief Main entry point for Celestial Engine applications
+ * @param argc Number of command-line arguments
+ * @param argv Array of command-line argument strings
+ * @return int Exit code (0 for success)
+ * @details This is the engine's main function that:
+ *          1. Initializes the logging system
+ *          2. Parses command-line arguments for window properties
+ *          3. Creates the application using the factory function
+ *          4. Runs the main application loop
+ *          5. Cleans up and terminates logging
+ *          The function is only defined when CE_API is defined (in engine builds).
+ *          Client applications should not define their own main function.
+ */
 int main(const int argc, char* argv[]) {
 	Log::Log::Init();
 	{

@@ -12,6 +12,13 @@
 
 namespace CE::Types::Window {
 
+/**
+ * @brief Constructor
+ * @param title Window title string
+ * @param width Window width in pixels
+ * @param height Window height in pixels
+ * @param VSync Enable or disable vertical synchronization
+ */
 WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync): // NOLINT(*-pass-by-value)
 	title(title), width(width), height(height), VSync(VSync) {}
 

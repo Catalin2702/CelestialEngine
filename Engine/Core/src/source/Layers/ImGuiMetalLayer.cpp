@@ -34,8 +34,23 @@
 
 namespace CE::Layers {
 
+/**
+ * @brief ImGuiMetalLayer constructor implementation
+ * @details Initializes the layer with the name "ImGuiMetalLayer"
+ */
 ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 
+/**
+ * @brief Attaches the ImGui Metal layer to the application
+ * @details Performs the following initialization:
+ *          - Creates ImGui context and applies dark theme
+ *          - Configures ImGui backend flags for mouse support
+ *          - Caches Metal viewport and GLFW window pointers
+ *          - Initializes ImGui_ImplGlfw backend
+ *          - Initializes ImGui Metal rendering backend
+ *          - Sets up custom dark theme colors
+ *          Exits with error if viewport is not a MetalViewport or if initialization fails
+ */
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -79,12 +94,25 @@ void ImGuiMetalLayer::OnAttach() {
 	Bridge::ImGuiMetalInit(_metalDevice);
 }
 
+/**
+ * @brief Detaches the ImGui Metal layer from the application
+ * @details Shuts down ImGui backends (Metal and GLFW) and destroys ImGui context
+ */
 void ImGuiMetalLayer::OnDetach() {
 	Bridge::ImGuiMetalShutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
+/**
+ * @brief Updates the ImGui Metal layer every frame
+ * @details Performs per-frame rendering:
+ *          - Creates Metal command buffer and render pass descriptor
+ *          - Starts new ImGui frame (Metal, GLFW, and ImGui)
+ *          - Renders ImGui demo window
+ *          - Finalizes ImGui rendering and encodes to Metal command buffer
+ *          - Presents drawable to screen
+ */
 void ImGuiMetalLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
@@ -144,6 +172,12 @@ void ImGuiMetalLayer::OnUpdate() {
 	renderPassDescriptor->release();
 }
 
+/**
+ * @brief Dispatches events to appropriate handlers
+ * @param event Reference to the event to process
+ * @return bool True if event was handled
+ * @details Uses EventDispatcher to route events to specific handler methods
+ */
 bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 
@@ -187,6 +221,12 @@ bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 	return false;
 }
 
+// Protected event handlers
+/**
+ * @brief Handles key press events
+ * @param event Key pressed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
@@ -215,6 +255,11 @@ bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles key release events
+ * @param event Key released event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
@@ -243,6 +288,11 @@ bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles key typed events (character input)
+ * @param event Key typed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
 	auto& io = ImGui::GetIO();
 	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
@@ -251,6 +301,11 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles mouse button press events
+ * @param event Mouse button pressed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseDown[event.GetMouseButton()] = true;
@@ -258,6 +313,11 @@ bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& even
 	return false;
 }
 
+/**
+ * @brief Handles mouse button release events
+ * @param event Mouse button released event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseDown[event.GetMouseButton()] = false;
@@ -265,6 +325,11 @@ bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& ev
 	return false;
 }
 
+/**
+ * @brief Handles mouse moved events
+ * @param event Mouse moved event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MousePos = ImVec2(event.GetX(), event.GetY());
@@ -272,6 +337,11 @@ bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles mouse scroll events
+ * @param event Mouse scrolled event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseWheelH += event.GetXOffset();
@@ -280,6 +350,11 @@ bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles window resize events
+ * @param event Window resize event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiMetalLayer::OnWindowResized(Events::WindowResizeEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));

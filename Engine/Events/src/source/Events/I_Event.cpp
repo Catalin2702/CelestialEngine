@@ -12,6 +12,10 @@
 
 namespace CE::Events {
 
-EventDispatcher::EventDispatcher(I_Event &event): _event(event) {}
+/**
+ * @brief EventDispatcher constructor implementation
+ * @param event Reference to the event to be dispatched
+ */
+EventDispatcher::EventDispatcher(I_Event& event): _event(event) {}
 
 }

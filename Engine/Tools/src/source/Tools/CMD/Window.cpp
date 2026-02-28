@@ -15,6 +15,19 @@
 
 namespace CE::Tools::CMD {
 
+/**
+ * @brief Parses command-line arguments to create window properties
+ * @param argc Number of command-line arguments
+ * @param argv Array of command-line argument strings
+ * @return Types::Window::WindowProps Window configuration extracted from arguments
+ * @details Parses command-line arguments for window configuration:
+ *          - --title/-t "title" : Sets window title (default: "CelestialEngine")
+ *          - --width/-w 1280 : Sets window width (default: 1280)
+ *          - --height/-h 720 : Sets window height (default: 720)
+ *          - --vsync/-v true/false : Enables/disables VSync (default: true)
+ *          Uses case-insensitive matching for argument names. Exits with error
+ *          if invalid values are provided for numeric parameters.
+ */
 Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 	std::string title = "CelestialEngine";
 	unsigned int width = 1280;

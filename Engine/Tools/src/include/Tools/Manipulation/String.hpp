@@ -14,8 +14,20 @@
 
 #include <string>
 
+/**
+ * @namespace CE::Tools::Manipulation
+ * @brief String manipulation utilities
+ * @details Provides helper functions for common string operations like case conversion
+ */
 namespace CE::Tools::Manipulation {
 
+/**
+ * @brief Converts a string to lowercase
+ * @param source The source string to convert
+ * @return std::string A new string with all characters converted to lowercase
+ * @details Creates a copy of the input string and converts all uppercase letters
+ *          to their lowercase equivalents. Non-alphabetic characters remain unchanged.
+ */
 std::string ToLowerCase(const std::string& source);
 
 }

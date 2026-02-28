@@ -28,8 +28,23 @@
 
 namespace CE::Layers {
 
+/**
+ * @brief ImGuiOpenGlLayer constructor implementation
+ * @details Initializes the layer with the name "ImGuiOpenGlLayer"
+ */
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
+/**
+ * @brief Attaches the ImGui OpenGL layer to the application
+ * @details Performs the following initialization:
+ *          - Creates ImGui context and applies dark theme
+ *          - Configures ImGui backend flags for mouse support
+ *          - Caches OpenGL viewport and GLFW window pointers
+ *          - Initializes ImGui_ImplGlfw backend
+ *          - Initializes ImGui OpenGL3 rendering backend
+ *          - Sets up custom dark theme colors
+ *          Exits with error if viewport is not an OpenGLViewport or if initialization fails
+ */
 void ImGuiOpenGlLayer::OnAttach() {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -58,12 +73,23 @@ void ImGuiOpenGlLayer::OnAttach() {
 	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 }
 
+/**
+ * @brief Detaches the ImGui OpenGL layer from the application
+ * @details Shuts down ImGui backends (OpenGL3 and GLFW) and destroys ImGui context
+ */
 void ImGuiOpenGlLayer::OnDetach() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
+/**
+ * @brief Updates the ImGui OpenGL layer every frame
+ * @details Performs per-frame rendering:
+ *          - Starts new ImGui frame (OpenGL3, GLFW, and ImGui)
+ *          - Renders ImGui demo window
+ *          - Finalizes ImGui rendering and renders to OpenGL
+ */
 void ImGuiOpenGlLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
@@ -97,6 +123,12 @@ void ImGuiOpenGlLayer::OnUpdate() {
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+/**
+ * @brief Dispatches events to appropriate handlers
+ * @param event Reference to the event to process
+ * @return bool True if event was handled
+ * @details Uses EventDispatcher to route events to specific handler methods
+ */
 bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 
@@ -140,6 +172,12 @@ bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 	return false;
 }
 
+// Protected event handlers
+/**
+ * @brief Handles key press events
+ * @param event Key pressed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
@@ -168,6 +206,11 @@ bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles key release events
+ * @param event Key released event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
@@ -196,6 +239,11 @@ bool ImGuiOpenGlLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles key typed events (character input)
+ * @param event Key typed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
 	auto& io = ImGui::GetIO();
 	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
@@ -204,6 +252,11 @@ bool ImGuiOpenGlLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles mouse button press events
+ * @param event Mouse button pressed event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseDown[event.GetMouseButton()] = true;
@@ -211,6 +264,11 @@ bool ImGuiOpenGlLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& eve
 	return false;
 }
 
+/**
+ * @brief Handles mouse button release events
+ * @param event Mouse button released event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseDown[event.GetMouseButton()] = false;
@@ -218,6 +276,11 @@ bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& e
 	return false;
 }
 
+/**
+ * @brief Handles mouse moved events
+ * @param event Mouse moved event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MousePos = ImVec2(event.GetX(), event.GetY());
@@ -225,6 +288,11 @@ bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles mouse scroll events
+ * @param event Mouse scrolled event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MouseWheelH += event.GetXOffset();
@@ -233,6 +301,11 @@ bool ImGuiOpenGlLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
 	return false;
 }
 
+/**
+ * @brief Handles window resize events
+ * @param event Window resize event
+ * @return bool Always returns false to allow event propagation
+ */
 bool ImGuiOpenGlLayer::OnWindowResized(Events::WindowResizeEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
