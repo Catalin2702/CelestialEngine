@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-18.
+// Module: Window/Platforms/Mac
+// File: MetalViewport.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-18
+// Updated: 2026-02-28
 //
 
 #pragma once

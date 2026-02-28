@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-16.
+// Module: Window//Platforms/Universal
+// File: OpenGLViewport.cpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-16
+// Updated: 2026-02-28
 //
 
 #include "Window/Platforms/Universal/OpenGLViewport.hpp"

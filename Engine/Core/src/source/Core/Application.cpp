@@ -1,14 +1,19 @@
 //
-// Created by Catalin Chirosca on 2026-02-15.
+// Module: Core
+// File: Application.cpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-15
+// Updated: 2026-02-28
 //
 
 #include "Core/Application.hpp"
+#include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/I_Viewport.hpp"
-#include "Define/Bind.hpp"
 
 #ifdef CE_PLATFORM_MACOS
 #include "Window/Platforms/Mac/MetalViewport.hpp"

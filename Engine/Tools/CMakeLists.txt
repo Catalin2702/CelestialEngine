@@ -2,7 +2,7 @@ set(HEADERS
 	src/include/Tools/CMD/Window.hpp
 	src/include/Tools/Log/Log.hpp
 	src/include/Tools/Manipulation/String.hpp
-	src/include/Tools/Time/Timer.hpp
+	src/include/Tools/Time/Chronometer.hpp
 	src/include/Tools/ImGui/ImGui.hpp
 )
 
@@ -10,7 +10,7 @@ set(SOURCES
 	src/source/Tools/CMD/Window.cpp
 	src/source/Tools/Log/Log.cpp
 	src/source/Tools/Manipulation/String.cpp
-	src/source/Tools/Time/Timer.cpp
+	src/source/Tools/Time/Chronometer.cpp
 	src/source/Tools/ImGui/ImGui.cpp
 )
 

@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-26.
+// Module: MetalBridge/ImGui
+// File: MetalImGuiBridge.mm
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-26
+// Updated: 2026-02-28
 //
 
 #import <Metal/Metal.h>

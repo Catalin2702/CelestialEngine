@@ -1,7 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-19.
-//
-// RAII ownership
+// Module: Layers
+// File: LayerStack.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-19
+// Updated: 2026-02-28
 //
 
 #pragma once

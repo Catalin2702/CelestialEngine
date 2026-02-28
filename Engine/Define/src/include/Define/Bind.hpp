@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-28.
+// Module: Define
+// File: Bind.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-28
+// Updated: 2026-02-28
 //
 
 #pragma once

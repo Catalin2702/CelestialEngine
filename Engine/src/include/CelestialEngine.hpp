@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-15.
+// Module: Engine
+// File: CelestialEngine.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-15
+// Updated: 2026-02-28
 //
 
 #pragma once
@@ -29,7 +34,7 @@
 // ---- Tools ------------------------------------
 #include <Tools/CMD/Window.hpp>
 #include <Tools/Log/Log.hpp>
-#include <Tools/Time/Timer.hpp>
+#include <Tools/Time/Chronometer.hpp>
 // -----------------------------------------------
 
 // ---- Types ------------------------------------

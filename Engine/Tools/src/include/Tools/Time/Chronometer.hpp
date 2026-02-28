@@ -1,23 +1,28 @@
 //
-// Created by Catalin Chirosca on 2026-02-16.
+// Module: Tools/Time
+// File: Chronometer.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-16
+// Updated: 2026-02-28
 //
 
 #pragma once
 
 
-#ifndef CE_TOOLS_TIMER_HPP
-#define CE_TOOLS_TIMER_HPP
+#ifndef CE_TOOLS_TIME_TIMER_HPP
+#define CE_TOOLS_TIME_TIMER_HPP
 
 #include <chrono>
 
 
 namespace CE::Tools::Time {
 
-class Timer {
+class Chronometer {
 #ifdef CE_DEBUG
 public:
-	Timer();
-	~Timer();
+	Chronometer();
+	~Chronometer();
 
 private:
 	void Start();
@@ -32,4 +37,4 @@ private:
 
 }
 
-#endif //CE_TOOLS_TIMER_HPP
+#endif //CE_TOOLS_TIME_TIMER_HPP

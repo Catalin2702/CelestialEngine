@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-15.
+// Module: Engine
+// File: EntryPoint.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-15
+// Updated: 2026-02-28
 //
 
 #pragma once
@@ -12,7 +17,7 @@
 int main(const int argc, char* argv[]) {
 	Log::Log::Init();
 	{
-		[[maybe_unused]] Time::Timer timer;
+		[[maybe_unused]] Time::Chronometer timer;
 		const auto app = Core::CreateApplication(CMD::GetWindowProps(argc, argv));
 		app->Run();
 		delete app;

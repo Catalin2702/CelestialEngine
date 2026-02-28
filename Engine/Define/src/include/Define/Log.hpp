@@ -1,6 +1,12 @@
 //
-// Created by Catalin Chirosca on 2026-02-17.
+// Module: Define
+// File: Log.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-17
+// Updated: 2026-02-28
 //
+
 #pragma once
 
 #ifndef CE_DEFINE_LOG_HPP

@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-16.
+// Module: Events
+// File: KeyEvent.hpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-16
+// Updated: 2026-02-28
 //
 
 #pragma once
