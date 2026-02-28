@@ -7,7 +7,7 @@
 // Updated: 2026-02-28
 //
 
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlViewport.hpp"
 
 #include "Layers/ImGuiOpenGlLayer.hpp"
 
@@ -54,9 +54,9 @@ void ImGuiOpenGlLayer::OnAttach() {
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
 	const auto& app = Core::Application::Get();
-	_viewport = dynamic_cast<Window::OpenGLViewport*>(app.GetViewport());
+	_viewport = dynamic_cast<Window::OpenGlViewport*>(app.GetViewport());
 	if (not _viewport) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGLViewport viewport!");
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlViewport viewport!");
 		exit(EXIT_FAILURE);
 	}
 	_glfwWindow = _viewport->GetGLFWwindow();

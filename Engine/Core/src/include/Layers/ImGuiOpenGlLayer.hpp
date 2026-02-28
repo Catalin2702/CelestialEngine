@@ -17,7 +17,7 @@
 struct GLFWwindow;
 
 namespace CE::Window {
-class OpenGLViewport;
+class OpenGlViewport;
 }
 
 
@@ -92,7 +92,7 @@ protected:
 private:
 	float _time = 0.0f;								///< Time accumulator for frame timing
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::OpenGLViewport* _viewport = nullptr;	///< Cached OpenGL viewport pointer
+	Window::OpenGlViewport* _viewport = nullptr;	///< Cached OpenGL viewport pointer
 };
 
 }

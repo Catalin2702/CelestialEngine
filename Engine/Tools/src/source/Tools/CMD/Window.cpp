@@ -32,7 +32,8 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 	std::string title = "CelestialEngine";
 	unsigned int width = 1280;
 	unsigned int height = 720;
-	bool VSync = true;
+	auto VSync = true;
+	auto graphicsApi = Types::Window::GraphicsApi::OpenGL;
 
 	// Start from 1 to skip executable path
 	for (int i = 1; i < argc; ++i) {
@@ -72,11 +73,34 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 			const std::string vsyncArg = Manipulation::ToLowerCase(argv[++i]);
 			VSync = (vsyncArg == "true" || vsyncArg == "1");
 		}
+		else if ((arg == "--graphics-api" or arg == "-g") and i + 1 < argc) {
+			// ReSharper disable once CppTooWideScopeInitStatement
+			const std::string apiArg = Manipulation::ToLowerCase(argv[++i]);
+			if (apiArg == "opengl") {
+				graphicsApi = Types::Window::GraphicsApi::OpenGL;
+			}
+			else if (apiArg == "metal") {
+				graphicsApi = Types::Window::GraphicsApi::Metal;
+			}
+			else if (apiArg == "vulkan") {
+				graphicsApi = Types::Window::GraphicsApi::Vulkan;
+			}
+			else if (apiArg == "directx11" or apiArg == "dx11" or apiArg == "d3d11") {
+				graphicsApi = Types::Window::GraphicsApi::DirectX11;
+			}
+			else if (apiArg == "directx12" or apiArg == "dx12" or apiArg == "d3d12") {
+				graphicsApi = Types::Window::GraphicsApi::DirectX12;
+			}
+			else {
+				CE_CORE_WARN("Unsupported graphics API specified: ({0}). Defaulting to OpenGL.", argv[i]);
+				graphicsApi = Types::Window::GraphicsApi::OpenGL;
+			}
+		}
 		else {
 			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
 		}
 	}
-	return {title, width, height, VSync};
+	return {title, width, height, VSync, graphicsApi};
 }
 
 }

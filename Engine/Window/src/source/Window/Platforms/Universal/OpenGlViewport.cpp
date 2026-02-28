@@ -1,13 +1,13 @@
 //
 // Module: Window/Platforms/Universal
-// File: OpenGLViewport.cpp
+// File: OpenGlViewport.cpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated: 2026-02-28
 //
 
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlViewport.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -33,7 +33,7 @@ static bool s_GLFWInitialized = false;
  * @details Initializes window data with the provided properties and calls _Init() to create
  *          and configure the GLFW window with OpenGL 4.1 Core Profile context
  */
-OpenGLViewport::OpenGLViewport(const TypeWindow::WindowProps& windowProps): _data(windowProps.title, windowProps.width, windowProps.height, windowProps.VSync){
+OpenGlViewport::OpenGlViewport(const TypeWindow::WindowProps& windowProps): _data(windowProps){
 	_Init();
 }
 
@@ -42,7 +42,7 @@ OpenGLViewport::OpenGLViewport(const TypeWindow::WindowProps& windowProps): _dat
  * @details Calls _Shutdown() to release GLFW window resources and clean up state
  *          before the object is destroyed
  */
-OpenGLViewport::~OpenGLViewport() {
+OpenGlViewport::~OpenGlViewport() {
 	_Shutdown();
 }
 
@@ -51,7 +51,7 @@ OpenGLViewport::~OpenGLViewport() {
  * @details Processes all queued events via glfwPollEvents() and swaps front/back buffers
  *          with glfwSwapBuffers() to display the rendered content
  */
-void OpenGLViewport::OnUpdate() {
+void OpenGlViewport::OnUpdate() {
 	glfwPollEvents();
 	glfwSwapBuffers(_glfwWindow.get());
 }
@@ -62,7 +62,7 @@ void OpenGLViewport::OnUpdate() {
  * @details This function will be called whenever an event occurs (resize, close,
  *          keyboard input, mouse, etc.)
  */
-void OpenGLViewport::SetEventCallback(const EventCallbackFn& callback) {
+void OpenGlViewport::SetEventCallback(const EventCallbackFn& callback) {
 	_data.eventCallback = callback;
 }
 
@@ -78,7 +78,7 @@ void OpenGLViewport::SetEventCallback(const EventCallbackFn& callback) {
  *          - Mouse movement: generates MouseMovedEvent
  *          Verifies that _glfwWindow is valid before registering callbacks
  */
-void OpenGLViewport::SetWindowCallbacks() {
+void OpenGlViewport::SetWindowCallbacks() {
 	if (not _glfwWindow)
 		return;
 
@@ -169,7 +169,7 @@ void OpenGLViewport::SetWindowCallbacks() {
  * @details Updates the internal value in the _data structure. Note: this method only updates
  *          the stored value, it does not actually resize the window
  */
-void OpenGLViewport::SetWidth(const unsigned int width) {
+void OpenGlViewport::SetWidth(const unsigned int width) {
 	_data.width = width;
 }
 
@@ -179,7 +179,7 @@ void OpenGLViewport::SetWidth(const unsigned int width) {
  * @details Updates the internal value in the _data structure. Note: this method only updates
  *          the stored value, it does not actually resize the window
  */
-void OpenGLViewport::SetHeight(const unsigned int height) {
+void OpenGlViewport::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
 
@@ -190,7 +190,7 @@ void OpenGLViewport::SetHeight(const unsigned int height) {
  *          If GLFW has not been initialized, prints a warning and returns without making changes.
  *          Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
  */
-void OpenGLViewport::SetVSync(const bool enabled) {
+void OpenGlViewport::SetVSync(const bool enabled) {
 	if (not s_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
@@ -213,9 +213,8 @@ void OpenGLViewport::SetVSync(const bool enabled) {
  *          9. Registers all event callbacks
  *          In case of error during GLAD initialization, terminates the program with exit(EXIT_FAILURE)
  */
-void OpenGLViewport::_Init() {
-
-	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}", _data.title, _data.width, _data.height, _data.VSync);
+void OpenGlViewport::_Init() {
+	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
 
 	if (not s_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
@@ -255,7 +254,7 @@ void OpenGLViewport::_Init() {
  * @details Releases GLFW window resources by resetting the _glfwWindow smart pointer,
  *          which automatically destroys the GLFW window when there are no more references to it
  */
-void OpenGLViewport::_Shutdown() {
+void OpenGlViewport::_Shutdown() {
 	_glfwWindow.reset();
 }
 

@@ -5,7 +5,7 @@ include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 project(CE_App LANGUAGES CXX VERSION 0.0.2)
 
 set(SOURCES
-	src/app.cpp
+	src/App.cpp
 )
 
 # Create macOS bundle to avoid system warnings

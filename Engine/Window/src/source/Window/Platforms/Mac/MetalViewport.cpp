@@ -27,8 +27,10 @@
 
 namespace CE::Window {
 
-/// @brief Static flag to track if GLFW has already been initialized
-/// @details Ensures that glfwInit() is called only once during program execution
+/**
+ * @brief Static flag to track if GLFW has already been initialized
+ * @details Ensures that glfwInit() is called only once during program execution
+ */
 static bool s_GLFWInitialized = false;
 
 /**
@@ -37,7 +39,7 @@ static bool s_GLFWInitialized = false;
  * @details Initializes window data with the provided properties and calls _Init()
  *          to set up the Metal device and create the window
  */
-MetalViewport::MetalViewport(const TypeWindow::WindowProps& windowProps): _data(windowProps.title, windowProps.width, windowProps.height, windowProps.VSync) {
+MetalViewport::MetalViewport(const TypeWindow::WindowProps& windowProps): _data(windowProps) {
 	_Init();
 }
 
@@ -267,6 +269,8 @@ void MetalViewport::_InitDevice() {
  *          to interact with Objective-C APIs.
  */
 void MetalViewport::_InitWindow() {
+	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
+
 	if (not s_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");

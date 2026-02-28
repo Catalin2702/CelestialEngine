@@ -10,11 +10,6 @@
 #include <CelestialEngine.hpp>
 #include <memory>
 
-#ifdef CE_PLATFORM_MACOS
-using ImGuiLayer = Layers::ImGuiMetalLayer;
-#else
-using ImGuiLayer = Layers::ImGuiOpenGlLayer;
-#endif
 
 /**
  * @brief Example layer class for demonstration purposes
@@ -69,7 +64,7 @@ public:
 	 * @details Creates the application with default window properties and initializes layers
 	 */
 	SandBox() {
-		_Init();
+		_Init(TypeWindow::GraphicsApi::OpenGL);
 	}
 
 	/**
@@ -78,7 +73,7 @@ public:
 	 * @details Creates the application with specified window properties and initializes layers
 	 */
 	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {
-		_Init();
+		_Init(windowProps.graphicsApi);
 	}
 
 	/**
@@ -87,10 +82,12 @@ public:
 	 * @param width Window width in pixels
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
+	 * @param graphicsApi Graphics API to use for rendering
 	 * @details Creates the application with individual window parameters and initializes layers
 	 */
-	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync): Application(title, width, height, VSync) {
-		_Init();
+	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi):
+		Application(title, width, height, VSync, graphicsApi) {
+		_Init(graphicsApi);
 	}
 
 	/**
@@ -105,10 +102,29 @@ private:
 	 * @details Creates and pushes an ExampleLayer to the layer stack and an ImGuiLayer
 	 *          to the overlay stack for rendering the GUI
 	 */
-	void _Init() {
+	void _Init(const TypeWindow::GraphicsApi graphicsApi) {
 		auto layer = std::make_unique<ExampleLayer>();
 		PushLayer(layer.release());
-		auto overlay = std::make_unique<ImGuiLayer>();
+
+		std::unique_ptr<Layers::I_ImGuiLayer> overlay;
+
+		switch (graphicsApi) {
+			case TypeWindow::GraphicsApi::OpenGL: {
+				overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+				break;
+			}
+#ifdef CE_PLATFORM_MACOS
+			case TypeWindow::GraphicsApi::Metal: {
+				overlay = std::make_unique<Layers::ImGuiMetalLayer>();
+				break;
+			}
+#endif
+			default: {
+				CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", graphicsApi);
+				exit(EXIT_FAILURE);
+			}
+		}
+
 		PushOverlay(overlay.release());
 	}
 };
@@ -142,11 +158,12 @@ Core::Application* Core::CreateApplication(const TypeWindow::WindowProps& window
  * @param width Window width in pixels
  * @param height Window height in pixels
  * @param VSync Enable or disable vertical synchronization
+ * @param graphicsApi Graphics API to use for rendering
  * @return Core::Application* Pointer to the newly created SandBox application
  * @details This function is called by the engine's entry point to instantiate the application
  *          with individual window parameters. Must be implemented by the client application.
  */
-Core::Application* Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync) {
-	auto app = std::make_unique<SandBox>(title, width, height, VSync);
+Core::Application* Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi) {
+	auto app = std::make_unique<SandBox>(title, width, height, VSync, graphicsApi);
 	return app.release();
 }

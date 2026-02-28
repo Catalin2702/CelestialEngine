@@ -17,16 +17,17 @@
 
 #ifdef CE_PLATFORM_MACOS
 #include "Window/Platforms/Mac/MetalViewport.hpp"
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlViewport.hpp"
 #else
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlViewport.hpp"
 #endif
 
 // Platform-specific viewport type selection
 #ifdef CE_PLATFORM_MACOS
-using Viewport = CE::Window::MetalViewport;  ///< Use Metal viewport on macOS
+using MetalViewport = CE::Window::MetalViewport;  ///< Use Metal viewport on macOS
+using OpenGlViewport = CE::Window::OpenGlViewport; ///< Use OpenGL viewport on macOS as well (fallback)
 #else
-using Viewport = CE::Window::OpenGLViewport; ///< Use OpenGL viewport on other platforms
+using OpenGlViewport = CE::Window::OpenGlViewport; ///< Use OpenGL viewport on other platforms
 #endif
 
 
@@ -45,7 +46,7 @@ Application* Application::_instance = nullptr;
  */
 Application::Application() {
 	assert(_instance == nullptr && "Application already exists!");
-	_Init({"CelestialEngine", 1280, 720, true});
+	_Init({"CelestialEngine", 1280, 720, true, Types::Window::GraphicsApi::OpenGL});
 }
 
 /**
@@ -63,11 +64,12 @@ Application::Application(const TypeWindow::WindowProps& windowProps) {
  * @param width Window width in pixels
  * @param height Window height in pixels
  * @param VSync Enable or disable vertical synchronization
+ * @param graphicsApi Graphics API to use for rendering
  * @details Initializes the application with individual window parameters by
  *          constructing a WindowProps object and passing it to _Init
  */
-Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync) {
-	_Init({title, width, height, VSync});
+Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Types::Window::GraphicsApi graphicsApi) {
+	_Init({title, width, height, VSync, graphicsApi});
 }
 
 /**
@@ -122,7 +124,7 @@ void Application::OnEvent(Events::I_Event& event) {
  */
 bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	_running = false;
-	CE_CORE_INFO("Window closed");
+	CE_CORE_INFO("Application::OnWindowClose: Window closed");
 	return true;
 }
 
@@ -158,13 +160,29 @@ void Application::PushOverlay(Layers::I_Layer *overlay) {
  */
 void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	_instance = this;
-	_viewport = std::unique_ptr<Window::I_Viewport>(
-		Window::I_Viewport::CreateWindow<Viewport>(windowProps)
-	);
+	switch (windowProps.graphicsApi) {
+		case Types::Window::GraphicsApi::OpenGL:
+			_viewport = std::unique_ptr<Window::I_Viewport>(
+				Window::I_Viewport::CreateWindow<OpenGlViewport>(windowProps)
+			);
+			break;
+#ifdef CE_PLATFORM_MACOS
+		case Types::Window::GraphicsApi::Metal:
+			_viewport = std::unique_ptr<Window::I_Viewport>(
+				Window::I_Viewport::CreateWindow<MetalViewport>(windowProps)
+			);
+			break;
+#endif
+		default:
+			CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties. Graphics API: {0}", windowProps.graphicsApi);
+			exit(EXIT_FAILURE);
+	}
+
 	if (not _viewport) {
-		CE_CORE_ERROR("Can't initialize the window");
+		CE_CORE_ERROR("Application::_Init: Can't initialize the window");
 		exit(EXIT_FAILURE);
 	}
+
 	_viewport->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }

@@ -14,7 +14,11 @@
 
 #include <functional>
 #include <string>
+#include <sstream>
 
+namespace CE::Events {
+class Event;
+}
 
 /**
  * @namespace CE::Types::Window
@@ -24,9 +28,14 @@
  */
 namespace CE::Types::Window {
 
-namespace Events {
-class Event;
-}
+enum class GraphicsApi: uint8_t {
+	None,											///< No graphics API specified
+	OpenGL,											///< OpenGL graphics API
+	Metal,											///< Metal graphics API (macOS)
+	Vulkan,											///< Vulkan graphics API
+	DirectX11,										///< DirectX 11 graphics API (Windows)
+	DirectX12,										///< DirectX 12 graphics API (Windows)
+};
 
 /**
  * @struct WindowProps
@@ -39,6 +48,7 @@ struct WindowProps {
 	unsigned int width;								///< Window width in pixels
 	unsigned int height;							///< Window height in pixels
 	bool VSync;										///< Vertical synchronization enabled/disabled
+	GraphicsApi graphicsApi;						///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
 
 	/**
 	 * @brief Constructor
@@ -46,8 +56,11 @@ struct WindowProps {
 	 * @param width Window width in pixels
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
+	 * @param graphicsApi Graphics API to use for rendering
+	 * @details Initializes the WindowProps structure with the provided values.
+	 *          This structure is used to pass configuration parameters when creating a window.
 	 */
-	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync);
+	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi);
 };
 
 /**
@@ -76,10 +89,54 @@ struct WindowData: WindowProps {
 	 * @param width Window width in pixels
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
+	 * @param graphicsApi Graphics API to use for rendering
 	 */
-	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync)
-		: WindowProps(title, width, height, VSync) {}
+	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi)
+		: WindowProps(title, width, height, VSync, graphicsApi) {}
+	/**
+	 * @brief Constructor from WindowProps
+	 * @param props WindowProps structure to initialize from
+	 */
+	WindowData(const WindowProps& props): WindowProps(props) {}
 };
+
+inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
+	switch (event) {
+		case GraphicsApi::None:
+			return os << "None";
+		case GraphicsApi::OpenGL:
+			return os << "OpenGL";
+		case GraphicsApi::Metal:
+			return os << "Metal";
+		case GraphicsApi::Vulkan:
+			return os << "Vulkan";
+		case GraphicsApi::DirectX11:
+			return os << "DirectX11";
+		case GraphicsApi::DirectX12:
+			return os << "DirectX12";
+		default:
+			return os << "Unknown Graphics API";
+	}
+}
+
+inline std::string format_as(const GraphicsApi& event) {
+	switch (event) {
+		case GraphicsApi::None:
+			return "None";
+		case GraphicsApi::OpenGL:
+			return "OpenGL";
+		case GraphicsApi::Metal:
+			return "Metal";
+		case GraphicsApi::Vulkan:
+			return "Vulkan";
+		case GraphicsApi::DirectX11:
+			return "DirectX11";
+		case GraphicsApi::DirectX12:
+			return "DirectX12";
+		default:
+			return "Unknown Graphics API";
+	}
+}
 
 }
 

@@ -68,9 +68,10 @@ public:
 	 * @param width Window width in pixels
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
+	 * @param graphicsApi Graphics API to use for rendering
 	 * @details Creates an application with individual window parameters
 	 */
-	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync);
+	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
 
 	/**
 	 * @brief Virtual destructor
@@ -169,10 +170,11 @@ Application* CreateApplication(const TypeWindow::WindowProps& windowProps);
  * @param width Window width in pixels
  * @param height Window height in pixels
  * @param VSync Enable or disable vertical synchronization
+ * @param graphicsApi Graphics API to use for rendering
  * @return Application* Pointer to the created application
  * @details Must be implemented by the client application
  */
-Application* CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync);
+Application* CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
 
 }
 

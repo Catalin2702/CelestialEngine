@@ -1,6 +1,6 @@
 //
 // Module: Window/Platforms/Universal
-// File: OpenGLViewport.hpp
+// File: OpenGlViewport.hpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-16
@@ -32,14 +32,14 @@ namespace TypeWindow = CE::Types::Window;
 namespace CE::Window {
 
 /**
- * @class OpenGLViewport
+ * @class OpenGlViewport
  * @brief Cross-platform viewport implementation using OpenGL rendering
  * @details Concrete implementation of I_Viewport that uses GLFW for window management
  *          and OpenGL for rendering. This is the primary cross-platform implementation
  *          that works on Windows, Linux, and macOS. It provides a complete windowing
  *          system with event handling, VSync control, and OpenGL context management.
  */
-class OpenGLViewport final: public I_Viewport {
+class OpenGlViewport final: public I_Viewport {
 public:
 	/**
 	 * @brief Constructor
@@ -47,13 +47,13 @@ public:
 	 * @details Creates and initializes an OpenGL-based viewport with the specified properties.
 	 *          Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
 	 */
-	OpenGLViewport(const TypeWindow::WindowProps& windowProps);
+	OpenGlViewport(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up GLFW window resources by calling _Shutdown()
 	 */
-	~OpenGLViewport() override;
+	~OpenGlViewport() override;
 
 public:
 	/**
