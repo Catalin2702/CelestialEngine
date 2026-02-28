@@ -19,8 +19,8 @@ class CE_API MouseMovedEvent final : public I_Event {
 public:
 	MouseMovedEvent(float x, float y);
 
-	[[nodiscard]] inline float GetX() const {return _x; }
-	[[nodiscard]] inline float GetY() const {return _y; }
+	[[nodiscard]] float GetX() const {return _x; }
+	[[nodiscard]] float GetY() const {return _y; }
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseMoved)
@@ -35,8 +35,8 @@ class CE_API MouseScrolledEvent final : public I_Event {
 public:
 	MouseScrolledEvent(float xOffset, float yOffset);
 
-	[[nodiscard]] inline float GetXOffset() const { return _xOffset; }
-	[[nodiscard]] inline float GetYOffset() const { return _yOffset; }
+	[[nodiscard]] float GetXOffset() const { return _xOffset; }
+	[[nodiscard]] float GetYOffset() const { return _yOffset; }
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseScrolled)
@@ -49,7 +49,7 @@ private:
 
 class CE_API I_MouseButtonEvent : public I_Event {
 public:
-	[[nodiscard]] inline int GetMouseButton() const { return _button; }
+	[[nodiscard]] int GetMouseButton() const { return _button; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
 

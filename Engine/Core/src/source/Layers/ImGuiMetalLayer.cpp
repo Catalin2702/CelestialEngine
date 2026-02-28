@@ -149,41 +149,8 @@ bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyReleased));
 	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyTyped));
 	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowResized));
-	dispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowClosed));
-	dispatcher.Dispatch<Events::AppTickEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppTick));
-	dispatcher.Dispatch<Events::AppUpdateEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppUpdate));
-	dispatcher.Dispatch<Events::AppRenderEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppRender));
 
 	return event.IsHandled();
-}
-
-bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
-	auto& io = ImGui::GetIO();
-	io.MousePos = ImVec2(event.GetX(), event.GetY());
-
-	return false;
-}
-
-bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
-	auto& io = ImGui::GetIO();
-	io.MouseWheelH += event.GetXOffset();
-	io.MouseWheel += event.GetYOffset();
-
-	return false;
-}
-
-bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
-	auto& io = ImGui::GetIO();
-	io.MouseDown[event.GetMouseButton()] = true;
-
-	return false;
-}
-
-bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
-	auto& io = ImGui::GetIO();
-	io.MouseDown[event.GetMouseButton()] = false;
-
-	return false;
 }
 
 bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
@@ -250,27 +217,40 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
 	return false;
 }
 
+bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = true;
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = false;
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MousePos = ImVec2(event.GetX(), event.GetY());
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseWheelH += event.GetXOffset();
+	io.MouseWheel += event.GetYOffset();
+
+	return false;
+}
+
 bool ImGuiMetalLayer::OnWindowResized(Events::WindowResizeEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
-	return false;
-}
-
-bool ImGuiMetalLayer::OnWindowClosed(Events::WindowCloseEvent&) {
-	return false;
-}
-
-bool ImGuiMetalLayer::OnAppTick(Events::AppTickEvent&) {
-	return false;
-}
-
-bool ImGuiMetalLayer::OnAppUpdate(Events::AppUpdateEvent&) {
-	return false;
-}
-
-bool ImGuiMetalLayer::OnAppRender(Events::AppRenderEvent&) {
 	return false;
 }
 

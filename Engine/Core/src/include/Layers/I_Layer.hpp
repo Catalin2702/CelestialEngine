@@ -26,7 +26,7 @@ public:
 
 #ifdef CE_DEBUG
 public:
-	[[nodiscard]] inline const std::string& GetDebugName() const { return _debugName; }
+	[[nodiscard]] const std::string& GetDebugName() const { return _debugName; }
 
 protected:
 	std::string _debugName;

@@ -11,6 +11,7 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
+#include "Tools/ImGui/ImGui.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <glad/glad.h>
@@ -21,7 +22,6 @@
 
 
 namespace CE::Layers {
-
 
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
@@ -94,47 +94,110 @@ void ImGuiOpenGlLayer::OnUpdate() {
 
 bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved));
-	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled));
-	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed));
-	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased));
+
 	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed));
 	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased));
 	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped));
+
+	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed));
+	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased));
+	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved));
+	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled));
+
 	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized));
-	dispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowClosed));
-	dispatcher.Dispatch<Events::AppTickEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnAppTick));
-	dispatcher.Dispatch<Events::AppUpdateEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnAppUpdate));
-	dispatcher.Dispatch<Events::AppRenderEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnAppRender));
 
 	return event.IsHandled();
 }
 
-bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent&) {
+bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
+	auto& io = ImGui::GetIO();
+	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	io.AddKeyEvent(key, true);
+
+	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
+		io.AddKeyEvent(ImGuiMod_Ctrl, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
+		io.AddKeyEvent(ImGuiMod_Shift, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
+		io.AddKeyEvent(ImGuiMod_Alt, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
+		io.AddKeyEvent(ImGuiMod_Super, true);
+		return false;
+	}
+
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnMouseScrolled(Events::MouseScrolledEvent&) {
+bool ImGuiOpenGlLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
+	auto& io = ImGui::GetIO();
+	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	io.AddKeyEvent(key, false);
+
+	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
+		io.AddKeyEvent(ImGuiMod_Ctrl, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
+		io.AddKeyEvent(ImGuiMod_Shift, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
+		io.AddKeyEvent(ImGuiMod_Alt, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
+		io.AddKeyEvent(ImGuiMod_Super, false);
+		return false;
+	}
+
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent&) {
+bool ImGuiOpenGlLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
+	auto& io = ImGui::GetIO();
+	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
+		io.AddInputCharacter(static_cast<unsigned short>(keycode));
+	}
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent&) {
+bool ImGuiOpenGlLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = true;
+
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent&) {
+bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = false;
+
+	return false;
+}
+bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MousePos = ImVec2(event.GetX(), event.GetY());
+
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnKeyReleased(Events::KeyReleasedEvent&) {
-	return false;
-}
+bool ImGuiOpenGlLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseWheelH += event.GetXOffset();
+	io.MouseWheel += event.GetYOffset();
 
-bool ImGuiOpenGlLayer::OnKeyTyped(Events::KeyTypedEvent&) {
 	return false;
 }
 
@@ -146,19 +209,4 @@ bool ImGuiOpenGlLayer::OnWindowResized(Events::WindowResizeEvent& event) {
 	return false;
 }
 
-bool ImGuiOpenGlLayer::OnWindowClosed(Events::WindowCloseEvent&) {
-	return false;
-}
-
-bool ImGuiOpenGlLayer::OnAppTick(Events::AppTickEvent&) {
-	return false;
-}
-
-bool ImGuiOpenGlLayer::OnAppUpdate(Events::AppUpdateEvent&) {
-	return false;
-}
-
-bool ImGuiOpenGlLayer::OnAppRender(Events::AppRenderEvent&) {
-	return false;
-}
 }
