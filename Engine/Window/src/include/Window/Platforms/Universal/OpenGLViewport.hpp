@@ -1,5 +1,5 @@
 //
-// Module: Window//Platforms/Universal
+// Module: Window/Platforms/Universal
 // File: OpenGLViewport.hpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
