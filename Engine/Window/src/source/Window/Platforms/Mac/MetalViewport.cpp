@@ -3,12 +3,12 @@
 //
 
 #include "Window/Platforms/Mac/MetalViewport.hpp"
+
 #include "Events/ApplicationEvent.hpp"
-#include "Events/Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Tools/Log/Log.hpp"
 #include "MetalBridge/Cocoa/MetalCocoaBridge.h"
+#include "Tools/Log/Log.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -19,9 +19,6 @@
 #include <AppKit/AppKit.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
-
-
-namespace CeEvents = CE::Events;
 
 namespace CE::Window {
 
@@ -51,14 +48,14 @@ void MetalViewport::SetWindowCallbacks() {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
-			CeEvents::WindowResizeEvent event{data->width, data->height};
+			Events::WindowResizeEvent event{data->width, data->height};
 			data->eventCallback(event);
 		}
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::WindowCloseEvent event;
+			Events::WindowCloseEvent event;
 			data->eventCallback(event);
 		}
 	});
@@ -67,19 +64,19 @@ void MetalViewport::SetWindowCallbacks() {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					CeEvents::KeyPressedEvent keyPressedEvent{key, 0};
+					Events::KeyPressedEvent keyPressedEvent{key, 0};
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
 
 				case GLFW_RELEASE: {
-					CeEvents::KeyReleasedEvent keyReleasedEvent{key};
+					Events::KeyReleasedEvent keyReleasedEvent{key};
 					data->eventCallback(keyReleasedEvent);
 					break;
 				}
 
 				case GLFW_REPEAT: {
-					CeEvents::KeyPressedEvent keyPressedEvent{key, 1};
+					Events::KeyPressedEvent keyPressedEvent{key, 1};
 					data->eventCallback(keyPressedEvent);
 					break;
 				}
@@ -87,17 +84,24 @@ void MetalViewport::SetWindowCallbacks() {
 			}
 		}
 	});
+	
+	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int keycode) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+			Events::KeyTypedEvent keyTypedEvent{keycode};
+			data->eventCallback(keyTypedEvent);
+		}
+	});
 
 	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					CeEvents::MouseButtonPressedEvent mouseButtonPressedEvent(button);
+					Events::MouseButtonPressedEvent mouseButtonPressedEvent(button);
 					data->eventCallback(mouseButtonPressedEvent);
 					break;
 				}
 				case GLFW_RELEASE: {
-					CeEvents::MouseButtonReleasedEvent mouseButtonReleasedEvent(button);
+					Events::MouseButtonReleasedEvent mouseButtonReleasedEvent(button);
 					data->eventCallback(mouseButtonReleasedEvent);
 					break;
 				}
@@ -108,14 +112,14 @@ void MetalViewport::SetWindowCallbacks() {
 
 	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
+			Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->eventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
-			CeEvents::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
+			Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->eventCallback(mouseMovedEvent);
 		}
 	});

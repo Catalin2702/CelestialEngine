@@ -9,14 +9,14 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Event.hpp"
-#include "Events/Event.hpp"
+#include "Events/I_Event.hpp"
 
 #include <string>
 
 
 namespace CE::Events {
 
-class CE_API WindowResizeEvent : public Event {
+class CE_API WindowResizeEvent : public I_Event {
 public:
 	WindowResizeEvent(unsigned int width, unsigned int height);
 
@@ -33,7 +33,7 @@ private:
 };
 
 
-class CE_API WindowCloseEvent : public Event {
+class CE_API WindowCloseEvent : public I_Event {
 public:
 	WindowCloseEvent() = default;
 
@@ -43,7 +43,7 @@ public:
 };
 
 
-class CE_API AppTickEvent : public Event {
+class CE_API AppTickEvent : public I_Event {
 public:
 	AppTickEvent() = default;
 
@@ -53,7 +53,7 @@ public:
 };
 
 
-class CE_API AppUpdateEvent : public Event {
+class CE_API AppUpdateEvent : public I_Event {
 public:
 	AppUpdateEvent() = default;
 
@@ -63,7 +63,7 @@ public:
 };
 
 
-class CE_API AppRenderEvent : public Event {
+class CE_API AppRenderEvent : public I_Event {
 public:
 	AppRenderEvent() = default;
 

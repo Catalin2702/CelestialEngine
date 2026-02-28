@@ -1,14 +1,15 @@
 set(HEADERS
 	src/include/Core/Application.hpp
-	src/include/Layers/Layer.hpp
+	src/include/Layers/I_Layer.hpp
 	src/include/Layers/LayerStack.hpp
 	src/include/Layers/ImGuiOpenGlLayer.hpp
 	src/include/Layers/ImGuiMetalLayer.hpp
+	src/include/Layers/I_ImGuiLayer.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
-	src/source/Layers/Layer.cpp
+	src/source/Layers/I_Layer.cpp
 	src/source/Layers/LayerStack.cpp
 	src/source/Layers/ImGuiOpenGlLayer.cpp
 	src/source/Layers/ImGuiMetalLayer.cpp

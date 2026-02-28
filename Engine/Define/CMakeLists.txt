@@ -1,8 +1,9 @@
 set(HEADERS
+	src/include/Define/Bind.hpp
 	src/include/Define/DynamicLinker.hpp
+	src/include/Define/Event.hpp
 	src/include/Define/Log.hpp
 	src/include/Define/Type.hpp
-	src/include/Define/Event.hpp
 )
 
 add_library(CE_Define SHARED

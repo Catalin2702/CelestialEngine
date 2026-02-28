@@ -2,10 +2,17 @@
 // Created by Catalin Chirosca on 2026-02-24.
 //
 
-#include "Layers/ImGuiMetalLayer.hpp"
-#include "Core/Application.hpp"
 #include "Window/Platforms/Mac/MetalViewport.hpp"
+
+#include "Layers/ImGuiMetalLayer.hpp"
+
+#include "Core/Application.hpp"
+#include "Define/Bind.hpp"
+#include "Events/ApplicationEvent.hpp"
+#include "Events/KeyEvent.hpp"
+#include "Events/MouseEvent.hpp"
 #include "MetalBridge/ImGui/MetalImGuiBridge.h"
+#include "Tools/ImGui/ImGui.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <imgui.h>
@@ -22,39 +29,16 @@
 
 namespace CE::Layers {
 
-ImGuiMetalLayer::ImGuiMetalLayer(): Layer("ImGuiMetalLayer") {}
+ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 
-	ImGuiIO& io = ImGui::GetIO();
+	auto& io = ImGui::GetIO();
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
-
-	io.AddKeyEvent(ImGuiKey_Tab, true);
-	io.AddKeyEvent(ImGuiKey_LeftArrow, true);
-	io.AddKeyEvent(ImGuiKey_RightArrow, true);
-	io.AddKeyEvent(ImGuiKey_UpArrow, true);
-	io.AddKeyEvent(ImGuiKey_DownArrow, true);
-	io.AddKeyEvent(ImGuiKey_PageUp, true);
-	io.AddKeyEvent(ImGuiKey_PageDown, true);
-	io.AddKeyEvent(ImGuiKey_Home, true);
-	io.AddKeyEvent(ImGuiKey_End, true);
-	io.AddKeyEvent(ImGuiKey_Insert, true);
-	io.AddKeyEvent(ImGuiKey_Delete, true);
-	io.AddKeyEvent(ImGuiKey_Backspace, true);
-	io.AddKeyEvent(ImGuiKey_Space, true);
-	io.AddKeyEvent(ImGuiKey_Enter, true);
-	io.AddKeyEvent(ImGuiKey_Escape, true);
-	io.AddKeyEvent(ImGuiKey_KeypadEnter, true);
-	io.AddKeyEvent(ImGuiKey_A, true);
-	io.AddKeyEvent(ImGuiKey_C, true);
-	io.AddKeyEvent(ImGuiKey_V, true);
-	io.AddKeyEvent(ImGuiKey_X, true);
-	io.AddKeyEvent(ImGuiKey_Y, true);
-	io.AddKeyEvent(ImGuiKey_Z, true);
 
 	const auto& app = Core::Application::Get();
 	_viewport = dynamic_cast<Window::MetalViewport*>(app.GetViewport());
@@ -85,7 +69,7 @@ void ImGuiMetalLayer::OnAttach() {
 		exit(EXIT_FAILURE);
 	}
 
-	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, true);
+	ImGui_ImplGlfw_InitForOther(_glfwWindow, false);
 
 	Bridge::ImGuiMetalInit(_metalDevice);
 }
@@ -99,7 +83,7 @@ void ImGuiMetalLayer::OnDetach() {
 void ImGuiMetalLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
-	ImGuiIO& io = ImGui::GetIO();
+	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(_viewport->GetWidth()), static_cast<float>(_viewport->GetHeight()));
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
@@ -120,7 +104,7 @@ void ImGuiMetalLayer::OnUpdate() {
 
 	const auto renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
-	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 0));
+	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
 	colorAttachment->setTexture(drawable->texture());
 	colorAttachment->setLoadAction(MTL::LoadActionClear);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
@@ -155,6 +139,139 @@ void ImGuiMetalLayer::OnUpdate() {
 	renderPassDescriptor->release();
 }
 
-void ImGuiMetalLayer::OnEvent(Events::Event&) {}
+bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
+	Events::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseMoved));
+	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseScrolled));
+	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonPressed));
+	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonReleased));
+	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyPressed));
+	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyReleased));
+	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyTyped));
+	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowResized));
+	dispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowClosed));
+	dispatcher.Dispatch<Events::AppTickEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppTick));
+	dispatcher.Dispatch<Events::AppUpdateEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppUpdate));
+	dispatcher.Dispatch<Events::AppRenderEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiMetalLayer::OnAppRender));
+
+	return event.IsHandled();
+}
+
+bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MousePos = ImVec2(event.GetX(), event.GetY());
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseWheelH += event.GetXOffset();
+	io.MouseWheel += event.GetYOffset();
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = true;
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.MouseDown[event.GetMouseButton()] = false;
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
+	auto& io = ImGui::GetIO();
+	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	io.AddKeyEvent(key, true);
+
+	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
+		io.AddKeyEvent(ImGuiMod_Ctrl, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
+		io.AddKeyEvent(ImGuiMod_Shift, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
+		io.AddKeyEvent(ImGuiMod_Alt, true);
+		return false;
+	}
+	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
+		io.AddKeyEvent(ImGuiMod_Super, true);
+		return false;
+	}
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
+	auto& io = ImGui::GetIO();
+	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	io.AddKeyEvent(key, false);
+
+	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
+		io.AddKeyEvent(ImGuiMod_Ctrl, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
+		io.AddKeyEvent(ImGuiMod_Shift, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
+		io.AddKeyEvent(ImGuiMod_Alt, false);
+		return false;
+	}
+	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
+		io.AddKeyEvent(ImGuiMod_Super, false);
+		return false;
+	}
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
+	auto& io = ImGui::GetIO();
+	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
+		io.AddInputCharacter(static_cast<unsigned short>(keycode));
+	}
+	return false;
+}
+
+bool ImGuiMetalLayer::OnWindowResized(Events::WindowResizeEvent& event) {
+	auto& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
+	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::OnWindowClosed(Events::WindowCloseEvent&) {
+	return false;
+}
+
+bool ImGuiMetalLayer::OnAppTick(Events::AppTickEvent&) {
+	return false;
+}
+
+bool ImGuiMetalLayer::OnAppUpdate(Events::AppUpdateEvent&) {
+	return false;
+}
+
+bool ImGuiMetalLayer::OnAppRender(Events::AppRenderEvent&) {
+	return false;
+}
 
 }

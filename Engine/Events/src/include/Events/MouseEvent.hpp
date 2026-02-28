@@ -8,14 +8,14 @@
 #define CE_EVENTS_MOUSEEVENT_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Events/Event.hpp"
+#include "Events/I_Event.hpp"
 
 #include <string>
 
 
 namespace CE::Events {
 
-class CE_API MouseMovedEvent final : public Event {
+class CE_API MouseMovedEvent final : public I_Event {
 public:
 	MouseMovedEvent(float x, float y);
 
@@ -31,7 +31,7 @@ private:
 };
 
 
-class CE_API MouseScrolledEvent final : public Event {
+class CE_API MouseScrolledEvent final : public I_Event {
 public:
 	MouseScrolledEvent(float xOffset, float yOffset);
 
@@ -47,21 +47,21 @@ private:
 };
 
 
-class CE_API MouseButtonEvent : public Event {
+class CE_API I_MouseButtonEvent : public I_Event {
 public:
 	[[nodiscard]] inline int GetMouseButton() const { return _button; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
 
 protected:
-	MouseButtonEvent(int button);
+	I_MouseButtonEvent(int button);
 
 protected:
 	int _button;
 };
 
 
-class CE_API MouseButtonPressedEvent final : public MouseButtonEvent {
+class CE_API MouseButtonPressedEvent final : public I_MouseButtonEvent {
 public:
 	MouseButtonPressedEvent(int button);
 
@@ -71,7 +71,7 @@ public:
 };
 
 
-class CE_API MouseButtonReleasedEvent final : public MouseButtonEvent {
+class CE_API MouseButtonReleasedEvent final : public I_MouseButtonEvent {
 public:
 	MouseButtonReleasedEvent(int button);
 

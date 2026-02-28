@@ -1,19 +1,19 @@
 set(HEADERS
 	src/include/Events/ApplicationEvent.hpp
-	src/include/Events/Event.hpp
+	src/include/Events/I_Event.hpp
 	src/include/Events/KeyEvent.hpp
 	src/include/Events/MouseEvent.hpp
 )
 
 set(SOURCES
 	src/source/Events/ApplicationEvent.cpp
-	src/source/Events/Event.cpp
+	src/source/Events/I_Event.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
 )
 
 set(TEMPLATES
-	src/template/Events/Event.tpp
+	src/template/Events/I_Event.tpp
 )
 
 add_library(CE_Events SHARED

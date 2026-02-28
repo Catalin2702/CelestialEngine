@@ -4,14 +4,17 @@
 
 #include "Core/Application.hpp"
 #include "Events/ApplicationEvent.hpp"
-#include "Events/Event.hpp"
-#include "Layers/Layer.hpp"
+#include "Events/I_Event.hpp"
+#include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Window/InterfaceWindow.hpp"
-#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#include "Window/I_Viewport.hpp"
+#include "Define/Bind.hpp"
 
 #ifdef CE_PLATFORM_MACOS
 #include "Window/Platforms/Mac/MetalViewport.hpp"
+#include "Window/Platforms/Universal/OpenGLViewport.hpp"
+#else
+#include "Window/Platforms/Universal/OpenGLViewport.hpp"
 #endif
 
 #ifdef CE_PLATFORM_MACOS
@@ -49,7 +52,7 @@ void Application::Run() {
 	}
 }
 
-void Application::OnEvent(Events::Event& event) {
+void Application::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher eventDispatcher(event);
 	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(Application::OnWindowClose));
 
@@ -66,18 +69,18 @@ bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	return true;
 }
 
-void Application::PushLayer(Layers::Layer *layer) {
+void Application::PushLayer(Layers::I_Layer *layer) {
 	_layerStack.PushLayer(layer);
 }
 
-void Application::PushOverlay(Layers::Layer *overlay) {
+void Application::PushOverlay(Layers::I_Layer *overlay) {
 	_layerStack.PushOverlay(overlay);
 }
 
 void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
 	_instance = this;
-	_viewport = std::unique_ptr<Window::InterfaceViewport>(
-		Window::InterfaceViewport::CreateWindow<Viewport>(windowProps)
+	_viewport = std::unique_ptr<Window::I_Viewport>(
+		Window::I_Viewport::CreateWindow<Viewport>(windowProps)
 	);
 	if (not _viewport) {
 		CE_CORE_ERROR("Can't initialize the window");

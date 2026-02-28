@@ -3,7 +3,7 @@ set(HEADERS
 )
 
 set(INTERFACES
-	src/interface/Window/InterfaceWindow.hpp
+	src/interface/Window/I_Viewport.hpp
 )
 
 set(SOURCES

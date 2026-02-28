@@ -17,7 +17,7 @@
 
 namespace CE::Events {
 
-class Event;
+class I_Event;
 class EventDispatcher;
 
 enum class EventType: uint8_t {
@@ -35,6 +35,7 @@ enum class EventType: uint8_t {
 
 	KeyPressed,
 	KeyReleased,
+	KeyTyped,
 
 	MouseButtonPressed,
 	MouseButtonReleased,
@@ -53,11 +54,11 @@ enum EventCategory {
 };
 
 
-class CE_API Event {
+class CE_API I_Event {
 	friend class EventDispatcher;
 
 public:
-	virtual ~Event() = default;
+	virtual ~I_Event() = default;
 
 public:
 	[[nodiscard]] virtual EventType GetEventType() const = 0;
@@ -79,26 +80,26 @@ class EventDispatcher {
 	using EventFn = std::function<bool(T&)>;
 
 public:
-	EventDispatcher(Event& event);
+	EventDispatcher(I_Event& event);
 
 public:
 	template<typename T>
 	bool Dispatch(EventFn<T> func);
 
 private:
-	Event& _event;
+	I_Event& _event;
 };
 
-inline std::ostream & operator<<(std::ostream &os, const Event &event) {
+inline std::ostream & operator<<(std::ostream &os, const I_Event &event) {
 	return os << event.ToString();
 }
 
-inline std::string format_as(const Event &event) {
+inline std::string format_as(const I_Event &event) {
 	return event.ToString();
 }
 
 }
 
-#include "../template/Events/Event.tpp"
+#include "../template/Events/I_Event.tpp"
 
 #endif //CE_EVENTS_EVENT_HPP

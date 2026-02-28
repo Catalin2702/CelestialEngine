@@ -4,6 +4,9 @@
 
 #pragma once
 
+#ifndef CE_WINDOW_I_VIEWPORT_HPP
+#define CE_WINDOW_I_VIEWPORT_HPP
+
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -13,17 +16,17 @@ struct GLFWwindow;
 
 
 namespace CE::Events {
-class Event;
+class I_Event;
 }
 
 namespace CE::Window {
 
-using EventWindowData = Types::Window::WindowData<Events::Event>;
-using EventCallbackFn = Types::Window::CallbackFn<Events::Event>;
+using EventWindowData = Types::Window::WindowData<Events::I_Event>;
+using EventCallbackFn = Types::Window::CallbackFn<Events::I_Event>;
 
-class CE_API InterfaceViewport {
+class CE_API I_Viewport {
 public:
-	virtual ~InterfaceViewport() = default;
+	virtual ~I_Viewport() = default;
 
 public:
 	virtual void OnUpdate() = 0;
@@ -40,11 +43,13 @@ public:
 	virtual void SetHeight(unsigned int height) = 0;
 	virtual void SetVSync(bool enabled) = 0;
 
-	template<std::derived_from<InterfaceViewport> T>
-	static InterfaceViewport* CreateWindow(const Types::Window::WindowProps& windowProps) {
+	template<std::derived_from<I_Viewport> T>
+	static I_Viewport* CreateWindow(const Types::Window::WindowProps& windowProps) {
 		auto window = std::make_unique<T>(windowProps);
 		return window.release();
 	}
 };
 
 }
+
+#endif // CE_WINDOW_I_VIEWPORT_HPP

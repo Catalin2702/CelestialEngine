@@ -15,13 +15,13 @@
 
 // ---- Event ------------------------------------
 #include <Events/ApplicationEvent.hpp>
-#include <Events/Event.hpp>
+#include <Events/I_Event.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
 // -----------------------------------------------
 
 // ---- Layer ------------------------------------
-#include <Layers/Layer.hpp>
+#include <Layers/I_Layer.hpp>
 #include <Layers/ImGuiMetalLayer.hpp>
 #include <Layers/ImGuiOpenGlLayer.hpp>
 // -----------------------------------------------

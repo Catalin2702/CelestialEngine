@@ -15,20 +15,20 @@
 
 namespace CE::Layers {
 
-class Layer;
+class I_Layer;
 
 class CE_API LayerStack {
-using StackContainer = std::vector<Layer*>;
+using StackContainer = std::vector<I_Layer*>;
 	
 public:
 	LayerStack();
 	~LayerStack();
 
 public:
-	void PushLayer(Layer* layer);
-	void PushOverlay(Layer* overlay);
-	void PopLayer(Layer* layer);
-	void PopOverlay(Layer* overlay);
+	void PushLayer(I_Layer* layer);
+	void PushOverlay(I_Layer* overlay);
+	void PopLayer(I_Layer* layer);
+	void PopOverlay(I_Layer* overlay);
 
 	StackContainer::iterator begin() { return _layers.begin(); }
 	StackContainer::iterator end() { return _layers.end(); }

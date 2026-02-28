@@ -3,6 +3,7 @@
 //
 
 #include "Window/Platforms/Universal/OpenGLViewport.hpp"
+
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -28,7 +29,7 @@ OpenGLViewport::~OpenGLViewport() {
 
 void OpenGLViewport::OnUpdate() {
 	glfwPollEvents();
-	glfwSwapBuffers(_window);
+	glfwSwapBuffers(_glfwWindow.get());
 }
 
 void OpenGLViewport::SetEventCallback(const EventCallbackFn &callback) {
@@ -36,10 +37,10 @@ void OpenGLViewport::SetEventCallback(const EventCallbackFn &callback) {
 }
 
 void OpenGLViewport::SetWindowCallbacks() {
-	if (not _window)
+	if (not _glfwWindow)
 		return;
 
-	glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, const int width, const int height) {
+	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
@@ -48,14 +49,14 @@ void OpenGLViewport::SetWindowCallbacks() {
 		}
 	});
 
-	glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
+	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::WindowCloseEvent event;
 			data->eventCallback(event);
 		}
 	});
 
-	glfwSetKeyCallback(_window, [](GLFWwindow* window, const int key, const int, const int action, const int) {
+	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
@@ -80,7 +81,14 @@ void OpenGLViewport::SetWindowCallbacks() {
 		}
 	});
 
-	glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, const int button, const int action, const int) {
+	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int keycode) {
+		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+			Events::KeyTypedEvent keyTypedEvent{keycode};
+			data->eventCallback(keyTypedEvent);
+		}
+	});
+
+	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
@@ -98,14 +106,14 @@ void OpenGLViewport::SetWindowCallbacks() {
 		}
 	});
 
-	glfwSetScrollCallback(_window, [](GLFWwindow* window, const double xOffset, const double yOffset) {
+	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->eventCallback(mouseScrolledEvent);
 		}
 	});
 
-	glfwSetCursorPosCallback(_window, [](GLFWwindow* window, const double xPos, const double yPos) {
+	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->eventCallback(mouseMovedEvent);
@@ -149,27 +157,26 @@ void OpenGLViewport::_Init() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	_window = glfwCreateWindow(
+	_glfwWindow.reset(glfwCreateWindow(
 		static_cast<int>(_data.width),
 		static_cast<int>(_data.height),
 		_data.title.c_str(),
 		nullptr,
 		nullptr
-	);
+	));
 
-	glfwMakeContextCurrent(_window);
+	glfwMakeContextCurrent(_glfwWindow.get());
 	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
 		CE_CORE_ERROR("Error to initialize GLAD");
 		exit(EXIT_FAILURE);
 	}
-	glfwSetWindowUserPointer(_window, &_data);
+	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 	SetVSync(_data.VSync);
 	SetWindowCallbacks();
 }
 
 void OpenGLViewport::_Shutdown() {
-	glfwDestroyWindow(_window);
-	_window = nullptr;
+	_glfwWindow.reset();
 }
 
 }

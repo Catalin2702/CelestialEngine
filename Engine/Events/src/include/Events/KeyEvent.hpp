@@ -8,28 +8,29 @@
 #define CE_EVENTS_KEYEVENT_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Events/Event.hpp"
+#include "Events/I_Event.hpp"
 
 #include <string>
 
 
 namespace CE::Events {
 
-class CE_API KeyEvent : public Event {
+template<typename T>
+class CE_API I_KeyEvent : public I_Event {
 public:
-	[[nodiscard]] int GetKeyCode() const { return _keyCode; }
+	[[nodiscard]] T GetKeyCode() const { return _keyCode; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
 protected:
-	KeyEvent(int keycode);
+	I_KeyEvent(T keycode): _keyCode(keycode) {}
 
 protected:
-	int _keyCode;
+	T _keyCode;
 };
 
 
-class CE_API KeyPressedEvent : public KeyEvent {
+class CE_API KeyPressedEvent : public I_KeyEvent<int> {
 public:
 	KeyPressedEvent(int keycode, int repeatCount);
 
@@ -42,7 +43,7 @@ private:
 	int _repeatCount;
 };
 
-class CE_API KeyReleasedEvent : public KeyEvent {
+class CE_API KeyReleasedEvent : public I_KeyEvent<int> {
 public:
 	KeyReleasedEvent(int keycode);
 
@@ -50,6 +51,16 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(KeyReleased)
+};
+
+class CE_API KeyTypedEvent : public I_KeyEvent<unsigned int> {
+public:
+	KeyTypedEvent(unsigned int keycode);
+
+public:
+	[[nodiscard]] std::string ToString() const override;
+
+	EVENT_CLASS_TYPE(KeyTyped)
 };
 
 }

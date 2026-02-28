@@ -3,7 +3,7 @@
 //
 
 #include "Layers/LayerStack.hpp"
-#include "Layers/Layer.hpp"
+#include "Layers/I_Layer.hpp"
 
 
 namespace CE::Layers {
@@ -20,18 +20,18 @@ LayerStack::~LayerStack() {
 	}
 }
 
-void LayerStack::PushLayer(Layer* layer) {
+void LayerStack::PushLayer(I_Layer* layer) {
 	_layerInsert = _layers.emplace(_layerInsert, layer);
 	layer->OnAttach();
 	++_layerInsert;
 }
 
-void LayerStack::PushOverlay(Layer* overlay) {
+void LayerStack::PushOverlay(I_Layer* overlay) {
 	_layers.emplace_back(overlay);
 	overlay->OnAttach();
 }
 
-void LayerStack::PopLayer(Layer* layer) {
+void LayerStack::PopLayer(I_Layer* layer) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {
 		layer->OnDetach();
 		_layers.erase(it);
@@ -44,7 +44,7 @@ void LayerStack::PopLayer(Layer* layer) {
 	}
 }
 
-void LayerStack::PopOverlay(Layer* overlay) {
+void LayerStack::PopOverlay(I_Layer* overlay) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), overlay); it != _layers.end()) {
 		overlay->OnDetach();
 		_layers.erase(it);

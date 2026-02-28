@@ -8,13 +8,13 @@ using ImGuiLayer = Layers::ImGuiOpenGlLayer;
 #endif
 
 
-class ExampleLayer : public Layers::Layer {
+class ExampleLayer : public Layers::I_Layer {
 public:
-	ExampleLayer(): Layer("ExampleLayer") {}
+	ExampleLayer(): I_Layer("ExampleLayer") {}
 
 	void OnUpdate() override {}
 
-	void OnEvent([[maybe_unused]] Events::Event &event) override {}
+	bool OnEvent([[maybe_unused]] Events::I_Event& event) override {return false;}
 
 	void OnAttach() override {}
 	void OnDetach() override {}

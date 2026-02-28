@@ -7,7 +7,7 @@
 #ifndef CE_LAYERS_IMGUIOPENGLLAYER_HPP
 #define CE_LAYERS_IMGUIOPENGLLAYER_HPP
 
-#include "Layers/Layer.hpp"
+#include "Layers/I_ImGuiLayer.hpp"
 
 struct GLFWwindow;
 
@@ -18,7 +18,7 @@ class OpenGLViewport;
 
 namespace CE::Layers {
 
-class ImGuiOpenGlLayer final : public Layer {
+class ImGuiOpenGlLayer final : public I_ImGuiLayer {
 public:
 	ImGuiOpenGlLayer();
 
@@ -26,7 +26,33 @@ public:
 	void OnAttach() override;
 	void OnDetach() override;
 	void OnUpdate() override;
-	void OnEvent(Events::Event& event) override;
+
+	bool OnEvent(Events::I_Event& event) override;
+
+protected:
+	bool OnMouseMoved(Events::MouseMovedEvent& event) override;
+
+	bool OnMouseScrolled(Events::MouseScrolledEvent& event) override;
+
+	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) override;
+
+	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) override;
+
+	bool OnKeyPressed(Events::KeyPressedEvent& event) override;
+
+	bool OnKeyReleased(Events::KeyReleasedEvent& event) override;
+
+	bool OnKeyTyped(Events::KeyTypedEvent& event) override;
+
+	bool OnWindowResized(Events::WindowResizeEvent& event) override;
+
+	bool OnWindowClosed(Events::WindowCloseEvent& event) override;
+
+	bool OnAppTick(Events::AppTickEvent& event) override;
+
+	bool OnAppUpdate(Events::AppUpdateEvent& event) override;
+
+	bool OnAppRender(Events::AppRenderEvent& event) override;
 
 private:
 	float _time = 0.0f;

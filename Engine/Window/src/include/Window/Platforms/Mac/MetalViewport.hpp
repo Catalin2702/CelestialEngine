@@ -9,7 +9,7 @@
 
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
-#include "Window/InterfaceWindow.hpp"
+#include "Window/I_Viewport.hpp"
 
 #include <memory>
 #include <AppKit/AppKit.hpp>
@@ -32,7 +32,7 @@ namespace CeTypeWindow = CE::Types::Window;
 
 namespace CE::Window {
 
-class MetalViewport final : public InterfaceViewport {
+class MetalViewport final : public I_Viewport {
 public:
 	MetalViewport(const CeTypeWindow::WindowProps& windowProps);
 	~MetalViewport() override;

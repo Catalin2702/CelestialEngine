@@ -9,10 +9,8 @@
 
 namespace CE::Events {
 
-KeyEvent::KeyEvent(const int keycode): _keyCode(keycode) {}
-
 KeyPressedEvent::KeyPressedEvent(const int keycode, const int repeatCount):
-	KeyEvent(keycode), _repeatCount(repeatCount) {}
+	I_KeyEvent(keycode), _repeatCount(repeatCount) {}
 
 std::string KeyPressedEvent::ToString() const {
 	std::stringstream ss;
@@ -20,11 +18,19 @@ std::string KeyPressedEvent::ToString() const {
 	return ss.str();
 }
 
-KeyReleasedEvent::KeyReleasedEvent(const int keycode): KeyEvent(keycode) {}
+KeyReleasedEvent::KeyReleasedEvent(const int keycode): I_KeyEvent(keycode) {}
 
 std::string KeyReleasedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "KeyReleasedEvent: " << _keyCode;
+	return ss.str();
+}
+
+KeyTypedEvent::KeyTypedEvent(const unsigned int keycode): I_KeyEvent(keycode) {}
+
+std::string KeyTypedEvent::ToString() const {
+	std::stringstream ss;
+	ss << "KeyTypedEvent: " << _keyCode;
 	return ss.str();
 }
 

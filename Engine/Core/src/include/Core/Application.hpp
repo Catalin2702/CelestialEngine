@@ -17,14 +17,14 @@
 namespace CE {
 
 namespace Events {
-class Event;
+class I_Event;
 class WindowCloseEvent;
 }
 namespace Layers {
-class Layer;
+class I_Layer;
 }
 namespace Window {
-class InterfaceViewport;
+class I_Viewport;
 }
 
 namespace CeTypeWindow = Types::Window;
@@ -41,21 +41,21 @@ public:
 
 public:
 	virtual void Run();
-	virtual void OnEvent(Events::Event& event);
+	virtual void OnEvent(Events::I_Event& event);
 	virtual bool OnWindowClose(const Events::WindowCloseEvent& event);
 
-	void PushLayer(Layers::Layer* layer);
-	void PushOverlay(Layers::Layer* overlay);
+	void PushLayer(Layers::I_Layer* layer);
+	void PushOverlay(Layers::I_Layer* overlay);
 
 public:
 	[[nodiscard]] static Application& Get() { return *_instance; }
-	[[nodiscard]] Window::InterfaceViewport* GetViewport() const { return _viewport.get(); }
+	[[nodiscard]] Window::I_Viewport* GetViewport() const { return _viewport.get(); }
 
 protected:
 	void _Init(const CeTypeWindow::WindowProps& windowProps);
 
 private:
-	std::unique_ptr<Window::InterfaceViewport> _viewport;
+	std::unique_ptr<Window::I_Viewport> _viewport;
 	bool _running = false;
 	Layers::LayerStack _layerStack;
 	static Application* _instance;

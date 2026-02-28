@@ -7,8 +7,10 @@
 #ifndef CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 #define CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
 
+#include "Window/I_Viewport.hpp"
+
+#include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
-#include "Window/InterfaceWindow.hpp"
 
 
 struct GLFWwindow;
@@ -17,7 +19,7 @@ namespace CeTypeWindow = CE::Types::Window;
 
 namespace CE::Window {
 
-class OpenGLViewport final : public InterfaceViewport {
+class OpenGLViewport final : public I_Viewport {
 public:
 	OpenGLViewport(const CeTypeWindow::WindowProps& windowProps);
 	~OpenGLViewport() override;
@@ -29,7 +31,7 @@ public:
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
 	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
-	[[nodiscard]] GLFWwindow* GetGLFWwindow() const override { return _window; }
+	[[nodiscard]] GLFWwindow* GetGLFWwindow() const override { return _glfwWindow.get(); }
 	
 	void SetEventCallback(const EventCallbackFn& callback) override;
 	void SetWindowCallbacks() override;
@@ -42,7 +44,7 @@ private:
 	void _Shutdown();
 
 private:
-	GLFWwindow* _window = nullptr;
+	CeTypeWindow::GLFWwindowPtr _glfwWindow = nullptr;
 	EventWindowData _data;
 };
 
