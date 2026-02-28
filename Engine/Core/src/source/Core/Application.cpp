@@ -54,7 +54,7 @@ void Application::Run() {
 
 void Application::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher eventDispatcher(event);
-	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_EVENT_FN_ONE_PARAM(Application::OnWindowClose));
+	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_FN_ONE_PARAM(Application::OnWindowClose));
 
 	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
 		(*--it)->OnEvent(event);
@@ -86,7 +86,7 @@ void Application::_Init(const CeTypeWindow::WindowProps& windowProps) {
 		CE_CORE_ERROR("Can't initialize the window");
 		exit(EXIT_FAILURE);
 	}
-	_viewport->SetEventCallback(BIND_EVENT_FN_ONE_PARAM(Application::OnEvent));
+	_viewport->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }
 

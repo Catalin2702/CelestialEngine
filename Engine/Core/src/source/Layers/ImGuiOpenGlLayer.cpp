@@ -95,16 +95,16 @@ void ImGuiOpenGlLayer::OnUpdate() {
 bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 
-	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed));
-	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased));
-	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped));
+	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed));
+	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased));
+	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped));
 
-	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed));
-	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased));
-	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved));
-	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled));
+	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed));
+	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased));
+	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved));
+	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled));
 
-	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_EVENT_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized));
+	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized));
 
 	return event.IsHandled();
 }
@@ -186,6 +186,7 @@ bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& e
 
 	return false;
 }
+
 bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	auto& io = ImGui::GetIO();
 	io.MousePos = ImVec2(event.GetX(), event.GetY());
