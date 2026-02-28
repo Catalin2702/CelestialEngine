@@ -141,16 +141,45 @@ void ImGuiMetalLayer::OnUpdate() {
 
 bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseMoved));
-	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseScrolled));
-	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonPressed));
-	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonReleased));
-	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyPressed));
-	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyReleased));
-	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyTyped));
-	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowResized));
 
-	return event.IsHandled();
+	switch (event.GetEventType()) {
+		case Events::EventType::KeyPressed: {
+			if (dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyPressed))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::KeyReleased: {
+			if (dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyReleased))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::KeyTyped: {
+			if (dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnKeyTyped))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseButtonPressed: {
+			if (dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonPressed))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseButtonReleased: {
+			if (dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseButtonReleased))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseMoved: {
+			if (dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseMoved))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseScrolled: {
+			if (dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnMouseScrolled))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::WindowResize: {
+			if (dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::OnWindowResized))) return event.IsHandled();
+			break;
+		}
+		default:
+			return false;
+	}
+
+	return false;
 }
 
 bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {

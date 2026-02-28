@@ -95,18 +95,44 @@ void ImGuiOpenGlLayer::OnUpdate() {
 bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 
-	dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed));
-	dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased));
-	dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped));
+	switch (event.GetEventType()) {
+		case Events::EventType::KeyPressed: {
+			if (dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::KeyReleased: {
+			if (dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::KeyTyped: {
+			if (dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseButtonPressed: {
+			if (dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseButtonReleased: {
+			if (dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseMoved: {
+			if (dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::MouseScrolled: {
+			if (dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled))) return event.IsHandled();
+			break;
+		}
+		case Events::EventType::WindowResize: {
+			if (dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized))) return event.IsHandled();
+			break;
+		}
+		default:
+			return false;
+	}
 
-	dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed));
-	dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased));
-	dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved));
-	dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled));
-
-	dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized));
-
-	return event.IsHandled();
+	return false;
 }
 
 bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
