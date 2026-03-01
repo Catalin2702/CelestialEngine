@@ -24,10 +24,10 @@
 
 // Platform-specific window type selection
 #ifdef CE_PLATFORM_MACOS
-using MetalWindow = CE::Window::MetalWindow;  ///< Use Metal window on macOS
-using OpenGlWindow = CE::Window::OpenGlWindow; ///< Use OpenGL window on macOS as well (fallback)
+using MetalWindow = CE::Window::MetalWindow;		///< Use Metal window on macOS
+using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS as well (fallback)
 #else
-using OpenGlWindow = CE::Window::OpenGlWindow; ///< Use OpenGL window on other platforms
+using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
 #endif
 
 
