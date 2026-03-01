@@ -7,7 +7,7 @@
 // Updated: 2026-02-28
 //
 
-#include "Window/Platforms/Mac/MetalViewport.hpp"
+#include "Window/Platforms/Mac/MetalWindow.hpp"
 
 #include "Layers/ImGuiMetalLayer.hpp"
 
@@ -45,11 +45,11 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
  * @details Performs the following initialization:
  *          - Creates ImGui context and applies dark theme
  *          - Configures ImGui backend flags for mouse support
- *          - Caches Metal viewport and GLFW window pointers
+ *          - Caches Metal window and GLFW window pointers
  *          - Initializes ImGui_ImplGlfw backend
  *          - Initializes ImGui Metal rendering backend
  *          - Sets up custom dark theme colors
- *          Exits with error if viewport is not a MetalViewport or if initialization fails
+ *          Exits with error if window is not a MetalWindow or if initialization fails
  */
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
@@ -61,29 +61,29 @@ void ImGuiMetalLayer::OnAttach() {
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
 	const auto& app = Core::Application::Get();
-	_viewport = dynamic_cast<Window::MetalViewport*>(app.GetViewport());
-	if (not _viewport) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalViewport viewport!");
+	_metalWindow = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
+	if (not _metalWindow) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
 		exit(EXIT_FAILURE);
 	}
 
 	// Cache dei puntatori per evitare lookup ripetuti ogni frame
-	_glfwWindow = _viewport->GetGLFWwindow();
+	_glfwWindow = _metalWindow->GetGLFWwindow();
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
 		exit(EXIT_FAILURE);
 	}
-	_metalDevice = _viewport->GetDevice();
+	_metalDevice = _metalWindow->GetDevice();
 	if (not _metalDevice) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
 		exit(EXIT_FAILURE);
 	}
-	_commandQueue = _viewport->GetCommandQueue();
+	_commandQueue = _metalWindow->GetCommandQueue();
 	if (not _commandQueue) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 		exit(EXIT_FAILURE);
 	}
-	_metalLayer = _viewport->GetMetalLayer();
+	_metalLayer = _metalWindow->GetMetalLayer();
 	if (not _metalLayer) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 		exit(EXIT_FAILURE);
@@ -117,7 +117,7 @@ void ImGuiMetalLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
 	auto& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(static_cast<float>(_viewport->GetWidth()), static_cast<float>(_viewport->GetHeight()));
+	io.DisplaySize = ImVec2(static_cast<float>(_metalWindow->GetWidth()), static_cast<float>(_metalWindow->GetHeight()));
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 

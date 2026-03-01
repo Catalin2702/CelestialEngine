@@ -1,22 +1,22 @@
 set(HEADERS
-	src/include/Window/Platforms/Universal/OpenGLViewport.hpp
+	src/include/Window/Platforms/Universal/OpenGlWindow.hpp
 )
 
 set(INTERFACES
-	src/interface/Window/I_Viewport.hpp
+	src/interface/Window/I_Window.hpp
 )
 
 set(SOURCES
-	src/source/Window/Platforms/Universal/OpenGLViewport.cpp
+	src/source/Window/Platforms/Universal/OpenGlWindow.cpp
 )
 
 if(APPLE)
 	list(APPEND HEADERS
-		src/include/Window/Platforms/Mac/MetalViewport.hpp
+		src/include/Window/Platforms/Mac/MetalWindow.hpp
 	)
 	list(APPEND SOURCES
-		src/source/Window/Platforms/Mac/MetalViewport.cpp
-		src/source/Window/Platforms/Universal/OpenGLViewport.cpp
+		src/source/Window/Platforms/Mac/MetalWindow.cpp
+		src/source/Window/Platforms/Universal/OpenGlWindow.cpp
 	)
 elseif(WIN32)
 	list(APPEND HEADERS

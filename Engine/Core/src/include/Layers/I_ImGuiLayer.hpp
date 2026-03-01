@@ -128,7 +128,7 @@ protected:
 	 * @brief Handles window resized events for ImGui
 	 * @param event Window resize event
 	 * @return bool True if the event was handled
-	 * @details Pure virtual method for updating ImGui viewport when window is resized
+	 * @details Pure virtual method for updating ImGui window when window is resized
 	 */
 	virtual bool OnWindowResized(Events::WindowResizeEvent& event) = 0;
 };

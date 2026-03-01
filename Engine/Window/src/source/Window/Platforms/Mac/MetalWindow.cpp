@@ -1,13 +1,13 @@
 //
 // Module: Window/Platforms/Mac
-// File: MetalViewport.cpp
+// File: MetalWindow.cpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-18
 // Updated: 2026-02-28
 //
 
-#include "Window/Platforms/Mac/MetalViewport.hpp"
+#include "Window/Platforms/Mac/MetalWindow.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -34,31 +34,31 @@ namespace CE::Window {
 static bool s_GLFWInitialized = false;
 
 /**
- * @brief MetalViewport constructor implementation
+ * @brief MetalWindow constructor implementation
  * @param windowProps Window configuration properties (title, width, height, VSync)
  * @details Initializes window data with the provided properties and calls _Init()
  *          to set up the Metal device and create the window
  */
-MetalViewport::MetalViewport(const TypeWindow::WindowProps& windowProps): _data(windowProps) {
+MetalWindow::MetalWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps) {
 	_Init();
 }
 
 /**
- * @brief MetalViewport destructor implementation
+ * @brief MetalWindow destructor implementation
  * @details Calls _Shutdown() to clean up GLFW window resources. Metal resources
  *          are automatically released by their smart pointers.
  */
-MetalViewport::~MetalViewport() {
+MetalWindow::~MetalWindow() {
 	_Shutdown();
 }
 
 /**
- * @brief Updates the viewport state each frame
- * @details Polls all pending GLFW events. Unlike OpenGL viewport, Metal handles
+ * @brief Updates the window state each frame
+ * @details Polls all pending GLFW events. Unlike OpenGL window, Metal handles
  *          buffer presentation separately through the Metal command buffer system,
  *          so no swap buffer call is needed here.
  */
-void MetalViewport::OnUpdate() {
+void MetalWindow::OnUpdate() {
 	glfwPollEvents();
 }
 
@@ -68,7 +68,7 @@ void MetalViewport::OnUpdate() {
  * @details Stores the callback in _data.eventCallback, which will be invoked by
  *          all the GLFW event callbacks registered in SetWindowCallbacks()
  */
-void MetalViewport::SetEventCallback(const EventCallbackFn& callback) {
+void MetalWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.eventCallback = callback;
 }
 
@@ -85,7 +85,7 @@ void MetalViewport::SetEventCallback(const EventCallbackFn& callback) {
  *          All callbacks retrieve the EventWindowData from GLFW user pointer and invoke
  *          the stored event callback. Returns early if _glfwWindow is null.
  */
-void MetalViewport::SetWindowCallbacks() {
+void MetalWindow::SetWindowCallbacks() {
 	if (not _glfwWindow)
 		return;
 
@@ -171,12 +171,12 @@ void MetalViewport::SetWindowCallbacks() {
 }
 
 /**
- * @brief Sets the viewport width
+ * @brief Sets the window width
  * @param width New width in pixels
  * @details Updates the cached width value in _data and updates the Metal layer's
  *          drawable size to match. The Metal layer must be recreated with the new size.
  */
-void MetalViewport::SetWidth(const unsigned int width) {
+void MetalWindow::SetWidth(const unsigned int width) {
 	_data.width = width;
 	if (_metalLayer) {
 		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
@@ -184,12 +184,12 @@ void MetalViewport::SetWidth(const unsigned int width) {
 }
 
 /**
- * @brief Sets the viewport height
+ * @brief Sets the window height
  * @param height New height in pixels
  * @details Updates the cached height value in _data and updates the Metal layer's
  *          drawable size to match. The Metal layer must be recreated with the new size.
  */
-void MetalViewport::SetHeight(const unsigned int height) {
+void MetalWindow::SetHeight(const unsigned int height) {
 	_data.height = height;
 	if (_metalLayer) {
 		_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
@@ -204,7 +204,7 @@ void MetalViewport::SetHeight(const unsigned int height) {
  *          Metal layer. If GLFW is not initialized or Metal layer is null, prints a
  *          warning and returns without making changes. Logs the VSync state change.
  */
-void MetalViewport::SetVSync(const bool enabled) {
+void MetalWindow::SetVSync(const bool enabled) {
 	if (not s_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
@@ -217,14 +217,14 @@ void MetalViewport::SetVSync(const bool enabled) {
 }
 
 /**
- * @brief Private initialization method for the Metal viewport
- * @details Performs complete viewport initialization in the following order:
+ * @brief Private initialization method for the Metal window
+ * @details Performs complete window initialization in the following order:
  *          1. Calls _InitDevice() to create Metal device and command queue
  *          2. Calls _InitWindow() to create GLFW window and configure Metal layer
  *          3. Calls SetVSync() to configure vertical synchronization
  *          4. Calls SetWindowCallbacks() to register all event callbacks
  */
-void MetalViewport::_Init() {
+void MetalWindow::_Init() {
 	_InitDevice();
 	_InitWindow();
 	SetVSync(_data.VSync);
@@ -239,7 +239,7 @@ void MetalViewport::_Init() {
  *          Exits with EXIT_FAILURE if either creation fails. Both resources are
  *          managed by smart pointers (NS::TransferPtr) for automatic cleanup.
  */
-void MetalViewport::_InitDevice() {
+void MetalWindow::_InitDevice() {
 	_metalDevice = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _metalDevice) {
 		CE_CORE_ERROR("Could not create MetalDevice!");
@@ -268,7 +268,7 @@ void MetalViewport::_InitDevice() {
  *          Exits with EXIT_FAILURE if any step fails. Uses Cocoa bridge functions
  *          to interact with Objective-C APIs.
  */
-void MetalViewport::_InitWindow() {
+void MetalWindow::_InitWindow() {
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
 
 	if (not s_GLFWInitialized) {
@@ -332,12 +332,12 @@ void MetalViewport::_InitWindow() {
 }
 
 /**
- * @brief Cleans up and releases viewport resources
+ * @brief Cleans up and releases window resources
  * @details Resets the GLFW window smart pointer, which automatically destroys
  *          the GLFW window. Metal resources (_metalDevice, _commandQueue, _metalLayer,
  *          _metalWindow) are automatically released by their NS::SharedPtr destructors.
  */
-void MetalViewport::_Shutdown() {
+void MetalWindow::_Shutdown() {
 	_glfwWindow.reset();
 }
 

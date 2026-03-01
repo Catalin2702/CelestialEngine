@@ -7,7 +7,7 @@
 // Updated: 2026-02-28
 //
 
-#include "Window/Platforms/Universal/OpenGlViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlWindow.hpp"
 
 #include "Layers/ImGuiOpenGlLayer.hpp"
 
@@ -39,11 +39,11 @@ ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
  * @details Performs the following initialization:
  *          - Creates ImGui context and applies dark theme
  *          - Configures ImGui backend flags for mouse support
- *          - Caches OpenGL viewport and GLFW window pointers
+ *          - Caches OpenGL window and GLFW window pointers
  *          - Initializes ImGui_ImplGlfw backend
  *          - Initializes ImGui OpenGL3 rendering backend
  *          - Sets up custom dark theme colors
- *          Exits with error if viewport is not an OpenGLViewport or if initialization fails
+ *          Exits with error if window is not an OpenGLWindow or if initialization fails
  */
 void ImGuiOpenGlLayer::OnAttach() {
 	ImGui::CreateContext();
@@ -54,12 +54,12 @@ void ImGuiOpenGlLayer::OnAttach() {
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
 	const auto& app = Core::Application::Get();
-	_viewport = dynamic_cast<Window::OpenGlViewport*>(app.GetViewport());
-	if (not _viewport) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlViewport viewport!");
+	_openGlWindow = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
+	if (not _openGlWindow) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 		exit(EXIT_FAILURE);
 	}
-	_glfwWindow = _viewport->GetGLFWwindow();
+	_glfwWindow = _openGlWindow->GetGLFWwindow();
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 		exit(EXIT_FAILURE);
@@ -94,7 +94,7 @@ void ImGuiOpenGlLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = {static_cast<float>(_viewport->GetWidth()), static_cast<float>(_viewport->GetHeight())};
+	io.DisplaySize = {static_cast<float>(_openGlWindow->GetWidth()), static_cast<float>(_openGlWindow->GetHeight())};
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 

@@ -17,7 +17,7 @@
 struct GLFWwindow;
 
 namespace CE::Window {
-class OpenGlViewport;
+class OpenGlWindow;
 }
 
 
@@ -27,7 +27,7 @@ class OpenGlViewport;
  * @details Provides the ImGuiOpenGlLayer class, a concrete implementation of I_ImGuiLayer
  *          that integrates ImGui with OpenGL for rendering on Windows and Linux. This layer
  *          handles initialization, rendering, and input events specific to ImGui interactions
- *          in an OpenGL context. It caches pointers to the OpenGL viewport and GLFW window
+ *          in an OpenGL context. It caches pointers to the OpenGL window and GLFW window
  *          to optimize performance by avoiding repeated lookups every frame.
  */
 namespace CE::Layers {
@@ -37,7 +37,7 @@ namespace CE::Layers {
  * @brief ImGui layer implementation for OpenGL rendering
  * @details Concrete implementation of I_ImGuiLayer that uses OpenGL for rendering
  *          ImGui interfaces. This is the cross-platform implementation that works
- *          on Windows, Linux, and macOS. It integrates ImGui with OpenGL viewports
+ *          on Windows, Linux, and macOS. It integrates ImGui with OpenGL windows
  *          and handles all input events through GLFW.
  */
 class ImGuiOpenGlLayer final: public I_ImGuiLayer {
@@ -52,7 +52,7 @@ public:
 	/**
 	 * @brief Called when the layer is attached to the layer stack
 	 * @details Initializes ImGui context, sets up OpenGL rendering backend,
-	 *          configures ImGui for GLFW input, and caches viewport pointers
+	 *          configures ImGui for GLFW input, and caches window pointers
 	 */
 	void OnAttach() override;
 
@@ -92,7 +92,7 @@ protected:
 private:
 	float _time = 0.0f;								///< Time accumulator for frame timing
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::OpenGlViewport* _viewport = nullptr;	///< Cached OpenGL viewport pointer
+	Window::OpenGlWindow* _openGlWindow = nullptr;	///< Cached OpenGL window pointer
 };
 
 }

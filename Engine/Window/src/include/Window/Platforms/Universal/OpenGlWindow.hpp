@@ -1,6 +1,6 @@
 //
 // Module: Window/Platforms/Universal
-// File: OpenGlViewport.hpp
+// File: OpenGlWindow.hpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-16
@@ -9,10 +9,10 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
-#define CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
+#ifndef CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP
+#define CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP
 
-#include "Window/I_Viewport.hpp"
+#include "Window/I_Window.hpp"
 
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -24,40 +24,40 @@ namespace TypeWindow = CE::Types::Window;
 
 /**
  * @namespace CE::Window
- * @brief Window management and viewport implementations
- * @details Contains the I_Viewport interface and concrete implementations for different platforms.
- *          The OpenGLViewport class provides a cross-platform implementation using OpenGL and GLFW,
- *          while the MetalViewport class provides a macOS-specific implementation using Metal.
+ * @brief Window management and window implementations
+ * @details Contains the I_Window interface and concrete implementations for different platforms.
+ *          The OpenGLWindow class provides a cross-platform implementation using OpenGL and GLFW,
+ *          while the MetalWindow class provides a macOS-specific implementation using Metal.
  */
 namespace CE::Window {
 
 /**
- * @class OpenGlViewport
- * @brief Cross-platform viewport implementation using OpenGL rendering
- * @details Concrete implementation of I_Viewport that uses GLFW for window management
+ * @class OpenGlWindow
+ * @brief Cross-platform window implementation using OpenGL rendering
+ * @details Concrete implementation of I_Window that uses GLFW for window management
  *          and OpenGL for rendering. This is the primary cross-platform implementation
  *          that works on Windows, Linux, and macOS. It provides a complete windowing
  *          system with event handling, VSync control, and OpenGL context management.
  */
-class OpenGlViewport final: public I_Viewport {
+class OpenGlWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
 	 * @param windowProps Window configuration properties (title, width, height, VSync)
-	 * @details Creates and initializes an OpenGL-based viewport with the specified properties.
+	 * @details Creates and initializes an OpenGL-based window with the specified properties.
 	 *          Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
 	 */
-	OpenGlViewport(const TypeWindow::WindowProps& windowProps);
+	OpenGlWindow(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up GLFW window resources by calling _Shutdown()
 	 */
-	~OpenGlViewport() override;
+	~OpenGlWindow() override;
 
 public:
 	/**
-	 * @brief Updates the viewport state each frame
+	 * @brief Updates the window state each frame
 	 * @details Polls all pending events via glfwPollEvents() and swaps the front/back
 	 *          rendering buffers via glfwSwapBuffers() to display the rendered content
 	 */
@@ -65,14 +65,14 @@ public:
 
 public:
 	/**
-	 * @brief Gets the current width of the viewport
+	 * @brief Gets the current width of the window
 	 * @return unsigned int Width in pixels
 	 * @details Inline getter that returns the cached width value from _data
 	 */
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
 
 	/**
-	 * @brief Gets the current height of the viewport
+	 * @brief Gets the current height of the window
 	 * @return unsigned int Height in pixels
 	 * @details Inline getter that returns the cached height value from _data
 	 */
@@ -115,7 +115,7 @@ public:
 	void SetWindowCallbacks() override;
 
 	/**
-	 * @brief Sets the viewport width
+	 * @brief Sets the window width
 	 * @param width New width in pixels
 	 * @details Updates the cached width value in _data. Note: this only updates
 	 *          the stored value, the actual window resize is handled by GLFW events
@@ -123,7 +123,7 @@ public:
 	void SetWidth(unsigned int width) override;
 
 	/**
-	 * @brief Sets the viewport height
+	 * @brief Sets the window height
 	 * @param height New height in pixels
 	 * @details Updates the cached height value in _data. Note: this only updates
 	 *          the stored value, the actual window resize is handled by GLFW events
@@ -142,8 +142,8 @@ public:
 
 private:
 	/**
-	 * @brief Initializes the OpenGL viewport
-	 * @details Performs complete viewport initialization:
+	 * @brief Initializes the OpenGL window
+	 * @details Performs complete window initialization:
 	 *          1. Logs window creation information
 	 *          2. Initializes GLFW if not already initialized (with error callback)
 	 *          3. Configures OpenGL context (version 4.1 Core Profile, forward compatible)
@@ -158,7 +158,7 @@ private:
 	void _Init();
 
 	/**
-	 * @brief Cleans up and releases viewport resources
+	 * @brief Cleans up and releases window resources
 	 * @details Resets the GLFW window smart pointer, which automatically destroys
 	 *          the GLFW window when there are no more references to it
 	 */
@@ -171,4 +171,4 @@ private:
 
 }
 
-#endif //CE_WINDOW_WINDOWS_WINDOWSVIEWPORT_HPP
+#endif //CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP

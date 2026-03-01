@@ -26,7 +26,7 @@ namespace CE::Layers {
 class I_Layer;
 }
 namespace CE::Window {
-class I_Viewport;
+class I_Window;
 }
 
 namespace TypeWindow = CE::Types::Window;
@@ -127,23 +127,23 @@ public:
 	[[nodiscard]] static Application& Get() { return *_instance; }
 
 	/**
-	 * @brief Gets the application's viewport
-	 * @return Window::I_Viewport* Pointer to the viewport
-	 * @details Provides access to the window/viewport for rendering operations
+	 * @brief Gets the application's window
+	 * @return Window::I_Window* Pointer to the window
+	 * @details Provides access to the window for rendering operations
 	 */
-	[[nodiscard]] Window::I_Viewport* GetViewport() const { return _viewport.get(); }
+	[[nodiscard]] Window::I_Window* GetWindow() const { return _window.get(); }
 
 protected:
 	/**
 	 * @brief Initializes the application with window properties
 	 * @param windowProps Window configuration properties
-	 * @details Protected initialization method called by constructors. Creates the viewport
+	 * @details Protected initialization method called by constructors. Creates the window
 	 *          and sets up event callbacks.
 	 */
 	void _Init(const TypeWindow::WindowProps& windowProps);
 
 private:
-	std::unique_ptr<Window::I_Viewport> _viewport;	///< Application window/viewport
+	std::unique_ptr<Window::I_Window> _window;		///< Application window
 	bool _running = false;							///< Flag indicating if application is running
 	Layers::LayerStack _layerStack;					///< Stack of layers and overlays
 	static Application* _instance;					///< Singleton application instance

@@ -13,21 +13,21 @@
 #include "Events/I_Event.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Window/I_Viewport.hpp"
+#include "Window/I_Window.hpp"
 
 #ifdef CE_PLATFORM_MACOS
-#include "Window/Platforms/Mac/MetalViewport.hpp"
-#include "Window/Platforms/Universal/OpenGlViewport.hpp"
+#include "Window/Platforms/Mac/MetalWindow.hpp"
+#include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #else
-#include "Window/Platforms/Universal/OpenGlViewport.hpp"
+#include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #endif
 
-// Platform-specific viewport type selection
+// Platform-specific window type selection
 #ifdef CE_PLATFORM_MACOS
-using MetalViewport = CE::Window::MetalViewport;  ///< Use Metal viewport on macOS
-using OpenGlViewport = CE::Window::OpenGlViewport; ///< Use OpenGL viewport on macOS as well (fallback)
+using MetalWindow = CE::Window::MetalWindow;  ///< Use Metal window on macOS
+using OpenGlWindow = CE::Window::OpenGlWindow; ///< Use OpenGL window on macOS as well (fallback)
 #else
-using OpenGlViewport = CE::Window::OpenGlViewport; ///< Use OpenGL viewport on other platforms
+using OpenGlWindow = CE::Window::OpenGlWindow; ///< Use OpenGL window on other platforms
 #endif
 
 
@@ -83,7 +83,7 @@ Application::~Application() = default;
  * @brief Main application loop implementation
  * @details Runs continuously while _running is true. Each iteration:
  *          1. Updates all layers in the layer stack (OnUpdate)
- *          2. Updates the viewport (polls events and swaps buffers)
+ *          2. Updates the window (polls events and swaps buffers)
  *          The loop exits when _running is set to false (typically by window close event)
  */
 void Application::Run() {
@@ -91,7 +91,7 @@ void Application::Run() {
 		for (const auto layer: _layerStack) {
 			layer->OnUpdate();
 		}
-		_viewport->OnUpdate();
+		_window->OnUpdate();
 	}
 }
 
@@ -153,23 +153,23 @@ void Application::PushOverlay(Layers::I_Layer *overlay) {
  * @param windowProps Window configuration properties
  * @details Performs the following initialization steps:
  *          1. Sets the singleton instance pointer
- *          2. Creates the appropriate viewport (Metal on macOS, OpenGL elsewhere)
+ *          2. Creates the appropriate window (Metal on macOS, OpenGL elsewhere)
  *          3. Sets up the event callback to route events to OnEvent
  *          4. Sets _running to true to start the main loop
- *          Exits with error if viewport creation fails
+ *          Exits with error if window creation fails
  */
 void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	_instance = this;
 	switch (windowProps.graphicsApi) {
 		case Types::Window::GraphicsApi::OpenGL:
-			_viewport = std::unique_ptr<Window::I_Viewport>(
-				Window::I_Viewport::CreateWindow<OpenGlViewport>(windowProps)
+			_window = std::unique_ptr<Window::I_Window>(
+				Window::I_Window::CreateWindow<OpenGlWindow>(windowProps)
 			);
 			break;
 #ifdef CE_PLATFORM_MACOS
 		case Types::Window::GraphicsApi::Metal:
-			_viewport = std::unique_ptr<Window::I_Viewport>(
-				Window::I_Viewport::CreateWindow<MetalViewport>(windowProps)
+			_window = std::unique_ptr<Window::I_Window>(
+				Window::I_Window::CreateWindow<MetalWindow>(windowProps)
 			);
 			break;
 #endif
@@ -178,12 +178,12 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			exit(EXIT_FAILURE);
 	}
 
-	if (not _viewport) {
+	if (not _window) {
 		CE_CORE_ERROR("Application::_Init: Can't initialize the window");
 		exit(EXIT_FAILURE);
 	}
 
-	_viewport->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
+	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
 }
 

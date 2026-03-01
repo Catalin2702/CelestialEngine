@@ -1,6 +1,6 @@
 //
 // Module: Window/Platforms/Mac
-// File: MetalViewport.hpp
+// File: MetalWindow.hpp
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-18
@@ -9,12 +9,12 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_MAC_METALVIEWPORT_HPP
-#define CE_WINDOW_MAC_METALVIEWPORT_HPP
+#ifndef CE_WINDOW_MAC_METALWINDOW_HPP
+#define CE_WINDOW_MAC_METALWINDOW_HPP
 
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
-#include "Window/I_Viewport.hpp"
+#include "Window/I_Window.hpp"
 
 #include <memory>
 #include <AppKit/AppKit.hpp>
@@ -38,43 +38,43 @@ namespace TypeWindow = CE::Types::Window;
 namespace CE::Window {
 
 /**
- * @class MetalViewport
- * @brief macOS-specific viewport implementation using Metal API
+ * @class MetalWindow
+ * @brief macOS-specific window implementation using Metal API
  * @details Provides a window implementation for macOS that uses Metal for rendering.
  *          Manages both GLFW window for input handling and Metal resources for graphics.
  *          This class integrates GLFW's cross-platform windowing with Apple's Metal API.
  */
-class MetalViewport final: public I_Viewport {
+class MetalWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
 	 * @param windowProps Window configuration properties (title, dimensions, VSync)
-	 * @details Creates and initializes a Metal-based viewport with the specified properties
+	 * @details Creates and initializes a Metal-based window with the specified properties
 	 */
-	MetalViewport(const TypeWindow::WindowProps& windowProps);
+	MetalWindow(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up Metal and GLFW resources
 	 */
-	~MetalViewport() override;
+	~MetalWindow() override;
 
 public:
 	/**
-	 * @brief Updates the viewport state each frame
+	 * @brief Updates the window state each frame
 	 * @details Polls events and handles buffer swapping for the Metal surface
 	 */
 	void OnUpdate() override;
 
 public:
 	/**
-	 * @brief Gets the current width of the viewport
+	 * @brief Gets the current width of the window
 	 * @return unsigned int Width in pixels
 	 */
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
 
 	/**
-	 * @brief Gets the current height of the viewport
+	 * @brief Gets the current height of the window
 	 * @return unsigned int Height in pixels
 	 */
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
@@ -132,13 +132,13 @@ public:
 	void SetWindowCallbacks() override;
 
 	/**
-	 * @brief Sets the viewport width
+	 * @brief Sets the window width
 	 * @param width New width in pixels
 	 */
 	void SetWidth(unsigned int width) override;
 
 	/**
-	 * @brief Sets the viewport height
+	 * @brief Sets the window height
 	 * @param height New height in pixels
 	 */
 	void SetHeight(unsigned int height) override;
@@ -151,7 +151,7 @@ public:
 
 private:
 	/**
-	 * @brief Initializes the Metal viewport
+	 * @brief Initializes the Metal window
 	 * @details Calls _InitDevice() and _InitWindow() in sequence
 	 */
 	void _Init();
@@ -187,4 +187,4 @@ private:
 }
 
 
-#endif //CE_WINDOW_MAC_METALVIEWPORT_HPP
+#endif //CE_WINDOW_MAC_METALWINDOW_HPP
