@@ -7,7 +7,7 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release) # Set DIST as release build
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.0.2)
+project(CelestialEngine LANGUAGES CXX VERSION 0.0.3)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
