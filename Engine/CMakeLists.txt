@@ -7,7 +7,7 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release) # Set DIST as release build
 
 include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.0.2)
+project(CelestialEngine LANGUAGES CXX VERSION 0.0.3)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
@@ -28,6 +28,7 @@ add_subdirectory(Window)
 
 if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
+	add_subdirectory(Apple/MetalBridge)
 endif()
 
 add_library(CelestialEngine SHARED
@@ -36,21 +37,22 @@ add_library(CelestialEngine SHARED
 
 set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CelestialEngine
-	PRIVATE CE_Config
-	PUBLIC CE_Core
-	PUBLIC CE_Define
-	PUBLIC CE_Events
-	PUBLIC CE_Tools
-	PUBLIC CE_Types
-	PUBLIC CE_Window
+target_link_libraries(CelestialEngine PUBLIC
+	CE_Config
+	CE_Core
+	CE_Define
+	CE_Events
+	CE_Tools
+	CE_Types
+	CE_Window
 
-	PUBLIC spdlog::spdlog
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
 
 if(APPLE)
-	target_link_libraries(CelestialEngine
-		PUBLIC CE_MetalCpp
+	target_link_libraries(CelestialEngine PUBLIC
+		CE_MetalCpp
+		CE_MetalBridge
 	)
 endif()
 

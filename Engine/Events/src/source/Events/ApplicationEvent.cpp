@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-16.
+// Module: Events
+// File: ApplicationEvent.cpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-16
+// Updated: 2026-02-28
 //
 
 #include "Events/ApplicationEvent.hpp"
@@ -9,9 +14,18 @@
 
 namespace CE::Events {
 
+/**
+ * @brief WindowResizeEvent constructor implementation
+ * @param width New window width in pixels
+ * @param height New window height in pixels
+ */
 WindowResizeEvent::WindowResizeEvent(const unsigned int width, const unsigned int height):
 	_width(width), _height(height) {}
 
+/**
+ * @brief Converts the window resize event to a string representation
+ * @return std::string String in format "WindowResizeEvent: width, height"
+ */
 std::string WindowResizeEvent::ToString() const {
 	std::stringstream ss;
 	ss << "WindowResizeEvent: " << _width << ", " << _height;

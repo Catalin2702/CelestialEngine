@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-21.
+// Module: Types/Window
+// File: WindowDestructor.cpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-21
+// Updated: 2026-02-28
 //
 
 #include "Types/Window/WindowDestructor.hpp"
@@ -9,6 +14,11 @@
 
 namespace CE::Types::Window {
 
+/**
+ * @brief Destroys the GLFW window
+ * @param window Pointer to the GLFW window to destroy
+ * @details Calls glfwDestroyWindow to properly clean up the window resources
+ */
 void GLFWwindowDestructor::operator()(GLFWwindow *window) const {
 	if (window)
 		glfwDestroyWindow(window);

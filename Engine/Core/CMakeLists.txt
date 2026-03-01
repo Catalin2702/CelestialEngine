@@ -1,15 +1,18 @@
 set(HEADERS
 	src/include/Core/Application.hpp
-	src/include/Layers/Layer.hpp
+	src/include/Layers/I_Layer.hpp
 	src/include/Layers/LayerStack.hpp
-	src/include/Layers/ImGuiLayer.hpp
+	src/include/Layers/ImGuiOpenGlLayer.hpp
+	src/include/Layers/ImGuiMetalLayer.hpp
+	src/include/Layers/I_ImGuiLayer.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
-	src/source/Layers/Layer.cpp
+	src/source/Layers/I_Layer.cpp
 	src/source/Layers/LayerStack.cpp
-	src/source/Layers/ImGuiLayer.cpp
+	src/source/Layers/ImGuiOpenGlLayer.cpp
+	src/source/Layers/ImGuiMetalLayer.cpp
 )
 
 add_library(CE_Core SHARED
@@ -19,19 +22,23 @@ add_library(CE_Core SHARED
 
 set_target_properties(CE_Core PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CE_Core
-	PRIVATE CE_Config
-	PRIVATE CE_Define
-	PRIVATE CE_Events
-	PRIVATE CE_Tools
-	PRIVATE CE_Types
-	PRIVATE CE_Window
+target_link_libraries(CE_Core PUBLIC
+	CE_Config
+	CE_Define
+	CE_Events
+	CE_Tools
+	CE_Types
+	CE_Window
 
-	PRIVATE imgui::imgui
-	PRIVATE spdlog::spdlog
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
 
-target_compile_definitions(CE_Core PRIVATE CE_CORE_EXPORTS)
+if(APPLE)
+	target_link_libraries(CE_Core PUBLIC
+		CE_MetalBridge
+		CE_MetalCpp
+	)
+endif()
 
 target_include_directories(CE_Core PUBLIC
 	src/include
@@ -42,3 +49,10 @@ target_include_directories(CE_Core PUBLIC
 	../Window/src/include
 	../Window/src/interface
 )
+
+if(APPLE)
+	target_include_directories(CE_Core PUBLIC
+		../Apple/MetalBridge/src/include
+		../Vendor/Apple/Metal/MetalCpp/src/include
+	)
+endif()

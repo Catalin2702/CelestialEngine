@@ -1,5 +1,10 @@
 //
-// Created by Catalin Chirosca on 2026-02-21.
+// Module: Tools/Manipulation
+// File: String.cpp
+// Created by: Catalin Chirosca
+// Updated by: Catalin Chirosca
+// Created: 2026-02-21
+// Updated: 2026-02-28
 //
 
 #include "Tools/Manipulation/String.hpp"
@@ -8,6 +13,13 @@
 
 namespace CE::Tools::Manipulation {
 
+/**
+ * @brief Converts a string to lowercase
+ * @param source The source string to convert
+ * @return std::string A new lowercase string
+ * @details Creates a copy of the input string and transforms all characters
+ *          to lowercase using std::tolower. Non-alphabetic characters are unchanged.
+ */
 std::string ToLowerCase(const std::string& source) {
 	std::string result = source;
 	std::ranges::transform(result, result.begin(), [](const unsigned char c) {

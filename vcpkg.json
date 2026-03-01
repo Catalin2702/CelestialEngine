@@ -1,12 +1,19 @@
 {
 	"name": "celestial-engine",
-	"version-string": "0.0.2",
+	"version-string": "0.0.3",
 	"description": "A course project for learning game engine",
 	"builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
 	"dependencies": [
 		"glad",
 		"glfw3",
-		"imgui",
+		{
+			"name": "imgui",
+			"features": [
+				"glfw-binding",
+				"metal-binding",
+				"opengl3-binding"
+			]
+		},
 		"spdlog"
 	],
 	"overrides": [

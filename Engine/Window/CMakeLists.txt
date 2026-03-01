@@ -1,28 +1,22 @@
 set(HEADERS
-	src/include/Window/Platforms/Universal/OpenGLViewport.hpp
+	src/include/Window/Platforms/Universal/OpenGlWindow.hpp
 )
 
 set(INTERFACES
-	src/interface/Window/InterfaceWindow.hpp
+	src/interface/Window/I_Window.hpp
 )
 
-set(INTERNALS)
-
 set(SOURCES
-	src/source/Window/Platforms/Universal/OpenGLViewport.cpp
+	src/source/Window/Platforms/Universal/OpenGlWindow.cpp
 )
 
 if(APPLE)
 	list(APPEND HEADERS
-		src/include/Window/Platforms/Mac/MetalViewport.hpp
-	)
-	list(APPEND INTERNALS
-		src/internal/Window/Platforms/Mac/MetalViewportHelper.h
-		src/internal/Window/Platforms/Mac/MetalViewportHelper.mm
+		src/include/Window/Platforms/Mac/MetalWindow.hpp
 	)
 	list(APPEND SOURCES
-		src/source/Window/Platforms/Mac/MetalViewport.cpp
-		src/source/Window/Platforms/Universal/OpenGLViewport.cpp
+		src/source/Window/Platforms/Mac/MetalWindow.cpp
+		src/source/Window/Platforms/Universal/OpenGlWindow.cpp
 	)
 elseif(WIN32)
 	list(APPEND HEADERS
@@ -34,25 +28,29 @@ endif()
 add_library(CE_Window SHARED
 	${HEADERS}
 	${INTERFACES}
-	${INTERNALS}
 	${SOURCES}
 )
 
 set_target_properties(CE_Window PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CE_Window
-	PRIVATE CE_Config
-	PRIVATE CE_Define
-	PRIVATE CE_Events
-	PRIVATE CE_Tools
-	PRIVATE CE_Types
+target_link_libraries(CE_Window PUBLIC
+	CE_Config
+	CE_Define
+	CE_Events
+	CE_Tools
+	CE_Types
 
-	PUBLIC CE_MetalCpp
-
-	PRIVATE glad::glad
-	PRIVATE glfw
-	PRIVATE spdlog::spdlog
+	glad::glad
+	glfw
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
+
+if(APPLE)
+	target_link_libraries(CE_Window PUBLIC
+		CE_MetalBridge
+		CE_MetalCpp
+	)
+endif()
 
 target_include_directories(CE_Window PUBLIC
 	src/include
@@ -64,6 +62,11 @@ target_include_directories(CE_Window PUBLIC
 	../Events/src/include
 	../Tools/src/include
 	../Types/src/include
-
-	../Vendor/Apple/Metal/MetalCpp/src/include
 )
+
+if(APPLE)
+	target_include_directories(CE_Window PUBLIC
+		../Apple/MetalBridge/src/include
+		../Vendor/Apple/Metal/MetalCpp/src/include
+	)
+endif()
