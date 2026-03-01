@@ -32,7 +32,6 @@ namespace CE::Tools::Time {
  *          profiling without impacting release builds.
  */
 class Chronometer {
-#ifdef CE_DEBUG
 public:
 	/**
 	 * @brief Constructor - starts the timer
@@ -68,7 +67,6 @@ private:
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _start;	///< Start time point
 	std::chrono::time_point<std::chrono::high_resolution_clock> _end;	///< End time point
-#endif
 };
 
 }

@@ -31,6 +31,8 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
+#include <stdexcept>
+
 
 namespace CE::Layers {
 
@@ -49,7 +51,7 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
  *          - Initializes ImGui_ImplGlfw backend
  *          - Initializes ImGui Metal rendering backend
  *          - Sets up custom dark theme colors
- *          Exits with error if window is not a MetalWindow or if initialization fails
+ *          Throws std::runtime_error if window is not a MetalWindow or if initialization fails.
  */
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
@@ -61,32 +63,32 @@ void ImGuiMetalLayer::OnAttach() {
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
 	const auto& app = Core::Application::Get();
-	_metalWindow = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
-	if (not _metalWindow) {
+	_window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
+	if (not _window) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
 	}
 
 	// Cache dei puntatori per evitare lookup ripetuti ogni frame
-	_glfwWindow = _metalWindow->GetGLFWwindow();
+	_glfwWindow = _window->GetGLFWwindow();
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");
 	}
-	_metalDevice = _metalWindow->GetDevice();
+	_metalDevice = _window->GetDevice();
 	if (not _metalDevice) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
 	}
-	_commandQueue = _metalWindow->GetCommandQueue();
+	_commandQueue = _window->GetCommandQueue();
 	if (not _commandQueue) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 	}
-	_metalLayer = _metalWindow->GetMetalLayer();
+	_metalLayer = _window->GetMetalLayer();
 	if (not _metalLayer) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 	}
 
 	ImGui_ImplGlfw_InitForOther(_glfwWindow, false);
@@ -117,11 +119,11 @@ void ImGuiMetalLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
 
 	auto& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(static_cast<float>(_metalWindow->GetWidth()), static_cast<float>(_metalWindow->GetHeight()));
+	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 
-	const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+	[[maybe_unused]] const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
 	int width, height;
 	glfwGetFramebufferSize(_glfwWindow, &width, &height);
@@ -308,7 +310,7 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
  */
 bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
 	auto& io = ImGui::GetIO();
-	io.MouseDown[event.GetMouseButton()] = true;
+	io.AddMouseButtonEvent(event.GetMouseButton(), true);
 
 	return false;
 }
@@ -320,7 +322,7 @@ bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& even
  */
 bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
 	auto& io = ImGui::GetIO();
-	io.MouseDown[event.GetMouseButton()] = false;
+	io.AddMouseButtonEvent(event.GetMouseButton(), false);
 
 	return false;
 }
@@ -332,7 +334,7 @@ bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& ev
  */
 bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
 	auto& io = ImGui::GetIO();
-	io.MousePos = ImVec2(event.GetX(), event.GetY());
+	io.AddMousePosEvent(event.GetX(), event.GetY());
 
 	return false;
 }
@@ -344,8 +346,7 @@ bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
  */
 bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
 	auto& io = ImGui::GetIO();
-	io.MouseWheelH += event.GetXOffset();
-	io.MouseWheel += event.GetYOffset();
+	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 
 	return false;
 }

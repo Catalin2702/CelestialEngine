@@ -154,7 +154,7 @@ private:
  * @return Application* Pointer to the created application
  * @details Must be implemented by the client application
  */
-Application* CreateApplication();
+std::unique_ptr<Application> CreateApplication();
 
 /**
  * @brief Factory function to create the application with window properties
@@ -162,7 +162,7 @@ Application* CreateApplication();
  * @return Application* Pointer to the created application
  * @details Must be implemented by the client application
  */
-Application* CreateApplication(const TypeWindow::WindowProps& windowProps);
+std::unique_ptr<Application> CreateApplication(const TypeWindow::WindowProps& windowProps);
 
 /**
  * @brief Factory function to create the application with individual window parameters
@@ -174,7 +174,7 @@ Application* CreateApplication(const TypeWindow::WindowProps& windowProps);
  * @return Application* Pointer to the created application
  * @details Must be implemented by the client application
  */
-Application* CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
+std::unique_ptr<Application> CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
 
 }
 

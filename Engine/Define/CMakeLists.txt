@@ -21,3 +21,5 @@ target_link_libraries(CE_Define PUBLIC
 target_include_directories(CE_Define PUBLIC
 	src/include
 )
+
+target_compile_definitions(CE_Define PRIVATE CE_CORE_EXPORTS)

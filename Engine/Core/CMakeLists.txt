@@ -29,12 +29,9 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Tools
 	CE_Types
 	CE_Window
-)
 
-# Link spdlog only for Debug and Release builds, not for Dist
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
-	target_link_libraries(CE_Core PUBLIC spdlog::spdlog)
-endif()
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
+)
 
 if(APPLE)
 	target_link_libraries(CE_Core PUBLIC
@@ -42,8 +39,6 @@ if(APPLE)
 		CE_MetalCpp
 	)
 endif()
-
-target_compile_definitions(CE_Core PRIVATE CE_CORE_EXPORTS)
 
 target_include_directories(CE_Core PUBLIC
 	src/include

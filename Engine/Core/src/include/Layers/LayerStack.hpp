@@ -84,6 +84,13 @@ public:
 	void PopOverlay(I_Layer* overlay);
 
 	/**
+	 * @brief Clears all layers from the stack
+	 * @details Detaches and deletes all layers. This is useful for explicit cleanup
+	 *          before other resources (like GLFW) are destroyed.
+	 */
+	void Clear();
+
+	/**
 	 * @brief Gets an iterator to the beginning of the layer stack
 	 * @return StackContainer::iterator Iterator pointing to the first layer
 	 */

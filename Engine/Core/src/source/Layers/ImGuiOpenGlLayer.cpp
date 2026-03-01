@@ -25,6 +25,8 @@
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 
+#include <stdexcept>
+
 
 namespace CE::Layers {
 
@@ -43,7 +45,7 @@ ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
  *          - Initializes ImGui_ImplGlfw backend
  *          - Initializes ImGui OpenGL3 rendering backend
  *          - Sets up custom dark theme colors
- *          Exits with error if window is not an OpenGLWindow or if initialization fails
+ *          Throws std::runtime_error if window is not an OpenGLWindow or if initialization fails.
  */
 void ImGuiOpenGlLayer::OnAttach() {
 	ImGui::CreateContext();
@@ -57,12 +59,12 @@ void ImGuiOpenGlLayer::OnAttach() {
 	_openGlWindow = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
 	if (not _openGlWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 	}
 	_glfwWindow = _openGlWindow->GetGLFWwindow();
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 	}
 
 	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);

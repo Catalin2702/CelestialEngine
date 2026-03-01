@@ -12,6 +12,8 @@
 #include "Tools/Manipulation/String.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <stdexcept>
+
 
 namespace CE::Tools::CMD {
 
@@ -25,7 +27,8 @@ namespace CE::Tools::CMD {
  *          - --width/-w 1280 : Sets window width (default: 1280)
  *          - --height/-h 720 : Sets window height (default: 720)
  *          - --vsync/-v true/false : Enables/disables VSync (default: true)
- *          Uses case-insensitive matching for argument names. Exits with error
+ *          - --graphics-api/-g opengl/metal/vulkan/directx11/directx12 : Sets graphics API (default: opengl)
+ *          Uses case-insensitive matching for argument names. Throws std::runtime_error
  *          if invalid values are provided for numeric parameters.
  */
 Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
@@ -47,26 +50,26 @@ Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
 			try {
 				width = static_cast<unsigned int>(std::stoi(argv[++i]));
 			}
-			catch ([[maybe_unused]] const std::invalid_argument& invalidArgument) {
+			catch (const std::invalid_argument& invalidArgument) {
 				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], invalidArgument.what());
-				exit(EXIT_FAILURE);
+				throw std::runtime_error("Invalid width parameter: " + std::string(argv[i]));
 			}
-			catch ([[maybe_unused]] const std::out_of_range& ofRange) {
+			catch (const std::out_of_range& ofRange) {
 				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], ofRange.what());
-				exit(EXIT_FAILURE);
+				throw std::runtime_error("Width parameter out of range: " + std::string(argv[i]));
 			}
 		}
 		else if ((arg == "--height" or arg == "-h") and i + 1 < argc) {
 			try {
 				height = static_cast<unsigned int>(std::stoi(argv[++i]));
 			}
-			catch ([[maybe_unused]] const std::invalid_argument& invalidArgument) {
+			catch (const std::invalid_argument& invalidArgument) {
 				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], invalidArgument.what());
-				exit(EXIT_FAILURE);
+				throw std::runtime_error("Invalid height parameter: " + std::string(argv[i]));
 			}
-			catch ([[maybe_unused]] const std::out_of_range& ofRange) {
+			catch (const std::out_of_range& ofRange) {
 				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], ofRange.what());
-				exit(EXIT_FAILURE);
+				throw std::runtime_error("Height parameter out of range: " + std::string(argv[i]));
 			}
 		}
 		else if ((arg == "--vsync" or arg == "-v") and i + 1 < argc) {

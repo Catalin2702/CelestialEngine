@@ -13,7 +13,6 @@
 
 namespace CE::Tools::Time {
 
-#ifdef CE_DEBUG
 /**
  * @brief Chronometer constructor - starts timing
  * @details Captures the current high-resolution clock time and stores it as the start point
@@ -50,16 +49,14 @@ void Chronometer::Stop() {
 /**
  * @brief Prints the measured time duration
  * @details Calculates the elapsed time in microseconds and milliseconds,
- *          then logs it using the core logger
+ *          then logs it using the core logger with rounded values for better readability
  */
 void Chronometer::PrintResult() const {
 	const auto start = std::chrono::time_point_cast<std::chrono::milliseconds>(_start).time_since_epoch().count();
 	const auto end = std::chrono::time_point_cast<std::chrono::milliseconds>(_end).time_since_epoch().count();
 	const auto duration = end - start;
-	const double ms = static_cast<double>(duration) * 0.001;
 
-	CE_CORE_TRACE("Chronometer duration: {0} - ({1} ms)", duration, ms);
+	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", duration * .001);
 }
-#endif
 
 }

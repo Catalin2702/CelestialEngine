@@ -117,7 +117,7 @@ public:
 	 * @return NS::Window* Pointer to the AppKit window
 	 * @details Provides access to the underlying macOS window for platform-specific operations
 	 */
-	[[nodiscard]] NS::Window* GetMetalWindow() const { return _metalWindow.get(); }
+	[[nodiscard]] NS::Window* GetMetalWindow() const { return _metalWindow; }
 
 	/**
 	 * @brief Sets the event callback function
@@ -176,12 +176,12 @@ private:
 	void _Shutdown();
 
 private:
-	EventWindowData _data;							///< Window data including event callback
-	TypeWindow::GLFWwindowPtr _glfwWindow;			///< GLFW window smart pointer
-	NS::SharedPtr<MTL::CommandQueue> _commandQueue;	///< Metal command queue
-	NS::SharedPtr<MTL::Device> _metalDevice;		///< Metal device (GPU)
-	NS::SharedPtr<CA::MetalLayer> _metalLayer;		///< Core Animation Metal layer
-	NS::SharedPtr<NS::Window> _metalWindow;			///< Native macOS window
+	EventWindowData _data;										///< Window data including event callback
+	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;			///< GLFW window smart pointer
+	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue
+	NS::SharedPtr<MTL::Device> _metalDevice = nullptr;			///< Metal device (GPU)
+	NS::SharedPtr<CA::MetalLayer> _metalLayer = nullptr;		///< Core Animation Metal layer
+	NS::Window* _metalWindow = nullptr;							///< Native macOS window
 };
 
 }

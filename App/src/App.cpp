@@ -9,6 +9,7 @@
 
 #include <CelestialEngine.hpp>
 #include <memory>
+#include <stdexcept>
 
 
 /**
@@ -121,7 +122,7 @@ private:
 #endif
 			default: {
 				CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", graphicsApi);
-				exit(EXIT_FAILURE);
+				throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
 			}
 		}
 
@@ -135,9 +136,8 @@ private:
  * @details This function is called by the engine's entry point to instantiate the application.
  *          Must be implemented by the client application.
  */
-Core::Application* Core::CreateApplication() {
-	auto app = std::make_unique<SandBox>();
-	return app.release();
+std::unique_ptr<Core::Application> Core::CreateApplication() {
+	return std::make_unique<SandBox>();
 }
 
 /**
@@ -147,9 +147,8 @@ Core::Application* Core::CreateApplication() {
  * @details This function is called by the engine's entry point to instantiate the application
  *          with specific window properties. Must be implemented by the client application.
  */
-Core::Application* Core::CreateApplication(const TypeWindow::WindowProps& windowProps) {
-	auto app = std::make_unique<SandBox>(windowProps);
-	return app.release();
+std::unique_ptr<Core::Application> Core::CreateApplication(const TypeWindow::WindowProps& windowProps) {
+	return std::make_unique<SandBox>(windowProps);
 }
 
 /**
@@ -163,7 +162,6 @@ Core::Application* Core::CreateApplication(const TypeWindow::WindowProps& window
  * @details This function is called by the engine's entry point to instantiate the application
  *          with individual window parameters. Must be implemented by the client application.
  */
-Core::Application* Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi) {
-	auto app = std::make_unique<SandBox>(title, width, height, VSync, graphicsApi);
-	return app.release();
+std::unique_ptr<Core::Application> Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi) {
+	return std::make_unique<SandBox>(title, width, height, VSync, graphicsApi);
 }

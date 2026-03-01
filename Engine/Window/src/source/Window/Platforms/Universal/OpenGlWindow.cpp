@@ -18,6 +18,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <stdexcept>
+
 
 namespace CE::Window {
 
@@ -211,7 +213,7 @@ void OpenGlWindow::SetVSync(const bool enabled) {
  *          7. Associates window data with GLFW's user pointer
  *          8. Sets VSync according to configuration
  *          9. Registers all event callbacks
- *          In case of error during GLAD initialization, terminates the program with exit(EXIT_FAILURE)
+ *          Throws std::runtime_error if window creation or GLAD initialization fails.
  */
 void OpenGlWindow::_Init() {
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
@@ -219,6 +221,7 @@ void OpenGlWindow::_Init() {
 	if (not s_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");
+			throw std::runtime_error("Could not initialize GLFW!");
 		}
 		glfwSetErrorCallback([]([[maybe_unused]] const int error_code, [[maybe_unused]] const char* description) {
 			CE_CORE_ERROR("GLFW error: {0}\nDescription: {1}", error_code, description);
@@ -239,10 +242,15 @@ void OpenGlWindow::_Init() {
 		nullptr
 	));
 
+	if (not _glfwWindow) {
+		CE_CORE_ERROR("Failed to create GLFW window!");
+		throw std::runtime_error("Failed to create GLFW window!");
+	}
+
 	glfwMakeContextCurrent(_glfwWindow.get());
 	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
 		CE_CORE_ERROR("Error to initialize GLAD");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Error to initialize GLAD");
 	}
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 	SetVSync(_data.VSync);
@@ -252,7 +260,11 @@ void OpenGlWindow::_Init() {
 /**
  * @brief Private method for cleanup and resource release
  * @details Releases GLFW window resources by resetting the _glfwWindow smart pointer,
- *          which automatically destroys the GLFW window when there are no more references to it
+ *          which automatically destroys the GLFW window by calling glfwDestroyWindow
+ *          through the custom deleter.
+ *          Note: glfwTerminate() should NOT be called here since GLFW is initialized
+ *          globally and may be used by other windows. It should only be called once
+ *          at application shutdown, after all windows are destroyed.
  */
 void OpenGlWindow::_Shutdown() {
 	_glfwWindow.reset();

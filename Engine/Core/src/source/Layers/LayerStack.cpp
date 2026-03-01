@@ -24,13 +24,25 @@ LayerStack::LayerStack() {
 
 /**
  * @brief LayerStack destructor implementation
- * @details Detaches and deletes all layers in the stack, cleaning up resources
+ * @details Detaches and deletes all layers in the stack by calling Clear()
  */
 LayerStack::~LayerStack() {
+	Clear();
+}
+
+/**
+ * @brief Clears all layers from the stack
+ * @details Detaches and deletes all layers, then clears the vector and resets
+ *          the insert iterator. This can be called explicitly for cleanup before
+ *          the destructor, or will be called automatically by the destructor.
+ */
+void LayerStack::Clear() {
 	for (const auto layer: _layers) {
 		layer->OnDetach();
 		delete layer;
 	}
+	_layers.clear();
+	_layerInsert = _layers.begin();
 }
 
 /**

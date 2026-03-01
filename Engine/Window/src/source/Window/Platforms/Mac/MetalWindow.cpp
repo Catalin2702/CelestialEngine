@@ -25,6 +25,9 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
+#include <stdexcept>
+
+
 namespace CE::Window {
 
 /**
@@ -236,19 +239,19 @@ void MetalWindow::_Init() {
  * @details Creates the Metal resources needed for rendering:
  *          - Metal device: Creates the system default Metal device (GPU)
  *          - Command queue: Creates a command queue for submitting rendering commands
- *          Exits with EXIT_FAILURE if either creation fails. Both resources are
+ *          Throws std::runtime_error if either creation fails. Both resources are
  *          managed by smart pointers (NS::TransferPtr) for automatic cleanup.
  */
 void MetalWindow::_InitDevice() {
 	_metalDevice = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _metalDevice) {
 		CE_CORE_ERROR("Could not create MetalDevice!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Could not create MetalDevice!");
 	}
 	_commandQueue = NS::TransferPtr(_metalDevice->newCommandQueue());
 	if (not _commandQueue) {
 		CE_CORE_ERROR("Could not create CommandQueue!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Could not create CommandQueue!");
 	}
 }
 
@@ -265,7 +268,7 @@ void MetalWindow::_InitDevice() {
  *          8. Configures Metal layer (device, pixel format, drawable size)
  *          9. Optimizes for triple buffering (3 drawables, no timeout)
  *          10. Sets Metal layer as backing layer for content view
- *          Exits with EXIT_FAILURE if any step fails. Uses Cocoa bridge functions
+ *          Throws std::runtime_error if any step fails. Uses Cocoa bridge functions
  *          to interact with Objective-C APIs.
  */
 void MetalWindow::_InitWindow() {
@@ -274,7 +277,7 @@ void MetalWindow::_InitWindow() {
 	if (not s_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");
-			exit(EXIT_FAILURE);
+			throw std::runtime_error("Could not initialize GLFW!");
 		}
 		glfwSetErrorCallback([]([[maybe_unused]] const int error_code, [[maybe_unused]] const char* description) {
 			CE_CORE_ERROR("GLFW error: {0}\nDescription: {1}", error_code, description);
@@ -290,29 +293,37 @@ void MetalWindow::_InitWindow() {
 		nullptr,
 		nullptr
 	));
+
+	if (not _glfwWindow) {
+		CE_CORE_ERROR("Failed to create GLFW window!");
+		throw std::runtime_error("Failed to create GLFW window!");
+	}
+
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 
 	// Get native Cocoa window from GLFW
 	void* cocoaWindow = glfwGetCocoaWindow(_glfwWindow.get());
 	if (not cocoaWindow) {
 		CE_CORE_ERROR("Could not get Cocoa window from GLFW!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Could not get Cocoa window from GLFW!");
 	}
 
-	_metalWindow = NS::TransferPtr(static_cast<NS::Window*>(cocoaWindow));
+	_metalWindow = static_cast<NS::Window*>(cocoaWindow);
 
 	// Get GLFW's content view
 	void* contentView = Bridge::GetCocoaContentView(cocoaWindow);
 	if (not contentView) {
 		CE_CORE_ERROR("Could not get content view from GLFW window!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Could not get content view from GLFW window!");
 	}
 
 	// Create CAMetalLayer
-	_metalLayer = NS::TransferPtr(CA::MetalLayer::layer());
+	// Using NS::RetainPtr for layer() because it returns an autoreleased object (+0).
+	// RetainPtr will automatically retain() it to get +1 ownership, which is then transferred to SharedPtr.
+	_metalLayer = NS::RetainPtr(CA::MetalLayer::layer());
 	if (not _metalLayer) {
 		CE_CORE_ERROR("Could not create CAMetalLayer!");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Could not create CAMetalLayer!");
 	}
 
 	// Configure Metal layer
@@ -334,8 +345,12 @@ void MetalWindow::_InitWindow() {
 /**
  * @brief Cleans up and releases window resources
  * @details Resets the GLFW window smart pointer, which automatically destroys
- *          the GLFW window. Metal resources (_metalDevice, _commandQueue, _metalLayer,
- *          _metalWindow) are automatically released by their NS::SharedPtr destructors.
+ *          the GLFW window by calling glfwDestroyWindow through the custom deleter.
+ *          Metal resources (_metalDevice, _commandQueue, _metalLayer, _metalWindow)
+ *          are automatically released by their NS::SharedPtr destructors.
+ *          Note: glfwTerminate() should NOT be called here since GLFW is initialized
+ *          globally and may be used by other windows. It should only be called once
+ *          at application shutdown, after all windows are destroyed.
  */
 void MetalWindow::_Shutdown() {
 	_glfwWindow.reset();

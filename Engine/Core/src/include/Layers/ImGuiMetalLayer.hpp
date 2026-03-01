@@ -145,7 +145,7 @@ private:
 	float _time = 0.0f;								///< Time accumulator for frame timing
 
 	// Cached pointers to avoid repeated lookups every frame
-	Window::MetalWindow* _metalWindow = nullptr;	///< Cached Metal window pointer
+	Window::MetalWindow* _window = nullptr;			///< Cached Metal window pointer
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
 	MTL::Device* _metalDevice = nullptr;			///< Cached Metal device pointer
 	MTL::CommandQueue* _commandQueue = nullptr;		///< Cached Metal command queue pointer

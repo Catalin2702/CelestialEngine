@@ -22,6 +22,10 @@
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #endif
 
+#include <GLFW/glfw3.h>
+
+#include <stdexcept>
+
 // Platform-specific window type selection
 #ifdef CE_PLATFORM_MACOS
 using MetalWindow = CE::Window::MetalWindow;		///< Use Metal window on macOS
@@ -74,10 +78,26 @@ Application::Application(const std::string& title, const unsigned int width, con
 
 /**
  * @brief Destructor implementation
- * @details Default destructor - cleanup is handled automatically by smart pointers
- *          and layer stack destructor
+ * @details Cleans up application resources in the correct order:
+ *          1. Clear layer stack (detaches all layers, which may use GLFW)
+ *          2. Destroy window (calls glfwDestroyWindow)
+ *          3. Terminate GLFW library
+ *          This order is critical to avoid GLFW errors when layers (e.g., ImGui)
+ *          try to clean up GLFW resources during their OnDetach.
  */
-Application::~Application() = default;
+Application::~Application() {
+	// First, detach all layers (they may use GLFW in their cleanup)
+	_layerStack.Clear();
+
+	// Then destroy the window (calls glfwDestroyWindow)
+	_window.reset();
+
+	// Finally, terminate GLFW now that everything is cleaned up
+	glfwTerminate();
+
+	// Reset the singleton instance pointer
+	_instance = nullptr;
+}
 
 /**
  * @brief Main application loop implementation
@@ -156,7 +176,7 @@ void Application::PushOverlay(Layers::I_Layer *overlay) {
  *          2. Creates the appropriate window (Metal on macOS, OpenGL elsewhere)
  *          3. Sets up the event callback to route events to OnEvent
  *          4. Sets _running to true to start the main loop
- *          Exits with error if window creation fails
+ *          Throws std::runtime_error if window creation fails or API is unsupported.
  */
 void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	_instance = this;
@@ -175,12 +195,12 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 #endif
 		default:
 			CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties. Graphics API: {0}", windowProps.graphicsApi);
-			exit(EXIT_FAILURE);
+			throw std::runtime_error("Unsupported graphics API specified in window properties");
 	}
 
 	if (not _window) {
 		CE_CORE_ERROR("Application::_Init: Can't initialize the window");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Can't initialize the window");
 	}
 
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));

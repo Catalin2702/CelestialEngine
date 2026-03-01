@@ -27,12 +27,9 @@ target_link_libraries(CE_Tools PUBLIC
 	CE_Config
 	CE_Define
 	CE_Types
-)
 
-# Link spdlog only for Debug and Release builds, not for Dist
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
-	target_link_libraries(CE_Tools PUBLIC spdlog::spdlog)
-endif()
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
+)
 
 target_include_directories(CE_Tools PUBLIC
 	src/include

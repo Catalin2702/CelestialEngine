@@ -45,12 +45,9 @@ target_link_libraries(CelestialEngine PUBLIC
 	CE_Tools
 	CE_Types
 	CE_Window
-)
 
-# Link spdlog only for Debug and Release builds, not for Dist
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
-	target_link_libraries(CelestialEngine PUBLIC spdlog::spdlog)
-endif()
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
+)
 
 if(APPLE)
 	target_link_libraries(CelestialEngine PUBLIC

@@ -153,8 +153,6 @@ protected:
  *          type safety by checking the event type at runtime before casting.
  */
 class EventDispatcher {
-	template<typename T>
-	using EventFn = std::function<bool(T&)>;		///< Type alias for event handler functions
 
 public:
 	/**
@@ -175,7 +173,13 @@ public:
 	 *          on the handler's return value.
 	 */
 	template<typename T>
-	bool Dispatch(EventFn<T> func);
+	bool Dispatch(std::function<bool(T&)> func) {
+		if (_event.GetEventType() == T::GetStaticType()) {
+			_event._handled |= func(static_cast<T&>(_event));
+			return true;
+		}
+		return false;
+	}
 
 private:
 	I_Event& _event;								///< Reference to the event being dispatched
@@ -203,7 +207,5 @@ inline std::string format_as(const I_Event& event) {
 }
 
 }
-
-#include "../template/Events/I_Event.tpp"
 
 #endif //CE_EVENTS_EVENT_HPP

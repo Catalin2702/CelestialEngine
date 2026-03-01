@@ -33,26 +33,22 @@ add_library(CE_Window SHARED
 
 set_target_properties(CE_Window PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CE_Window
-	PRIVATE CE_Config
-	PRIVATE CE_Define
-	PRIVATE CE_Events
-	PRIVATE CE_Tools
-	PRIVATE CE_Types
+target_link_libraries(CE_Window PUBLIC
+	CE_Config
+	CE_Define
+	CE_Events
+	CE_Tools
+	CE_Types
 
-	PUBLIC glad::glad
-	PUBLIC glfw
+	glad::glad
+	glfw
+	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
 
-# Link spdlog only for Debug and Release builds, not for Dist
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Dist")
-	target_link_libraries(CE_Window PUBLIC spdlog::spdlog)
-endif()
-
 if(APPLE)
-	target_link_libraries(CE_Window
-		PUBLIC CE_MetalBridge
-		PUBLIC CE_MetalCpp
+	target_link_libraries(CE_Window PUBLIC
+		CE_MetalBridge
+		CE_MetalCpp
 	)
 endif()
 
