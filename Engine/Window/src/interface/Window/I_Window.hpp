@@ -28,8 +28,8 @@ class I_Event;
  * @namespace CE::Window
  * @brief Window management and window interfaces
  * @details Contains the I_Window interface and related type definitions for window management.
- *          This namespace defines the common interface for all window implementations,
- *          allowing for platform-specific implementations while maintaining a consistent API.
+ *			This namespace defines the common interface for all window implementations,
+ *			allowing for platform-specific implementations while maintaining a consistent API.
  */
 namespace CE::Window {
 
@@ -51,8 +51,8 @@ using EventCallbackFn = Types::Window::CallbackFn<Events::I_Event>;
  * @class I_Window
  * @brief Abstract interface for platform-specific window implementations
  * @details Defines the common interface that all window/window implementations must provide.
- *          Implementations include OpenGLWindow for cross-platform OpenGL windows and
- *          MetalWindow for macOS Metal-based windows.
+ *			Implementations include OpenGLWindow for cross-platform OpenGL windows and
+ *			MetalWindow for macOS Metal-based windows.
  */
 class CE_API I_Window {
 public:
@@ -66,7 +66,7 @@ public:
 	/**
 	 * @brief Updates the window state each frame
 	 * @details Pure virtual method that handles per-frame updates, event polling,
-	 *          and buffer swapping. Must be implemented by derived classes.
+	 *			and buffer swapping. Must be implemented by derived classes.
 	 */
 	virtual void OnUpdate() = 0;
 
@@ -134,7 +134,7 @@ public:
 	 * @param windowProps Window configuration properties
 	 * @return I_Window* Pointer to the created window
 	 * @details Template factory method that creates and returns a window
-	 *          of the specified type with the given properties
+	 *			of the specified type with the given properties
 	 */
 	template<std::derived_from<I_Window> T>
 	static I_Window* CreateWindow(const Types::Window::WindowProps& windowProps) {

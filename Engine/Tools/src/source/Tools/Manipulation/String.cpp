@@ -18,7 +18,7 @@ namespace CE::Tools::Manipulation {
  * @param source The source string to convert
  * @return std::string A new lowercase string
  * @details Creates a copy of the input string and transforms all characters
- *          to lowercase using std::tolower. Non-alphabetic characters are unchanged.
+ *			to lowercase using std::tolower. Non-alphabetic characters are unchanged.
  */
 std::string ToLowerCase(const std::string& source) {
 	std::string result = source;

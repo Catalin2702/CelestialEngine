@@ -35,8 +35,8 @@ namespace TypeWindow = CE::Types::Window;
  * @namespace CE::Core
  * @brief Core application framework components
  * @details Contains the Application class which serves as the main entry point for client applications.
- *          Manages the application lifecycle, event handling, and layer management. Client applications
- *          should inherit from Application and implement the CreateApplication factory functions.
+ *			Manages the application lifecycle, event handling, and layer management. Client applications
+ *			should inherit from Application and implement the CreateApplication factory functions.
  */
 namespace CE::Core {
 
@@ -44,8 +44,8 @@ namespace CE::Core {
  * @class Application
  * @brief Core application class that manages the main loop and application lifecycle
  * @details Central class that initializes the window, manages the layer stack, handles events,
- *          and runs the main application loop. Client applications should inherit from this
- *          class and implement the CreateApplication factory functions.
+ *			and runs the main application loop. Client applications should inherit from this
+ *			class and implement the CreateApplication factory functions.
  */
 class CE_API Application {
 public:
@@ -83,7 +83,7 @@ public:
 	/**
 	 * @brief Runs the main application loop
 	 * @details Continues running until _running is set to false. Each iteration
-	 *          updates all layers and polls events from the window.
+	 *			updates all layers and polls events from the window.
 	 */
 	virtual void Run();
 
@@ -91,7 +91,7 @@ public:
 	 * @brief Handles application events
 	 * @param event Reference to the event to be processed
 	 * @details Dispatches events to appropriate handlers and propagates them
-	 *          through the layer stack
+	 *			through the layer stack
 	 */
 	virtual void OnEvent(Events::I_Event& event);
 
@@ -114,7 +114,7 @@ public:
 	 * @brief Adds an overlay to the layer stack
 	 * @param overlay Pointer to the overlay layer to add
 	 * @details Overlays are rendered on top of regular layers and receive
-	 *          events before regular layers
+	 *			events before regular layers
 	 */
 	void PushOverlay(Layers::I_Layer* overlay);
 
@@ -138,7 +138,7 @@ protected:
 	 * @brief Initializes the application with window properties
 	 * @param windowProps Window configuration properties
 	 * @details Protected initialization method called by constructors. Creates the window
-	 *          and sets up event callbacks.
+	 *			and sets up event callbacks.
 	 */
 	void _Init(const TypeWindow::WindowProps& windowProps);
 

@@ -11,16 +11,16 @@
  * @file CelestialEngine.hpp
  * @brief Main include file for the Celestial Engine
  * @details This is the primary header file that client applications should include.
- *          It provides access to all public engine APIs including:
- *          - Application framework (Core::Application)
- *          - Event system (Events::*)
- *          - Layer system (Layers::*)
- *          - Tools and utilities (Log, Chronometer, CMD)
- *          - Type definitions (WindowProps)
- *          - Entry point (main function)
+ *			It provides access to all public engine APIs including:
+ *			- Application framework (Core::Application)
+ *			- Event system (Events::*)
+ *			- Layer system (Layers::*)
+ *			- Tools and utilities (Log, Chronometer, CMD)
+ *			- Type definitions (WindowProps)
+ *			- Entry point (main function)
  *
- *          Client applications only need to include this single header to access
- *          the full engine functionality.
+ *			Client applications only need to include this single header to access
+ *			the full engine functionality.
  *
  * @author Catalin Chirosca
  * @date 2026-02-15

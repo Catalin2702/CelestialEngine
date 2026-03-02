@@ -17,15 +17,15 @@
  * @brief Creates a bit mask by shifting 1 left by x positions
  * @param x The bit position (0-based)
  * @details Useful for creating bit flags and masks. For example:
- *          BIT(0) = 0b00000001 = 1
- *          BIT(1) = 0b00000010 = 2
- *          BIT(2) = 0b00000100 = 4
- *          Commonly used for event categories and layer masks.
+ *			BIT(0) = 0b00000001 = 1
+ *			BIT(1) = 0b00000010 = 2
+ *			BIT(2) = 0b00000100 = 4
+ *			Commonly used for event categories and layer masks.
  * @example
- *          enum EventCategory {
- *              EventCategoryApplication = BIT(0),
- *              EventCategoryInput = BIT(1)
- *          };
+ *			enum EventCategory {
+ *				EventCategoryApplication = BIT(0),
+ *				EventCategoryInput = BIT(1)
+ *			};
  */
 #define BIT(x) (1 << x)
 

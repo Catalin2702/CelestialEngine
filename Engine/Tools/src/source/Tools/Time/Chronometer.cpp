@@ -49,7 +49,7 @@ void Chronometer::Stop() {
 /**
  * @brief Prints the measured time duration
  * @details Calculates the elapsed time in microseconds and milliseconds,
- *          then logs it using the core logger with rounded values for better readability
+ *			then logs it using the core logger with rounded values for better readability
  */
 void Chronometer::PrintResult() const {
 	const auto start = std::chrono::time_point_cast<std::chrono::milliseconds>(_start).time_since_epoch().count();

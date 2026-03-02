@@ -19,9 +19,9 @@ std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
 /**
  * @brief Initializes the logging system
  * @details Creates two separate console loggers with color output:
- *          - Core logger: for engine internal messages (prefix "CELESTIAL_ENGINE")
- *          - Client logger: for application messages (prefix "APP")
- *          Both loggers are configured to show timestamps, logger names, and log levels
+ *			- Core logger: for engine internal messages (prefix "CELESTIAL_ENGINE")
+ *			- Client logger: for application messages (prefix "APP")
+ *			Both loggers are configured to show timestamps, logger names, and log levels
  */
 void Log::Init() {
 #ifndef CE_DIST

@@ -16,10 +16,10 @@
  * @def CE_API
  * @brief Platform-specific macro for exporting/importing symbols from shared libraries
  * @details On Windows: Uses __declspec(dllexport) when building the engine (CE_CORE_EXPORTS defined),
- *          and __declspec(dllimport) when using the engine.
- *          On macOS/Linux: Uses __attribute__((visibility("default"))) to make symbols visible.
- *          This macro must be used on classes and functions that need to be accessible
- *          from outside the shared library.
+ *			and __declspec(dllimport) when using the engine.
+ *			On macOS/Linux: Uses __attribute__((visibility("default"))) to make symbols visible.
+ *			This macro must be used on classes and functions that need to be accessible
+ *			from outside the shared library.
  */
 #if defined(CE_PLATFORM_WINDOWS)
 	#ifdef CE_CORE_EXPORTS

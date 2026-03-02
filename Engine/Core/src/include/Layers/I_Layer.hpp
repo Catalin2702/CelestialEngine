@@ -20,8 +20,8 @@
  * @namespace CE::Layers
  * @brief Layer system for organizing application logic into stackable components
  * @details Provides the I_Layer interface for defining application layers that can handle events,
- *          update logic, and rendering. Layers are managed in a stack and can be added or removed
- *          dynamically during the application's lifecycle.
+ *			update logic, and rendering. Layers are managed in a stack and can be added or removed
+ *			dynamically during the application's lifecycle.
  */
 namespace CE::Layers {
 
@@ -29,8 +29,8 @@ namespace CE::Layers {
  * @class I_Layer
  * @brief Abstract base class for application layers
  * @details Layers are stackable components that can handle events, update logic, and rendering.
- *          The layer system allows for organizing application logic into separate, manageable units.
- *          Layers are updated and rendered in order, and events propagate through the layer stack.
+ *			The layer system allows for organizing application logic into separate, manageable units.
+ *			Layers are updated and rendered in order, and events propagate through the layer stack.
  */
 class CE_API I_Layer {
 public:
@@ -51,21 +51,21 @@ public:
 	/**
 	 * @brief Called when the layer is attached to the layer stack
 	 * @details Pure virtual method for layer initialization. Called once when the layer
-	 *          is added to the application. Use this for setting up resources.
+	 *			is added to the application. Use this for setting up resources.
 	 */
 	virtual void OnAttach() = 0;
 
 	/**
 	 * @brief Called when the layer is detached from the layer stack
 	 * @details Pure virtual method for layer cleanup. Called once when the layer
-	 *          is removed from the application. Use this for releasing resources.
+	 *			is removed from the application. Use this for releasing resources.
 	 */
 	virtual void OnDetach() = 0;
 
 	/**
 	 * @brief Called every frame to update the layer
 	 * @details Pure virtual method for per-frame update logic. Called once per frame
-	 *          for all active layers. Use this for game logic, animations, etc.
+	 *			for all active layers. Use this for game logic, animations, etc.
 	 */
 	virtual void OnUpdate() = 0;
 
@@ -74,7 +74,7 @@ public:
 	 * @param event Reference to the event to be processed
 	 * @return bool True if the event was handled and should stop propagating
 	 * @details Pure virtual method for event handling. Events propagate through layers
-	 *          until one handles them. Return true to stop event propagation.
+	 *			until one handles them. Return true to stop event propagation.
 	 */
 	virtual bool OnEvent(Events::I_Event& event) = 0;
 

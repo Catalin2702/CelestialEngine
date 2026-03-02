@@ -7,15 +7,16 @@ Questa directory contiene tutti i test per il progetto CelestialEngine.
 ```
 Tests/
 ├── Engine/			# Test per il motore
-│   ├── Core/       # Test per CE_Core
-│   ├── Events/     # Test per CE_Events
-│   └── Tools/      # Test per CE_Tools
-└── Editor/         # Test per l'editor (futuro)
+│   ├── Core/		# Test per CE_Core
+│   ├── Events/		# Test per CE_Events
+│   └── Tools/		# Test per CE_Tools
+└── Editor/			# Test per l'editor (futuro)
 ```
 
 ## Eseguire i Test
 
 ### Tutti i test del progetto
+
 ```bash
 cd .debug
 ctest --output-on-failure
@@ -24,6 +25,7 @@ cmake --build . --target run_all_tests
 ```
 
 ### Solo i test di Engine
+
 ```bash
 cd .debug
 ctest -L Engine --output-on-failure
@@ -32,20 +34,23 @@ cmake --build . --target run_engine_tests
 ```
 
 ### Test specifici per modulo
+
 ```bash
 cd .debug
 ctest -L Events --output-on-failure  # Solo test Events
 ctest -L Tools --output-on-failure   # Solo test Tools
-ctest -L Core --output-on-failure    # Solo test Core
+ctest -L Core --output-on-failure	# Solo test Core
 ```
 
 ### Test con output verbose
+
 ```bash
 cd .debug
 ctest --verbose
 ```
 
 ### Solo test falliti
+
 ```bash
 cd .debug
 ctest --rerun-failed --output-on-failure
@@ -54,6 +59,7 @@ ctest --rerun-failed --output-on-failure
 ## Label
 
 I test sono organizzati con i seguenti label:
+
 - **Engine**: Tutti i test del motore
 - **Events**: Test del sistema di eventi
 - **Tools**: Test degli strumenti
@@ -67,25 +73,25 @@ I test sono organizzati con i seguenti label:
 
 ```cmake
 set(SOURCES
-    MyModuleTests.cpp
+	MyModuleTests.cpp
 )
 
 add_executable(CE_TestsMyModule ${SOURCES})
 
 target_link_libraries(CE_TestsMyModule PRIVATE
-    CE_Config
-    CE_MyModule
-    GTest::gtest
-    GTest::gtest_main
+	CE_Config
+	CE_MyModule
+	GTest::gtest
+	GTest::gtest_main
 )
 
-add_test(NAME MyModuleTests 
-    COMMAND CE_TestsMyModule
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
+add_test(NAME MyModuleTests
+	COMMAND CE_TestsMyModule
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
 )
 
 set_tests_properties(MyModuleTests PROPERTIES
-    LABELS "Engine;MyModule"
+	LABELS "Engine;MyModule"
 )
 ```
 

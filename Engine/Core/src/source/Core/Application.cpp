@@ -45,8 +45,8 @@ Application* Application::_instance = nullptr;
 /**
  * @brief Default constructor implementation
  * @details Asserts that no other Application instance exists (singleton pattern),
- *          then initializes with default window properties: "CelestialEngine" title,
- *          1280x720 resolution, VSync enabled
+ *			then initializes with default window properties: "CelestialEngine" title,
+ *			1280x720 resolution, VSync enabled
  */
 Application::Application() {
 	assert(_instance == nullptr && "Application already exists!");
@@ -70,7 +70,7 @@ Application::Application(const TypeWindow::WindowProps& windowProps) {
  * @param VSync Enable or disable vertical synchronization
  * @param graphicsApi Graphics API to use for rendering
  * @details Initializes the application with individual window parameters by
- *          constructing a WindowProps object and passing it to _Init
+ *			constructing a WindowProps object and passing it to _Init
  */
 Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Types::Window::GraphicsApi graphicsApi) {
 	_Init({title, width, height, VSync, graphicsApi});
@@ -79,11 +79,11 @@ Application::Application(const std::string& title, const unsigned int width, con
 /**
  * @brief Destructor implementation
  * @details Cleans up application resources in the correct order:
- *          1. Clear layer stack (detaches all layers, which may use GLFW)
- *          2. Destroy window (calls glfwDestroyWindow)
- *          3. Terminate GLFW library
- *          This order is critical to avoid GLFW errors when layers (e.g., ImGui)
- *          try to clean up GLFW resources during their OnDetach.
+ *			1. Clear layer stack (detaches all layers, which may use GLFW)
+ *			2. Destroy window (calls glfwDestroyWindow)
+ *			3. Terminate GLFW library
+ *			This order is critical to avoid GLFW errors when layers (e.g., ImGui)
+ *			try to clean up GLFW resources during their OnDetach.
  */
 Application::~Application() {
 	// First, detach all layers (they may use GLFW in their cleanup)
@@ -102,9 +102,9 @@ Application::~Application() {
 /**
  * @brief Main application loop implementation
  * @details Runs continuously while _running is true. Each iteration:
- *          1. Updates all layers in the layer stack (OnUpdate)
- *          2. Updates the window (polls events and swaps buffers)
- *          The loop exits when _running is set to false (typically by window close event)
+ *			1. Updates all layers in the layer stack (OnUpdate)
+ *			2. Updates the window (polls events and swaps buffers)
+ *			The loop exits when _running is set to false (typically by window close event)
  */
 void Application::Run() {
 	while (_running) {
@@ -119,10 +119,10 @@ void Application::Run() {
  * @brief Event handling implementation
  * @param event Reference to the event to be processed
  * @details Handles events in the following order:
- *          1. Dispatches window close events to OnWindowClose handler
- *          2. Propagates event through layer stack in reverse order (overlays first)
- *          3. Stops propagation if any layer handles the event
- *          This allows overlays (like ImGui) to intercept events before game layers
+ *			1. Dispatches window close events to OnWindowClose handler
+ *			2. Propagates event through layer stack in reverse order (overlays first)
+ *			3. Stops propagation if any layer handles the event
+ *			This allows overlays (like ImGui) to intercept events before game layers
  */
 void Application::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher eventDispatcher(event);
@@ -139,8 +139,8 @@ void Application::OnEvent(Events::I_Event& event) {
  * @brief Window close event handler implementation
  * @return bool Always returns true to indicate the event was handled
  * @details Sets _running to false, which causes the main loop to exit,
- *          and logs the window close event. The event parameter is unnamed
- *          as its content is not needed for this handler.
+ *			and logs the window close event. The event parameter is unnamed
+ *			as its content is not needed for this handler.
  */
 bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	_running = false;
@@ -152,7 +152,7 @@ bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
  * @brief Adds a layer to the layer stack
  * @param layer Pointer to the layer to add
  * @details Delegates to LayerStack::PushLayer, which inserts the layer
- *          before overlays and calls its OnAttach method
+ *			before overlays and calls its OnAttach method
  */
 void Application::PushLayer(Layers::I_Layer *layer) {
 	_layerStack.PushLayer(layer);
@@ -162,7 +162,7 @@ void Application::PushLayer(Layers::I_Layer *layer) {
  * @brief Adds an overlay to the layer stack
  * @param overlay Pointer to the overlay to add
  * @details Delegates to LayerStack::PushOverlay, which inserts the overlay
- *          at the end of the stack (after all layers) and calls its OnAttach method
+ *			at the end of the stack (after all layers) and calls its OnAttach method
  */
 void Application::PushOverlay(Layers::I_Layer *overlay) {
 	_layerStack.PushOverlay(overlay);
@@ -172,11 +172,11 @@ void Application::PushOverlay(Layers::I_Layer *overlay) {
  * @brief Private initialization method implementation
  * @param windowProps Window configuration properties
  * @details Performs the following initialization steps:
- *          1. Sets the singleton instance pointer
- *          2. Creates the appropriate window (Metal on macOS, OpenGL elsewhere)
- *          3. Sets up the event callback to route events to OnEvent
- *          4. Sets _running to true to start the main loop
- *          Throws std::runtime_error if window creation fails or API is unsupported.
+ *			1. Sets the singleton instance pointer
+ *			2. Creates the appropriate window (Metal on macOS, OpenGL elsewhere)
+ *			3. Sets up the event callback to route events to OnEvent
+ *			4. Sets _running to true to start the main loop
+ *			Throws std::runtime_error if window creation fails or API is unsupported.
  */
 void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	_instance = this;

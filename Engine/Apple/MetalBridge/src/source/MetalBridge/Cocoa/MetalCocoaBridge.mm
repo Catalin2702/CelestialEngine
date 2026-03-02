@@ -18,15 +18,15 @@ namespace CE::Bridge {
  * @param cocoaWindow Void pointer to NSWindow
  * @return void* Pointer to the window's content NSView, or nullptr if window is invalid
  * @details Bridges C++ to Objective-C by casting the void pointer to NSWindow and
- *          retrieving its contentView. The returned pointer is bridged back to void*
- *          for C++ compatibility. Returns nullptr if the input window is null.
+ *			retrieving its contentView. The returned pointer is bridged back to void*
+ *			for C++ compatibility. Returns nullptr if the input window is null.
  */
 void* GetCocoaContentView(void* cocoaWindow) {
-    if (!cocoaWindow)
-        return nullptr;
+	if (!cocoaWindow)
+		return nullptr;
 
-    NSWindow* window = (__bridge NSWindow*)cocoaWindow;
-    return (__bridge void*)[window contentView];
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	return (__bridge void*)[window contentView];
 }
 
 /**
@@ -34,19 +34,19 @@ void* GetCocoaContentView(void* cocoaWindow) {
  * @param cocoaView Void pointer to NSView
  * @param metalLayer Void pointer to CAMetalLayer
  * @details Configures the NSView to use a CAMetalLayer as its backing layer,
- *          enabling Metal rendering in the view. The view is configured with
- *          setWantsLayer:YES to enable layer-backed rendering. Does nothing
- *          if either parameter is null.
+ *			enabling Metal rendering in the view. The view is configured with
+ *			setWantsLayer:YES to enable layer-backed rendering. Does nothing
+ *			if either parameter is null.
  */
 void SetCocoaViewLayer(void* cocoaView, void* metalLayer) {
-    if (!cocoaView || !metalLayer)
-        return;
+	if (!cocoaView || !metalLayer)
+		return;
 
-    NSView* view = (__bridge NSView*)cocoaView;
-    CAMetalLayer* layer = (__bridge CAMetalLayer*)metalLayer;
+	NSView* view = (__bridge NSView*)cocoaView;
+	CAMetalLayer* layer = (__bridge CAMetalLayer*)metalLayer;
 
-    [view setLayer:layer];
-    [view setWantsLayer:YES];
+	[view setLayer:layer];
+	[view setWantsLayer:YES];
 }
 
 /**
@@ -54,17 +54,17 @@ void SetCocoaViewLayer(void* cocoaView, void* metalLayer) {
  * @param cocoaWindow Void pointer to NSWindow
  * @param cocoaView Void pointer to NSView to set as the new content view
  * @details Replaces the window's current content view with the specified view.
- *          The new view becomes the primary view in the window's view hierarchy.
- *          Does nothing if either parameter is null.
+ *			The new view becomes the primary view in the window's view hierarchy.
+ *			Does nothing if either parameter is null.
  */
 void SetCocoaWindowContentView(void* cocoaWindow, void* cocoaView) {
-    if (!cocoaWindow || !cocoaView)
-        return;
+	if (!cocoaWindow || !cocoaView)
+		return;
 
-    NSWindow* window = (__bridge NSWindow*)cocoaWindow;
-    NSView* view = (__bridge NSView*)cocoaView;
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	NSView* view = (__bridge NSView*)cocoaView;
 
-    [window setContentView:view];
+	[window setContentView:view];
 }
 
 /**
@@ -72,27 +72,27 @@ void SetCocoaWindowContentView(void* cocoaWindow, void* cocoaView) {
  * @param cocoaWindow Void pointer to NSWindow
  * @param subview Void pointer to NSView to add as a subview
  * @details Adds the specified NSView as a subview to the window's content view.
- *          The subview is configured to automatically resize with the content view
- *          (NSViewWidthSizable | NSViewHeightSizable) and its frame is set to
- *          match the content view's bounds. Does nothing if either parameter is null
- *          or if the window has no content view.
+ *			The subview is configured to automatically resize with the content view
+ *			(NSViewWidthSizable | NSViewHeightSizable) and its frame is set to
+ *			match the content view's bounds. Does nothing if either parameter is null
+ *			or if the window has no content view.
  */
 void AddSubviewToContentView(void* cocoaWindow, void* subview) {
-    if (!cocoaWindow || !subview)
-        return;
+	if (!cocoaWindow || !subview)
+		return;
 
-    NSWindow* window = (__bridge NSWindow*)cocoaWindow;
-    NSView* contentView = [window contentView];
-    NSView* newSubview = (__bridge NSView*)subview;
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	NSView* contentView = [window contentView];
+	NSView* newSubview = (__bridge NSView*)subview;
 
-    if (!contentView)
-        return;
+	if (!contentView)
+		return;
 
-    [newSubview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+	[newSubview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 
-    [newSubview setFrame:[contentView bounds]];
+	[newSubview setFrame:[contentView bounds]];
 
-    [contentView addSubview:newSubview];
+	[contentView addSubview:newSubview];
 }
 
 /**
@@ -100,47 +100,47 @@ void AddSubviewToContentView(void* cocoaWindow, void* subview) {
  * @param cocoaWindow Void pointer to NSWindow
  * @return int Display refresh rate in Hz (e.g., 60, 120, 144)
  * @details Queries the display's refresh rate using multiple fallback methods:
- *          1. On macOS 10.15+, uses maximumFramesPerSecond from NSScreen
- *          2. Falls back to CGDisplayModeGetRefreshRate for older systems
- *          3. Returns 60 Hz as final fallback if all methods fail
- *          The refresh rate is useful for VSync configuration and smooth rendering.
- *          If the window is null or has no associated screen, defaults to 60 Hz.
+ *			1. On macOS 10.15+, uses maximumFramesPerSecond from NSScreen
+ *			2. Falls back to CGDisplayModeGetRefreshRate for older systems
+ *			3. Returns 60 Hz as final fallback if all methods fail
+ *			The refresh rate is useful for VSync configuration and smooth rendering.
+ *			If the window is null or has no associated screen, defaults to 60 Hz.
  */
 int GetDisplayRefreshRate(void* cocoaWindow) {
-    if (!cocoaWindow)
-        return 60; // Default fallback
+	if (!cocoaWindow)
+		return 60; // Default fallback
 
-    NSWindow* window = (__bridge NSWindow*)cocoaWindow;
-    NSScreen* screen = [window screen];
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	NSScreen* screen = [window screen];
 
-    if (!screen) {
-        screen = [NSScreen mainScreen];
-    }
+	if (!screen) {
+		screen = [NSScreen mainScreen];
+	}
 
-    if (!screen)
-        return 60; // Default fallback
+	if (!screen)
+		return 60; // Default fallback
 
-    if (@available(macOS 10.15, *)) {
-        NSInteger maxFPS = [screen maximumFramesPerSecond];
-        if (maxFPS > 0) {
-            return (int)maxFPS;
-        }
-    }
+	if (@available(macOS 10.15, *)) {
+		NSInteger maxFPS = [screen maximumFramesPerSecond];
+		if (maxFPS > 0) {
+			  return (int)maxFPS;
+		}
+	}
 
-    NSDictionary* description = [screen deviceDescription];
-    CGDirectDisplayID displayID = [[description objectForKey:@"NSScreenNumber"] unsignedIntValue];
+	NSDictionary* description = [screen deviceDescription];
+	CGDirectDisplayID displayID = [[description objectForKey:@"NSScreenNumber"] unsignedIntValue];
 
-    CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayID);
-    if (mode) {
-        double refreshRate = CGDisplayModeGetRefreshRate(mode);
-        CGDisplayModeRelease(mode);
+	CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayID);
+	if (mode) {
+		double refreshRate = CGDisplayModeGetRefreshRate(mode);
+		CGDisplayModeRelease(mode);
 
-        if (refreshRate > 0) {
-            return (int)round(refreshRate);
-        }
-    }
+		if (refreshRate > 0) {
+			  return (int)round(refreshRate);
+		}
+	}
 
-    return 60; // Default fallback
+	return 60; // Default fallback
 }
 
 }

@@ -33,7 +33,7 @@ static bool s_GLFWInitialized = false;
  * @brief Constructor of the OpenGLWindow class
  * @param windowProps Constant reference to window properties (title, width, height, VSync)
  * @details Initializes window data with the provided properties and calls _Init() to create
- *          and configure the GLFW window with OpenGL 4.1 Core Profile context
+ *			and configure the GLFW window with OpenGL 4.1 Core Profile context
  */
 OpenGlWindow::OpenGlWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
 	_Init();
@@ -42,7 +42,7 @@ OpenGlWindow::OpenGlWindow(const TypeWindow::WindowProps& windowProps): _data(wi
 /**
  * @brief Destructor of the OpenGLWindow class
  * @details Calls _Shutdown() to release GLFW window resources and clean up state
- *          before the object is destroyed
+ *			before the object is destroyed
  */
 OpenGlWindow::~OpenGlWindow() {
 	_Shutdown();
@@ -51,7 +51,7 @@ OpenGlWindow::~OpenGlWindow() {
 /**
  * @brief Updates the window state every frame
  * @details Processes all queued events via glfwPollEvents() and swaps front/back buffers
- *          with glfwSwapBuffers() to display the rendered content
+ *			with glfwSwapBuffers() to display the rendered content
  */
 void OpenGlWindow::OnUpdate() {
 	glfwPollEvents();
@@ -62,7 +62,7 @@ void OpenGlWindow::OnUpdate() {
  * @brief Sets the callback function for event handling
  * @param callback Constant reference to a callback function that will be invoked when events occur
  * @details This function will be called whenever an event occurs (resize, close,
- *          keyboard input, mouse, etc.)
+ *			keyboard input, mouse, etc.)
  */
 void OpenGlWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.eventCallback = callback;
@@ -71,14 +71,14 @@ void OpenGlWindow::SetEventCallback(const EventCallbackFn& callback) {
 /**
  * @brief Configures all GLFW callbacks for window event handling
  * @details Registers the following callbacks:
- *          - Window resize: generates WindowResizeEvent
- *          - Window close: generates WindowCloseEvent
- *          - Keyboard input (press/release/repeat): generates KeyPressedEvent and KeyReleasedEvent
- *          - Typed characters: generates KeyTypedEvent for text input
- *          - Mouse buttons (press/release): generates MouseButtonPressedEvent and MouseButtonReleasedEvent
- *          - Mouse scroll: generates MouseScrolledEvent
- *          - Mouse movement: generates MouseMovedEvent
- *          Verifies that _glfwWindow is valid before registering callbacks
+ *			- Window resize: generates WindowResizeEvent
+ *			- Window close: generates WindowCloseEvent
+ *			- Keyboard input (press/release/repeat): generates KeyPressedEvent and KeyReleasedEvent
+ *			- Typed characters: generates KeyTypedEvent for text input
+ *			- Mouse buttons (press/release): generates MouseButtonPressedEvent and MouseButtonReleasedEvent
+ *			- Mouse scroll: generates MouseScrolledEvent
+ *			- Mouse movement: generates MouseMovedEvent
+ *			Verifies that _glfwWindow is valid before registering callbacks
  */
 void OpenGlWindow::SetWindowCallbacks() {
 	if (not _glfwWindow)
@@ -169,7 +169,7 @@ void OpenGlWindow::SetWindowCallbacks() {
  * @brief Sets the window width
  * @param width New window width in pixels
  * @details Updates the internal value in the _data structure. Note: this method only updates
- *          the stored value, it does not actually resize the window
+ *			the stored value, it does not actually resize the window
  */
 void OpenGlWindow::SetWidth(const unsigned int width) {
 	_data.width = width;
@@ -179,7 +179,7 @@ void OpenGlWindow::SetWidth(const unsigned int width) {
  * @brief Sets the window height
  * @param height New window height in pixels
  * @details Updates the internal value in the _data structure. Note: this method only updates
- *          the stored value, it does not actually resize the window
+ *			the stored value, it does not actually resize the window
  */
 void OpenGlWindow::SetHeight(const unsigned int height) {
 	_data.height = height;
@@ -189,8 +189,8 @@ void OpenGlWindow::SetHeight(const unsigned int height) {
  * @brief Enables or disables vertical synchronization (VSync)
  * @param enabled true to enable VSync, false to disable it
  * @details When enabled, limits the frame rate to the monitor's refresh rate to prevent tearing.
- *          If GLFW has not been initialized, prints a warning and returns without making changes.
- *          Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
+ *			If GLFW has not been initialized, prints a warning and returns without making changes.
+ *			Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
  */
 void OpenGlWindow::SetVSync(const bool enabled) {
 	if (not s_GLFWInitialized) {
@@ -204,16 +204,16 @@ void OpenGlWindow::SetVSync(const bool enabled) {
 /**
  * @brief Private method for OpenGL window initialization
  * @details Performs the following operations:
- *          1. Logs window information
- *          2. Initializes GLFW if not already done (also sets up error callback)
- *          3. Configures OpenGL context parameters (version 4.1 Core Profile with forward compatibility)
- *          4. Creates the GLFW window with the specified dimensions
- *          5. Makes the window's OpenGL context current
- *          6. Initializes GLAD to load OpenGL functions
- *          7. Associates window data with GLFW's user pointer
- *          8. Sets VSync according to configuration
- *          9. Registers all event callbacks
- *          Throws std::runtime_error if window creation or GLAD initialization fails.
+ *			1. Logs window information
+ *			2. Initializes GLFW if not already done (also sets up error callback)
+ *			3. Configures OpenGL context parameters (version 4.1 Core Profile with forward compatibility)
+ *			4. Creates the GLFW window with the specified dimensions
+ *			5. Makes the window's OpenGL context current
+ *			6. Initializes GLAD to load OpenGL functions
+ *			7. Associates window data with GLFW's user pointer
+ *			8. Sets VSync according to configuration
+ *			9. Registers all event callbacks
+ *			Throws std::runtime_error if window creation or GLAD initialization fails.
  */
 void OpenGlWindow::_Init() {
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
@@ -260,11 +260,11 @@ void OpenGlWindow::_Init() {
 /**
  * @brief Private method for cleanup and resource release
  * @details Releases GLFW window resources by resetting the _glfwWindow smart pointer,
- *          which automatically destroys the GLFW window by calling glfwDestroyWindow
- *          through the custom deleter.
- *          Note: glfwTerminate() should NOT be called here since GLFW is initialized
- *          globally and may be used by other windows. It should only be called once
- *          at application shutdown, after all windows are destroyed.
+ *			which automatically destroys the GLFW window by calling glfwDestroyWindow
+ *			through the custom deleter.
+ *			Note: glfwTerminate() should NOT be called here since GLFW is initialized
+ *			globally and may be used by other windows. It should only be called once
+ *			at application shutdown, after all windows are destroyed.
  */
 void OpenGlWindow::_Shutdown() {
 	_glfwWindow.reset();

@@ -22,14 +22,14 @@
  * @param argv Array of command-line argument strings
  * @return int Exit code (0 for success, 1 for failure)
  * @details This is the engine's main function that:
- *          1. Initializes the logging system
- *          2. Parses command-line arguments for window properties
- *          3. Creates the application using the factory function
- *          4. Runs the main application loop
- *          5. Cleans up and terminates logging
- *          Catches and handles exceptions thrown during initialization or runtime.
- *          The function is only defined when CE_API is defined (in engine builds).
- *          Client applications should not define their own main function.
+ *			1. Initializes the logging system
+ *			2. Parses command-line arguments for window properties
+ *			3. Creates the application using the factory function
+ *			4. Runs the main application loop
+ *			5. Cleans up and terminates logging
+ *			Catches and handles exceptions thrown during initialization or runtime.
+ *			The function is only defined when CE_API is defined (in engine builds).
+ *			Client applications should not define their own main function.
  */
 int main(const int argc, char* argv[]) {
 	int code = 0;
@@ -37,7 +37,7 @@ int main(const int argc, char* argv[]) {
 	Log::Log::Init();
 	try {
 #ifdef CE_DEBUG
-		Time::Chronometer timer;
+		Time::Chronometer chronometer;
 #endif
 
 		const auto app = Core::CreateApplication(CMD::GetWindowProps(argc, argv));

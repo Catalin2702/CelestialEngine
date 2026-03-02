@@ -18,14 +18,14 @@ namespace CE::Tools::ImGui {
  * @param key GLFW key code
  * @return ImGuiKey Corresponding ImGui key code, or ImGuiKey_None if not mapped
  * @details Maps GLFW key codes to ImGui key codes for proper input handling.
- *          Includes mappings for:
- *          - Navigation keys (arrows, home, end, page up/down)
- *          - Editing keys (backspace, delete, insert)
- *          - Function keys (F1-F12)
- *          - Alphanumeric keys (0-9, A-Z)
- *          - Special keys (space, enter, tab, escape)
- *          - Modifier keys (shift, ctrl, alt, super)
- *          - Keypad keys
+ *			Includes mappings for:
+ *			- Navigation keys (arrows, home, end, page up/down)
+ *			- Editing keys (backspace, delete, insert)
+ *			- Function keys (F1-F12)
+ *			- Alphanumeric keys (0-9, A-Z)
+ *			- Special keys (space, enter, tab, escape)
+ *			- Modifier keys (shift, ctrl, alt, super)
+ *			- Keypad keys
  */
 ImGuiKey GlfwKeyToImGuiKey(const int key) {
 	switch (key) {

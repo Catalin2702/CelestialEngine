@@ -37,10 +37,10 @@ class AppRenderEvent;
  * @namespace CE::Layers
  * @brief Layer system for organizing application logic into stackable components
  * @details Provides the I_ImGuiLayer interface for defining ImGui overlay layers that can handle
- *          input events specific to ImGui interactions. This allows for a clean separation of
- *          concerns between general application layers and UI-specific layers. The I_ImGuiLayer
- *          interface defines methods for handling keyboard and mouse events, as well as window
- *          resize events, which are essential for responsive UI behavior.
+ *			input events specific to ImGui interactions. This allows for a clean separation of
+ *			concerns between general application layers and UI-specific layers. The I_ImGuiLayer
+ *			interface defines methods for handling keyboard and mouse events, as well as window
+ *			resize events, which are essential for responsive UI behavior.
  */
 namespace CE::Layers {
 
@@ -48,9 +48,9 @@ namespace CE::Layers {
  * @class I_ImGuiLayer
  * @brief Abstract base class for ImGui overlay layers
  * @details Extends I_Layer to provide a specialized interface for ImGui-based UI layers.
- *          Defines pure virtual methods for handling various input events that are
- *          relevant for ImGui interactions. Concrete implementations (ImGuiOpenGlLayer,
- *          ImGuiMetalLayer) handle platform-specific rendering.
+ *			Defines pure virtual methods for handling various input events that are
+ *			relevant for ImGui interactions. Concrete implementations (ImGuiOpenGlLayer,
+ *			ImGuiMetalLayer) handle platform-specific rendering.
  */
 class I_ImGuiLayer: public I_Layer {
 public:

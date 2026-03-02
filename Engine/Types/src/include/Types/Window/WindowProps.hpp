@@ -24,7 +24,7 @@ class Event;
  * @namespace CE::Types::Window
  * @brief Types and utilities related to window management
  * @details Contains type definitions and helper structures for managing windows,
- *          including properties for window creation and event handling.
+ *			including properties for window creation and event handling.
  */
 namespace CE::Types::Window {
 
@@ -41,7 +41,7 @@ enum class GraphicsApi: uint8_t {
  * @struct WindowProps
  * @brief Structure holding window creation properties
  * @details Contains all necessary information to create and configure a window,
- *          including title, dimensions, and VSync setting.
+ *			including title, dimensions, and VSync setting.
  */
 struct WindowProps {
 	std::string title;								///< Window title displayed in the title bar
@@ -58,7 +58,7 @@ struct WindowProps {
 	 * @param VSync Enable or disable vertical synchronization
 	 * @param graphicsApi Graphics API to use for rendering
 	 * @details Initializes the WindowProps structure with the provided values.
-	 *          This structure is used to pass configuration parameters when creating a window.
+	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
 	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi);
 };
@@ -77,7 +77,7 @@ using CallbackFn = std::function<void(T&)>;
  * @brief Extended window properties including event callback
  * @tparam T Event type
  * @details Extends WindowProps with an event callback function. Used internally
- *          by window implementations to store window state and event handling.
+ *			by window implementations to store window state and event handling.
  */
 template<class T>
 struct WindowData: WindowProps {

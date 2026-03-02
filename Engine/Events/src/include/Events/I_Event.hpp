@@ -23,9 +23,9 @@
  * @namespace CE::Events
  * @brief Event system for handling various types of events in the engine
  * @details Provides the I_Event interface and EventDispatcher class for defining
- *          and dispatching events. Events are categorized by type and category
- *          to allow for efficient filtering and handling by different layers
- *          and systems within the engine.
+ *			and dispatching events. Events are categorized by type and category
+ *			to allow for efficient filtering and handling by different layers
+ *			and systems within the engine.
  */
 namespace CE::Events {
 
@@ -36,7 +36,7 @@ class EventDispatcher;
  * @enum EventType
  * @brief Enumeration of all possible event types in the engine
  * @details Each event type represents a specific kind of event that can occur.
- *          Events are categorized into application events, window events, input events, etc.
+ *			Events are categorized into application events, window events, input events, etc.
  */
 enum class EventType: uint8_t {
 	None = 0,
@@ -65,8 +65,8 @@ enum class EventType: uint8_t {
  * @enum EventCategory
  * @brief Bit flags for event categories
  * @details Categories are used to filter and route events efficiently.
- *          Multiple categories can be combined using bitwise OR.
- *          Each category is a single bit, allowing for efficient filtering.
+ *			Multiple categories can be combined using bitwise OR.
+ *			Each category is a single bit, allowing for efficient filtering.
  */
 enum EventCategory {
 	None = 0,
@@ -81,8 +81,8 @@ enum EventCategory {
  * @class I_Event
  * @brief Base interface class for all events in the engine
  * @details Abstract base class that defines the interface for all event types.
- *          Events are immutable once created and can be dispatched to handlers.
- *          The event system uses a polling mechanism where events are processed immediately.
+ *			Events are immutable once created and can be dispatched to handlers.
+ *			The event system uses a polling mechanism where events are processed immediately.
  */
 class CE_API I_Event {
 	friend class EventDispatcher;
@@ -120,7 +120,7 @@ public:
 	 * @brief Converts the event to a string representation
 	 * @return std::string String representation of the event
 	 * @details Default implementation returns the event name. Can be overridden
-	 *          for more detailed string representations.
+	 *			for more detailed string representations.
 	 */
 	[[nodiscard]] virtual std::string ToString() const { return GetName(); }
 
@@ -149,8 +149,8 @@ protected:
  * @class EventDispatcher
  * @brief Helper class for dispatching events to type-specific handlers
  * @details The EventDispatcher uses the visitor pattern to dispatch events to
- *          appropriate handlers based on the event's concrete type. It ensures
- *          type safety by checking the event type at runtime before casting.
+ *			appropriate handlers based on the event's concrete type. It ensures
+ *			type safety by checking the event type at runtime before casting.
  */
 class EventDispatcher {
 
@@ -169,8 +169,8 @@ public:
 	 * @param func Handler function that takes a reference to the event type
 	 * @return bool True if the event type matched and was dispatched
 	 * @details Checks if the event is of type T, and if so, casts it and calls
-	 *          the handler function. The event's handled flag is updated based
-	 *          on the handler's return value.
+	 *			the handler function. The event's handled flag is updated based
+	 *			on the handler's return value.
 	 */
 	template<typename T>
 	bool Dispatch(std::function<bool(T&)> func) {

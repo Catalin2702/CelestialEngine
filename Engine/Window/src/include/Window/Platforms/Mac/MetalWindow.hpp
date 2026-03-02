@@ -41,8 +41,8 @@ namespace CE::Window {
  * @class MetalWindow
  * @brief macOS-specific window implementation using Metal API
  * @details Provides a window implementation for macOS that uses Metal for rendering.
- *          Manages both GLFW window for input handling and Metal resources for graphics.
- *          This class integrates GLFW's cross-platform windowing with Apple's Metal API.
+ *			Manages both GLFW window for input handling and Metal resources for graphics.
+ *			This class integrates GLFW's cross-platform windowing with Apple's Metal API.
  */
 class MetalWindow final: public I_Window {
 public:
@@ -165,7 +165,7 @@ private:
 	/**
 	 * @brief Initializes the window and Metal layer
 	 * @details Creates the GLFW window, retrieves the native macOS window,
-	 *          and sets up the Metal layer for rendering
+	 *			and sets up the Metal layer for rendering
 	 */
 	void _InitWindow();
 

@@ -20,9 +20,9 @@
  * @namespace CE::Layers
  * @brief Layer system for organizing application logic into stackable components
  * @details Provides the LayerStack class for managing a collection of layers and overlays.
- *          The LayerStack allows adding and removing layers dynamically, and ensures that
- *          layers are updated and rendered in the correct order. Regular layers are inserted
- *          before overlays, allowing overlays to receive events first.
+ *			The LayerStack allows adding and removing layers dynamically, and ensures that
+ *			layers are updated and rendered in the correct order. Regular layers are inserted
+ *			before overlays, allowing overlays to receive events first.
  */
 namespace CE::Layers {
 
@@ -32,9 +32,9 @@ class I_Layer;
  * @class LayerStack
  * @brief Container for managing application layers and overlays
  * @details Maintains an ordered collection of layers where regular layers are inserted
- *          before overlays. Layers are updated/rendered in order, while events propagate
- *          in reverse order (overlays receive events first). This allows overlays like
- *          UI or debug tools to intercept events before they reach game layers.
+ *			before overlays. Layers are updated/rendered in order, while events propagate
+ *			in reverse order (overlays receive events first). This allows overlays like
+ *			UI or debug tools to intercept events before they reach game layers.
  */
 class CE_API LayerStack {
 using StackContainer = std::vector<I_Layer*>;
@@ -57,7 +57,7 @@ public:
 	 * @brief Adds a layer to the stack
 	 * @param layer Pointer to the layer to add
 	 * @details Layers are inserted before overlays in the stack. The layer's
-	 *          OnAttach() method is called after insertion.
+	 *			OnAttach() method is called after insertion.
 	 */
 	void PushLayer(I_Layer* layer);
 
@@ -65,7 +65,7 @@ public:
 	 * @brief Adds an overlay to the stack
 	 * @param overlay Pointer to the overlay layer to add
 	 * @details Overlays are always inserted at the end of the stack, after all
-	 *          regular layers. The overlay's OnAttach() method is called after insertion.
+	 *			regular layers. The overlay's OnAttach() method is called after insertion.
 	 */
 	void PushOverlay(I_Layer* overlay);
 
@@ -86,7 +86,7 @@ public:
 	/**
 	 * @brief Clears all layers from the stack
 	 * @details Detaches and deletes all layers. This is useful for explicit cleanup
-	 *          before other resources (like GLFW) are destroyed.
+	 *			before other resources (like GLFW) are destroyed.
 	 */
 	void Clear();
 

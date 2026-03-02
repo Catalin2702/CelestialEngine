@@ -45,13 +45,13 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 /**
  * @brief Attaches the ImGui Metal layer to the application
  * @details Performs the following initialization:
- *          - Creates ImGui context and applies dark theme
- *          - Configures ImGui backend flags for mouse support
- *          - Caches Metal window and GLFW window pointers
- *          - Initializes ImGui_ImplGlfw backend
- *          - Initializes ImGui Metal rendering backend
- *          - Sets up custom dark theme colors
- *          Throws std::runtime_error if window is not a MetalWindow or if initialization fails.
+ *			- Creates ImGui context and applies dark theme
+ *			- Configures ImGui backend flags for mouse support
+ *			- Caches Metal window and GLFW window pointers
+ *			- Initializes ImGui_ImplGlfw backend
+ *			- Initializes ImGui Metal rendering backend
+ *			- Sets up custom dark theme colors
+ *			Throws std::runtime_error if window is not a MetalWindow or if initialization fails.
  */
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
@@ -109,11 +109,11 @@ void ImGuiMetalLayer::OnDetach() {
 /**
  * @brief Updates the ImGui Metal layer every frame
  * @details Performs per-frame rendering:
- *          - Creates Metal command buffer and render pass descriptor
- *          - Starts new ImGui frame (Metal, GLFW, and ImGui)
- *          - Renders ImGui demo window
- *          - Finalizes ImGui rendering and encodes to Metal command buffer
- *          - Presents drawable to screen
+ *			- Creates Metal command buffer and render pass descriptor
+ *			- Starts new ImGui frame (Metal, GLFW, and ImGui)
+ *			- Renders ImGui demo window
+ *			- Finalizes ImGui rendering and encodes to Metal command buffer
+ *			- Presents drawable to screen
  */
 void ImGuiMetalLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());

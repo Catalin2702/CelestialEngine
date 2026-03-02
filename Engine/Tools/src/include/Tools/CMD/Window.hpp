@@ -27,12 +27,13 @@ namespace CE::Tools::CMD {
  * @param argv Array of command-line argument strings
  * @return Types::Window::WindowProps Window configuration extracted from arguments
  * @details Parses command-line arguments looking for window configuration flags:
- *          - --title="Window Title" : Sets window title
- *          - --width=1280 : Sets window width in pixels
- *          - --height=720 : Sets window height in pixels
- *          - --vsync=true/false : Enables/disables vertical synchronization
- *          Returns default window properties if no arguments are provided or if
- *          parsing fails. Uses case-insensitive matching for argument names.
+ *			- --title="Window Title" : Sets window title
+ *			- --width=1280 : Sets window width in pixels
+ *			- --height=720 : Sets window height in pixels
+ *			- --vsync=true/false : Enables/disables vertical synchronization
+ *			- --graphics-api=d3d11/d3d12/metal/opengl/vulkan : Sets the graphics API to use
+ *			Returns default window properties if no arguments are provided or if
+ *			parsing fails. Uses case-insensitive matching for argument names.
  */
 Types::Window::WindowProps GetWindowProps(int argc, char* argv[]);
 

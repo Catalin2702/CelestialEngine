@@ -15,7 +15,7 @@
 /**
  * @brief Example layer class for demonstration purposes
  * @details Simple layer implementation that can be used as a template for creating custom layers.
- *          This layer doesn't perform any specific operations in its callbacks.
+ *			This layer doesn't perform any specific operations in its callbacks.
  */
 class ExampleLayer: public Layers::I_Layer {
 public:
@@ -55,8 +55,8 @@ public:
 /**
  * @brief SandBox application class - main application entry point
  * @details Concrete implementation of the Application class that sets up the example layer
- *          and ImGui overlay layer. This class demonstrates how to create a basic application
- *          using the Celestial Engine framework.
+ *			and ImGui overlay layer. This class demonstrates how to create a basic application
+ *			using the Celestial Engine framework.
  */
 class SandBox final: public Core::Application {
 public:
@@ -101,7 +101,7 @@ private:
 	/**
 	 * @brief Initializes the application layers
 	 * @details Creates and pushes an ExampleLayer to the layer stack and an ImGuiLayer
-	 *          to the overlay stack for rendering the GUI
+	 *			to the overlay stack for rendering the GUI
 	 */
 	void _Init(const TypeWindow::GraphicsApi graphicsApi) {
 		auto layer = std::make_unique<ExampleLayer>();
@@ -134,7 +134,7 @@ private:
  * @brief Factory function to create the application instance with default properties
  * @return Core::Application* Pointer to the newly created SandBox application
  * @details This function is called by the engine's entry point to instantiate the application.
- *          Must be implemented by the client application.
+ *			Must be implemented by the client application.
  */
 std::unique_ptr<Core::Application> Core::CreateApplication() {
 	return std::make_unique<SandBox>();
@@ -145,7 +145,7 @@ std::unique_ptr<Core::Application> Core::CreateApplication() {
  * @param windowProps Window configuration properties (title, width, height, VSync)
  * @return Core::Application* Pointer to the newly created SandBox application
  * @details This function is called by the engine's entry point to instantiate the application
- *          with specific window properties. Must be implemented by the client application.
+ *			with specific window properties. Must be implemented by the client application.
  */
 std::unique_ptr<Core::Application> Core::CreateApplication(const TypeWindow::WindowProps& windowProps) {
 	return std::make_unique<SandBox>(windowProps);
@@ -160,7 +160,7 @@ std::unique_ptr<Core::Application> Core::CreateApplication(const TypeWindow::Win
  * @param graphicsApi Graphics API to use for rendering
  * @return Core::Application* Pointer to the newly created SandBox application
  * @details This function is called by the engine's entry point to instantiate the application
- *          with individual window parameters. Must be implemented by the client application.
+ *			with individual window parameters. Must be implemented by the client application.
  */
 std::unique_ptr<Core::Application> Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi) {
 	return std::make_unique<SandBox>(title, width, height, VSync, graphicsApi);

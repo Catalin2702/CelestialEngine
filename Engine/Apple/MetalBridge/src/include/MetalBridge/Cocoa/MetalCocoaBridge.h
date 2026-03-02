@@ -16,8 +16,8 @@
  * @namespace CE::Bridge
  * @brief Bridge functions for integrating Metal with Cocoa windows
  * @details Provides C++ functions to interact with Objective-C/Cocoa APIs for setting up
- *          Metal rendering in GLFW windows on macOS. These functions handle the conversion
- *          between C++ and Objective-C objects.
+ *			Metal rendering in GLFW windows on macOS. These functions handle the conversion
+ *			between C++ and Objective-C objects.
  */
 namespace CE::Bridge {
 
@@ -34,7 +34,7 @@ void* GetCocoaContentView(void* cocoaWindow);
  * @param cocoaView Pointer to NSView (as void*)
  * @param metalLayer Pointer to CAMetalLayer (as void*)
  * @details Configures the view to use the Metal layer for rendering, replacing
- *          the default Core Animation layer
+ *			the default Core Animation layer
  */
 void SetCocoaViewLayer(void* cocoaView, void* metalLayer);
 

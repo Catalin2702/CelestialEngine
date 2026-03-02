@@ -28,8 +28,8 @@ namespace CE::Tools::Time {
  * @class Chronometer
  * @brief RAII-style timing utility for measuring code execution time
  * @details Automatically starts timing on construction and stops on destruction,
- *          printing the elapsed time. Only active in debug builds for performance
- *          profiling without impacting release builds.
+ *			printing the elapsed time. Only active in debug builds for performance
+ *			profiling without impacting release builds.
  */
 class Chronometer {
 public:

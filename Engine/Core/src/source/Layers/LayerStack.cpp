@@ -16,7 +16,7 @@ namespace CE::Layers {
 /**
  * @brief LayerStack constructor implementation
  * @details Initializes the layer insert iterator to the beginning of the vector.
- *          This ensures layers are inserted before overlays.
+ *			This ensures layers are inserted before overlays.
  */
 LayerStack::LayerStack() {
 	_layerInsert = _layers.begin();
@@ -33,8 +33,8 @@ LayerStack::~LayerStack() {
 /**
  * @brief Clears all layers from the stack
  * @details Detaches and deletes all layers, then clears the vector and resets
- *          the insert iterator. This can be called explicitly for cleanup before
- *          the destructor, or will be called automatically by the destructor.
+ *			the insert iterator. This can be called explicitly for cleanup before
+ *			the destructor, or will be called automatically by the destructor.
  */
 void LayerStack::Clear() {
 	for (const auto layer: _layers) {
@@ -49,7 +49,7 @@ void LayerStack::Clear() {
  * @brief Pushes a layer onto the stack
  * @param layer Pointer to the layer to add
  * @details Inserts the layer at the current insert position (before overlays),
- *          calls OnAttach(), and updates the insert iterator
+ *			calls OnAttach(), and updates the insert iterator
  */
 void LayerStack::PushLayer(I_Layer* layer) {
 	_layerInsert = _layers.emplace(_layerInsert, layer);
@@ -61,7 +61,7 @@ void LayerStack::PushLayer(I_Layer* layer) {
  * @brief Pushes an overlay onto the stack
  * @param overlay Pointer to the overlay to add
  * @details Inserts the overlay at the end of the stack (after all layers)
- *          and calls OnAttach()
+ *			and calls OnAttach()
  */
 void LayerStack::PushOverlay(I_Layer* overlay) {
 	_layers.emplace_back(overlay);
@@ -72,7 +72,7 @@ void LayerStack::PushOverlay(I_Layer* overlay) {
  * @brief Removes a layer from the stack
  * @param layer Pointer to the layer to remove
  * @details Finds the layer in the stack, calls OnDetach(), removes it from
- *          the vector, and adjusts the insert iterator if necessary
+ *			the vector, and adjusts the insert iterator if necessary
  */
 void LayerStack::PopLayer(I_Layer* layer) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {

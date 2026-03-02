@@ -18,33 +18,33 @@ namespace CE::Bridge {
  * @brief Initializes the ImGui Metal rendering backend
  * @param device Void pointer to MTLDevice (will be cast to id<MTLDevice>)
  * @details Wraps ImGui_ImplMetal_Init() from the ImGui Metal backend.
- *          Casts the void pointer to the appropriate Objective-C Metal device type
- *          and initializes all Metal resources needed for ImGui rendering.
+ *			Casts the void pointer to the appropriate Objective-C Metal device type
+ *			and initializes all Metal resources needed for ImGui rendering.
  */
 void ImGuiMetalInit(void* device) {
-    ImGui_ImplMetal_Init(static_cast<id<MTLDevice>>(device));
+	ImGui_ImplMetal_Init(static_cast<id<MTLDevice>>(device));
 }
 
 /**
  * @brief Shuts down the ImGui Metal rendering backend
  * @details Wraps ImGui_ImplMetal_Shutdown() from the ImGui Metal backend.
- *          Releases all Metal resources allocated for ImGui rendering.
- *          Should be called before destroying the Metal device.
+ *			Releases all Metal resources allocated for ImGui rendering.
+ *			Should be called before destroying the Metal device.
  */
 void ImGuiMetalShutdown() {
-    ImGui_ImplMetal_Shutdown();
+	ImGui_ImplMetal_Shutdown();
 }
 
 /**
  * @brief Prepares ImGui for rendering a new frame with Metal
  * @param renderPassDescriptor Void pointer to MTLRenderPassDescriptor
  * @details Wraps ImGui_ImplMetal_NewFrame() from the ImGui Metal backend.
- *          Casts the void pointer to MTLRenderPassDescriptor and sets up
- *          the Metal render pass for ImGui drawing. Must be called at the
- *          start of each frame before any ImGui rendering commands.
+ *			Casts the void pointer to MTLRenderPassDescriptor and sets up
+ *			the Metal render pass for ImGui drawing. Must be called at the
+ *			start of each frame before any ImGui rendering commands.
  */
 void ImGuiMetalNewFrame(void* renderPassDescriptor) {
-    ImGui_ImplMetal_NewFrame(static_cast<MTLRenderPassDescriptor*>(renderPassDescriptor));
+	ImGui_ImplMetal_NewFrame(static_cast<MTLRenderPassDescriptor*>(renderPassDescriptor));
 }
 
 /**
@@ -53,17 +53,17 @@ void ImGuiMetalNewFrame(void* renderPassDescriptor) {
  * @param commandBuffer Void pointer to MTLCommandBuffer (id<MTLCommandBuffer>)
  * @param renderEncoder Void pointer to MTLRenderCommandEncoder (id<MTLRenderCommandEncoder>)
  * @details Wraps ImGui_ImplMetal_RenderDrawData() from the ImGui Metal backend.
- *          Casts all void pointers to their appropriate types and encodes all
- *          ImGui rendering commands into the Metal command buffer using the
- *          provided render encoder. Should be called after ImGui::Render()
- *          to actually draw the ImGui interface.
+ *			Casts all void pointers to their appropriate types and encodes all
+ *			ImGui rendering commands into the Metal command buffer using the
+ *			provided render encoder. Should be called after ImGui::Render()
+ *			to actually draw the ImGui interface.
  */
 void ImGuiMetalRenderDrawData(void* drawData, void* commandBuffer, void* renderEncoder) {
-    ImGui_ImplMetal_RenderDrawData(
-        static_cast<ImDrawData*>(drawData),
-        static_cast<id<MTLCommandBuffer>>(commandBuffer),
-        static_cast<id<MTLRenderCommandEncoder>>(renderEncoder)
-    );
+	ImGui_ImplMetal_RenderDrawData(
+		static_cast<ImDrawData*>(drawData),
+		static_cast<id<MTLCommandBuffer>>(commandBuffer),
+		static_cast<id<MTLRenderCommandEncoder>>(renderEncoder)
+	);
 }
 
 }

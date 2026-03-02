@@ -39,13 +39,13 @@ ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 /**
  * @brief Attaches the ImGui OpenGL layer to the application
  * @details Performs the following initialization:
- *          - Creates ImGui context and applies dark theme
- *          - Configures ImGui backend flags for mouse support
- *          - Caches OpenGL window and GLFW window pointers
- *          - Initializes ImGui_ImplGlfw backend
- *          - Initializes ImGui OpenGL3 rendering backend
- *          - Sets up custom dark theme colors
- *          Throws std::runtime_error if window is not an OpenGLWindow or if initialization fails.
+ *			- Creates ImGui context and applies dark theme
+ *			- Configures ImGui backend flags for mouse support
+ *			- Caches OpenGL window and GLFW window pointers
+ *			- Initializes ImGui_ImplGlfw backend
+ *			- Initializes ImGui OpenGL3 rendering backend
+ *			- Sets up custom dark theme colors
+ *			Throws std::runtime_error if window is not an OpenGLWindow or if initialization fails.
  */
 void ImGuiOpenGlLayer::OnAttach() {
 	ImGui::CreateContext();
@@ -88,9 +88,9 @@ void ImGuiOpenGlLayer::OnDetach() {
 /**
  * @brief Updates the ImGui OpenGL layer every frame
  * @details Performs per-frame rendering:
- *          - Starts new ImGui frame (OpenGL3, GLFW, and ImGui)
- *          - Renders ImGui demo window
- *          - Finalizes ImGui rendering and renders to OpenGL
+ *			- Starts new ImGui frame (OpenGL3, GLFW, and ImGui)
+ *			- Renders ImGui demo window
+ *			- Finalizes ImGui rendering and renders to OpenGL
  */
 void ImGuiOpenGlLayer::OnUpdate() {
 	const auto time = static_cast<float>(glfwGetTime());
