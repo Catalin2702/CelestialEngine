@@ -11,7 +11,7 @@ enable_testing()
 add_subdirectory(Engine)
 
 # Target personalizzato per eseguire tutti i test
-add_custom_target(run_all_tests
+add_custom_target(RunAllTests
 	COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Running all tests..."

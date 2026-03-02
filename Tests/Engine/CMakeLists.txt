@@ -1,11 +1,11 @@
-add_subdirectory(Core)
-add_subdirectory(Events)
-add_subdirectory(Native)
-add_subdirectory(Tools)
-add_subdirectory(Window)
+add_subdirectory(Modules/Core)
+add_subdirectory(Modules/Events)
+add_subdirectory(Modules/Native)
+add_subdirectory(Modules/Tools)
+add_subdirectory(Modules/Window)
 
 # Target personalizzato per eseguire tutti i test di Engine
-add_custom_target(run_engine_tests
+add_custom_target(RunEngineTests
 	COMMAND ${CMAKE_CTEST_COMMAND} -L Engine --output-on-failure
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Running all Engine tests..."

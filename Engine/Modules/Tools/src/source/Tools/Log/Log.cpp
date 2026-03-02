@@ -9,7 +9,9 @@
 
 #include "Tools/Log/Log.hpp"
 
+#ifndef CE_DIST
 #include <spdlog/sinks/stdout_color_sinks.h>
+#endif
 
 namespace CE::Tools::Log {
 
@@ -26,17 +28,18 @@ std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
  */
 void Log::Init() {
 #ifndef CE_DIST
-	// Drop all existing loggers to allow reinitialization
-	spdlog::drop_all();
-
 	spdlog::set_pattern("%^[%T] %n: %v%$");
-	_s_coreLogger = spdlog::stdout_color_mt("CelestialLogger");
-	_s_clientLogger = spdlog::stdout_color_mt("AppLogger");
+	if (not _s_coreLogger) {
+		_s_coreLogger = spdlog::stdout_color_mt("CelestialLogger");
+		if (_s_coreLogger)
+			_s_coreLogger->set_level(spdlog::level::trace);
+	}
 
-	if (_s_coreLogger)
-		_s_coreLogger->set_level(spdlog::level::trace);
-	if (_s_clientLogger)
-		_s_clientLogger->set_level(spdlog::level::trace);
+	if (not _s_clientLogger) {
+		_s_clientLogger = spdlog::stdout_color_mt("AppLogger");
+		 if (_s_clientLogger)
+			 _s_clientLogger->set_level(spdlog::level::trace);
+	}
 #endif
 }
 
@@ -47,13 +50,8 @@ void Log::Init() {
  */
 void Log::Shutdown() {
 #ifndef CE_DIST
-	if (_s_coreLogger)
-		_s_coreLogger.reset();
-	if (_s_clientLogger)
-		_s_clientLogger.reset();
-
-	// Drop all loggers from the registry
-	spdlog::drop_all();
+	spdlog::drop("CelestialLogger");
+	spdlog::drop("AppLogger");
 #endif
 }
 

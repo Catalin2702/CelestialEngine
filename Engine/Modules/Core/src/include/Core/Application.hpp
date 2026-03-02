@@ -81,9 +81,14 @@ public:
 
 public:
 	/**
+	 * @brief Updates the application state
+	 * @details Called every frame to update the application. Updates all layers in the layer stack.
+	 */
+	virtual void Update();
+
+	/**
 	 * @brief Runs the main application loop
-	 * @details Continues running until _running is set to false. Each iteration
-	 *			updates all layers and polls events from the window.
+	 * @details Starts the main loop, in which it calls Update every frame
 	 */
 	virtual void Run();
 
@@ -118,6 +123,29 @@ public:
 	 */
 	void PushOverlay(Layers::I_Layer* overlay);
 
+	/**
+	 * @brief Removes a layer from the layer stack
+	 * @param layer Pointer to the layer to remove
+	 * @details Delegates to LayerStack::PopLayer, which removes the layer
+	 *			from the stack and calls its OnDetach method
+	 */
+	void PopLayer(Layers::I_Layer* layer);
+
+	/**
+	 * @brief Removes an overlay from the layer stack
+	 * @param overlay Pointer to the overlay layer to remove
+	 * @details Delegates to LayerStack::PopOverlay, which removes the overlay
+	 *			from the stack and calls its OnDetach method
+	 */
+	void PopOverlay(Layers::I_Layer* overlay);
+
+	/**
+	 * @brief Checks if the application has any layers
+	 * @return bool True if there are layers in the stack, false otherwise
+	 * @details Utility method to check if the layer stack is empty
+	 */
+	[[nodiscard]] bool HasLayers() const { return not _layerStack.Empty(); }
+
 public:
 	/**
 	 * @brief Gets the singleton application instance
@@ -132,6 +160,13 @@ public:
 	 * @details Provides access to the window for rendering operations
 	 */
 	[[nodiscard]] Window::I_Window* GetWindow() const { return _window.get(); }
+
+	/**
+	 * @brief Forces a reset of the singleton instance pointer
+	 * @details FOR TESTING ONLY: Resets the instance pointer without calling destructor.
+	 *			Use this only when a test has crashed and left the instance in a bad state.
+	 */
+	static void ForceResetInstance() { _instance = nullptr; }
 
 protected:
 	/**

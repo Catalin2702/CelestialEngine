@@ -90,6 +90,13 @@ public:
 	 */
 	void Clear();
 
+public:
+	/**
+	 * @brief Checks if the layer stack is empty
+	 * @return bool True if the stack has no layers, false otherwise
+	 */
+	[[nodiscard]] bool Empty() const { return _layers.empty(); }
+
 	/**
 	 * @brief Gets an iterator to the beginning of the layer stack
 	 * @return StackContainer::iterator Iterator pointing to the first layer
@@ -104,7 +111,7 @@ public:
 
 private:
 	StackContainer _layers;							///< Vector containing all layers and overlays
-	StackContainer::iterator _layerInsert;			///< Iterator marking the position to insert layers (before overlays)
+	unsigned int _layerInsert;						///< Iterator marking the position to insert layers (before overlays)
 };
 
 }

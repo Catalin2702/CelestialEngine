@@ -37,13 +37,20 @@ namespace CE::Window {
 static bool s_GLFWInitialized = false;
 
 /**
+ * @brief Static counter to track the number of active windows
+ * @details Used to determine when to call glfwTerminate() (when count reaches 0)
+ */
+static int s_GLFWWindowCount = 0;
+
+/**
  * @brief MetalWindow constructor implementation
  * @param windowProps Window configuration properties (title, width, height, VSync)
  * @details Initializes window data with the provided properties and calls _Init()
- *			to set up the Metal device and create the window
+ *			to set up the Metal device and create the window. Increments the window count.
  */
 MetalWindow::MetalWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps) {
 	_Init();
+	s_GLFWWindowCount++;
 }
 
 /**
@@ -348,12 +355,18 @@ void MetalWindow::_InitWindow() {
  *			the GLFW window by calling glfwDestroyWindow through the custom deleter.
  *			Metal resources (_metalDevice, _commandQueue, _metalLayer, _metalWindow)
  *			are automatically released by their NS::SharedPtr destructors.
- *			Note: glfwTerminate() should NOT be called here since GLFW is initialized
- *			globally and may be used by other windows. It should only be called once
- *			at application shutdown, after all windows are destroyed.
+ *			Decrements the window count and calls glfwTerminate() when the last
+ *			window is destroyed to properly clean up GLFW resources.
  */
 void MetalWindow::_Shutdown() {
 	_glfwWindow.reset();
+
+	s_GLFWWindowCount--;
+	if (s_GLFWWindowCount == 0 && s_GLFWInitialized) {
+		glfwTerminate();
+		s_GLFWInitialized = false;
+		CE_CORE_INFO("GLFW terminated - all Metal windows closed");
+	}
 }
 
 }

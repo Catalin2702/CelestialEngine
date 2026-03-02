@@ -59,6 +59,7 @@ Application::Application() {
  * @details Initializes the application with the specified window properties
  */
 Application::Application(const TypeWindow::WindowProps& windowProps) {
+	assert(_instance == nullptr && "Application already exists!");
 	_Init(windowProps);
 }
 
@@ -73,6 +74,7 @@ Application::Application(const TypeWindow::WindowProps& windowProps) {
  *			constructing a WindowProps object and passing it to _Init
  */
 Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Types::Window::GraphicsApi graphicsApi) {
+	assert(_instance == nullptr && "Application already exists!");
 	_Init({title, width, height, VSync, graphicsApi});
 }
 
@@ -92,11 +94,14 @@ Application::~Application() {
 	// Then destroy the window (calls glfwDestroyWindow)
 	_window.reset();
 
-	// Finally, terminate GLFW now that everything is cleaned up
-	glfwTerminate();
-
 	// Reset the singleton instance pointer
 	_instance = nullptr;
+}
+
+void Application::Update() {
+	for (const auto layer: _layerStack)
+		layer->OnUpdate();
+	_window->OnUpdate();
 }
 
 /**
@@ -108,10 +113,7 @@ Application::~Application() {
  */
 void Application::Run() {
 	while (_running) {
-		for (const auto layer: _layerStack) {
-			layer->OnUpdate();
-		}
-		_window->OnUpdate();
+		Update();
 	}
 }
 
@@ -166,6 +168,14 @@ void Application::PushLayer(Layers::I_Layer *layer) {
  */
 void Application::PushOverlay(Layers::I_Layer *overlay) {
 	_layerStack.PushOverlay(overlay);
+}
+
+void Application::PopLayer(Layers::I_Layer* layer) {
+	_layerStack.PopLayer(layer);
+}
+
+void Application::PopOverlay(Layers::I_Layer* overlay) {
+	_layerStack.PopOverlay(overlay);
 }
 
 /**

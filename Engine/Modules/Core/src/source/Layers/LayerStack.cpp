@@ -18,9 +18,7 @@ namespace CE::Layers {
  * @details Initializes the layer insert iterator to the beginning of the vector.
  *			This ensures layers are inserted before overlays.
  */
-LayerStack::LayerStack() {
-	_layerInsert = _layers.begin();
-}
+LayerStack::LayerStack(): _layerInsert(0) {}
 
 /**
  * @brief LayerStack destructor implementation
@@ -42,7 +40,7 @@ void LayerStack::Clear() {
 		delete layer;
 	}
 	_layers.clear();
-	_layerInsert = _layers.begin();
+	_layerInsert = 0;
 }
 
 /**
@@ -52,9 +50,9 @@ void LayerStack::Clear() {
  *			calls OnAttach(), and updates the insert iterator
  */
 void LayerStack::PushLayer(I_Layer* layer) {
-	_layerInsert = _layers.emplace(_layerInsert, layer);
+	_layers.emplace(_layers.begin() + _layerInsert, layer);
+	_layerInsert++;
 	layer->OnAttach();
-	++_layerInsert;
 }
 
 /**
@@ -78,12 +76,7 @@ void LayerStack::PopLayer(I_Layer* layer) {
 	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {
 		layer->OnDetach();
 		_layers.erase(it);
-		const bool erasedBeforeInsert = (it < _layerInsert);
-		layer->OnDetach();
-		_layers.erase(it);
-		if (erasedBeforeInsert) {
-			--_layerInsert;
-		}
+		--_layerInsert;
 	}
 }
 
