@@ -35,7 +35,7 @@ namespace CE::Tools::CMD {
  *			Returns default window properties if no arguments are provided or if
  *			parsing fails. Uses case-insensitive matching for argument names.
  */
-Types::Window::WindowProps GetWindowProps(int argc, char* argv[]);
+Types::Window::WindowProps GetWindowProps(int argc, const char* argv[]);
 
 }
 

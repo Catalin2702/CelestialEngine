@@ -1,7 +1,11 @@
 enable_testing()
 
 set(SOURCES
-	src/StringManipulationTests.cpp
+	src/Tools/Time/ChronometerTests.cpp
+	src/Tools/ImGui/ImGuiTests.cpp
+	src/Tools/Log/LogTests.cpp
+	src/Tools/Manipulation/StringManipulationTests.cpp
+	src/Tools/CMD/WindowCMDTests.cpp
 )
 
 add_executable(CE_TestsTools

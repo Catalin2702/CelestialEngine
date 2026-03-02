@@ -31,7 +31,7 @@
  *			The function is only defined when CE_API is defined (in engine builds).
  *			Client applications should not define their own main function.
  */
-int main(const int argc, char* argv[]) {
+int main(const int argc, const char* argv[]) {
 	int code = 0;
 
 	Log::Log::Init();
@@ -52,7 +52,7 @@ int main(const int argc, char* argv[]) {
 		CE_CORE_ERROR("Unknown exception occurred");
 		code = 1;
 	}
-	Log::Log::Terminate();
+	Log::Log::Shutdown();
 
 	return code;
 }

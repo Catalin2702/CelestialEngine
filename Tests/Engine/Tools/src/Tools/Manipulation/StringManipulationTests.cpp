@@ -7,8 +7,9 @@
 // Updated: 2026-03-02
 //
 
-#include <gtest/gtest.h>
 #include "Tools/Manipulation/String.hpp"
+
+#include <gtest/gtest.h>
 
 using namespace CE::Tools::Manipulation;
 
@@ -17,13 +18,9 @@ using namespace CE::Tools::Manipulation;
  */
 class StringManipulationTest: public ::testing::Test {
 protected:
-	void SetUp() override {
-		// Setup code if needed
-	}
+	void SetUp() override {}
 
-	void TearDown() override {
-		// Cleanup code if needed
-	}
+	void TearDown() override {}
 };
 
 /**

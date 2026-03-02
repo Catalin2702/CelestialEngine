@@ -31,7 +31,7 @@ namespace CE::Tools::CMD {
  *			Uses case-insensitive matching for argument names. Throws std::runtime_error
  *			if invalid values are provided for numeric parameters.
  */
-Types::Window::WindowProps GetWindowProps(const int argc, char* argv[]){
+Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	std::string title = "CelestialEngine";
 	unsigned int width = 1280;
 	unsigned int height = 720;

@@ -51,7 +51,7 @@ public:
 	 * @details Flushes all pending log messages and releases logger resources.
 	 *			Should be called during application shutdown.
 	 */
-	static void Terminate();
+	static void Shutdown();
 
 	/**
 	 * @brief Gets the core logger instance

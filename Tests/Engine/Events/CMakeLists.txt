@@ -1,8 +1,8 @@
 set(SOURCES
-	src/ApplicationEventTests.cpp
-	src/EventTests.cpp
-	src/KeyEventTests.cpp
-	src/MouseEventTests.cpp
+	src/Events/ApplicationEventTests.cpp
+	src/Events/EventTests.cpp
+	src/Events/KeyEventTests.cpp
+	src/Events/MouseEventTests.cpp
 )
 
 add_executable(CE_TestsEvents
