@@ -16,7 +16,7 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/ImGui/MetalImGuiBridge.h"
+#include "MetalBridge/ImGui/ImGuiBridge.h"
 #include "Tools/ImGui/ImGui.hpp"
 #include "Tools/Log/Log.hpp"
 

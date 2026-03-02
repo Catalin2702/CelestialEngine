@@ -22,6 +22,10 @@ target_link_libraries(CE_TestsEvents PRIVATE
 	GTest::gtest_main
 )
 
+target_include_directories(CE_TestsEvents PUBLIC
+	${CMAKE_SOURCE_DIR}/Engine/Events/src/include
+)
+
 add_test(NAME EventsTests
 	COMMAND CE_TestsEvents
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>

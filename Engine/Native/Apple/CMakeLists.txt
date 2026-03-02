@@ -11,7 +11,3 @@ target_link_libraries(CE_Apple INTERFACE
 	CE_AppleMetal
 )
 
-# Expose Metal includes through CE_Apple
-target_include_directories(CE_Apple INTERFACE
-	Metal/MetalBridge/src/include
-)

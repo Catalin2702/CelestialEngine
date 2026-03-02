@@ -1,11 +1,11 @@
 set(HEADERS
-	src/include/MetalBridge/Cocoa/MetalCocoaBridge.h
-	src/include/MetalBridge/ImGui/MetalImGuiBridge.h
+	src/include/MetalBridge/Cocoa/CocoaBridge.h
+	src/include/MetalBridge/ImGui/ImGuiBridge.h
 )
 
 set(SOURCES
-	src/source/MetalBridge/Cocoa/MetalCocoaBridge.mm
-	src/source/MetalBridge/ImGui/MetalImGuiBridge.mm
+	src/source/MetalBridge/Cocoa/CocoaBridge.mm
+	src/source/MetalBridge/ImGui/ImGuiBridge.mm
 )
 
 add_library(CE_MetalBridge SHARED

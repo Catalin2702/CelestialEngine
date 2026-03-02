@@ -26,6 +26,10 @@ target_link_libraries(CE_TestsTools PRIVATE
 	GTest::gmock_main
 )
 
+target_include_directories(CE_TestsTools PUBLIC
+	${CMAKE_SOURCE_DIR}/Engine/Tools/src/include
+)
+
 add_test(NAME ToolsTests
 	COMMAND CE_TestsTools
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>

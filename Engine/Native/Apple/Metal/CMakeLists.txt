@@ -8,10 +8,11 @@ add_subdirectory(MetalBridge)
 
 # Link MetalBridge to CE_AppleMetal
 target_link_libraries(CE_AppleMetal INTERFACE
-	CE_MetalBridge
+	$<BUILD_INTERFACE:CE_MetalBridge>
+	$<INSTALL_INTERFACE:CE_MetalBridge>
 )
 
-# Expose MetalBridge includes through CE_AppleMetal
+# Propagate include directories from CE_MetalBridge
 target_include_directories(CE_AppleMetal INTERFACE
-	MetalBridge/src/include
+	$<TARGET_PROPERTY:CE_MetalBridge,INTERFACE_INCLUDE_DIRECTORIES>
 )

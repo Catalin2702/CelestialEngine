@@ -9,9 +9,6 @@ if(APPLE)
 	target_link_libraries(CE_Native INTERFACE
 		CE_Apple
 	)
-	target_include_directories(CE_Native INTERFACE
-		Apple/Metal/MetalBridge/src/include
-	)
 endif()
 
 # Future platforms can be added here:

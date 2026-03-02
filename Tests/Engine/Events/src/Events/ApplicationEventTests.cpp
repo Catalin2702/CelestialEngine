@@ -7,10 +7,10 @@
 // Updated: 2026-03-02
 //
 
-#include <gtest/gtest.h>
-
 #include <Events/ApplicationEvent.hpp>
 #include <Events/I_Event.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace CE::Events;
 
@@ -92,4 +92,45 @@ TEST_F(ApplicationEventTest, WindowCloseEvent_IsInCategory_ApplicationCategory) 
 	const WindowCloseEvent event;
 
 	EXPECT_TRUE(event.IsInCategory(EventCategoryApplication));
+}
+
+/**
+ * @brief Test that events start with handled flag set to false
+ */
+TEST_F(ApplicationEventTest, Event_IsHandled_InitiallyFalse) {
+	const WindowCloseEvent event;
+
+	EXPECT_FALSE(event.IsHandled());
+}
+
+
+// ============================================================================
+// AppEvent Tests
+// ============================================================================
+
+/**
+ * @brief Test that AppTickEvent has correct event type
+ */
+TEST_F(ApplicationEventTest, AppTickEvent_GetEventType_ReturnsCorrectType) {
+	constexpr AppTickEvent event;
+
+	EXPECT_EQ(event.GetEventType(), EventType::AppTick);
+}
+
+/**
+ * @brief Test that AppUpdateEvent has correct event type
+ */
+TEST_F(ApplicationEventTest, AppUpdateEvent_GetEventType_ReturnsCorrectType) {
+	constexpr AppUpdateEvent event;
+
+	EXPECT_EQ(event.GetEventType(), EventType::AppUpdate);
+}
+
+/**
+ * @brief Test that AppRenderEvent has correct event type
+ */
+TEST_F(ApplicationEventTest, AppRenderEvent_GetEventType_ReturnsCorrectType) {
+	constexpr AppRenderEvent event;
+
+	EXPECT_EQ(event.GetEventType(), EventType::AppRender);
 }

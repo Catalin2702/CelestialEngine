@@ -8,10 +8,8 @@
 //
 
 #include <gtest/gtest.h>
-#include "Events/ApplicationEvent.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
-#include "Events/I_Event.hpp"
+#include <Events/ApplicationEvent.hpp>
+#include <Events/I_Event.hpp>
 
 using namespace CE::Events;
 
@@ -30,14 +28,7 @@ protected:
 // Event Handled Flag Tests
 // ============================================================================
 
-/**
- * @brief Test that events start with handled flag set to false
- */
-TEST_F(EventTest, Event_IsHandled_InitiallyFalse) {
-	const WindowCloseEvent event;
 
-	EXPECT_FALSE(event.IsHandled());
-}
 
 // ============================================================================
 // EventDispatcher Tests
@@ -125,35 +116,4 @@ TEST_F(EventTest, EventDispatcher_Dispatch_PassesCorrectEventData) {
 
 	EXPECT_EQ(receivedWidth, expectedWidth);
 	EXPECT_EQ(receivedHeight, expectedHeight);
-}
-
-// ============================================================================
-// AppEvent Tests
-// ============================================================================
-
-/**
- * @brief Test that AppTickEvent has correct event type
- */
-TEST_F(EventTest, AppTickEvent_GetEventType_ReturnsCorrectType) {
-	constexpr AppTickEvent event;
-
-	EXPECT_EQ(event.GetEventType(), EventType::AppTick);
-}
-
-/**
- * @brief Test that AppUpdateEvent has correct event type
- */
-TEST_F(EventTest, AppUpdateEvent_GetEventType_ReturnsCorrectType) {
-	constexpr AppUpdateEvent event;
-
-	EXPECT_EQ(event.GetEventType(), EventType::AppUpdate);
-}
-
-/**
- * @brief Test that AppRenderEvent has correct event type
- */
-TEST_F(EventTest, AppRenderEvent_GetEventType_ReturnsCorrectType) {
-	constexpr AppRenderEvent event;
-
-	EXPECT_EQ(event.GetEventType(), EventType::AppRender);
 }

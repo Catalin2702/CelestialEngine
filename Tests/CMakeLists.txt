@@ -17,4 +17,3 @@ add_custom_target(run_all_tests
 	COMMENT "Running all tests..."
 	USES_TERMINAL
 )
-

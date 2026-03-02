@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Tools
+// Module: Tests/Engine/Tools/ImGui
 // File: ImGuiTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

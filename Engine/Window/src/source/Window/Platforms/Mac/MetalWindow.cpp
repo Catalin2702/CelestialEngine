@@ -12,7 +12,7 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/Cocoa/MetalCocoaBridge.h"
+#include "MetalBridge/Cocoa/CocoaBridge.h"
 #include "Tools/Log/Log.hpp"
 
 #define GLFW_INCLUDE_NONE

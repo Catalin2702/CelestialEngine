@@ -1,6 +1,6 @@
 //
 // Module: MetalBridge/Cocoa
-// File: MetalCocoaBridge.h
+// File: CocoaBridge.h
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-19
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
-#define CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
+#ifndef CE_APPLE_METAL_METALBRIDGE_COCOABRIDGE_H
+#define CE_APPLE_METAL_METALBRIDGE_COCOABRIDGE_H
 
 /**
  * @namespace CE::Bridge
@@ -64,4 +64,4 @@ int GetDisplayRefreshRate(void* cocoaWindow);
 
 }
 
-#endif //CE_APPLE_METAL_METALBRIDGE_METALCOCOABRIDGE_H
+#endif //CE_APPLE_METAL_METALBRIDGE_COCOABRIDGE_H

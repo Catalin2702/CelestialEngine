@@ -1,6 +1,6 @@
 //
 // Module: MetalBridge/ImGui
-// File: MetalImGuiBridge.h
+// File: ImGuiBridge.h
 // Created by: Catalin Chirosca
 // Updated by: Catalin Chirosca
 // Created: 2026-02-26
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_APPLE_METAL_METALBRIDGE_METALIMGUIBRIDGE_H
-#define CE_APPLE_METAL_METALBRIDGE_METALIMGUIBRIDGE_H
+#ifndef CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H
+#define CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H
 
 /**
  * @namespace CE::Bridge
@@ -57,4 +57,4 @@ void ImGuiMetalRenderDrawData(void* drawData, void* commandBuffer, void* renderE
 
 }
 
-#endif //CE_APPLE_METAL_METALBRIDGE_METALIMGUIBRIDGE_H
+#endif //CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H

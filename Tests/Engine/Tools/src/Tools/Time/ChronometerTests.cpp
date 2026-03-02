@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Tools
+// Module: Tests/Engine/Tools/Time
 // File: ChronometerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
@@ -13,7 +13,6 @@
 #include <chrono>
 #include <thread>
 #include <gtest/gtest.h>
-#include <spdlog/spdlog.h>
 
 using namespace CE::Tools::Time;
 
