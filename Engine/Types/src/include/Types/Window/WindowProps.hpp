@@ -45,11 +45,17 @@ enum class GraphicsApi: uint8_t {
  */
 struct WindowProps {
 	std::string title;								///< Window title displayed in the title bar
-	unsigned int width;								///< Window width in pixels
-	unsigned int height;							///< Window height in pixels
-	bool VSync;										///< Vertical synchronization enabled/disabled
-	GraphicsApi graphicsApi;						///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
+	unsigned int width = 0;							///< Window width in pixels
+	unsigned int height = 0;						///< Window height in pixels
+	bool VSync = false;								///< Vertical synchronization enabled/disabled
+	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
 
+	/**
+	 * @brief Default constructor
+	 * @details Initializes the WindowProps structure with default values:
+	 *			title = "", width = 0, height = 0, VSync = false, graphicsApi = None.
+	 */
+	WindowProps() = default;
 	/**
 	 * @brief Constructor
 	 * @param title Window title string
@@ -83,6 +89,7 @@ template<class T>
 struct WindowData: WindowProps {
 	CallbackFn<T> eventCallback;					///< Callback function for event handling
 
+	WindowData() = default;
 	/**
 	 * @brief Constructor
 	 * @param title Window title string

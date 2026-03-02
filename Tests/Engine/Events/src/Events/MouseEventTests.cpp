@@ -7,10 +7,10 @@
 // Updated: 2026-03-02
 //
 
-#include <gtest/gtest.h>
-
 #include <Events/I_Event.hpp>
 #include <Events/MouseEvent.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace CE::Events;
 

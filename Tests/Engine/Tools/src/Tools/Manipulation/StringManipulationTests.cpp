@@ -7,7 +7,7 @@
 // Updated: 2026-03-02
 //
 
-#include "Tools/Manipulation/String.hpp"
+#include <Tools/Manipulation/String.hpp>
 
 #include <gtest/gtest.h>
 

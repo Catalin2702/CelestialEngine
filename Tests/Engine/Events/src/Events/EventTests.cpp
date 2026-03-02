@@ -7,9 +7,10 @@
 // Updated: 2026-03-02
 //
 
-#include <gtest/gtest.h>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/I_Event.hpp>
+
+#include <gtest/gtest.h>
 
 using namespace CE::Events;
 

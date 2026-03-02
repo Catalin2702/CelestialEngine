@@ -2,6 +2,7 @@ add_subdirectory(Core)
 add_subdirectory(Events)
 add_subdirectory(Native)
 add_subdirectory(Tools)
+add_subdirectory(Window)
 
 # Target personalizzato per eseguire tutti i test di Engine
 add_custom_target(run_engine_tests

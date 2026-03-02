@@ -7,7 +7,7 @@
 // Updated: 2026-03-02
 //
 
-#include "Tools/Log/Log.hpp"
+#include <Tools/Log/Log.hpp>
 
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>

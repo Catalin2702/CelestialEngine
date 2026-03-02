@@ -7,9 +7,9 @@
 // Updated: 2026-03-02
 //
 
-#include "Tools/CMD/Window.hpp"
-#include "Tools/Log/Log.hpp"
-#include "Types/Window/WindowProps.hpp"
+#include <Tools/CMD/Window.hpp>
+#include <Tools/Log/Log.hpp>
+#include <Types/Window/WindowProps.hpp>
 
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
