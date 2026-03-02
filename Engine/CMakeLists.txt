@@ -21,13 +21,14 @@ find_package(spdlog CONFIG REQUIRED)
 add_subdirectory(Core)
 add_subdirectory(Define)
 add_subdirectory(Events)
+add_subdirectory(Native)
 add_subdirectory(Tools)
 add_subdirectory(Types)
 add_subdirectory(Window)
 
 if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
-	add_subdirectory(Apple/MetalBridge)
+
 endif()
 
 add_library(CelestialEngine SHARED
@@ -41,6 +42,7 @@ target_link_libraries(CelestialEngine PUBLIC
 	CE_Core
 	CE_Define
 	CE_Events
+	CE_Native
 	CE_Tools
 	CE_Types
 	CE_Window
@@ -50,12 +52,11 @@ target_link_libraries(CelestialEngine PUBLIC
 
 if(APPLE)
 	target_link_libraries(CelestialEngine PUBLIC
-		CE_MetalCpp
-		CE_MetalBridge
+		MetalCpp
 	)
 endif()
 
-target_include_directories(CelestialEngine
-	PUBLIC src/include
-	PUBLIC src/internal
+target_include_directories(CelestialEngine PUBLIC
+	src/include
+	src/internal
 )

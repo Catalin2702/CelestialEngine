@@ -19,7 +19,7 @@ set_target_properties(CE_MetalBridge PROPERTIES
 
 target_link_libraries(CE_MetalBridge PUBLIC
 	CE_Config
-	CE_MetalCpp
+	MetalCpp
 
 	imgui::imgui
 

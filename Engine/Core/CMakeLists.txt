@@ -35,8 +35,9 @@ target_link_libraries(CE_Core PUBLIC
 
 if(APPLE)
 	target_link_libraries(CE_Core PUBLIC
-		CE_MetalBridge
-		CE_MetalCpp
+		CE_Native
+
+		MetalCpp
 	)
 endif()
 
@@ -52,7 +53,7 @@ target_include_directories(CE_Core PUBLIC
 
 if(APPLE)
 	target_include_directories(CE_Core PUBLIC
-		../Apple/MetalBridge/src/include
+		../Native/Apple/Metal/MetalBridge/src/include
 		../Vendor/Apple/Metal/MetalCpp/src/include
 	)
 endif()
