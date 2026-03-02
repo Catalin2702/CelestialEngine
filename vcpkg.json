@@ -6,6 +6,7 @@
 	"dependencies": [
 		"glad",
 		"glfw3",
+		"gtest",
 		{
 			"name": "imgui",
 			"features": [
@@ -24,6 +25,10 @@
 		{
 			"name": "glfw3",
 			"version": "3.4#1"
+		},
+		{
+			"name": "gtest",
+			"version": "1.17.0#2"
 		},
 		{
 			"name": "imgui",

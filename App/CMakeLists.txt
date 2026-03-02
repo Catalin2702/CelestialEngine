@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
+include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
 project(CE_App LANGUAGES CXX VERSION 0.0.3)
 

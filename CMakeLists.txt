@@ -10,5 +10,8 @@ endif()
 
 project(CE LANGUAGES CXX)
 
+enable_testing()
+
 add_subdirectory(Engine)
 add_subdirectory(App)
+add_subdirectory(Tests)

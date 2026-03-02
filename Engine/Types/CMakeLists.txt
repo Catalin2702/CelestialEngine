@@ -8,8 +8,6 @@ set(SOURCES
 	src/source/Types/Window/WindowDestructor.cpp
 )
 
-
-
 add_library(CE_Types SHARED
 	${HEADERS}
 	${SOURCES}
@@ -19,7 +17,7 @@ set_target_properties(CE_Types PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
-target_link_libraries(CE_Types
+target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
 

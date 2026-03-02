@@ -3,9 +3,8 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 cmake_minimum_required(VERSION 3.21)
-set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release) # Set DIST as release build
 
-include("${CMAKE_SOURCE_DIR}/Engine/config/cmake/CelestialEngineMacros.cmake")
+include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
 project(CelestialEngine LANGUAGES CXX VERSION 0.0.3)
 
