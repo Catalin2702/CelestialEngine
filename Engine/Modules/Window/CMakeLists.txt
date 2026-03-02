@@ -68,6 +68,6 @@ target_include_directories(CE_Window PUBLIC
 if(APPLE)
 	target_include_directories(CE_Window PUBLIC
 		../Native/Apple/Metal/MetalBridge/src/include
-		../Vendor/Apple/Metal/MetalCpp/src/include
+		../../Vendor/Apple/Metal/MetalCpp/src/include
 	)
 endif()

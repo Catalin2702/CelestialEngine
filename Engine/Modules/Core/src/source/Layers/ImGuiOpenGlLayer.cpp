@@ -111,7 +111,7 @@ void ImGuiOpenGlLayer::OnUpdate() {
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with Metal!");
+	ImGui::Text("Hello from ImGui with OpenGl!");
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 	if (ImGui::Button("Click Me!")) {
 		CE_CORE_INFO("Button clicked!");

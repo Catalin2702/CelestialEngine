@@ -54,6 +54,6 @@ target_include_directories(CE_Core PUBLIC
 if(APPLE)
 	target_include_directories(CE_Core PUBLIC
 		../Native/Apple/Metal/MetalBridge/src/include
-		../Vendor/Apple/Metal/MetalCpp/src/include
+		../../Vendor/Apple/Metal/MetalCpp/src/include
 	)
 endif()
