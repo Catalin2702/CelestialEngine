@@ -7,8 +7,6 @@
 // Updated: 2026-03-02
 //
 
-#ifndef CE_DIST
-
 #include <Tools/CMD/Window.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
@@ -17,6 +15,7 @@
 #include <spdlog/spdlog.h>
 
 using namespace CE::Tools::CMD;
+using namespace CE::Tools::Log;
 using namespace CE::Types::Window;
 
 /**
@@ -25,15 +24,11 @@ using namespace CE::Types::Window;
 class WindowCMDTest: public ::testing::Test {
 protected:
 	void SetUp() override {
-		// Initialize logging system for tests that use CE_ERROR/CE_CORE_WARN macros
-		// Logger cleanup is now handled internally by Log::Init()
-		CE::Tools::Log::Log::Init();
+		Log::Init();
 	}
 
 	void TearDown() override {
-		// Clean up logging system
-		// Logger cleanup is now handled internally by Log::Shutdown()
-		CE::Tools::Log::Log::Shutdown();
+		Log::Shutdown();
 	}
 };
 
@@ -462,5 +457,3 @@ TEST_F(WindowCMDTest, GetWindowProps_UnrecognizedArguments_Ignored) {
 
 	EXPECT_EQ(props.width, 1024);
 }
-
-#endif

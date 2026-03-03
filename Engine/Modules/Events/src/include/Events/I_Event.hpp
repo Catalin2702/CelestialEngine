@@ -140,8 +140,14 @@ public:
 	 */
 	[[nodiscard]] bool IsHandled() const { return _handled; }
 
+	/**
+	 * @brief Marks the event as handled
+	 * @details Sets the handled flag to true, indicating that the event has been processed
+	 */
+	void Consume() const {_handled = true; }
+
 protected:
-	bool _handled = false;							///< Flag indicating whether the event has been handled
+	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
 };
 
 
@@ -175,7 +181,8 @@ public:
 	template<typename T>
 	bool Dispatch(std::function<bool(T&)> func) {
 		if (_event.GetEventType() == T::GetStaticType()) {
-			_event._handled |= func(static_cast<T&>(_event));
+			if (func(static_cast<T&>(_event)))
+				_event.Consume();
 			return true;
 		}
 		return false;

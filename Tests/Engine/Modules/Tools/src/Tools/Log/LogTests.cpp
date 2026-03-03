@@ -7,12 +7,9 @@
 // Updated: 2026-03-02
 //
 
-#ifndef CE_DIST
-
 #include <Tools/Log/Log.hpp>
 
 #include <gtest/gtest.h>
-#include <spdlog/spdlog.h>
 
 using namespace CE::Tools::Log;
 
@@ -67,7 +64,7 @@ TEST_F(LogTest, GetCoreLogger_AfterInit_ReturnsValidLogger) {
 	EXPECT_NE(logger, nullptr);
 #else
 	// In distribution builds, logger might be null
-	EXPECT_TRUE(true);
+	EXPECT_EQ(logger, nullptr);
 #endif
 }
 
@@ -82,7 +79,7 @@ TEST_F(LogTest, GetClientLogger_AfterInit_ReturnsValidLogger) {
 	EXPECT_NE(logger, nullptr);
 #else
 	// In distribution builds, logger might be null
-	EXPECT_TRUE(true);
+	EXPECT_EQ(logger, nullptr);
 #endif
 }
 
@@ -95,10 +92,10 @@ TEST_F(LogTest, GetLoggers_CoreAndClient_AreDifferent) {
 	const auto& clientLogger = Log::GetClientLogger();
 
 #ifndef CE_DIST
-	EXPECT_NE(coreLogger.get(), clientLogger.get());
+	EXPECT_NE(coreLogger, clientLogger);
 #else
 	// In distribution builds, both might be null
-	EXPECT_TRUE(true);
+	EXPECT_EQ(coreLogger, clientLogger);
 #endif
 }
 
@@ -120,7 +117,7 @@ TEST_F(LogTest, CoreLogger_LogMessage_NoErrors) {
 		}
 	});
 #else
-	EXPECT_TRUE(true);
+	EXPECT_EQ(logger, nullptr);
 #endif
 }
 
@@ -142,7 +139,7 @@ TEST_F(LogTest, ClientLogger_LogMessage_NoErrors) {
 		}
 	});
 #else
-	EXPECT_TRUE(true);
+	EXPECT_EQ(logger, nullptr);
 #endif
 }
 
@@ -161,7 +158,7 @@ TEST_F(LogTest, Logger_FormattedMessage_NoErrors) {
 		}
 	});
 #else
-	EXPECT_TRUE(true);
+	EXPECT_EQ(logger, nullptr);
 #endif
 }
 
@@ -191,11 +188,13 @@ TEST_F(LogTest, GetLogger_BeforeInit_ReturnsLogger) {
 TEST_F(LogTest, Logger_DistBuild_HandlesGracefully) {
 	// This test ensures the code compiles and runs in both debug and dist modes
 	EXPECT_NO_THROW(Log::Init());
+
 #ifndef CE_DIST
 	if (const auto& logger = Log::GetCoreLogger()) {
 		EXPECT_NO_THROW(logger->info("This should log in debug builds"));
 	}
 #endif
+
 	EXPECT_NO_THROW(Log::Shutdown());
 }
 
@@ -218,8 +217,8 @@ TEST_F(LogTest, Logger_MultipleAccesses_ThreadSafe) {
 		}
 	}
 #else
-	EXPECT_TRUE(true);
+	const auto& coreLogger = Log::GetCoreLogger();
+	const auto& clientLogger = Log::GetClientLogger();
+	EXPECT_EQ(coreLogger, clientLogger);
 #endif
 }
-
-#endif

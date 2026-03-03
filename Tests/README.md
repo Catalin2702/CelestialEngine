@@ -8,6 +8,7 @@ Questa directory contiene tutti i test per il progetto CelestialEngine.
 Tests/
 ├── Engine/			# Test per il motore
 │   ├── Core/		# Test per CE_Core
+│   ├── Define/		# Test per CE_Define (macro compilation tests)
 │   ├── Events/		# Test per CE_Events
 │   └── Tools/		# Test per CE_Tools
 └── Editor/			# Test per l'editor (futuro)
@@ -40,6 +41,7 @@ cd .debug
 ctest -L Events --output-on-failure  # Solo test Events
 ctest -L Tools --output-on-failure   # Solo test Tools
 ctest -L Core --output-on-failure	# Solo test Core
+ctest -L Define --output-on-failure  # Solo test Define
 ```
 
 ### Test con output verbose
@@ -61,9 +63,10 @@ ctest --rerun-failed --output-on-failure
 I test sono organizzati con i seguenti label:
 
 - **Engine**: Tutti i test del motore
+- **Core**: Test del core (quando implementati)
+- **Define**: Test delle macro (compilation tests)
 - **Events**: Test del sistema di eventi
 - **Tools**: Test degli strumenti
-- **Core**: Test del core (quando implementati)
 
 ## Aggiungere Nuovi Test
 

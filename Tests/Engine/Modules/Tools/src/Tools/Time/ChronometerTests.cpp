@@ -22,14 +22,10 @@ using namespace CE::Tools::Time;
 class ChronometerTest: public ::testing::Test {
 protected:
 	void SetUp() override {
-		// Initialize logging for Chronometer output
-		// Logger cleanup is now handled internally by Log::Init()
 		CE::Tools::Log::Log::Init();
 	}
 
 	void TearDown() override {
-		// Clean up logging system
-		// Logger cleanup is now handled internally by Log::Shutdown()
 		CE::Tools::Log::Log::Shutdown();
 	}
 };

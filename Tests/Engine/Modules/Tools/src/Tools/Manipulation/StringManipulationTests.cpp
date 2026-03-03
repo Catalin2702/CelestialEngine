@@ -110,3 +110,19 @@ TEST_F(StringManipulationTest, ToLowerCase_SingleCharLowercase_RemainsUnchanged)
 
 	EXPECT_EQ(result, expected);
 }
+
+TEST_F(StringManipulationTest, ToLowerCase_ConstCharPointer_ReturnsLowercase) {
+	const char* input = "CONSTANT STRING";
+	constexpr std::string expected = "constant string";
+	const std::string result = ToLowerCase(input);
+
+	EXPECT_EQ(result, expected);
+}
+
+TEST_F(StringManipulationTest, ToLowerCase_ConstCharPointerWithNumbers_ReturnsLowercase) {
+	const char* input = "STRING123WITH456NUMBERS";
+	const std::string expected = "string123with456numbers";
+	const std::string result = ToLowerCase(input);
+
+	EXPECT_EQ(result, expected);
+}

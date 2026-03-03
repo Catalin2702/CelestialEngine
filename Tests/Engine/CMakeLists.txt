@@ -1,4 +1,5 @@
 add_subdirectory(Modules/Core)
+add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
 add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Tools)
