@@ -9,7 +9,6 @@
 
 #pragma once
 
-
 #ifndef CE_TOOLS_TIME_TIMER_HPP
 #define CE_TOOLS_TIME_TIMER_HPP
 

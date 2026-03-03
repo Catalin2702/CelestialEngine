@@ -56,7 +56,6 @@ private:
 	bool _shouldHandleEvent = false;
 };
 
-
 /**
  * @brief Test fixture for I_Layer tests
  */
@@ -70,7 +69,6 @@ protected:
 		// Cleanup code if needed
 	}
 };
-
 
 /**
  * @brief Test Layer construction
@@ -87,7 +85,6 @@ TEST_F(LayerTest, Construction) {
 #endif
 }
 
-
 /**
  * @brief Test Layer construction with default name
  */
@@ -100,7 +97,6 @@ TEST_F(LayerTest, ConstructionDefaultName) {
 	EXPECT_EQ(layer.GetDebugName(), "MockLayer");
 #endif
 }
-
 
 /**
  * @brief Test Layer OnAttach
@@ -115,7 +111,6 @@ TEST_F(LayerTest, OnAttach) {
 	EXPECT_TRUE(layer.IsAttached());
 }
 
-
 /**
  * @brief Test Layer OnDetach
  */
@@ -128,7 +123,6 @@ TEST_F(LayerTest, OnDetach) {
 	layer.OnDetach();
 	EXPECT_FALSE(layer.IsAttached());
 }
-
 
 /**
  * @brief Test Layer OnUpdate
@@ -148,7 +142,6 @@ TEST_F(LayerTest, OnUpdate) {
 	EXPECT_EQ(layer.GetUpdateCount(), 3);
 }
 
-
 /**
  * @brief Test Layer OnEvent without handling
  */
@@ -165,7 +158,6 @@ TEST_F(LayerTest, OnEventNotHandled) {
 	EXPECT_EQ(layer.GetEventCount(), 1);
 }
 
-
 /**
  * @brief Test Layer OnEvent with handling
  */
@@ -181,7 +173,6 @@ TEST_F(LayerTest, OnEventHandled) {
 	EXPECT_TRUE(handled);
 	EXPECT_EQ(layer.GetEventCount(), 1);
 }
-
 
 /**
  * @brief Test Layer receiving multiple events
@@ -205,7 +196,6 @@ TEST_F(LayerTest, MultipleEvents) {
 	layer.OnEvent(resizeEvent);
 	EXPECT_EQ(layer.GetEventCount(), 3);
 }
-
 
 /**
  * @brief Test Layer lifecycle
@@ -237,21 +227,17 @@ TEST_F(LayerTest, LayerLifecycle) {
 	EXPECT_FALSE(layer.IsAttached());
 }
 
-
 #ifdef CE_DEBUG
 /**
  * @brief Test Layer debug name
  */
 TEST_F(LayerTest, DebugName) {
-	MockLayer layer1("Layer1");
-	MockLayer layer2("Layer2");
-	MockLayer layer3;
+	const MockLayer layer1("Layer1");
+	const MockLayer layer2("Layer2");
+	const MockLayer layer3;
 
 	EXPECT_EQ(layer1.GetDebugName(), "Layer1");
 	EXPECT_EQ(layer2.GetDebugName(), "Layer2");
 	EXPECT_EQ(layer3.GetDebugName(), "MockLayer");
 }
 #endif
-
-
-

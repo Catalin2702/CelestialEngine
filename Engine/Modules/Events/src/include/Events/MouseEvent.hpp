@@ -189,7 +189,6 @@ public:
 	EVENT_CLASS_TYPE(MouseButtonReleased)
 };
 
-
 }
 
 #endif //CE_EVENTS_MOUSEEVENT_HPP

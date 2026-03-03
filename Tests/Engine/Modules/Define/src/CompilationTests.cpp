@@ -7,7 +7,6 @@
 // Updated: 2026-03-03
 //
 
-
 // Include the macros we want to test
 #include <Define/Bind.hpp>
 #include <Define/Event.hpp>

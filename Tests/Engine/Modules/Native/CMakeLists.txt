@@ -29,7 +29,6 @@ target_link_libraries(CE_TestsNative PRIVATE
 	GTest::gmock_main
 )
 
-
 add_test(NAME NativeTests
 	COMMAND CE_TestsNative
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>

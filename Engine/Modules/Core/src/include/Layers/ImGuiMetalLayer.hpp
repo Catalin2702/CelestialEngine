@@ -155,5 +155,4 @@ private:
 
 }
 
-
 #endif //CE_LAYERS_IMGUIMETALLAYER_HPP

@@ -103,7 +103,6 @@ TEST_F(ApplicationEventTest, Event_IsHandled_InitiallyFalse) {
 	EXPECT_FALSE(event.IsHandled());
 }
 
-
 // ============================================================================
 // AppEvent Tests
 // ============================================================================

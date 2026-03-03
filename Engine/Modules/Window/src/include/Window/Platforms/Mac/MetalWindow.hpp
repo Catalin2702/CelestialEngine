@@ -186,5 +186,4 @@ private:
 
 }
 
-
 #endif //CE_WINDOW_MAC_METALWINDOW_HPP

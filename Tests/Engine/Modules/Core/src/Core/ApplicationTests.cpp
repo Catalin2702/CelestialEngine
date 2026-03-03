@@ -70,7 +70,6 @@ private:
 	int _eventCount = 0;
 };
 
-
 /**
  * @brief Test fixture for Application tests
  */
@@ -86,7 +85,6 @@ protected:
 		Log::Shutdown();
 	}
 };
-
 
 /**
  * @brief Test Application construction with default parameters
@@ -443,7 +441,6 @@ public:
 private:
 	bool* _detachedFlag;
 };
-
 
 /**
  * @brief Test destructor cleanup

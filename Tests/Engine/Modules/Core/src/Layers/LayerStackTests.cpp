@@ -57,7 +57,6 @@ private:
 	int _eventCount = 0;
 };
 
-
 /**
  * @brief Test fixture for LayerStack tests
  */
@@ -71,7 +70,6 @@ protected:
 	}
 };
 
-
 /**
  * @brief Test LayerStack construction
  */
@@ -80,7 +78,6 @@ TEST_F(LayerStackTest, Construction) {
 
 	EXPECT_EQ(stack.begin(), stack.end());
 }
-
 
 /**
  * @brief Test pushing a single layer
@@ -98,7 +95,6 @@ TEST_F(LayerStackTest, PushLayer) {
 	EXPECT_EQ(layer->GetAttachCount(), 1);
 	EXPECT_NE(stack.begin(), stack.end());
 }
-
 
 /**
  * @brief Test pushing multiple layers
@@ -126,7 +122,6 @@ TEST_F(LayerStackTest, PushMultipleLayers) {
 	EXPECT_EQ(*it, layer3);
 }
 
-
 /**
  * @brief Test pushing a single overlay
  */
@@ -141,7 +136,6 @@ TEST_F(LayerStackTest, PushOverlay) {
 	EXPECT_TRUE(overlay->IsAttached());
 	EXPECT_EQ(overlay->GetAttachCount(), 1);
 }
-
 
 /**
  * @brief Test pushing layers and overlays
@@ -169,7 +163,6 @@ TEST_F(LayerStackTest, PushLayersAndOverlays) {
 	EXPECT_EQ(*it, overlay2);
 }
 
-
 /**
  * @brief Test popping a layer
  */
@@ -189,7 +182,6 @@ TEST_F(LayerStackTest, PopLayer) {
 	delete layer;
 }
 
-
 /**
  * @brief Test popping an overlay
  */
@@ -207,7 +199,6 @@ TEST_F(LayerStackTest, PopOverlay) {
 
 	delete overlay;
 }
-
 
 /**
  * @brief Test clearing the stack
@@ -231,7 +222,6 @@ TEST_F(LayerStackTest, Clear) {
 	EXPECT_EQ(stack.begin(), stack.end());
 }
 
-
 /**
  * @brief Test iterating through the stack
  */
@@ -253,7 +243,6 @@ TEST_F(LayerStackTest, Iteration) {
 
 	EXPECT_EQ(count, 3);
 }
-
 
 /**
  * @brief Test layer stack lifecycle
@@ -285,4 +274,3 @@ TEST_F(LayerStackTest, LayerStackLifecycle) {
 
 	// Note: layer2 was deleted by Clear()
 }
-

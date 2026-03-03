@@ -76,5 +76,4 @@ private:
 
 }
 
-
 #endif //CE_LOG_LOG_HPP

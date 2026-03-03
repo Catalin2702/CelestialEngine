@@ -110,4 +110,3 @@ TEST_F(ChronometerTest, Chronometer_FunctionScope_MeasuresCorrectly) {
 
 	EXPECT_NO_THROW(testFunction());
 }
-
