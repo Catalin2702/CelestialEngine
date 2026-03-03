@@ -22,7 +22,7 @@ Tests/
 cd .debug
 ctest --output-on-failure
 # oppure
-cmake --build . --target run_all_tests
+cmake --build . --target RunAllTests
 ```
 
 ### Solo i test di Engine
@@ -31,7 +31,7 @@ cmake --build . --target run_all_tests
 cd .debug
 ctest -L Engine --output-on-failure
 # oppure
-cmake --build . --target run_engine_tests
+cmake --build . --target RunEngineTests
 ```
 
 ### Test specifici per modulo

@@ -36,7 +36,13 @@ protected:
 	void SetUp() override {
 		Log::Init();
 
-		_app = new Application(WindowProps{"Test-ImGuiMetalLayer", 800, 600, false, GraphicsApi::Metal});
+		try {
+			_app = new Application(WindowProps{"Test-ImGuiMetalLayer", 800, 600, false, GraphicsApi::Metal});
+		}
+		catch (...) {
+			_windowAvailable = false;
+			return;
+		}
 
 		_windowAvailable = true;
 	}

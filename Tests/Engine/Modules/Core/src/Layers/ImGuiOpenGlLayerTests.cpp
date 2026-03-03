@@ -34,9 +34,13 @@ protected:
 	void SetUp() override {
 		Log::Init();
 
-		_app = new Application(WindowProps{"Test-ImGuiOpenGlLayer", 800, 600, false, GraphicsApi::OpenGL});
-		if (not _app)
+		try {
+			_app = new Application(WindowProps{"Test-ImGuiOpenGlLayer", 800, 600, false, GraphicsApi::OpenGL});
+		}
+		catch (...) {
+			_windowAvailable = false;
 			return;
+		}
 
 		_windowAvailable = true;
 	}

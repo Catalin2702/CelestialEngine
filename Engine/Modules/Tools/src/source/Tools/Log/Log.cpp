@@ -49,6 +49,8 @@ void Log::Init() {
  *			and drops all loggers from the spdlog registry.
  */
 void Log::Shutdown() {
+	_s_clientLogger.reset();
+	_s_clientLogger.reset();
 #ifndef CE_DIST
 	spdlog::drop("CelestialLogger");
 	spdlog::drop("AppLogger");
