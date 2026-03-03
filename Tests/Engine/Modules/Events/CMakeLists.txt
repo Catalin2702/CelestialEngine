@@ -23,10 +23,6 @@ target_link_libraries(CE_TestsEvents PRIVATE
 # Third-party
 target_link_libraries(CE_TestsEvents PRIVATE
 	GTest::gtest_main
-
-#	$<$<NOT:$<CONFIG:Dist>>:
-#		spdlog::spdlog
-#	>
 )
 
 add_test(NAME EventsTests

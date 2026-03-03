@@ -23,10 +23,6 @@ target_link_libraries(CE_TestsCore PRIVATE
 # Third-party
 target_link_libraries(CE_TestsCore PRIVATE
 	GTest::gtest_main
-
-#	$<$<NOT:$<CONFIG:Dist>>:
-#		spdlog::spdlog
-#	>
 )
 
 add_test(NAME CoreTests

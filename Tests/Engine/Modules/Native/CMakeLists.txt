@@ -24,10 +24,6 @@ target_link_libraries(CE_TestsNative PRIVATE
 # Third-party
 target_link_libraries(CE_TestsNative PRIVATE
 	GTest::gtest_main
-
-#	$<$<NOT:$<CONFIG:Dist>>:
-#		spdlog::spdlog
-#	>
 )
 
 add_test(NAME NativeTests

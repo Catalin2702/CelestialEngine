@@ -25,10 +25,6 @@ target_link_libraries(CE_TestsWindow PRIVATE
 # Third-party
 target_link_libraries(CE_TestsWindow PRIVATE
 	GTest::gtest_main
-
-#	$<$<NOT:$<CONFIG:Dist>>:
-#		spdlog::spdlog
-#	>
 )
 
 add_test(NAME WindowTests
