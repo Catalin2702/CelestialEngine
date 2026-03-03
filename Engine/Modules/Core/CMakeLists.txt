@@ -29,6 +29,8 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
+	CE_ImGui
+	CE_SpdLog
 	CE_Tools
 	CE_Types
 	CE_Window
@@ -43,9 +45,6 @@ target_link_libraries(CE_Core PUBLIC
 
 # Third-party
 target_link_libraries(CE_Core PUBLIC
-	$<$<NOT:$<CONFIG:Dist>>:
-		spdlog::spdlog
-	>
 )
 
 target_include_directories(CE_Core PUBLIC

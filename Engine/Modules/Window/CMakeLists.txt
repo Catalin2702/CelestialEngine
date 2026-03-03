@@ -38,7 +38,10 @@ target_link_libraries(CE_Window PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
+	CE_Glad
+	CE_Glfw
 	CE_Native
+	CE_SpdLog
 	CE_Tools
 	CE_Types
 )
@@ -47,15 +50,6 @@ target_link_libraries(CE_Window PUBLIC
 target_link_libraries(CE_Window PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
 		MetalCpp
-	>
-)
-
-# Third-party
-target_link_libraries(CE_Window PRIVATE
-	glad::glad
-	glfw
-	$<$<NOT:$<CONFIG:Dist>>:
-		spdlog::spdlog
 	>
 )
 

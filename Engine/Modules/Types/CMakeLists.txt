@@ -21,11 +21,11 @@ set_target_properties(CE_Types PROPERTIES
 target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
+	CE_Glfw
 )
 
 # Third-party
 target_link_libraries(CE_Types PUBLIC
-	glfw
 )
 
 target_include_directories(CE_Types PUBLIC

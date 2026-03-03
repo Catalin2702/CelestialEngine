@@ -27,14 +27,12 @@ set_target_properties(CE_Tools PROPERTIES
 target_link_libraries(CE_Tools PUBLIC
 	CE_Config
 	CE_Define
+	CE_SpdLog
 	CE_Types
 )
 
 # Third-party
 target_link_libraries(CE_Tools PUBLIC
-	$<$<NOT:$<CONFIG:Dist>>:
-		spdlog::spdlog
-	>
 )
 
 target_include_directories(CE_Tools PUBLIC

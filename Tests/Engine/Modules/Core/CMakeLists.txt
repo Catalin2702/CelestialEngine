@@ -18,6 +18,7 @@ set_target_properties(CE_TestsCore PROPERTIES
 target_link_libraries(CE_TestsCore PRIVATE
 	CE_Config
 	CE_Core
+	CE_SpdLog
 )
 
 # Third-party

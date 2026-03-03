@@ -13,11 +13,6 @@ set(HEADERS
 	src/internal/EntryPoint.hpp
 )
 
-find_package(glad CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
@@ -25,6 +20,12 @@ add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Window)
+
+# Vendor libraries
+add_subdirectory(Vendor/Glad)
+add_subdirectory(Vendor/Glfw)
+add_subdirectory(Vendor/ImGui)
+add_subdirectory(Vendor/SpdLog)
 
 if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
@@ -45,8 +46,6 @@ target_link_libraries(CelestialEngine PUBLIC
 	CE_Tools
 	CE_Types
 	CE_Window
-
-	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
 
 if(APPLE)

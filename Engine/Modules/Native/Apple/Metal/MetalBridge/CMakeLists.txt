@@ -24,8 +24,8 @@ target_link_libraries(CE_MetalBridge PUBLIC
 
 # Third-party
 target_link_libraries(CE_MetalBridge PUBLIC
+	CE_ImGui
 	MetalCpp
-	imgui::imgui
 )
 
 target_compile_options(CE_MetalBridge
