@@ -74,7 +74,7 @@ public:
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
 	 *			and submits rendering commands to Metal command queue
 	 */
-	void OnUpdate() override;
+	void OnUpdate() const override;
 
 	/**
 	 * @brief Handles and dispatches events to appropriate handlers
@@ -90,59 +90,59 @@ protected:
 	 * @param event Key pressed event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnKeyPressed(Events::KeyPressedEvent& event) override;
+	bool OnKeyPressed(Events::KeyPressedEvent& event) const override;
 
 	/**
 	 * @brief Handles key released events
 	 * @param event Key released event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnKeyReleased(Events::KeyReleasedEvent& event) override;
+	bool OnKeyReleased(Events::KeyReleasedEvent& event) const override;
 
 	/**
 	 * @brief Handles key typed events (character input)
 	 * @param event Key typed event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnKeyTyped(Events::KeyTypedEvent& event) override;
+	bool OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
 	/**
 	 * @brief Handles mouse button pressed events
 	 * @param event Mouse button pressed event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) override;
+	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
 
 	/**
 	 * @brief Handles mouse button released events
 	 * @param event Mouse button released event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) override;
+	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
 
 	/**
 	 * @brief Handles mouse moved events
 	 * @param event Mouse moved event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnMouseMoved(Events::MouseMovedEvent& event) override;
+	bool OnMouseMoved(Events::MouseMovedEvent& event) const override;
 
 	/**
 	 * @brief Handles mouse scrolled events
 	 * @param event Mouse scrolled event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnMouseScrolled(Events::MouseScrolledEvent& event) override;
+	bool OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
 
 	/**
 	 * @brief Handles window resized events
 	 * @param event Window resize event
 	 * @return bool Always returns false to allow event propagation
 	 */
-	bool OnWindowResized(Events::WindowResizeEvent& event) override;
+	bool OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	float _time = 0.0f;								///< Time accumulator for frame timing
+	mutable float _time = 0.0f;								///< Time accumulator for frame timing
 
 	// Cached pointers to avoid repeated lookups every frame
 	Window::MetalWindow* _window = nullptr;			///< Cached Metal window pointer

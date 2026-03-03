@@ -61,7 +61,7 @@ OpenGlWindow::~OpenGlWindow() {
  * @details Processes all queued events via glfwPollEvents() and swaps front/back buffers
  *			with glfwSwapBuffers() to display the rendered content
  */
-void OpenGlWindow::OnUpdate() {
+void OpenGlWindow::OnUpdate() const {
 	glfwPollEvents();
 	glfwSwapBuffers(_glfwWindow.get());
 }

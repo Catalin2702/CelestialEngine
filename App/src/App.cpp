@@ -29,7 +29,7 @@ public:
 	 * @brief Updates the layer every frame
 	 * @details Currently empty implementation, can be overridden to add custom update logic
 	 */
-	void OnUpdate() override {}
+	void OnUpdate() const override {}
 
 	/**
 	 * @brief Handles events for this layer

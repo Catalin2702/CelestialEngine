@@ -67,7 +67,7 @@ public:
 	 * @details Pure virtual method for per-frame update logic. Called once per frame
 	 *			for all active layers. Use this for game logic, animations, etc.
 	 */
-	virtual void OnUpdate() = 0;
+	virtual void OnUpdate() const = 0;
 
 	/**
 	 * @brief Called when an event occurs

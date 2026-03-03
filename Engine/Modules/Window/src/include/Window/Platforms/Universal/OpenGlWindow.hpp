@@ -61,7 +61,7 @@ public:
 	 * @details Polls all pending events via glfwPollEvents() and swaps the front/back
 	 *			rendering buffers via glfwSwapBuffers() to display the rendered content
 	 */
-	void OnUpdate() override;
+	void OnUpdate() const override;
 
 public:
 	/**

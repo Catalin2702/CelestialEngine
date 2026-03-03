@@ -116,7 +116,7 @@ void ImGuiMetalLayer::OnDetach() {
  *			- Finalizes ImGui rendering and encodes to Metal command buffer
  *			- Presents drawable to screen
  */
-void ImGuiMetalLayer::OnUpdate() {
+void ImGuiMetalLayer::OnUpdate() const {
 	const auto time = static_cast<float>(glfwGetTime());
 
 	auto& io = ImGui::GetIO();
@@ -230,7 +230,7 @@ bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
  * @param event Key pressed event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
+bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
 	if (key == ImGuiKey_None)
@@ -263,7 +263,7 @@ bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) {
  * @param event Key released event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
+bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
 	if (key == ImGuiKey_None)
@@ -296,7 +296,7 @@ bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) {
  * @param event Key typed event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
+bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
 		io.AddInputCharacter(static_cast<unsigned short>(keycode));
@@ -309,7 +309,7 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) {
  * @param event Mouse button pressed event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) {
+bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseButtonEvent(event.GetMouseButton(), true);
 
@@ -321,7 +321,7 @@ bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& even
  * @param event Mouse button released event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) {
+bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseButtonEvent(event.GetMouseButton(), false);
 
@@ -333,7 +333,7 @@ bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& ev
  * @param event Mouse moved event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
+bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 
@@ -345,7 +345,7 @@ bool ImGuiMetalLayer::OnMouseMoved(Events::MouseMovedEvent& event) {
  * @param event Mouse scrolled event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
+bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 
@@ -357,7 +357,7 @@ bool ImGuiMetalLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) {
  * @param event Window resize event
  * @return bool Always returns false to allow event propagation
  */
-bool ImGuiMetalLayer::OnWindowResized(Events::WindowResizeEvent& event) {
+bool ImGuiMetalLayer::OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);

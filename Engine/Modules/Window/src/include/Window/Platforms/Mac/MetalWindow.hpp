@@ -64,7 +64,7 @@ public:
 	 * @brief Updates the window state each frame
 	 * @details Polls events and handles buffer swapping for the Metal surface
 	 */
-	void OnUpdate() override;
+	void OnUpdate() const override;
 
 public:
 	/**

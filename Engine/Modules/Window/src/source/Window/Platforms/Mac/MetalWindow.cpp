@@ -68,7 +68,7 @@ MetalWindow::~MetalWindow() {
  *			buffer presentation separately through the Metal command buffer system,
  *			so no swap buffer call is needed here.
  */
-void MetalWindow::OnUpdate() {
+void MetalWindow::OnUpdate() const {
 	glfwPollEvents();
 }
 

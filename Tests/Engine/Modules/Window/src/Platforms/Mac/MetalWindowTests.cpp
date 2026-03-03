@@ -41,7 +41,7 @@ TEST_F(MetalWindowTest, Constructor_DefaultProperties_CreatesWindow) {
 	const WindowProps props{"Test-Window", 800, 600, false, GraphicsApi::Metal};
 
 	EXPECT_NO_THROW({
-		MetalWindow window(props);
+		const MetalWindow window(props);
 	});
 }
 
@@ -52,7 +52,7 @@ TEST_F(MetalWindowTest, Constructor_ValidProperties_Succeeds) {
 	const WindowProps props{"Metal Test Window", 1024, 768, true, GraphicsApi::Metal};
 
 	EXPECT_NO_THROW({
-		MetalWindow window(props);
+		const MetalWindow window(props);
 	});
 }
 
@@ -65,7 +65,7 @@ TEST_F(MetalWindowTest, Constructor_ValidProperties_Succeeds) {
  */
 TEST_F(MetalWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Width Test", 1280, 720, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_EQ(window.GetWidth(), 1280);
 }
@@ -75,7 +75,7 @@ TEST_F(MetalWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
  */
 TEST_F(MetalWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Height Test", 1280, 720, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_EQ(window.GetHeight(), 720);
 }
@@ -85,7 +85,7 @@ TEST_F(MetalWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
  */
 TEST_F(MetalWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
 	const WindowProps props{"VSync Test", 800, 600, true, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_TRUE(window.IsVSync());
 }
@@ -95,7 +95,7 @@ TEST_F(MetalWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
  */
 TEST_F(MetalWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
 	const WindowProps props{"VSync Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_FALSE(window.IsVSync());
 }
@@ -105,7 +105,7 @@ TEST_F(MetalWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
  */
 TEST_F(MetalWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"GLFW Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetGLFWwindow(), nullptr);
 }
@@ -119,7 +119,7 @@ TEST_F(MetalWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
  */
 TEST_F(MetalWindowTest, GetCommandQueue_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Command Queue Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetCommandQueue(), nullptr);
 }
@@ -129,7 +129,7 @@ TEST_F(MetalWindowTest, GetCommandQueue_AfterConstruction_ReturnsValidPointer) {
  */
 TEST_F(MetalWindowTest, GetDevice_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Device Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetDevice(), nullptr);
 }
@@ -139,7 +139,7 @@ TEST_F(MetalWindowTest, GetDevice_AfterConstruction_ReturnsValidPointer) {
  */
 TEST_F(MetalWindowTest, GetMetalLayer_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Metal Layer Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetMetalLayer(), nullptr);
 }
@@ -149,7 +149,7 @@ TEST_F(MetalWindowTest, GetMetalLayer_AfterConstruction_ReturnsValidPointer) {
  */
 TEST_F(MetalWindowTest, GetMetalWindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Metal Window Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetMetalWindow(), nullptr);
 }
@@ -211,7 +211,7 @@ TEST_F(MetalWindowTest, SetVSync_DisableVSync_UpdatesState) {
  */
 TEST_F(MetalWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NO_THROW(window.OnUpdate());
 }
@@ -221,7 +221,7 @@ TEST_F(MetalWindowTest, OnUpdate_Called_NoThrow) {
  */
 TEST_F(MetalWindowTest, OnUpdate_MultipleCalls_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NO_THROW({
 		window.OnUpdate();
@@ -269,7 +269,7 @@ TEST_F(MetalWindowTest, Constructor_SmallWindow_Succeeds) {
 	const WindowProps props{"Small Window", 320, 240, false, GraphicsApi::Metal};
 
 	EXPECT_NO_THROW({
-		MetalWindow window(props);
+		const MetalWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 320);
 		EXPECT_EQ(window.GetHeight(), 240);
 	});
@@ -282,7 +282,7 @@ TEST_F(MetalWindowTest, Constructor_LargeWindow_Succeeds) {
 	const WindowProps props{"Large Window", 2560, 1440, false, GraphicsApi::Metal};
 
 	EXPECT_NO_THROW({
-		MetalWindow window(props);
+		const MetalWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 2560);
 		EXPECT_EQ(window.GetHeight(), 1440);
 	});
@@ -297,7 +297,7 @@ TEST_F(MetalWindowTest, Constructor_LargeWindow_Succeeds) {
  */
 TEST_F(MetalWindowTest, MetalResources_AfterConstruction_AllValid) {
 	const WindowProps props{"Resources Test", 800, 600, false, GraphicsApi::Metal};
-	MetalWindow window(props);
+	const MetalWindow window(props);
 
 	EXPECT_NE(window.GetDevice(), nullptr);
 	EXPECT_NE(window.GetCommandQueue(), nullptr);

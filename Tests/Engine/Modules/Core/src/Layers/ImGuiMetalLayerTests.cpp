@@ -15,9 +15,7 @@
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 
-#include <print>
 #include <memory>
-#include <chrono>
 #include <gtest/gtest.h>
 
 using namespace CE::Core;
@@ -59,7 +57,6 @@ TEST_F(ImGuiMetalLayerTest, Construction) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	EXPECT_NE(layer, nullptr);
@@ -69,10 +66,6 @@ TEST_F(ImGuiMetalLayerTest, Construction) {
 #endif
 
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -83,10 +76,7 @@ TEST_F(ImGuiMetalLayerTest, OnAttach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto start = std::chrono::high_resolution_clock::now();
-
 	const auto layer = new ImGuiMetalLayer();
-
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
 	});
@@ -94,10 +84,6 @@ TEST_F(ImGuiMetalLayerTest, OnAttach) {
 	// Clean up - pop the layer before the test ends
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -108,23 +94,14 @@ TEST_F(ImGuiMetalLayerTest, OnDetach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto start = std::chrono::high_resolution_clock::now();
-
 	const auto layer = new ImGuiMetalLayer();
-
-	// First attach the layer
 	_app->PushLayer(layer);
 
-	// Then detach it
 	EXPECT_NO_THROW({
 		_app->PopLayer(layer);
 	});
 
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -135,8 +112,6 @@ TEST_F(ImGuiMetalLayerTest, OnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto start = std::chrono::high_resolution_clock::now();
-
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
@@ -146,10 +121,6 @@ TEST_F(ImGuiMetalLayerTest, OnUpdate) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -160,8 +131,6 @@ TEST_F(ImGuiMetalLayerTest, MultipleOnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto start = std::chrono::high_resolution_clock::now();
-
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
@@ -173,10 +142,6 @@ TEST_F(ImGuiMetalLayerTest, MultipleOnUpdate) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -186,8 +151,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -200,10 +163,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -213,8 +172,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -226,10 +183,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -239,8 +192,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -252,10 +203,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -265,8 +212,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -278,10 +223,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -291,8 +232,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -304,10 +243,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -317,8 +252,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseMoved) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -330,10 +263,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseMoved) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -343,8 +272,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseScrolled) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -356,10 +283,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseScrolled) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -369,8 +292,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventWindowResize) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -382,10 +303,6 @@ TEST_F(ImGuiMetalLayerTest, OnEventWindowResize) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -395,8 +312,6 @@ TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
@@ -413,10 +328,6 @@ TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 
 	_app->PopLayer(layer);
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }
 
 /**
@@ -426,8 +337,6 @@ TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
-
-	const auto start = std::chrono::high_resolution_clock::now();
 
 	const auto layer = new ImGuiMetalLayer();
 
@@ -462,8 +371,4 @@ TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 	});
 
 	delete layer;
-
-	const auto end = std::chrono::high_resolution_clock::now();
-	const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::print("[          ] Time: {} us\n", duration);
 }

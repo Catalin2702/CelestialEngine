@@ -68,7 +68,7 @@ public:
 	 * @details Pure virtual method that handles per-frame updates, event polling,
 	 *			and buffer swapping. Must be implemented by derived classes.
 	 */
-	virtual void OnUpdate() = 0;
+	virtual void OnUpdate() const = 0;
 
 public:
 	/**

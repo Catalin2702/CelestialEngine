@@ -41,7 +41,7 @@ public:
 		_detachCount++;
 	}
 
-	void OnUpdate() override {
+	void OnUpdate() const override {
 		_updateCount++;
 	}
 
@@ -64,9 +64,9 @@ public:
 private:
 	bool _attached = false;
 	bool _shouldHandleEvent = false;
-	int _attachCount = 0;
-	int _detachCount = 0;
-	int _updateCount = 0;
+	mutable int _attachCount = 0;
+	mutable int _detachCount = 0;
+	mutable int _updateCount = 0;
 	int _eventCount = 0;
 };
 
@@ -435,7 +435,7 @@ public:
 			*_detachedFlag = true;
 		}
 	}
-	void OnUpdate() override {}
+	void OnUpdate() const override {}
 	bool OnEvent([[maybe_unused]] I_Event& event) override { return false; }
 
 private:

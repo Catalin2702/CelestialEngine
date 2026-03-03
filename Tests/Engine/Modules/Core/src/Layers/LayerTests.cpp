@@ -34,7 +34,7 @@ public:
 		_attached = false;
 	}
 
-	void OnUpdate() override {
+	void OnUpdate() const override {
 		_updateCount++;
 	}
 
@@ -51,8 +51,8 @@ public:
 
 private:
 	bool _attached = false;
-	int _updateCount = 0;
-	int _eventCount = 0;
+	mutable int _updateCount = 0;
+	mutable int _eventCount = 0;
 	bool _shouldHandleEvent = false;
 };
 

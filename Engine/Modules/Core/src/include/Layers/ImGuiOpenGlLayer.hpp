@@ -67,7 +67,7 @@ public:
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
 	 *			and submits rendering commands to OpenGL
 	 */
-	void OnUpdate() override;
+	void OnUpdate() const override;
 
 	/**
 	 * @brief Handles and dispatches events to appropriate handlers
@@ -78,19 +78,19 @@ public:
 	bool OnEvent(Events::I_Event& event) override;
 
 protected:
-	bool OnKeyPressed(Events::KeyPressedEvent& event) override;
-	bool OnKeyReleased(Events::KeyReleasedEvent& event) override;
-	bool OnKeyTyped(Events::KeyTypedEvent& event) override;
+	bool OnKeyPressed(Events::KeyPressedEvent& event) const override;
+	bool OnKeyReleased(Events::KeyReleasedEvent& event) const override;
+	bool OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
-	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) override;
-	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) override;
-	bool OnMouseMoved(Events::MouseMovedEvent& event) override;
-	bool OnMouseScrolled(Events::MouseScrolledEvent& event) override;
+	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
+	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
+	bool OnMouseMoved(Events::MouseMovedEvent& event) const override;
+	bool OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
 
-	bool OnWindowResized(Events::WindowResizeEvent& event) override;
+	bool OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	float _time = 0.0f;								///< Time accumulator for frame timing
+	mutable float _time = 0.0f;								///< Time accumulator for frame timing
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
 	Window::OpenGlWindow* _openGlWindow = nullptr;	///< Cached OpenGL window pointer
 };
