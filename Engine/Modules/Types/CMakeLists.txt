@@ -17,10 +17,14 @@ set_target_properties(CE_Types PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
+)
 
+# Third-party
+target_link_libraries(CE_Types PUBLIC
 	glfw
 )
 

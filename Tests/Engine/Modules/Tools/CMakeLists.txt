@@ -16,18 +16,19 @@ set_target_properties(CE_TestsTools PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_TestsTools PRIVATE
 	CE_Config
 	CE_Tools
-
-	GTest::gtest
-	GTest::gtest_main
-	GTest::gmock
-	GTest::gmock_main
 )
 
-target_include_directories(CE_TestsTools PUBLIC
-	${CMAKE_SOURCE_DIR}/Engine/Tools/src/include
+# Third-party
+target_link_libraries(CE_TestsTools PRIVATE
+	GTest::gtest_main
+
+#	$<$<NOT:$<CONFIG:Dist>>:
+#		spdlog::spdlog
+#	>
 )
 
 add_test(NAME ToolsTests
@@ -38,4 +39,3 @@ add_test(NAME ToolsTests
 set_tests_properties(ToolsTests PROPERTIES
 	LABELS "Engine;Tools"
 )
-

@@ -13,17 +13,20 @@ set_target_properties(CE_TestsEvents PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_TestsEvents PRIVATE
 	CE_Config
 	CE_Events
 	CE_Define
-
-	GTest::gtest
-	GTest::gtest_main
 )
 
-target_include_directories(CE_TestsEvents PUBLIC
-	${CMAKE_SOURCE_DIR}/Engine/Events/src/include
+# Third-party
+target_link_libraries(CE_TestsEvents PRIVATE
+	GTest::gtest_main
+
+#	$<$<NOT:$<CONFIG:Dist>>:
+#		spdlog::spdlog
+#	>
 )
 
 add_test(NAME EventsTests

@@ -17,8 +17,11 @@ add_library(CE_Events SHARED
 	${SOURCES}
 )
 
-set_target_properties(CE_Events PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(CE_Events PROPERTIES
+	LINKER_LANGUAGE CXX
+)
 
+# Modules
 target_link_libraries(CE_Events PUBLIC
 	CE_Config
 	CE_Define
@@ -27,6 +30,4 @@ target_link_libraries(CE_Events PUBLIC
 target_include_directories(CE_Events PUBLIC
 	src/include
 	src/template
-	../Core/src/include
-	../Define/src/include
 )

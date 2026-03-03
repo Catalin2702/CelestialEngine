@@ -13,18 +13,20 @@ set(SOURCES
 
 add_executable(CE_TestsDefine ${SOURCES})
 
+# Modules
 target_link_libraries(CE_TestsDefine PRIVATE
 	CE_Config
 	CE_Define
 	CE_Events
-
-	GTest::gtest
-	GTest::gtest_main
 )
 
-target_include_directories(CE_TestsDefine PUBLIC
-	${CMAKE_SOURCE_DIR}/Engine/Define/src/include
-	${CMAKE_SOURCE_DIR}/Engine/Events/src/include
+# Third-party
+target_link_libraries(CE_TestsDefine PRIVATE
+	GTest::gtest_main
+
+#	$<$<NOT:$<CONFIG:Dist>>:
+#		spdlog::spdlog
+#	>
 )
 
 add_test(NAME DefineTests

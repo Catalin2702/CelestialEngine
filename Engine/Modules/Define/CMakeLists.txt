@@ -14,6 +14,7 @@ set_target_properties(CE_Define PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_Define PUBLIC
 	CE_Config
 )
@@ -22,4 +23,6 @@ target_include_directories(CE_Define PUBLIC
 	src/include
 )
 
-target_compile_definitions(CE_Define PRIVATE CE_CORE_EXPORTS)
+target_compile_definitions(CE_Define PRIVATE
+	CE_CORE_EXPORTS
+)

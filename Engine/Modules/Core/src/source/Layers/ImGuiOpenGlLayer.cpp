@@ -48,7 +48,9 @@ ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
  *			Throws std::runtime_error if window is not an OpenGLWindow or if initialization fails.
  */
 void ImGuiOpenGlLayer::OnAttach() {
-	ImGui::CreateContext();
+	IMGUI_CHECKVERSION();
+	const auto context = ImGui::CreateContext();
+	ImGui::SetCurrentContext(context);
 	ImGui::StyleColorsDark();
 
 	ImGuiIO& io = ImGui::GetIO();

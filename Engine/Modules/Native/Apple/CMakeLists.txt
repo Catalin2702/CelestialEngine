@@ -10,4 +10,3 @@ add_subdirectory(Metal)
 target_link_libraries(CE_Apple INTERFACE
 	CE_AppleMetal
 )
-

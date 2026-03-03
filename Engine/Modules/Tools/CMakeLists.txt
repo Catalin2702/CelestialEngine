@@ -23,18 +23,20 @@ set_target_properties(CE_Tools PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_Tools PUBLIC
 	CE_Config
 	CE_Define
 	CE_Types
+)
 
-	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
+# Third-party
+target_link_libraries(CE_Tools PUBLIC
+	$<$<NOT:$<CONFIG:Dist>>:
+		spdlog::spdlog
+	>
 )
 
 target_include_directories(CE_Tools PUBLIC
 	src/include
-	../Core/src/include
-	../Define/src/include
-	../Types/src/include
-	../Window/src/include
 )

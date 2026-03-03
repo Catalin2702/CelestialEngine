@@ -28,7 +28,6 @@ add_subdirectory(Modules/Window)
 
 if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
-
 endif()
 
 add_library(CelestialEngine SHARED

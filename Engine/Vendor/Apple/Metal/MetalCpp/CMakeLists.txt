@@ -10,9 +10,13 @@ set_target_properties(MetalCpp PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(MetalCpp PUBLIC
 	CE_Config
+)
 
+# Third-party
+target_link_libraries(MetalCpp PUBLIC
 	"-framework AppKit"
 	"-framework CoreVideo"
 	"-framework Foundation"

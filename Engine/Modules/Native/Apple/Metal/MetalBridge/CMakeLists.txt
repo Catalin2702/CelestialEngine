@@ -17,16 +17,15 @@ set_target_properties(CE_MetalBridge PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_MetalBridge PUBLIC
 	CE_Config
+)
+
+# Third-party
+target_link_libraries(CE_MetalBridge PUBLIC
 	MetalCpp
-
 	imgui::imgui
-
-	"-framework Foundation"
-	"-framework Metal"
-	"-framework QuartzCore"
-	"-framework AppKit"
 )
 
 target_compile_options(CE_MetalBridge

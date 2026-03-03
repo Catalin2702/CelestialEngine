@@ -55,7 +55,8 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
  */
 void ImGuiMetalLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	const auto context = ImGui::CreateContext();
+	ImGui::SetCurrentContext(context);
 	ImGui::StyleColorsDark();
 
 	auto& io = ImGui::GetIO();

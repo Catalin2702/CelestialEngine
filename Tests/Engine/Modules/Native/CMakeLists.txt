@@ -1,15 +1,11 @@
 enable_testing()
 
-set(SOURCES)
-
-if(APPLE)
-	list(APPEND SOURCES
+set(SOURCES
+	$<$<PLATFORM_ID:Darwin>:
 		src/Apple/Metal/MetalBridge/Cocoa/CocoaBridgeTests.cpp
 		src/Apple/Metal/MetalBridge/ImGui/ImGuiBridgeTests.cpp
-	)
-else()
-	message(FATAL_ERROR "No native tests implemented for this platform yet.")
-endif()
+	>
+)
 
 add_executable(CE_TestsNative
 	${SOURCES}
@@ -19,14 +15,19 @@ set_target_properties(CE_TestsNative PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_TestsNative PRIVATE
 	CE_Config
 	CE_Native
+)
 
-	GTest::gtest
+# Third-party
+target_link_libraries(CE_TestsNative PRIVATE
 	GTest::gtest_main
-	GTest::gmock
-	GTest::gmock_main
+
+#	$<$<NOT:$<CONFIG:Dist>>:
+#		spdlog::spdlog
+#	>
 )
 
 add_test(NAME NativeTests

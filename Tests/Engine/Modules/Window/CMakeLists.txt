@@ -2,15 +2,11 @@ enable_testing()
 
 set(SOURCES
 	src/Platforms/Universal/OpenGlWindowTests.cpp
-)
 
-if(APPLE)
-	list(APPEND SOURCES
+	$<$<PLATFORM_ID:Darwin>:
 		src/Platforms/Mac/MetalWindowTests.cpp
-	)
-else()
-	message(FATAL_ERROR "No window tests implemented for this platform yet.")
-endif()
+	>
+)
 
 add_executable(CE_TestsWindow
 	${SOURCES}
@@ -20,14 +16,19 @@ set_target_properties(CE_TestsWindow PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
+# Modules
 target_link_libraries(CE_TestsWindow PRIVATE
 	CE_Config
 	CE_Window
+)
 
-	GTest::gtest
+# Third-party
+target_link_libraries(CE_TestsWindow PRIVATE
 	GTest::gtest_main
-	GTest::gmock
-	GTest::gmock_main
+
+#	$<$<NOT:$<CONFIG:Dist>>:
+#		spdlog::spdlog
+#	>
 )
 
 add_test(NAME WindowTests

@@ -20,8 +20,11 @@ add_library(CE_Core SHARED
 	${SOURCES}
 )
 
-set_target_properties(CE_Core PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(CE_Core PROPERTIES
+	LINKER_LANGUAGE CXX
+)
 
+# Modules
 target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
@@ -29,31 +32,22 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Tools
 	CE_Types
 	CE_Window
-
-	$<$<NOT:$<CONFIG:Dist>>:spdlog::spdlog>
 )
 
-if(APPLE)
-	target_link_libraries(CE_Core PUBLIC
-		CE_Native
-
+# Platform-specific
+target_link_libraries(CE_Core PUBLIC
+	$<$<PLATFORM_ID:Darwin>:
 		MetalCpp
-	)
-endif()
+	>
+)
+
+# Third-party
+target_link_libraries(CE_Core PUBLIC
+	$<$<NOT:$<CONFIG:Dist>>:
+		spdlog::spdlog
+	>
+)
 
 target_include_directories(CE_Core PUBLIC
 	src/include
-	../Define/src/include
-	../Events/src/include
-	../Tools/src/include
-	../Types/src/include
-	../Window/src/include
-	../Window/src/interface
 )
-
-if(APPLE)
-	target_include_directories(CE_Core PUBLIC
-		../Native/Apple/Metal/MetalBridge/src/include
-		../../Vendor/Apple/Metal/MetalCpp/src/include
-	)
-endif()
