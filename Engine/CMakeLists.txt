@@ -15,13 +15,25 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(Engine LANGUAGES CXX VERSION 0.0.3)
+project(CE_Engine LANGUAGES CXX VERSION 0.0.4)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
 	src/internal/EntryPoint.hpp
 )
 
+# Vendor libraries
+add_subdirectory(Vendor/Glad)
+add_subdirectory(Vendor/Glfw)
+add_subdirectory(Vendor/ImGui)
+add_subdirectory(Vendor/SpdLog)
+
+# Platform-specific vendor libraries
+if(APPLE)
+	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
+endif()
+
+# Modules libraries
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
@@ -30,23 +42,13 @@ add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Window)
 
-# Vendor libraries
-add_subdirectory(Vendor/Glad)
-add_subdirectory(Vendor/Glfw)
-add_subdirectory(Vendor/ImGui)
-add_subdirectory(Vendor/SpdLog)
-
-if(APPLE)
-	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
-endif()
-
-add_library(Engine SHARED
+add_library(CE_Engine SHARED
 	${HEADERS}
 )
 
-set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(CE_Engine PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(Engine PUBLIC
+target_link_libraries(CE_Engine PUBLIC
 	CE_Config
 	CE_Core
 	CE_Define
@@ -58,12 +60,12 @@ target_link_libraries(Engine PUBLIC
 )
 
 if(APPLE)
-	target_link_libraries(Engine PUBLIC
+	target_link_libraries(CE_Engine PUBLIC
 		MetalCpp
 	)
 endif()
 
-target_include_directories(Engine PUBLIC
+target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
 )

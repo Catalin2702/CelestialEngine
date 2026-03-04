@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Tests LANGUAGES CXX VERSION 0.0.3)
+project(CE_Tests LANGUAGES CXX VERSION 0.0.4)
 
 find_package(GTest CONFIG REQUIRED)
 

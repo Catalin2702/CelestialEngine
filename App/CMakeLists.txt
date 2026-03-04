@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_App LANGUAGES CXX VERSION 0.0.3)
+project(CE_App LANGUAGES CXX VERSION 0.0.4)
 
 set(SOURCES
 	src/App.cpp
@@ -74,5 +74,5 @@ endif()
 
 target_link_libraries(CE_App PRIVATE
 	CE_Config
-	Engine
+	CE_Engine
 )
