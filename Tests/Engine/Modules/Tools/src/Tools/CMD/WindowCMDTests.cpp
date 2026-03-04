@@ -1,10 +1,10 @@
 //
-// Module: Tests/Engine/Modules/Tools/CMD
+// Module: CelestialEngine/Tests/Engine/Modules/Tools/CMD
 // File: WindowCMDTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-03
 //
 
 #include <Tools/CMD/Window.hpp>

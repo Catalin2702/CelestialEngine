@@ -1,10 +1,10 @@
 //
-// Module: Core
+// Module: CelestialEngine/Engine/Modules/Core
 // File: Application.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-15
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-03
 //
 
 #include "Core/Application.hpp"

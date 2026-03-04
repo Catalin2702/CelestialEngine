@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/MetalBridge
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-26
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/MetalBridge/Cocoa/CocoaBridge.h
 	src/include/MetalBridge/ImGui/ImGuiBridge.h

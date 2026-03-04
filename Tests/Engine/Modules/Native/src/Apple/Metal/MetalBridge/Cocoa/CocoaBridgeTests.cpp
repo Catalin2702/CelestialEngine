@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Modules/Native/Apple/Metal/MetalBridge/Cocoa
+// Module: CelestialEngine/Tests/Engine/Modules/Native/Apple/Metal/MetalBridge/Cocoa
 // File: CocoaBridgeTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

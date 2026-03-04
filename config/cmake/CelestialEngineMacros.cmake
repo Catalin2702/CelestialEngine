@@ -1,3 +1,12 @@
+#
+# Module: config
+# File: CelestialEngineMacros.cmake
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-02
+#
+
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")

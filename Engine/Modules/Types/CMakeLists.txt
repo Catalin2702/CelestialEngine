@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Types
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/WindowDestructor.hpp

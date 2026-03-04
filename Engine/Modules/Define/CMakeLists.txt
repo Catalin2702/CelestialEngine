@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Define
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-17
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/Define/Bind.hpp
 	src/include/Define/DynamicLinker.hpp

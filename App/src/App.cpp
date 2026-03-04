@@ -1,9 +1,9 @@
 //
-// Module: App
+// Module: CelestialEngine/App
 // File: App.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-16
+// Updated by: Catalin Chirosca
 // Updated: 2026-02-28
 //
 

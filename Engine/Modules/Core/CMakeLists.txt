@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Core
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/Core/Application.hpp
 	src/include/Layers/I_Layer.hpp

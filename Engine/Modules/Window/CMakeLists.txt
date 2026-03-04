@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Window
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-17
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/Window/Platforms/Universal/OpenGlWindow.hpp
 )

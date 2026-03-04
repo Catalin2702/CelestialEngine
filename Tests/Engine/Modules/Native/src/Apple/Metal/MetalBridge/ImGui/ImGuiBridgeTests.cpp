@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Modules/Native/Apple/Metal/MetalBridge/ImGui
+// Module: CelestialEngine/Tests/Engine/Modules/Native/Apple/Metal/MetalBridge/ImGui
 // File: ImGuiBridgeTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

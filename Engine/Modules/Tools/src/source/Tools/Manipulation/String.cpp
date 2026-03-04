@@ -1,9 +1,9 @@
 //
-// Module: Tools/Manipulation
+// Module: CelestialEngine/Engine/Modules/Tools/Manipulation
 // File: String.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-21
+// Updated by: Catalin Chirosca
 // Updated: 2026-02-28
 //
 

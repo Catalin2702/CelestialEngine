@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Tests/Engine/
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-03-02
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)

@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Modules/Tools/ImGui
+// Module: CelestialEngine/Tests/Engine/Modules/Tools/ImGui
 // File: ImGuiTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

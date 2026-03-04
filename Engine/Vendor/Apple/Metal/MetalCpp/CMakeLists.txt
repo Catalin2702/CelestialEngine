@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Vendor/Apple/Metal/MetalCpp
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-18
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(SOURCES
 	src/source/Define/MetalDefine.cpp
 )

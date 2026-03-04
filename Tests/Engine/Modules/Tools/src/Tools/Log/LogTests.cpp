@@ -1,10 +1,10 @@
 //
-// Module: Tests/Engine/Modules/Tools/Log
+// Module: CelestialEngine/Tests/Engine/Modules/Tools/Log
 // File: LogTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-04
 //
 
 #include <Tools/Log/Log.hpp>
@@ -20,25 +20,49 @@ class LogTest: public ::testing::Test {
 protected:
 	void SetUp() override {}
 
-	void TearDown() override {
-		// Ensure logging is terminated after each test
-		Log::Shutdown();
-	}
+	void TearDown() override {}
 };
 
 /**
- * @brief Test that Log can be initialized without errors
+ * @brief Test that Log can be initialized and shutdown without errors
  */
-TEST_F(LogTest, Init_CallInit_NoErrors) {
-	EXPECT_NO_THROW(Log::Init());
+TEST_F(LogTest, Init_CallInitAndShutdown_NoErrors) {
+	EXPECT_NO_THROW({
+		Log::Init();
+		Log::Shutdown();
+	});
+}
+
+TEST_F(LogTest, Init_CallInitMultipleTimes_NoErrors) {
+	EXPECT_NO_THROW({
+		Log::Init();
+		Log::Init();
+		Log::Init();
+	});
+	Log::Shutdown();
 }
 
 /**
- * @brief Test that Log can be terminated without errors
+ * @brief Test that Log can be shutdown without initialization and does not throw errors
  */
-TEST_F(LogTest, Shutdown_CallShutdown_NoErrors) {
+TEST_F(LogTest, Init_CallShutdownMultipleTimes_NoErrors) {
 	Log::Init();
-	EXPECT_NO_THROW(Log::Shutdown());
+	EXPECT_NO_THROW({
+		Log::Shutdown();
+		Log::Shutdown();
+		Log::Shutdown();
+	});
+}
+
+/**
+ * @brief Test that Log can be shutdown multiple times without initialization and does not throw errors
+ */
+TEST_F(LogTest, Init_CallShutdownMultipleTimesWithoutInit_NoErrors) {
+	EXPECT_NO_THROW({
+		Log::Shutdown();
+		Log::Shutdown();
+		Log::Shutdown();
+	});
 }
 
 /**
@@ -66,6 +90,7 @@ TEST_F(LogTest, GetCoreLogger_AfterInit_ReturnsValidLogger) {
 	// In distribution builds, logger might be null
 	EXPECT_EQ(logger, nullptr);
 #endif
+	Log::Shutdown();
 }
 
 /**
@@ -81,6 +106,7 @@ TEST_F(LogTest, GetClientLogger_AfterInit_ReturnsValidLogger) {
 	// In distribution builds, logger might be null
 	EXPECT_EQ(logger, nullptr);
 #endif
+	Log::Shutdown();
 }
 
 /**
@@ -97,6 +123,7 @@ TEST_F(LogTest, GetLoggers_CoreAndClient_AreDifferent) {
 	// In distribution builds, both might be null
 	EXPECT_EQ(coreLogger, clientLogger);
 #endif
+	Log::Shutdown();
 }
 
 /**

@@ -1,10 +1,10 @@
 //
-// Module: Tools/Log
+// Module: CelestialEngine/Engine/Modules/Tools/Log
 // File: Log.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-16
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-04
 //
 
 #include "Tools/Log/Log.hpp"
@@ -30,13 +30,13 @@ void Log::Init() {
 #ifndef CE_DIST
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 	if (not _s_coreLogger) {
-		_s_coreLogger = spdlog::stdout_color_mt("CelestialLogger");
+		_s_coreLogger = spdlog::stdout_color_mt("CoreLogger");
 		if (_s_coreLogger)
 			_s_coreLogger->set_level(spdlog::level::trace);
 	}
 
 	if (not _s_clientLogger) {
-		_s_clientLogger = spdlog::stdout_color_mt("AppLogger");
+		_s_clientLogger = spdlog::stdout_color_mt("ClientLogger");
 		 if (_s_clientLogger)
 			 _s_clientLogger->set_level(spdlog::level::trace);
 	}
@@ -49,12 +49,12 @@ void Log::Init() {
  *			and drops all loggers from the spdlog registry.
  */
 void Log::Shutdown() {
-	_s_clientLogger.reset();
-	_s_clientLogger.reset();
 #ifndef CE_DIST
-	spdlog::drop("CelestialLogger");
-	spdlog::drop("AppLogger");
+	spdlog::drop("CoreLogger");
+	spdlog::drop("ClientLogger");
 #endif
+	_s_coreLogger.reset();
+	_s_clientLogger.reset();
 }
 
 }

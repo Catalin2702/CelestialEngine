@@ -1,10 +1,10 @@
 //
-// Module: Window/Platforms/Universal
+// Module: CelestialEngine/Engine/Modules/Window/Platforms/Universal
 // File: OpenGlWindow.cpp
 // Created by: Catalin Chirosca
+// Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Created: 2026-02-16
-// Updated: 2026-02-28
+// Updated: 2026-03-03
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"

@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine/Modules/Tools
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-16
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(HEADERS
 	src/include/Tools/CMD/Window.hpp
 	src/include/Tools/Log/Log.hpp

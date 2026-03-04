@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Tests/Engine/Modules/Events
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-03-02
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(SOURCES
 	src/Events/ApplicationEventTests.cpp
 	src/Events/EventTests.cpp

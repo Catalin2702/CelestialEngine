@@ -1,10 +1,10 @@
 //
-// Module: Window
+// Module: CelestialEngine/Engine/Modules/Window
 // File: I_Window.hpp
 // Created by: Catalin Chirosca
+// Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Created: 2026-02-16
-// Updated: 2026-02-28
+// Updated: 2026-03-01
 //
 
 #pragma once

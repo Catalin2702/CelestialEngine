@@ -1,10 +1,10 @@
 //
-// Module: Tests/Engine/Modules/Core/Layers
+// Module: CelestialEngine/Tests/Engine/Modules/Core/Layers
 // File: ImGuiMetalLayerTests.cpp
 // Created by: Catalin Chirosca
-// Created: 2026-03-02
+// Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-04
 //
 
 #include <Core/Application.hpp>
@@ -37,7 +37,7 @@ protected:
 		Log::Init();
 
 		try {
-			_app = new Application(WindowProps{"Test-ImGuiMetalLayer", 800, 600, false, GraphicsApi::Metal});
+			_app = std::make_unique<Application>(WindowProps{"Test-ImGuiMetalLayer", 800, 600, false, GraphicsApi::Metal});
 		}
 		catch (...) {
 			_windowAvailable = false;
@@ -48,12 +48,12 @@ protected:
 	}
 
 	void TearDown() override {
+		_app.reset();
 		Log::Shutdown();
-		delete _app;
 	}
 
 	bool _windowAvailable = false;
-	Application* _app = nullptr;
+	std::unique_ptr<Application> _app = nullptr;
 };
 
 /**

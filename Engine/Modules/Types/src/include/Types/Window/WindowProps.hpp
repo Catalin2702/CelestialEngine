@@ -1,10 +1,10 @@
 //
-// Module: Types/Window
+// Module: CelestialEngine/Engine/Modules/Types/Window
 // File: WindowProps.hpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-21
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-02
 //
 
 #pragma once

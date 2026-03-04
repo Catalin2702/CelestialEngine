@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Tests/Engine/Modules/Core
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-03-03
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 set(SOURCES
 	src/Core/ApplicationTests.cpp
 	src/Layers/ImGuiMetalLayerTests.cpp

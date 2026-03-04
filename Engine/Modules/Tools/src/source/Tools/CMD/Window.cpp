@@ -1,10 +1,10 @@
 //
-// Module: Tools/CMD
+// Module: CelestialEngine/Engine/Modules/Tools/CMD
 // File: Window.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-21
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-02
 //
 
 #include "Tools/CMD/Window.hpp"

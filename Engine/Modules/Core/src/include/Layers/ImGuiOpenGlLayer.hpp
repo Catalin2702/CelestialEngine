@@ -1,10 +1,10 @@
 //
-// Module: Layers
+// Module: CelestialEngine/Engine/Modules/Layers
 // File: ImGuiOpenGlLayer.hpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-24
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-03
 //
 
 #pragma once

@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Modules/Events
+// Module: CelestialEngine/Tests/Engine/Modules/Events
 // File: KeyEventTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

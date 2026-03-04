@@ -1,10 +1,10 @@
 //
-// Module: Events
+// Module: CelestialEngine/Engine/Modules/Events
 // File: MouseEvent.hpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-16
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-04
 //
 
 #pragma once
@@ -12,9 +12,10 @@
 #ifndef CE_EVENTS_MOUSEEVENT_HPP
 #define CE_EVENTS_MOUSEEVENT_HPP
 
+#include "I_Event.hpp"
+
 #include "Define/DynamicLinker.hpp"
 #include "Define/Event.hpp"
-#include "Events/I_Event.hpp"
 
 #include <string>
 

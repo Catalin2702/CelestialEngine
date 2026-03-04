@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/App
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-02
+#
+
 cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
@@ -65,5 +74,5 @@ endif()
 
 target_link_libraries(CE_App PRIVATE
 	CE_Config
-	CelestialEngine
+	Engine
 )

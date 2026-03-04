@@ -1,3 +1,12 @@
+#
+# Module: CelestialEngine/Engine
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg_link/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
@@ -6,7 +15,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.0.3)
+project(Engine LANGUAGES CXX VERSION 0.0.3)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
@@ -31,13 +40,13 @@ if(APPLE)
 	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
 endif()
 
-add_library(CelestialEngine SHARED
+add_library(Engine SHARED
 	${HEADERS}
 )
 
-set_target_properties(CelestialEngine PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(CelestialEngine PUBLIC
+target_link_libraries(Engine PUBLIC
 	CE_Config
 	CE_Core
 	CE_Define
@@ -49,12 +58,12 @@ target_link_libraries(CelestialEngine PUBLIC
 )
 
 if(APPLE)
-	target_link_libraries(CelestialEngine PUBLIC
+	target_link_libraries(Engine PUBLIC
 		MetalCpp
 	)
 endif()
 
-target_include_directories(CelestialEngine PUBLIC
+target_include_directories(Engine PUBLIC
 	src/include
 	src/internal
 )

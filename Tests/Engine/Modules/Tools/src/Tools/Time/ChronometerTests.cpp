@@ -1,5 +1,5 @@
 //
-// Module: Tests/Engine/Modules/Tools/Time
+// Module: CelestialEngine/Tests/Engine/Modules/Tools/Time
 // File: ChronometerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

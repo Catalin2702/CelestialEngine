@@ -1,10 +1,10 @@
 //
-// Module: Tests/Engine/Modules/Tools/Manipulation
+// Module: CelestialEngine/Tests/Engine/Modules/Tools/Manipulation
 // File: StringManipulationTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-03
 //
 
 #include <Tools/Manipulation/String.hpp>

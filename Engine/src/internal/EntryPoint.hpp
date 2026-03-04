@@ -2,9 +2,9 @@
 // Module: Engine
 // File: EntryPoint.hpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-15
-// Updated: 2026-02-28
+// Updated by: Catalin Chirosca
+// Updated: 2026-03-04
 //
 
 #pragma once
@@ -35,22 +35,23 @@ int main(const int argc, const char* argv[]) {
 	int code = 0;
 
 	Log::Log::Init();
-	try {
+	{
+		try {
 #ifdef CE_DEBUG
-		Time::Chronometer chronometer;
+			Time::Chronometer chronometer;
 #endif
-
-		const auto app = Core::CreateApplication(CMD::GetWindowProps(argc, argv));
-		app->Run();
-	} catch ([[maybe_unused]] const std::runtime_error& _err) {
-		CE_CORE_ERROR("Runtime error: {0}", _err.what());
-		code = 1;
-	} catch ([[maybe_unused]] const std::exception& _err) {
-		CE_CORE_ERROR("Exception: {0}", _err.what());
-		code = 1;
-	} catch (...) {
-		CE_CORE_ERROR("Unknown exception occurred");
-		code = 1;
+			const auto app = Core::CreateApplication(CMD::GetWindowProps(argc, argv));
+			app->Run();
+		} catch ([[maybe_unused]] const std::runtime_error& _err) {
+			CE_CORE_ERROR("Runtime error: {0}", _err.what());
+			code = 1;
+		} catch ([[maybe_unused]] const std::exception& _err) {
+			CE_CORE_ERROR("Exception: {0}", _err.what());
+			code = 1;
+		} catch (...) {
+			CE_CORE_ERROR("Unknown exception occurred");
+			code = 1;
+		}
 	}
 	Log::Log::Shutdown();
 

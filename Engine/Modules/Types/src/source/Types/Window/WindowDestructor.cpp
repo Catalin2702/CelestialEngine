@@ -1,9 +1,9 @@
 //
-// Module: Types/Window
+// Module: CelestialEngine/Engine/Modules/Types/Window
 // File: WindowDestructor.cpp
 // Created by: Catalin Chirosca
+// Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Created: 2026-02-21
 // Updated: 2026-02-28
 //
 

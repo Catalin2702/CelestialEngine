@@ -1,10 +1,10 @@
 //
-// Module: Window/Platforms/Mac
+// Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac
 // File: MetalWindow.hpp
 // Created by: Catalin Chirosca
+// Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Created: 2026-02-18
-// Updated: 2026-02-28
+// Updated: 2026-03-03
 //
 
 #pragma once
