@@ -1,0 +1,61 @@
+#
+# Module: CelestialEngine/Engine/Modules/Core
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-03-03
+#
+
+set(HEADERS
+	src/include/Core/Application.hpp
+	src/include/Layers/I_Layer.hpp
+	src/include/Layers/LayerStack.hpp
+	src/include/Layers/ImGuiOpenGlLayer.hpp
+	src/include/Layers/ImGuiMetalLayer.hpp
+	src/include/Layers/I_ImGuiLayer.hpp
+)
+
+set(SOURCES
+	src/source/Core/Application.cpp
+	src/source/Layers/I_Layer.cpp
+	src/source/Layers/LayerStack.cpp
+	src/source/Layers/ImGuiOpenGlLayer.cpp
+	src/source/Layers/ImGuiMetalLayer.cpp
+)
+
+add_library(CE_Core SHARED
+	${HEADERS}
+	${SOURCES}
+)
+
+set_target_properties(CE_Core PROPERTIES
+	LINKER_LANGUAGE CXX
+)
+
+# Modules
+target_link_libraries(CE_Core PUBLIC
+	CE_Config
+	CE_Define
+	CE_Events
+	CE_ImGui
+	CE_SpdLog
+	CE_Tools
+	CE_Types
+	CE_Window
+)
+
+# Platform-specific
+target_link_libraries(CE_Core PUBLIC
+	$<$<PLATFORM_ID:Darwin>:
+		MetalCpp
+	>
+)
+
+# Third-party
+target_link_libraries(CE_Core PUBLIC
+)
+
+target_include_directories(CE_Core PUBLIC
+	src/include
+)

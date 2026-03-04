@@ -1,9 +1,9 @@
 //
-// Module: MetalCpp
+// Module: CelestialEngine/Engine/Vendor/Apple/Metal/MetalCpp/Define
 // File: MetalDefine.cpp
 // Created by: Catalin Chirosca
-// Updated by: Catalin Chirosca
 // Created: 2026-02-18
+// Updated by: Catalin Chirosca
 // Updated: 2026-02-28
 //
 

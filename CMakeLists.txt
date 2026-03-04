@@ -8,7 +8,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")
 	endif()
 endif()
 
-project(CE LANGUAGES CXX)
+project(CelestialEngine LANGUAGES CXX)
+
+enable_testing()
 
 add_subdirectory(Engine)
 add_subdirectory(App)
+add_subdirectory(Tests)
