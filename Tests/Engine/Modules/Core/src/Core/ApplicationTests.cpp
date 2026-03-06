@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #include <Core/Application.hpp>
@@ -77,11 +77,9 @@ class ApplicationTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
-		Application::ForceResetInstance();
 	}
 
 	void TearDown() override {
-		Application::ForceResetInstance();
 		Log::Shutdown();
 	}
 };

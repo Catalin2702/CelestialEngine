@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -12,7 +12,7 @@
 #ifndef CE_I_IMGUILAYER_HPP
 #define CE_I_IMGUILAYER_HPP
 
-#include "I_Layer.hpp"
+#include "Layers/I_Layer.hpp"
 
 namespace CE::Events {
 

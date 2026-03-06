@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -89,7 +89,7 @@ public:
 	 * @brief Gets the underlying GLFW window pointer
 	 * @return GLFWwindow* Pointer to the GLFW window
 	 */
-	[[nodiscard]] GLFWwindow* GetGLFWwindow() const override { return _glfwWindow.get(); }
+	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 
 	/**
 	 * @brief Gets the Metal command queue

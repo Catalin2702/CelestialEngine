@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #include <Tools/Log/Log.hpp>
@@ -107,7 +107,7 @@ TEST_F(OpenGlWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"GLFW Test", 800, 600, false, GraphicsApi::OpenGL};
 	const OpenGlWindow window(props);
 
-	EXPECT_NE(window.GetGLFWwindow(), nullptr);
+	EXPECT_NE(window.GetNativeWindow(), nullptr);
 }
 
 // ============================================================================

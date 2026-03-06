@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-06
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -48,6 +48,7 @@ add_library(CE_Engine SHARED
 
 set_target_properties(CE_Engine PROPERTIES LINKER_LANGUAGE CXX)
 
+# Modules
 target_link_libraries(CE_Engine PUBLIC
 	CE_Config
 	CE_Core
@@ -58,12 +59,6 @@ target_link_libraries(CE_Engine PUBLIC
 	CE_Types
 	CE_Window
 )
-
-if(APPLE)
-	target_link_libraries(CE_Engine PUBLIC
-		MetalCpp
-	)
-endif()
 
 target_include_directories(CE_Engine PUBLIC
 	src/include

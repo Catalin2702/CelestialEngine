@@ -58,7 +58,7 @@ target_link_libraries(CE_Window PUBLIC
 # Platform-specific
 target_link_libraries(CE_Window PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
-		MetalCpp
+		CE_MetalCpp
 	>
 )
 

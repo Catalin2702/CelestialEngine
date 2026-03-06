@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 
-#include "Layers/ImGuiOpenGlLayer.hpp"
+#include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
@@ -63,7 +63,7 @@ void ImGuiOpenGlLayer::OnAttach() {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 	}
-	_glfwWindow = _openGlWindow->GetGLFWwindow();
+	_glfwWindow = static_cast<GLFWwindow*>(_openGlWindow->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #include "Core/Application.hpp"
@@ -16,13 +16,12 @@
 #include "Window/I_Window.hpp"
 
 #ifdef CE_PLATFORM_MACOS
+#include "Input/Platforms/Mac/MetalInput.hpp"
 #include "Window/Platforms/Mac/MetalWindow.hpp"
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #else
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #endif
-
-#include <GLFW/glfw3.h>
 
 #include <stdexcept>
 
@@ -30,6 +29,7 @@
 #ifdef CE_PLATFORM_MACOS
 using MetalWindow = CE::Window::MetalWindow;		///< Use Metal window on macOS
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS as well (fallback)
+using MetalInput = CE::Input::MetalInput;			///< Use Metal input handling on macOS
 #else
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
 #endif
@@ -88,10 +88,13 @@ Application::Application(const std::string& title, const unsigned int width, con
  *			try to clean up GLFW resources during their OnDetach.
  */
 Application::~Application() {
-	// First, detach all layers (they may use GLFW in their cleanup)
+	// Detach all layers (they may use GLFW in their cleanup)
 	_layerStack.Clear();
 
-	// Then destroy the window (calls glfwDestroyWindow)
+	// Shutdown input system (deletes the singleton instance)
+	Input::I_Input::Shutdown();
+
+	// Destroy the window (calls glfwDestroyWindow)
 	_window.reset();
 
 	// Reset the singleton instance pointer
@@ -101,6 +104,8 @@ Application::~Application() {
 void Application::Update() {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
+	const auto [x, y] = MetalInput::GetMouseXY();
+	CE_TRACE("Mouse position: ({0}, {1})", x, y);
 	_window->OnUpdate();
 }
 

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-26
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-06
 #
 
 set(HEADERS
@@ -29,12 +29,12 @@ set_target_properties(CE_MetalBridge PROPERTIES
 # Modules
 target_link_libraries(CE_MetalBridge PUBLIC
 	CE_Config
+	CE_ImGui
 )
 
 # Third-party
 target_link_libraries(CE_MetalBridge PUBLIC
-	CE_ImGui
-	MetalCpp
+	CE_MetalCpp
 )
 
 target_compile_options(CE_MetalBridge

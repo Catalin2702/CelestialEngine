@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-06
 //
 
 /**
@@ -44,10 +44,16 @@
 #include <Events/MouseEvent.hpp>
 // -----------------------------------------------
 
+// ---- Input ------------------------------------
+#ifdef CE_PLATFORM_MACOS
+	#include <Input/Platforms/Mac/MetalInput.hpp>
+#endif
+// -----------------------------------------------
+
 // ---- Layer ------------------------------------
 #include <Layers/I_Layer.hpp>
-#include <Layers/ImGuiMetalLayer.hpp>
-#include <Layers/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
+#include <Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp>
 // -----------------------------------------------
 
 // ---- Tools ------------------------------------
@@ -64,6 +70,7 @@
 namespace CMD = CE::Tools::CMD;						///< Command-line parsing utilities
 namespace Core = CE::Core;							///< Core engine functionality
 namespace Events = CE::Events;						///< Event system
+namespace Input = CE::Input;						///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
 namespace Layers = CE::Layers;						///< Layer management
 namespace Time = CE::Tools::Time;					///< Time utilities

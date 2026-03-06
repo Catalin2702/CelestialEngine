@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-06
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGuiMetalLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 

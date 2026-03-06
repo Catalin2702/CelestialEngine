@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
 
-#include "Layers/ImGuiMetalLayer.hpp"
+#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
@@ -71,7 +71,7 @@ void ImGuiMetalLayer::OnAttach() {
 	}
 
 	// Cache dei puntatori per evitare lookup ripetuti ogni frame
-	_glfwWindow = _window->GetGLFWwindow();
+	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
 		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");

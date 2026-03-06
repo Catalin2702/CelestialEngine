@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -12,7 +12,7 @@
 #ifndef CE_LAYERS_IMGUIMETALLAYER_HPP
 #define CE_LAYERS_IMGUIMETALLAYER_HPP
 
-#include "Layers/I_ImGuiLayer.hpp"
+#include "Layers/ImGui/I_ImGuiLayer.hpp"
 
 struct GLFWwindow;
 

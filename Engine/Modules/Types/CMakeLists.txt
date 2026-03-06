@@ -4,12 +4,13 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-06
 #
 
 set(HEADERS
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/WindowDestructor.hpp
+	src/include/Types/Container/Vec.hpp
 )
 
 set(SOURCES
@@ -31,10 +32,6 @@ target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
 	CE_Glfw
-)
-
-# Third-party
-target_link_libraries(CE_Types PUBLIC
 )
 
 target_include_directories(CE_Types PUBLIC

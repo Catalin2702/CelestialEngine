@@ -11,21 +11,21 @@ set(SOURCES
 	src/source/Define/MetalDefine.cpp
 )
 
-add_library(MetalCpp SHARED
+add_library(CE_MetalCpp SHARED
 	${SOURCES}
 )
 
-set_target_properties(MetalCpp PROPERTIES
+set_target_properties(CE_MetalCpp PROPERTIES
 	LINKER_LANGUAGE CXX
 )
 
 # Modules
-target_link_libraries(MetalCpp PUBLIC
+target_link_libraries(CE_MetalCpp PUBLIC
 	CE_Config
 )
 
 # Third-party
-target_link_libraries(MetalCpp PUBLIC
+target_link_libraries(CE_MetalCpp PUBLIC
 	"-framework AppKit"
 	"-framework CoreVideo"
 	"-framework Foundation"
@@ -34,10 +34,10 @@ target_link_libraries(MetalCpp PUBLIC
 	"-framework QuartzCore"
 )
 
-target_compile_options(MetalCpp
+target_compile_options(CE_MetalCpp
 	PUBLIC -ObjC++ -fno-objc-arc
 )
 
-target_include_directories(MetalCpp PUBLIC
+target_include_directories(CE_MetalCpp PUBLIC
 	src/include
 )
