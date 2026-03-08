@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-08
 //
 
 #include "Input/Platforms/Mac/MetalInput.hpp"
@@ -67,4 +67,16 @@ void MetalInput::_InitGLFWWindow() {
 	}
 }
 
+void MetalInputManager::Init() {
+	if (not MetalInput::_instance) {
+		MetalInput::_instance = new MetalInput();
+	}
+}
+
+void MetalInputManager::Shutdown() {
+	if (MetalInput::_instance) {
+		delete MetalInput::_instance;
+		MetalInput::_instance = nullptr;
+	}
+}
 }

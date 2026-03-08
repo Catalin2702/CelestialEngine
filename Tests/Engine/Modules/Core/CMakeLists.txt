@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-08
 #
 
 set(SOURCES
 	src/Core/ApplicationTests.cpp
+	src/Input/MetalInputTests.cpp
 	src/Layers/ImGuiMetalLayerTests.cpp
 	src/Layers/ImGuiOpenGlLayerTests.cpp
 	src/Layers/LayerStackTests.cpp
@@ -41,5 +42,5 @@ add_test(NAME CoreTests
 )
 
 set_tests_properties(CoreTests PROPERTIES
-LABELS "Engine;Core"
+	LABELS "Engine;Core"
 )

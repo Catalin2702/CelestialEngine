@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-08
 //
 
 #include "Core/Application.hpp"
@@ -32,6 +32,13 @@ using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS 
 using MetalInput = CE::Input::MetalInput;			///< Use Metal input handling on macOS
 #else
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
+#endif
+
+// Platform-specific input type
+#ifdef CE_PLATFORM_MACOS
+using InputManager = CE::Input::MetalInputManager;	///< Use Metal input manager on macOS
+#else
+using InputManager = CE::Input::I_InputManager;		///< Use generic input manager on other platforms
 #endif
 
 
@@ -92,7 +99,7 @@ Application::~Application() {
 	_layerStack.Clear();
 
 	// Shutdown input system (deletes the singleton instance)
-	Input::I_Input::Shutdown();
+	InputManager().Shutdown();
 
 	// Destroy the window (calls glfwDestroyWindow)
 	_window.reset();
@@ -104,8 +111,6 @@ Application::~Application() {
 void Application::Update() {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
-	const auto [x, y] = MetalInput::GetMouseXY();
-	CE_TRACE("Mouse position: ({0}, {1})", x, y);
 	_window->OnUpdate();
 }
 
@@ -220,6 +225,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
+	InputManager().Init();
 }
 
 }
