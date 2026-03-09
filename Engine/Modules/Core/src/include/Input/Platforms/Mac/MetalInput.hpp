@@ -13,7 +13,8 @@
 #define CE_INPUT_METALINPUT_HPP
 
 #include "Input/I_Input.hpp"
-#include "Types/Container/Vec.hpp"
+
+#include <utility>
 
 struct GLFWwindow;
 
@@ -32,7 +33,7 @@ protected:
 	[[nodiscard]] bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) override;
 	[[nodiscard]] float _GetMouseXImpl() override;
 	[[nodiscard]] float _GetMouseYImpl() override;
-	[[nodiscard]] Types::Vec2f _GetMouseXYImpl() override;
+	[[nodiscard]] std::pair<float, float> _GetMouseXYImpl() override;
 
 private:
 	void _InitGLFWWindow();

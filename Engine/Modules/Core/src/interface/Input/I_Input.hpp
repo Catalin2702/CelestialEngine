@@ -13,9 +13,10 @@
 #define CE_INPUT_I_INPUT_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Types/Container/Vec.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
+
+#include <utility>
 
 /**
  * @namespace CE::Input
@@ -77,12 +78,12 @@ public:
 	static float GetMouseY() { return _instance->_GetMouseYImpl(); }
 	/**
 	 * @brief Gets the current X and Y position of the mouse cursor as a vector
-	 * @return Types::Vec2f A vector containing the X and Y coordinates of the mouse cursor
+	 * @return std::pair<float, float> A vector containing the X and Y coordinates of the mouse cursor
 	 * @details Retrieves both the X and Y positions of the mouse cursor in a single call. This method
 	*			is static and relies on the singleton instance to perform the query. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static Types::Vec2f GetMouseXY() { return _instance->_GetMouseXYImpl(); }
+	static std::pair<float, float> GetMouseXY() { return _instance->_GetMouseXYImpl(); }
 
 public:
 	/**
@@ -126,7 +127,7 @@ protected:
 	 * @return Types::Vec2f A vector containing the X and Y coordinates of the mouse cursor
 	 * @details Pure virtual method that must be implemented by derived classes to provide platform-specific logic for retrieving both the X and Y positions of the mouse cursor in a single call.
 	 */
-	[[nodiscard]] virtual Types::Vec2f _GetMouseXYImpl() = 0;
+	[[nodiscard]] virtual std::pair<float, float> _GetMouseXYImpl() = 0;
 
 private:
 	static I_Input* _instance;						///< Singleton instance of the I_Input class

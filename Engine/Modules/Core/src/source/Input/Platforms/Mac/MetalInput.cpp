@@ -54,7 +54,7 @@ float MetalInput::_GetMouseYImpl() {
 	return static_cast<float>(mouseY);
 }
 
-Types::Vec2f MetalInput::_GetMouseXYImpl() {
+std::pair<float, float> MetalInput::_GetMouseXYImpl() {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}

@@ -279,13 +279,13 @@ TEST_F(MetalInputTest, GetMouseY_Called_ReturnsValidFloat) {
  */
 TEST_F(MetalInputTest, GetMouseXY_Called_ReturnsValidVector) {
 	_InitInput();
-	const auto mousePos = I_Input::GetMouseXY();
+	const auto [x, y] = I_Input::GetMouseXY();
 
 	// Both components should be finite numbers
-	EXPECT_FALSE(std::isnan(mousePos.x));
-	EXPECT_FALSE(std::isinf(mousePos.x));
-	EXPECT_FALSE(std::isnan(mousePos.y));
-	EXPECT_FALSE(std::isinf(mousePos.y));
+	EXPECT_FALSE(std::isnan(x));
+	EXPECT_FALSE(std::isinf(x));
+	EXPECT_FALSE(std::isnan(y));
+	EXPECT_FALSE(std::isinf(y));
 	_ShutdownInput();
 }
 
@@ -296,14 +296,14 @@ TEST_F(MetalInputTest, GetMouseXY_Consistency_MatchesIndividualGetters) {
 	_InitInput();
 	const float mouseX = I_Input::GetMouseX();
 	const float mouseY = I_Input::GetMouseY();
-	const auto mouseXY = I_Input::GetMouseXY();
+	const auto [x, y] = I_Input::GetMouseXY();
 
 	// Note: Due to timing, these might not be exactly equal in a real scenario
 	// but they should both be valid values
 	EXPECT_FALSE(std::isnan(mouseX));
 	EXPECT_FALSE(std::isnan(mouseY));
-	EXPECT_FALSE(std::isnan(mouseXY.x));
-	EXPECT_FALSE(std::isnan(mouseXY.y));
+	EXPECT_FALSE(std::isnan(x));
+	EXPECT_FALSE(std::isnan(y));
 	_ShutdownInput();
 }
 
