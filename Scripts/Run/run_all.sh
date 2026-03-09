@@ -9,17 +9,17 @@
 # Updated: 2026-03-09
 #
 
-# Script per eseguire l'applicazione CE_App e tutti i test
-# Utilizza la cartella Binaries/Last per eseguire l'ultima build
+# Script to run the CE_App application and all tests
+# Uses the Binaries/Last folder to run the latest build
 
-# Colori per l'output
+# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Directory base
+# Base directories
 SCRIPT_DIR="${0:A:h}"
 PROJECT_DIR="${SCRIPT_DIR}/../.."
 BINARIES_DIR="${PROJECT_DIR}/Binaries/Last"
@@ -29,44 +29,44 @@ echo "${BLUE}CelestialEngine - Run All${NC}"
 echo "${BLUE}========================================${NC}"
 echo ""
 
-# Verifica che la cartella Binaries/Last esista
+# Verify that the Binaries/Last folder exists
 if [ ! -d "${BINARIES_DIR}" ]; then
-    echo "${RED}Errore: La cartella ${BINARIES_DIR} non esiste!${NC}"
-    echo "${YELLOW}Compila prima il progetto con CMake${NC}"
+    echo "${RED}Error: The folder ${BINARIES_DIR} does not exist!${NC}"
+    echo "${YELLOW}Please compile the project with CMake first${NC}"
     exit 1
 fi
 
-# Variabile per tracciare i fallimenti
+# Variable to track failures
 FAILED_TESTS=0
 TOTAL_TESTS=0
 
-# Funzione per eseguire un comando e verificare il risultato
+# Function to execute a command and verify the result
 run_command() {
     local name="$1"
     local command="$2"
     local is_gui="${3:-false}"
 
-    echo "${BLUE}Esecuzione: ${name}${NC}"
-    echo "${YELLOW}Comando: ${command}${NC}"
+    echo "${BLUE}Executing: ${name}${NC}"
+    echo "${YELLOW}Command: ${command}${NC}"
     echo ""
 
-    cd "${BINARIES_DIR}"
+    cd "${BINARIES_DIR}" || exit
 
     if [ "$is_gui" = "true" ]; then
-        # Per applicazioni GUI, lancia in background e termina dopo 0.5 secondi
+        # For GUI applications, launch in background and terminate after 0.5 seconds
         eval "${command}" &
         local pid=$!
-        echo "${YELLOW}Applicazione avviata (PID: ${pid}), attesa 0.5 secondi...${NC}"
+        echo "${YELLOW}Application started (PID: ${pid}), waiting 0.5 seconds...${NC}"
         sleep 0.5
 
-        # Verifica se il processo è ancora attivo
+        # Check if the process is still active
         if ps -p $pid > /dev/null 2>&1; then
-            echo "${YELLOW}Chiusura applicazione...${NC}"
-            # Prima prova con SIGTERM (chiusura gentile)
+            echo "${YELLOW}Closing application...${NC}"
+            # First try with SIGTERM (graceful shutdown)
             kill -TERM $pid 2>/dev/null
             sleep 0.1
 
-            # Se il processo è ancora attivo, usa SIGKILL (chiusura forzata)
+            # If the process is still active, use SIGKILL (forced shutdown)
             if ps -p $pid > /dev/null 2>&1; then
                 kill -KILL $pid 2>/dev/null
                 sleep 0.1
@@ -74,17 +74,17 @@ run_command() {
         fi
 
         wait $pid 2>/dev/null
-        local exit_code=0  # Considera successo se l'app si è avviata
+        local exit_code=0  # Consider success if the app started
     else
-        # Per test e comandi normali, esegui normalmente
+        # For tests and normal commands, execute normally
         eval "${command}"
         local exit_code=$?
     fi
 
     if [ $exit_code -eq 0 ] || [ "$is_gui" = "true" ]; then
-        echo "${GREEN}✓ ${name} completato con successo${NC}"
+        echo "${GREEN}✓ ${name} completed successfully${NC}"
     else
-        echo "${RED}✗ ${name} fallito con codice di uscita ${exit_code}${NC}"
+        echo "${RED}✗ ${name} failed with exit code ${exit_code}${NC}"
         FAILED_TESTS=$((FAILED_TESTS + 1))
     fi
 
@@ -96,21 +96,21 @@ run_command() {
     return $exit_code
 }
 
-# Esegui CE_App con Metal
+# Execute CE_App with Metal
 run_command \
     "CE_App (Metal)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll\" -w 1280 -h 720 -v true -g metal" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll Metal\" -w 1280 -h 720 -v true -g metal" \
     "true"
 
-# Esegui CE_App con OpenGL
+# Execute CE_App with OpenGL
 run_command \
     "CE_App (OpenGL)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll\" -w 1280 -h 720 -v true -g opengl" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGL\" -w 1280 -h 720 -v true -g opengl" \
     "true"
 
-# Esegui tutti i test
+# Execute all tests
 echo "${BLUE}========================================${NC}"
-echo "${BLUE}Esecuzione Test Suite${NC}"
+echo "${BLUE}Executing Test Suite${NC}"
 echo "${BLUE}========================================${NC}"
 echo ""
 
@@ -118,7 +118,7 @@ echo ""
 if [ -f "${BINARIES_DIR}/CE_TestsCore" ]; then
     run_command "CE_TestsCore" "./CE_TestsCore"
 else
-    echo "${YELLOW}⚠ CE_TestsCore non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsCore not found, skipping${NC}"
     echo ""
 fi
 
@@ -126,7 +126,7 @@ fi
 if [ -f "${BINARIES_DIR}/CE_TestsDefine" ]; then
     run_command "CE_TestsDefine" "./CE_TestsDefine"
 else
-    echo "${YELLOW}⚠ CE_TestsDefine non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsDefine not found, skipping${NC}"
     echo ""
 fi
 
@@ -134,7 +134,7 @@ fi
 if [ -f "${BINARIES_DIR}/CE_TestsEvents" ]; then
     run_command "CE_TestsEvents" "./CE_TestsEvents"
 else
-    echo "${YELLOW}⚠ CE_TestsEvents non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsEvents not found, skipping${NC}"
     echo ""
 fi
 
@@ -142,7 +142,7 @@ fi
 if [ -f "${BINARIES_DIR}/CE_TestsNative" ]; then
     run_command "CE_TestsNative" "./CE_TestsNative"
 else
-    echo "${YELLOW}⚠ CE_TestsNative non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsNative not found, skipping${NC}"
     echo ""
 fi
 
@@ -150,7 +150,7 @@ fi
 if [ -f "${BINARIES_DIR}/CE_TestsTools" ]; then
     run_command "CE_TestsTools" "./CE_TestsTools"
 else
-    echo "${YELLOW}⚠ CE_TestsTools non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsTools not found, skipping${NC}"
     echo ""
 fi
 
@@ -158,21 +158,21 @@ fi
 if [ -f "${BINARIES_DIR}/CE_TestsWindow" ]; then
     run_command "CE_TestsWindow" "./CE_TestsWindow"
 else
-    echo "${YELLOW}⚠ CE_TestsWindow non trovato, skip${NC}"
+    echo "${YELLOW}⚠ CE_TestsWindow not found, skipping${NC}"
     echo ""
 fi
 
-# Riepilogo finale
+# Final summary
 echo "${BLUE}========================================${NC}"
-echo "${BLUE}Riepilogo Esecuzione${NC}"
+echo "${BLUE}Execution Summary${NC}"
 echo "${BLUE}========================================${NC}"
 echo ""
 
 if [ $FAILED_TESTS -eq 0 ]; then
-    echo "${GREEN}✓ Tutti i test sono passati! (${TOTAL_TESTS}/${TOTAL_TESTS})${NC}"
+    echo "${GREEN}✓ All tests passed! (${TOTAL_TESTS}/${TOTAL_TESTS})${NC}"
     exit 0
 else
-    echo "${RED}✗ ${FAILED_TESTS}/${TOTAL_TESTS} test falliti${NC}"
+    echo "${RED}✗ ${FAILED_TESTS}/${TOTAL_TESTS} tests failed${NC}"
     exit 1
 fi
 

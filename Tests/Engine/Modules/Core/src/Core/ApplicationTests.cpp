@@ -351,7 +351,7 @@ TEST_F(ApplicationTest, OnEventPropagation) {
 	app->PushOverlay(overlay);
 
 	// Create a mock event (use WindowResizeEvent for testing)
-	WindowResizeEvent event(800, 600);
+	WindowResizeEvent event{800, 600};
 
 	EXPECT_EQ(layer1->GetEventCount(), 0);
 	EXPECT_EQ(layer2->GetEventCount(), 0);
@@ -385,7 +385,7 @@ TEST_F(ApplicationTest, OnEventStopsPropagation) {
 	// Make layer2 handle the event
 	layer2->SetShouldHandleEvent(true);
 
-	WindowResizeEvent event(800, 600);
+	WindowResizeEvent event{800, 600};
 
 	app->OnEvent(event);
 

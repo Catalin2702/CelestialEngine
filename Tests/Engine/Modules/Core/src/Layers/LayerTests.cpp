@@ -142,10 +142,10 @@ TEST_F(LayerTest, OnEventNotHandled) {
 	MockLayer layer{"TestLayer"};
 	layer.SetShouldHandleEvent(false);
 
-	KeyPressedEvent event(KeyboardKeyCode::A, 0); // 'A' key
+	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
-	bool handled = layer.OnEvent(event);
+	const bool handled = layer.OnEvent(event);
 
 	EXPECT_FALSE(handled);
 	EXPECT_EQ(layer.GetEventCount(), 1);
@@ -161,7 +161,7 @@ TEST_F(LayerTest, OnEventHandled) {
 	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
-	bool handled = layer.OnEvent(event);
+	const bool handled = layer.OnEvent(event);
 
 	EXPECT_TRUE(handled);
 	EXPECT_EQ(layer.GetEventCount(), 1);
@@ -174,9 +174,9 @@ TEST_F(LayerTest, MultipleEvents) {
 	MockLayer layer{"TestLayer"};
 	layer.SetShouldHandleEvent(false);
 
-	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
-	MouseMovedEvent mouseEvent(100.0f, 200.0f);
-	WindowResizeEvent resizeEvent(800, 600);
+	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
+	MouseMovedEvent mouseEvent{100.0f, 200.0f};
+	WindowResizeEvent resizeEvent{800, 600};
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
 
@@ -211,7 +211,7 @@ TEST_F(LayerTest, LayerLifecycle) {
 	EXPECT_EQ(layer.GetUpdateCount(), 2);
 
 	// Event
-	KeyPressedEvent event(KeyboardKeyCode::A, 0);
+	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 	layer.OnEvent(event);
 	EXPECT_EQ(layer.GetEventCount(), 1);
 
@@ -225,8 +225,8 @@ TEST_F(LayerTest, LayerLifecycle) {
  * @brief Test Layer debug name
  */
 TEST_F(LayerTest, DebugName) {
-	const MockLayer layer1("Layer1");
-	const MockLayer layer2("Layer2");
+	const MockLayer layer1{"Layer1"};
+	const MockLayer layer2{"Layer2"};
 	const MockLayer layer3;
 
 	EXPECT_EQ(layer1.GetDebugName(), "Layer1");

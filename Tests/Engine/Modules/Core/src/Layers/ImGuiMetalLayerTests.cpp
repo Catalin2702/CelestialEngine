@@ -164,7 +164,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent event(KeyboardKeyCode::A, 0); // 'A' key
+	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 	_app->OnEvent(event);
 
 	// ImGui layers typically don't block event propagation
@@ -185,7 +185,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyReleasedEvent event(KeyboardKeyCode::A); // 'A' key
+	KeyReleasedEvent event{KeyboardKeyCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -205,7 +205,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyTypedEvent event(KeyboardCharsCode::A);
+	KeyTypedEvent event{KeyboardCharsCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -225,7 +225,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonPressedEvent event(MouseButtonCode::Left);
+	MouseButtonPressedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -245,7 +245,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonReleasedEvent event(MouseButtonCode::Left);
+	MouseButtonReleasedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -265,7 +265,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseMoved) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseMovedEvent event(100.0f, 200.0f);
+	MouseMovedEvent event{100.0f, 200.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -285,7 +285,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseScrolled) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseScrolledEvent event(0.0f, 1.0f); // Scroll up
+	MouseScrolledEvent event{0.0f, 1.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -305,7 +305,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventWindowResize) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	WindowResizeEvent event(1024, 768);
+	WindowResizeEvent event{1024, 768};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -325,9 +325,9 @@ TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
-	MouseMovedEvent mouseEvent(100.0f, 200.0f);
-	WindowResizeEvent resizeEvent(1024, 768);
+	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
+	MouseMovedEvent mouseEvent{100.0f, 200.0f};
+	WindowResizeEvent resizeEvent{1024, 768};
 
 	EXPECT_NO_THROW({
 		_app->OnEvent(keyEvent);
@@ -361,8 +361,8 @@ TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 	});
 
 	// Handle events
-	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
-	MouseMovedEvent mouseEvent(100.0f, 200.0f);
+	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
+	MouseMovedEvent mouseEvent{100.0f, 200.0f};
 
 	EXPECT_NO_THROW({
 		_app->OnEvent(keyEvent);

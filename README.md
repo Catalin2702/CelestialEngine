@@ -2,7 +2,7 @@
 
 **CelestialEngine** è un game engine 3D amatoriale sviluppato in **C++23**, progettato per esplorare architetture di rendering moderne e sistemi di scripting ad alte prestazioni.
 
-## 🔖 Version: 0.0.4
+## 🔖 Version: 0.0.5
 
 ## 🚀 Key Features
 * **Modern C++ Core:** Gestione della memoria tramite smart pointers e custom allocators.
