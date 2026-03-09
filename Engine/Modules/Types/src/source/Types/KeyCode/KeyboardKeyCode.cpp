@@ -93,7 +93,7 @@ const char* ToString(const KeyboardKeyCode key) {
 	}
 }
 
-const char* ToString(KeyboardCharsCode key) {
+const char* ToString(const KeyboardCharsCode key) {
 	switch (key) {
 		case KeyboardCharsCode::A: return "A";
 		case KeyboardCharsCode::B: return "B";
