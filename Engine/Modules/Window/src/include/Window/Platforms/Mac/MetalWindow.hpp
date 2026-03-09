@@ -87,7 +87,7 @@ public:
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
-	 * @return GLFWwindow* Pointer to the GLFW window
+	 * @return void* Pointer to the GLFW window
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 

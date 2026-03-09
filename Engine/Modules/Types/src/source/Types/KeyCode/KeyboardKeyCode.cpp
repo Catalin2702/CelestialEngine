@@ -231,7 +231,10 @@ KeyboardKeyCode KeyboardKeyCodeFromGlfw(const int keycode) {
 }
 
 KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode) {
-	return static_cast<KeyboardCharsCode>(charCode);
+	if (charCode >= 32 && charCode <= 126) {
+		return static_cast<KeyboardCharsCode>(charCode);
+	}
+	return KeyboardCharsCode::Unknown;
 }
 
 int GlfwKeyCodeFromKeyboard(const KeyboardKeyCode keycode) {

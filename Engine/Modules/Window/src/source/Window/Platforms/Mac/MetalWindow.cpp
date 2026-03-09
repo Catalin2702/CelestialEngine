@@ -75,7 +75,7 @@ void MetalWindow::OnUpdate() const {
 /**
  * @brief Sets the event callback function
  * @param callback Function to be called when events occur
- * @details Stores the callback in _data.eventCallback, which will be invoked by
+ * @details Stores the callback in _data.EventCallback, which will be invoked by
  *			all the GLFW event callbacks registered in SetWindowCallbacks()
  */
 void MetalWindow::SetEventCallback(const EventCallbackFn& callback) {

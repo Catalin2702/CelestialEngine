@@ -73,7 +73,7 @@ enum class CE_API KeyboardKeyCode : uint16_t {
 	Unknown = 0
 };
 
-enum class CE_API KeyboardCharsCode: uint8_t {
+enum class CE_API KeyboardCharsCode: uint32_t {
 	A = 65, B = 66, C = 67, D = 68, E = 69, F = 70,
 	G = 71, H = 72, I = 73, J = 74, K = 75, L = 76,
 	M = 77, N = 78, O = 79, P = 80, Q = 81, R = 82,
@@ -229,6 +229,6 @@ inline std::string format_as(const KeyboardCharsCode charCode) {
 	return ToString(charCode);
 }
 
-} // namespace CE::Input
+}
 
 #endif //CE_TYPES_KEYCODE_KEYBOARDKEYS_HPP

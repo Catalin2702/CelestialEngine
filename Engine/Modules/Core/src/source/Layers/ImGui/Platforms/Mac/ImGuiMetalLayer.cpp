@@ -232,10 +232,11 @@ bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
  * @return bool Always returns false to allow event propagation
  */
 bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
-	auto& io = ImGui::GetIO();
 	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
+
+	auto& io = ImGui::GetIO();
 
 	io.AddKeyEvent(key, true);
 
@@ -265,10 +266,11 @@ bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
  * @return bool Always returns false to allow event propagation
  */
 bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	auto& io = ImGui::GetIO();
 	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
+
+	auto& io = ImGui::GetIO();
 
 	io.AddKeyEvent(key, false);
 
@@ -298,10 +300,12 @@ bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
  * @return bool Always returns false to allow event propagation
  */
 bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
+	const auto keycode = event.GetKeyCode();
+	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
+		return false;
+
 	auto& io = ImGui::GetIO();
-	if (const auto keycode = event.GetKeyCode(); keycode >= KeyCode::KeyboardCharsCode::A && keycode <= KeyCode::KeyboardCharsCode::z) {
-		io.AddInputCharacter(KeyCode::ToUInt(keycode));
-	}
+	io.AddInputCharacter(KeyCode::ToUInt(keycode));
 	return false;
 }
 
@@ -311,8 +315,12 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
  * @return bool Always returns false to allow event propagation
  */
 bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	if (button >= ImGuiMouseButton_COUNT)
+		return false;
+
 	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton()), true);
+	io.AddMouseButtonEvent(button, true);
 
 	return false;
 }
@@ -323,8 +331,12 @@ bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& even
  * @return bool Always returns false to allow event propagation
  */
 bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	if (button >= ImGuiMouseButton_COUNT)
+		return false;
+
 	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton()), false);
+	io.AddMouseButtonEvent(button, false);
 
 	return false;
 }

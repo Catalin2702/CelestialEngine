@@ -38,7 +38,6 @@ using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other 
 #ifdef CE_PLATFORM_MACOS
 using InputManager = CE::Input::MetalInputManager;	///< Use Metal input manager on macOS
 #else
-using InputManager = CE::Input::I_InputManager;		///< Use generic input manager on other platforms
 #endif
 
 

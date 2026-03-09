@@ -54,7 +54,7 @@ public:
 	 * @details Queries the current state of the specified key. This method is static and can be called
 	 *			from anywhere in the application without needing an instance of I_Input. It relies on
 	 *			the singleton instance to perform the actual check. If the instance is not initialized,
-	 *			it logs an error and returns false.
+	 *			it crashes.
 	 */
 	static bool IsKeyPressed(const KeyCode::KeyboardKeyCode keyCode) { return _instance->_IsKeyPressedImpl(keyCode); }
 	/**
@@ -62,32 +62,32 @@ public:
 	 * @param buttonCode The button code of the mouse button to check
 	 * @return bool True if the mouse button is pressed, false otherwise
 	 * @details Queries the current state of the specified mouse button. Similar to IsKeyPressed, this
-	 *			method is static and relies on the singleton instance to perform the check. If the
-	 *			instance is not initialized, it logs an error and returns false.
+	*			method is static and relies on the singleton instance to perform the check. If the instance is not initialized,
+	 *			it crashes.
 	 */
 	static bool IsMouseButtonPressed(const KeyCode::MouseButtonCode buttonCode) { return _instance->_IsMouseButtonPressedImpl(buttonCode); }
 	/**
 	 * @brief Gets the current X position of the mouse cursor
 	 * @return float The X coordinate of the mouse cursor
 	 * @details Retrieves the current X position of the mouse cursor. This method is static and relies
-	 *			on the singleton instance to perform the query. If the instance is not initialized, it
-	 *			logs an error and returns 0.0f.
+	*			on the singleton instance to perform the query. If the instance is not initialized,
+	 *			it crashes.
 	 */
 	static float GetMouseX() { return _instance->_GetMouseXImpl(); }
 	/**
 	 * @brief Gets the current Y position of the mouse cursor
 	 * @return float The Y coordinate of the mouse cursor
 	 * @details Retrieves the current Y position of the mouse cursor. Similar to GetMouseX, this method
-	 *			is static and relies on the singleton instance. If the instance is not initialized, it
-	 *			logs an error and returns 0.0f.
+	*			is static and relies on the singleton instance. If the instance is not initialized,
+	 *			it crashes.
 	 */
 	static float GetMouseY() { return _instance->_GetMouseYImpl(); }
 	/**
 	 * @brief Gets the current X and Y position of the mouse cursor as a vector
 	 * @return Types::Vec2f A vector containing the X and Y coordinates of the mouse cursor
 	 * @details Retrieves both the X and Y positions of the mouse cursor in a single call. This method
-	 *			is static and relies on the singleton instance to perform the query. If the instance is
-	 *			not initialized, it logs an error and returns a vector with (0.0f, 0.0f).
+	*			is static and relies on the singleton instance to perform the query. If the instance is not initialized,
+	 *			it crashes.
 	 */
 	static Types::Vec2f GetMouseXY() { return _instance->_GetMouseXYImpl(); }
 

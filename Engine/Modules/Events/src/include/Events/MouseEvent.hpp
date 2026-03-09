@@ -124,7 +124,7 @@ class CE_API I_MouseButtonEvent: public I_Event {
 public:
 	/**
 	 * @brief Gets the mouse button code
-	 * @return int Platform-specific mouse button code (0=left, 1=right, 2=middle, etc.)
+	 * @return KeyCode::MouseButtonCode Platform-specific mouse button code
 	 */
 	[[nodiscard]] KeyCode::MouseButtonCode GetMouseButton() const { return _button; }
 

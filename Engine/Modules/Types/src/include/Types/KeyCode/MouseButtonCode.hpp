@@ -29,7 +29,6 @@ namespace CE::KeyCode {
 /**
  * @brief Enumeration of mouse button codes
  * @details This enum defines the various mouse buttons and wheel actions that can be used within the engine.
- *			Each button is assigned a unique integer value corresponding to its GLFW code, allowing for easy integration with GLFW's input handling.
  *			The enum includes standard buttons (Left, Right, Middle) as well as additional buttons (Button4-Button8) and wheel actions (WheelX, WheelY).
  *			An Unknown value is also provided to represent unrecognized or unsupported mouse button codes.
  */

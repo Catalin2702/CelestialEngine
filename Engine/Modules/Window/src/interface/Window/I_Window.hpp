@@ -89,7 +89,7 @@ public:
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
-	 * @return GLFWwindow* Pointer to the GLFW window
+	 * @return void* Pointer to the GLFW window
 	 * @details Provides access to the GLFW window for platform-specific operations
 	 */
 	[[nodiscard]] virtual void* GetNativeWindow() const = 0;

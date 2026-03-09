@@ -54,14 +54,17 @@ int GlfwKeyCodeFromMouseButton(const MouseButtonCode buttonCode) {
 	switch (buttonCode) {
 		case MouseButtonCode::Left: return GLFW_MOUSE_BUTTON_LEFT;
 		case MouseButtonCode::Right: return GLFW_MOUSE_BUTTON_RIGHT;
-		case MouseButtonCode::Middle: return GLFW_MOUSE_BUTTON_MIDDLE;
+		case MouseButtonCode::Middle:
+		case MouseButtonCode::WheelX:
+		case MouseButtonCode::WheelY: return GLFW_MOUSE_BUTTON_MIDDLE;
 		case MouseButtonCode::Button4: return GLFW_MOUSE_BUTTON_4;
 		case MouseButtonCode::Button5: return GLFW_MOUSE_BUTTON_5;
 		case MouseButtonCode::Button6: return GLFW_MOUSE_BUTTON_6;
 		case MouseButtonCode::Button7: return GLFW_MOUSE_BUTTON_7;
 		case MouseButtonCode::Button8: return GLFW_MOUSE_BUTTON_8;
 
-		default: return -1; // Invalid button code for GLFW
+		case MouseButtonCode::Unknown:
+		default: return GLFW_KEY_UNKNOWN;
 	}
 }
 
@@ -69,8 +72,8 @@ int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 	switch (buttonCode) {
 		case MouseButtonCode::Left: return 0;
 		case MouseButtonCode::Right: return 1;
-		case MouseButtonCode::Middle: return 2;
-		case MouseButtonCode::WheelX: return 2;
+		case MouseButtonCode::Middle:
+		case MouseButtonCode::WheelX:
 		case MouseButtonCode::WheelY: return 2;
 
 		default: return 5; // No valid mapping for this button
