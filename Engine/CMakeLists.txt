@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-06
+# Updated: 2026-03-09
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -64,3 +64,7 @@ target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Engine)
+

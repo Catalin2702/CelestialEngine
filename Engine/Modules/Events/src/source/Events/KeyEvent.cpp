@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-09
 //
 
 #include "Events/KeyEvent.hpp"
@@ -19,7 +19,7 @@ namespace CE::Events {
  * @param keycode Platform-specific key code
  * @param repeatCount Number of times the key has repeated (0 for initial press)
  */
-KeyPressedEvent::KeyPressedEvent(const int keycode, const int repeatCount):
+KeyPressedEvent::KeyPressedEvent(const KeyType keycode, const int repeatCount):
 	I_KeyEvent(keycode), _repeatCount(repeatCount) {}
 
 /**
@@ -36,7 +36,7 @@ std::string KeyPressedEvent::ToString() const {
  * @brief KeyReleasedEvent constructor implementation
  * @param keycode Platform-specific key code
  */
-KeyReleasedEvent::KeyReleasedEvent(const int keycode): I_KeyEvent(keycode) {}
+KeyReleasedEvent::KeyReleasedEvent(const KeyType keycode): I_KeyEvent(keycode) {}
 
 /**
  * @brief Converts KeyReleasedEvent to string representation
@@ -52,7 +52,7 @@ std::string KeyReleasedEvent::ToString() const {
  * @brief KeyTypedEvent constructor implementation
  * @param keycode Unicode code point of the typed character
  */
-KeyTypedEvent::KeyTypedEvent(const unsigned int keycode): I_KeyEvent(keycode) {}
+KeyTypedEvent::KeyTypedEvent(const KeyCharType keycode): I_KeyEvent(keycode) {}
 
 /**
  * @brief Converts KeyTypedEvent to string representation

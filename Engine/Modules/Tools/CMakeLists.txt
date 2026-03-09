@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-06
+# Updated: 2026-03-09
 #
 
 set(HEADERS
@@ -43,3 +43,7 @@ target_link_libraries(CE_Tools PUBLIC
 target_include_directories(CE_Tools PUBLIC
 	src/include
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Tools)
+

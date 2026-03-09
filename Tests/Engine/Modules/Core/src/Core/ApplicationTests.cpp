@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
@@ -169,7 +169,7 @@ TEST_F(ApplicationTest, GetWindow) {
  */
 TEST_F(ApplicationTest, PushLayer) {
 	const auto app = std::make_unique<Application>();
-	auto* layer = new MockAppLayer("TestLayer");
+	auto* layer = new MockAppLayer{"TestLayer"};
 
 	EXPECT_FALSE(layer->IsAttached());
 	EXPECT_FALSE(app->HasLayers());
@@ -203,7 +203,7 @@ TEST_F(ApplicationTest, PushOverlay) {
  */
 TEST_F(ApplicationTest, PopLayer) {
 	const auto app = std::make_unique<Application>();
-	auto* layer = new MockAppLayer("TestLayer");
+	auto* layer = new MockAppLayer{"TestLayer"};
 
 	app->PushLayer(layer);
 	EXPECT_TRUE(layer->IsAttached());

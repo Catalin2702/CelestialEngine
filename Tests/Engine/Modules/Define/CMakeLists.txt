@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 set(SOURCES
@@ -33,3 +33,7 @@ add_test(NAME DefineTests
 set_tests_properties(DefineTests PROPERTIES
 	LABELS "Engine;Define"
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_TestsDefine)
+

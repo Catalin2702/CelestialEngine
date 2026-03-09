@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-09
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
@@ -79,7 +79,7 @@ void MetalWindow::OnUpdate() const {
  *			all the GLFW event callbacks registered in SetWindowCallbacks()
  */
 void MetalWindow::SetEventCallback(const EventCallbackFn& callback) {
-	_data.eventCallback = callback;
+	_data.EventCallback = callback;
 }
 
 /**
@@ -104,14 +104,14 @@ void MetalWindow::SetWindowCallbacks() {
 			data->width = static_cast<unsigned int>(width);
 			data->height = static_cast<unsigned int>(height);
 			Events::WindowResizeEvent event{data->width, data->height};
-			data->eventCallback(event);
+			data->EventCallback(event);
 		}
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::WindowCloseEvent event;
-			data->eventCallback(event);
+			data->EventCallback(event);
 		}
 	});
 
@@ -119,20 +119,20 @@ void MetalWindow::SetWindowCallbacks() {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					Events::KeyPressedEvent keyPressedEvent{key, 0};
-					data->eventCallback(keyPressedEvent);
+					Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key), 0};
+					data->EventCallback(keyPressedEvent);
 					break;
 				}
 
 				case GLFW_RELEASE: {
-					Events::KeyReleasedEvent keyReleasedEvent{key};
-					data->eventCallback(keyReleasedEvent);
+					Events::KeyReleasedEvent keyReleasedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key)};
+					data->EventCallback(keyReleasedEvent);
 					break;
 				}
 
 				case GLFW_REPEAT: {
-					Events::KeyPressedEvent keyPressedEvent{key, 1};
-					data->eventCallback(keyPressedEvent);
+					Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key), 1};
+					data->EventCallback(keyPressedEvent);
 					break;
 				}
 				default:;
@@ -142,8 +142,8 @@ void MetalWindow::SetWindowCallbacks() {
 	
 	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int keycode) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
-			Events::KeyTypedEvent keyTypedEvent{keycode};
-			data->eventCallback(keyTypedEvent);
+			Events::KeyTypedEvent keyTypedEvent{KeyCode::KeyboardCharsCodeFromGlfw(keycode)};
+			data->EventCallback(keyTypedEvent);
 		}
 	});
 
@@ -151,13 +151,13 @@ void MetalWindow::SetWindowCallbacks() {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
-					Events::MouseButtonPressedEvent mouseButtonPressedEvent(button);
-					data->eventCallback(mouseButtonPressedEvent);
+					Events::MouseButtonPressedEvent mouseButtonPressedEvent{KeyCode::MouseButtonKeyCodeFromGlfw(button)};
+					data->EventCallback(mouseButtonPressedEvent);
 					break;
 				}
 				case GLFW_RELEASE: {
-					Events::MouseButtonReleasedEvent mouseButtonReleasedEvent(button);
-					data->eventCallback(mouseButtonReleasedEvent);
+					Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{KeyCode::MouseButtonKeyCodeFromGlfw(button)};
+					data->EventCallback(mouseButtonReleasedEvent);
 					break;
 				}
 				default:;
@@ -168,14 +168,14 @@ void MetalWindow::SetWindowCallbacks() {
 	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
-			data->eventCallback(mouseScrolledEvent);
+			data->EventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
 		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
-			data->eventCallback(mouseMovedEvent);
+			data->EventCallback(mouseMovedEvent);
 		}
 	});
 }

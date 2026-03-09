@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-08
+// Updated: 2026-03-09
 //
 
 #pragma once
@@ -14,6 +14,8 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Container/Vec.hpp"
+#include "Types/KeyCode/KeyboardKeyCode.hpp"
+#include "Types/KeyCode/MouseButtonCode.hpp"
 
 /**
  * @namespace CE::Input
@@ -54,7 +56,7 @@ public:
 	 *			the singleton instance to perform the actual check. If the instance is not initialized,
 	 *			it logs an error and returns false.
 	 */
-	static bool IsKeyPressed(const int keyCode) { return _instance->_IsKeyPressedImpl(keyCode); }
+	static bool IsKeyPressed(const KeyCode::KeyboardKeyCode keyCode) { return _instance->_IsKeyPressedImpl(keyCode); }
 	/**
 	 * @brief Checks if a specific mouse button is currently pressed
 	 * @param buttonCode The button code of the mouse button to check
@@ -63,7 +65,7 @@ public:
 	 *			method is static and relies on the singleton instance to perform the check. If the
 	 *			instance is not initialized, it logs an error and returns false.
 	 */
-	static bool IsMouseButtonPressed(const int buttonCode) { return _instance->_IsMouseButtonPressedImpl(buttonCode); }
+	static bool IsMouseButtonPressed(const KeyCode::MouseButtonCode buttonCode) { return _instance->_IsMouseButtonPressedImpl(buttonCode); }
 	/**
 	 * @brief Gets the current X position of the mouse cursor
 	 * @return float The X coordinate of the mouse cursor
@@ -106,14 +108,14 @@ protected:
 	 * @return bool True if the key is pressed, false otherwise
 	 * @details Pure virtual method that must be implemented by derived classes to provide platform-specific key press checking logic.
 	 */
-	[[nodiscard]] virtual bool _IsKeyPressedImpl(int keyCode) = 0;
+	[[nodiscard]] virtual bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) = 0;
 	/**
 	 * @brief Implementation of mouse button press check
 	 * @param buttonCode The button code of the mouse button to check
 	 * @return bool True if the mouse button is pressed, false otherwise
 	 * @details Pure virtual method that must be implemented by derived classes to provide platform-specific mouse button press checking logic.
 	 */
-	[[nodiscard]] virtual bool _IsMouseButtonPressedImpl(int buttonCode) = 0;
+	[[nodiscard]] virtual bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) = 0;
 	/**
 	 * @brief Implementation of mouse X position retrieval
 	 * @return float The X coordinate of the mouse cursor

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-08
+// Updated: 2026-03-09
 //
 
 #pragma once
@@ -28,8 +28,8 @@ class MetalInputManager;
  */
 class MetalInput final: public I_Input {
 protected:
-	[[nodiscard]] bool _IsKeyPressedImpl(int keyCode) override;
-	[[nodiscard]] bool _IsMouseButtonPressedImpl(int buttonCode) override;
+	[[nodiscard]] bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) override;
+	[[nodiscard]] bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) override;
 	[[nodiscard]] float _GetMouseXImpl() override;
 	[[nodiscard]] float _GetMouseYImpl() override;
 	[[nodiscard]] Types::Vec2f _GetMouseXYImpl() override;

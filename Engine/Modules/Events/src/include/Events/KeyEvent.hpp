@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-09
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Event.hpp"
+#include "Types/KeyCode/KeyboardKeyCode.hpp"
 
 #include <string>
 
@@ -57,8 +58,16 @@ protected:
 	I_KeyEvent(T keycode): _keyCode(keycode) {}
 
 protected:
-	T _keyCode;										///< Platform-specific key code
+	T _keyCode;										///< Key code
 };
+
+/**
+ * @brief Type alias for keyboard key codes used in key events
+ * @details This alias simplifies the type used for key codes in keyboard events, making it clear that these events are specifically related to keyboard input.
+ *			It uses the KeyboardKeyCodes enum defined in the KeyCode namespace, which provides a standardized set of key codes across the application.
+ */
+using KeyType = KeyCode::KeyboardKeyCode;
+using KeyCharType = KeyCode::KeyboardCharsCode;
 
 /**
  * @class KeyPressedEvent
@@ -67,7 +76,7 @@ protected:
  *			this event may be generated multiple times with incrementing repeat counts.
  *			A repeat count of 0 indicates the initial press, values > 0 indicate repeats.
  */
-class CE_API KeyPressedEvent: public I_KeyEvent<int> {
+class CE_API KeyPressedEvent: public I_KeyEvent<KeyType> {
 public:
 	/**
 	 * @brief Constructor
@@ -75,7 +84,7 @@ public:
 	 * @param repeatCount Number of times the key has repeated (0 for initial press)
 	 * @details Creates a key pressed event with the specified key code and repeat count
 	 */
-	KeyPressedEvent(int keycode, int repeatCount);
+	KeyPressedEvent(KeyType keycode, int repeatCount);
 
 public:
 	/**
@@ -101,14 +110,14 @@ private:
  * @details Contains the key code of the released key. This event is generated
  *			when the user releases a previously pressed key.
  */
-class CE_API KeyReleasedEvent: public I_KeyEvent<int> {
+class CE_API KeyReleasedEvent: public I_KeyEvent<KeyType> {
 public:
 	/**
 	 * @brief Constructor
 	 * @param keycode Platform-specific key code of the released key
 	 * @details Creates a key released event with the specified key code
 	 */
-	KeyReleasedEvent(int keycode);
+	KeyReleasedEvent(KeyType keycode);
 
 public:
 	/**
@@ -127,14 +136,14 @@ public:
  *			of the typed character. Unlike KeyPressedEvent, this handles character
  *			input after keyboard layout processing and is suitable for text entry.
  */
-class CE_API KeyTypedEvent: public I_KeyEvent<unsigned int> {
+class CE_API KeyTypedEvent: public I_KeyEvent<KeyCharType> {
 public:
 	/**
 	 * @brief Constructor
 	 * @param keycode Unicode code point of the typed character
 	 * @details Creates a key typed event with the specified character code
 	 */
-	KeyTypedEvent(unsigned int keycode);
+	KeyTypedEvent(KeyCharType keycode);
 
 public:
 	/**

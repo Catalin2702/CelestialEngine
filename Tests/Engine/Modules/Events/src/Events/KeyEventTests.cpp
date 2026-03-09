@@ -4,30 +4,23 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-09
 //
 
 #include <Events/I_Event.hpp>
 #include <Events/KeyEvent.hpp>
+#include <Types/KeyCode/KeyboardKeyCode.hpp>
 
 #include <gtest/gtest.h>
 
 using namespace CE::Events;
+using namespace CE::KeyCode;
 
 
 /**
  * @brief Test fixture for KeyEvent tests
  */
-class KeyEventTest: public ::testing::Test {
-protected:
-	void SetUp() override {
-		// Setup code if needed
-	}
-
-	void TearDown() override {
-		// Cleanup code if needed
-	}
-};
+class KeyEventTest: public ::testing::Test {};
 
 // ============================================================================
 // KeyPressedEvent Tests
@@ -37,7 +30,7 @@ protected:
  * @brief Test that KeyPressedEvent stores keycode correctly
  */
 TEST_F(KeyEventTest, KeyPressedEvent_Constructor_StoresKeyCode) {
-	constexpr int keycode = 65; // 'A' key
+	constexpr auto keycode = KeyboardKeyCode::A;
 	constexpr int repeatCount = 0;
 
 	const KeyPressedEvent event{keycode, repeatCount};
@@ -49,7 +42,7 @@ TEST_F(KeyEventTest, KeyPressedEvent_Constructor_StoresKeyCode) {
  * @brief Test that KeyPressedEvent stores repeat count correctly
  */
 TEST_F(KeyEventTest, KeyPressedEvent_Constructor_StoresRepeatCount) {
-	constexpr int keycode = 65;
+	constexpr auto keycode = KeyboardKeyCode::A;
 	constexpr int repeatCount = 5;
 
 	const KeyPressedEvent event{keycode, repeatCount};
@@ -61,7 +54,7 @@ TEST_F(KeyEventTest, KeyPressedEvent_Constructor_StoresRepeatCount) {
  * @brief Test that KeyPressedEvent has correct event type
  */
 TEST_F(KeyEventTest, KeyPressedEvent_GetEventType_ReturnsCorrectType) {
-	const KeyPressedEvent event{65, 0};
+	const KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
 	EXPECT_EQ(event.GetEventType(), EventType::KeyPressed);
 }
@@ -70,7 +63,7 @@ TEST_F(KeyEventTest, KeyPressedEvent_GetEventType_ReturnsCorrectType) {
  * @brief Test that KeyPressedEvent is in both Keyboard and Input categories
  */
 TEST_F(KeyEventTest, KeyPressedEvent_IsInCategory_KeyboardAndInputCategories) {
-	const KeyPressedEvent event{65, 0};
+	const KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
 	EXPECT_TRUE(event.IsInCategory(EventCategoryKeyboard));
 	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
@@ -85,7 +78,7 @@ TEST_F(KeyEventTest, KeyPressedEvent_IsInCategory_KeyboardAndInputCategories) {
  * @brief Test that KeyReleasedEvent stores keycode correctly
  */
 TEST_F(KeyEventTest, KeyReleasedEvent_Constructor_StoresKeyCode) {
-	constexpr int keycode = 32; // Space key
+	constexpr auto keycode = KeyboardKeyCode::Space; // Space key
 
 	const KeyReleasedEvent event{keycode};
 
@@ -96,7 +89,7 @@ TEST_F(KeyEventTest, KeyReleasedEvent_Constructor_StoresKeyCode) {
  * @brief Test that KeyReleasedEvent has correct event type
  */
 TEST_F(KeyEventTest, KeyReleasedEvent_GetEventType_ReturnsCorrectType) {
-	const KeyReleasedEvent event{32};
+	const KeyReleasedEvent event{KeyboardKeyCode::Space};
 
 	EXPECT_EQ(event.GetEventType(), EventType::KeyReleased);
 }
@@ -109,7 +102,7 @@ TEST_F(KeyEventTest, KeyReleasedEvent_GetEventType_ReturnsCorrectType) {
  * @brief Test that KeyTypedEvent stores character code correctly
  */
 TEST_F(KeyEventTest, KeyTypedEvent_Constructor_StoresCharCode) {
-	constexpr unsigned int charCode = 97; // 'a' character
+	constexpr auto charCode = KeyboardCharsCode::a;
 
 	const KeyTypedEvent event{charCode};
 
@@ -120,7 +113,7 @@ TEST_F(KeyEventTest, KeyTypedEvent_Constructor_StoresCharCode) {
  * @brief Test that KeyTypedEvent has correct event type
  */
 TEST_F(KeyEventTest, KeyTypedEvent_GetEventType_ReturnsCorrectType) {
-	const KeyTypedEvent event{97};
+	const KeyTypedEvent event{KeyboardCharsCode::a};
 
 	EXPECT_EQ(event.GetEventType(), EventType::KeyTyped);
 }

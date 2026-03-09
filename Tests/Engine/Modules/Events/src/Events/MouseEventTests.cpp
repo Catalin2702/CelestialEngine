@@ -4,30 +4,23 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-09
 //
 
 #include <Events/I_Event.hpp>
 #include <Events/MouseEvent.hpp>
+#include <Types/KeyCode/MouseButtonCode.hpp>
 
 #include <gtest/gtest.h>
 
 using namespace CE::Events;
+using namespace CE::KeyCode;
 
 
 /**
  * @brief Test fixture for MouseEvent tests
  */
-class MouseEventTest: public ::testing::Test {
-protected:
-	void SetUp() override {
-		// Setup code if needed
-	}
-
-	void TearDown() override {
-		// Cleanup code if needed
-	}
-};
+class MouseEventTest: public ::testing::Test {};
 
 // ============================================================================
 // MouseButtonEvent Tests
@@ -37,8 +30,7 @@ protected:
  * @brief Test that MouseButtonPressedEvent stores button code correctly
  */
 TEST_F(MouseEventTest, MouseButtonPressedEvent_Constructor_StoresButtonCode) {
-	constexpr int button = 0; // Left mouse button
-
+	constexpr auto button = MouseButtonCode::Left;
 	const MouseButtonPressedEvent event{button};
 
 	EXPECT_EQ(event.GetMouseButton(), button);
@@ -48,7 +40,7 @@ TEST_F(MouseEventTest, MouseButtonPressedEvent_Constructor_StoresButtonCode) {
  * @brief Test that MouseButtonPressedEvent has correct event type
  */
 TEST_F(MouseEventTest, MouseButtonPressedEvent_GetEventType_ReturnsCorrectType) {
-	const MouseButtonPressedEvent event{0};
+	const MouseButtonPressedEvent event{MouseButtonCode::Left};
 
 	EXPECT_EQ(event.GetEventType(), EventType::MouseButtonPressed);
 }
@@ -57,7 +49,7 @@ TEST_F(MouseEventTest, MouseButtonPressedEvent_GetEventType_ReturnsCorrectType) 
  * @brief Test that MouseButtonPressedEvent is in Mouse and Input categories
  */
 TEST_F(MouseEventTest, MouseButtonPressedEvent_IsInCategory_MouseAndInputCategories) {
-	const MouseButtonPressedEvent event{0};
+	const MouseButtonPressedEvent event{MouseButtonCode::Left};
 
 	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
 	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
@@ -68,7 +60,7 @@ TEST_F(MouseEventTest, MouseButtonPressedEvent_IsInCategory_MouseAndInputCategor
  * @brief Test that MouseButtonReleasedEvent stores button code correctly
  */
 TEST_F(MouseEventTest, MouseButtonReleasedEvent_Constructor_StoresButtonCode) {
-	constexpr int button = 1; // Right mouse button
+	constexpr auto button = MouseButtonCode::Right;
 
 	const MouseButtonReleasedEvent event{button};
 

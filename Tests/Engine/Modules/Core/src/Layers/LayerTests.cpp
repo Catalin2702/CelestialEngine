@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
@@ -12,11 +12,13 @@
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
 #include <Layers/I_Layer.hpp>
+#include <Types/KeyCode/KeyboardKeyCode.hpp>
 
 #include <gtest/gtest.h>
 
 using namespace CE::Layers;
 using namespace CE::Events;
+using namespace CE::KeyCode;
 
 
 /**
@@ -59,22 +61,13 @@ private:
 /**
  * @brief Test fixture for I_Layer tests
  */
-class LayerTest: public ::testing::Test {
-protected:
-	void SetUp() override {
-		// Setup code if needed
-	}
-
-	void TearDown() override {
-		// Cleanup code if needed
-	}
-};
+class LayerTest: public ::testing::Test {};
 
 /**
  * @brief Test Layer construction
  */
 TEST_F(LayerTest, Construction) {
-	MockLayer layer("TestLayer");
+	const MockLayer layer{"TestLayer"};
 
 	EXPECT_FALSE(layer.IsAttached());
 	EXPECT_EQ(layer.GetUpdateCount(), 0);
@@ -89,7 +82,7 @@ TEST_F(LayerTest, Construction) {
  * @brief Test Layer construction with default name
  */
 TEST_F(LayerTest, ConstructionDefaultName) {
-	MockLayer layer;
+	const MockLayer layer;
 
 	EXPECT_FALSE(layer.IsAttached());
 
@@ -102,7 +95,7 @@ TEST_F(LayerTest, ConstructionDefaultName) {
  * @brief Test Layer OnAttach
  */
 TEST_F(LayerTest, OnAttach) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 
 	EXPECT_FALSE(layer.IsAttached());
 
@@ -115,7 +108,7 @@ TEST_F(LayerTest, OnAttach) {
  * @brief Test Layer OnDetach
  */
 TEST_F(LayerTest, OnDetach) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 
 	layer.OnAttach();
 	EXPECT_TRUE(layer.IsAttached());
@@ -128,7 +121,7 @@ TEST_F(LayerTest, OnDetach) {
  * @brief Test Layer OnUpdate
  */
 TEST_F(LayerTest, OnUpdate) {
-	MockLayer layer("TestLayer");
+	const MockLayer layer{"TestLayer"};
 
 	EXPECT_EQ(layer.GetUpdateCount(), 0);
 
@@ -146,10 +139,10 @@ TEST_F(LayerTest, OnUpdate) {
  * @brief Test Layer OnEvent without handling
  */
 TEST_F(LayerTest, OnEventNotHandled) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 	layer.SetShouldHandleEvent(false);
 
-	KeyPressedEvent event(65, 0); // 'A' key
+	KeyPressedEvent event(KeyboardKeyCode::A, 0); // 'A' key
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
 	bool handled = layer.OnEvent(event);
@@ -162,10 +155,10 @@ TEST_F(LayerTest, OnEventNotHandled) {
  * @brief Test Layer OnEvent with handling
  */
 TEST_F(LayerTest, OnEventHandled) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 	layer.SetShouldHandleEvent(true);
 
-	KeyPressedEvent event(65, 0); // 'A' key
+	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
 	bool handled = layer.OnEvent(event);
@@ -178,10 +171,10 @@ TEST_F(LayerTest, OnEventHandled) {
  * @brief Test Layer receiving multiple events
  */
 TEST_F(LayerTest, MultipleEvents) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 	layer.SetShouldHandleEvent(false);
 
-	KeyPressedEvent keyEvent(65, 0);
+	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
 	MouseMovedEvent mouseEvent(100.0f, 200.0f);
 	WindowResizeEvent resizeEvent(800, 600);
 
@@ -201,7 +194,7 @@ TEST_F(LayerTest, MultipleEvents) {
  * @brief Test Layer lifecycle
  */
 TEST_F(LayerTest, LayerLifecycle) {
-	MockLayer layer("TestLayer");
+	MockLayer layer{"TestLayer"};
 
 	// Initial state
 	EXPECT_FALSE(layer.IsAttached());
@@ -218,7 +211,7 @@ TEST_F(LayerTest, LayerLifecycle) {
 	EXPECT_EQ(layer.GetUpdateCount(), 2);
 
 	// Event
-	KeyPressedEvent event(65, 0);
+	KeyPressedEvent event(KeyboardKeyCode::A, 0);
 	layer.OnEvent(event);
 	EXPECT_EQ(layer.GetEventCount(), 1);
 

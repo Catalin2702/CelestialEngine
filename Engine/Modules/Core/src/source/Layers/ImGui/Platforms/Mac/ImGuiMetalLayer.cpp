@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-09
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
@@ -17,8 +17,9 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "MetalBridge/ImGui/ImGuiBridge.h"
-#include "Tools/ImGui/ImGui.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/KeyCode/KeyboardKeyCode.hpp"
+#include "Types/KeyCode/MouseButtonCode.hpp"
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -232,7 +233,7 @@ bool ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
  */
 bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
 	auto& io = ImGui::GetIO();
-	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 
@@ -265,7 +266,7 @@ bool ImGuiMetalLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
  */
 bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	auto& io = ImGui::GetIO();
-	const ImGuiKey key = Tools::ImGui::GlfwKeyToImGuiKey(event.GetKeyCode());
+	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 
@@ -298,8 +299,8 @@ bool ImGuiMetalLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
  */
 bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
 	auto& io = ImGui::GetIO();
-	if (const auto keycode = event.GetKeyCode(); keycode > 0 && keycode < 0x10000) {
-		io.AddInputCharacter(static_cast<unsigned short>(keycode));
+	if (const auto keycode = event.GetKeyCode(); keycode >= KeyCode::KeyboardCharsCode::A && keycode <= KeyCode::KeyboardCharsCode::z) {
+		io.AddInputCharacter(KeyCode::ToUInt(keycode));
 	}
 	return false;
 }
@@ -311,7 +312,7 @@ bool ImGuiMetalLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
  */
 bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(event.GetMouseButton(), true);
+	io.AddMouseButtonEvent(KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton()), true);
 
 	return false;
 }
@@ -323,7 +324,7 @@ bool ImGuiMetalLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& even
  */
 bool ImGuiMetalLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(event.GetMouseButton(), false);
+	io.AddMouseButtonEvent(KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton()), false);
 
 	return false;
 }

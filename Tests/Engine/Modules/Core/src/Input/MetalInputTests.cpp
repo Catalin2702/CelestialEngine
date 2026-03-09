@@ -4,12 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-08
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
 #include <Input/Platforms/Mac/MetalInput.hpp>
 #include <Tools/Log/Log.hpp>
+#include <Types/KeyCode/KeyboardKeyCode.hpp>
+#include <Types/KeyCode/MouseButtonCode.hpp>
 #include <Types/Window/WindowProps.hpp>
 
 #include <memory>
@@ -18,6 +20,7 @@
 using namespace CE::Core;
 using namespace CE::Input;
 using namespace CE::Tools::Log;
+using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
 /**
@@ -107,7 +110,7 @@ TEST_F(MetalInputTest, MetalInputManager_MultipleShutdown_DoesNotCrash) {
 TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
-		[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(65);
+		[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(KeyboardKeyCode::A);
 	});
 	_ShutdownInput();
 }
@@ -118,7 +121,7 @@ TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
 TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_ReturnsBoolean) {
 	_InitInput();
 	// GLFW_KEY_SPACE = 32
-	const bool result = I_Input::IsKeyPressed(32);
+	const bool result = I_Input::IsKeyPressed(KeyboardKeyCode::Space);
 
 	// Result should be either true or false
 	EXPECT_TRUE(result == true || result == false);
@@ -132,11 +135,11 @@ TEST_F(MetalInputTest, IsKeyPressed_MultipleKeyCodes_DoesNotCrash) {
 	_InitInput();
 	// GLFW_KEY_ESCAPE = 256
 	EXPECT_NO_THROW({
-		[[maybe_unused]] const bool escape = I_Input::IsKeyPressed(256);
+		[[maybe_unused]] const bool escape = I_Input::IsKeyPressed(KeyboardKeyCode::Escape);
 		// GLFW_KEY_ENTER = 257
-		[[maybe_unused]] const bool enter = I_Input::IsKeyPressed(257);
+		[[maybe_unused]] const bool enter = I_Input::IsKeyPressed(KeyboardKeyCode::Enter);
 		// GLFW_KEY_TAB = 258
-		[[maybe_unused]] const bool tab = I_Input::IsKeyPressed(258);
+		[[maybe_unused]] const bool tab = I_Input::IsKeyPressed(KeyboardKeyCode::Tab);
 	});
 	_ShutdownInput();
 }
@@ -149,7 +152,7 @@ TEST_F(MetalInputTest, IsKeyPressed_LetterKeys_DoesNotCrash) {
 	// Test A-Z keys (GLFW_KEY_A through GLFW_KEY_Z = 65-90)
 	for (int keyCode = 65; keyCode <= 90; ++keyCode) {
 		EXPECT_NO_THROW({
-			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(keyCode);
+			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(KeyboardKeyCodeFromGlfw(keyCode));
 		});
 	}
 	_ShutdownInput();
@@ -163,7 +166,7 @@ TEST_F(MetalInputTest, IsKeyPressed_NumberKeys_DoesNotCrash) {
 	// Test 0-9 keys (GLFW_KEY_0 through GLFW_KEY_9 = 48-57)
 	for (int keyCode = 48; keyCode <= 57; ++keyCode) {
 		EXPECT_NO_THROW({
-			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(keyCode);
+			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(KeyboardKeyCodeFromGlfw(keyCode));
 		});
 	}
 	_ShutdownInput();
@@ -177,7 +180,7 @@ TEST_F(MetalInputTest, IsKeyPressed_FunctionKeys_DoesNotCrash) {
 	// Test F1-F12 keys (GLFW_KEY_F1 through GLFW_KEY_F12 = 290-301)
 	for (int keyCode = 290; keyCode <= 301; ++keyCode) {
 		EXPECT_NO_THROW({
-			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(keyCode);
+			[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(KeyboardKeyCodeFromGlfw(keyCode));
 		});
 	}
 	_ShutdownInput();
@@ -194,7 +197,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
 	_InitInput();
 	// GLFW_MOUSE_BUTTON_LEFT = 0
 	EXPECT_NO_THROW({
-		[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(0);
+		[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(MouseButtonCode::Left);
 	});
 	_ShutdownInput();
 }
@@ -205,7 +208,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
 TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_ReturnsBoolean) {
 	_InitInput();
 	// GLFW_MOUSE_BUTTON_LEFT = 0
-	const bool result = I_Input::IsMouseButtonPressed(0);
+	const bool result = I_Input::IsMouseButtonPressed(MouseButtonCode::Left);
 
 	// Result should be either true or false
 	EXPECT_TRUE(result == true || result == false);
@@ -222,7 +225,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_AllButtons_DoesNotCrash) {
 	// GLFW_MOUSE_BUTTON_MIDDLE = 2
 	for (int buttonCode = 0; buttonCode <= 2; ++buttonCode) {
 		EXPECT_NO_THROW({
-			[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(buttonCode);
+			[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(MouseButtonKeyCodeFromGlfw(buttonCode));
 		});
 	}
 	_ShutdownInput();
@@ -236,7 +239,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ExtendedButtons_DoesNotCrash) {
 	// GLFW supports up to 8 mouse buttons (0-7)
 	for (int buttonCode = 0; buttonCode <= 7; ++buttonCode) {
 		EXPECT_NO_THROW({
-			[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(buttonCode);
+			[[maybe_unused]] const bool pressed = I_Input::IsMouseButtonPressed(MouseButtonKeyCodeFromGlfw(buttonCode));
 		});
 	}
 	_ShutdownInput();
@@ -331,8 +334,8 @@ TEST_F(MetalInputTest, MultipleInputQueries_RapidFire_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
 		for (int i = 0; i < 1000; ++i) {
-			[[maybe_unused]] const bool keyPressed = I_Input::IsKeyPressed(65); // 'A' key
-			[[maybe_unused]] const bool mousePressed = I_Input::IsMouseButtonPressed(0); // Left button
+			[[maybe_unused]] const bool keyPressed = I_Input::IsKeyPressed(KeyboardKeyCode::A); // 'A' key
+			[[maybe_unused]] const bool mousePressed = I_Input::IsMouseButtonPressed(MouseButtonCode::Left); // Left button
 			[[maybe_unused]] const float mouseX = I_Input::GetMouseX();
 			[[maybe_unused]] const float mouseY = I_Input::GetMouseY();
 		}
@@ -346,12 +349,12 @@ TEST_F(MetalInputTest, MultipleInputQueries_RapidFire_DoesNotCrash) {
 TEST_F(MetalInputTest, MixedInputQueries_Sequential_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
-		[[maybe_unused]] const bool keyA = I_Input::IsKeyPressed(65);
+		[[maybe_unused]] const bool keyA = I_Input::IsKeyPressed(KeyboardKeyCode::A);
 		[[maybe_unused]] const auto mousePos = I_Input::GetMouseXY();
-		[[maybe_unused]] const bool leftButton = I_Input::IsMouseButtonPressed(0);
-		[[maybe_unused]] const bool keySpace = I_Input::IsKeyPressed(32);
+		[[maybe_unused]] const bool leftButton = I_Input::IsMouseButtonPressed(MouseButtonCode::Left);
+		[[maybe_unused]] const bool keySpace = I_Input::IsKeyPressed(KeyboardKeyCode::Space);
 		[[maybe_unused]] const float mouseX = I_Input::GetMouseX();
-		[[maybe_unused]] const bool rightButton = I_Input::IsMouseButtonPressed(1);
+		[[maybe_unused]] const bool rightButton = I_Input::IsMouseButtonPressed(MouseButtonCode::Right);
 	});
 	_ShutdownInput();
 }

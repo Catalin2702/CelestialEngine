@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
@@ -13,6 +13,8 @@
 #include <Events/MouseEvent.hpp>
 #include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
 #include <Tools/Log/Log.hpp>
+#include <Types/KeyCode/KeyboardKeyCode.hpp>
+#include <Types/KeyCode/MouseButtonCode.hpp>
 #include <Types/Window/WindowProps.hpp>
 
 #include <memory>
@@ -22,6 +24,7 @@ using namespace CE::Core;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
+using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
 
@@ -161,7 +164,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent event(65, 0); // 'A' key
+	KeyPressedEvent event(KeyboardKeyCode::A, 0); // 'A' key
 	_app->OnEvent(event);
 
 	// ImGui layers typically don't block event propagation
@@ -182,7 +185,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyReleasedEvent event(65); // 'A' key
+	KeyReleasedEvent event(KeyboardKeyCode::A); // 'A' key
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -202,7 +205,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyTypedEvent event(65); // 'A' key
+	KeyTypedEvent event(KeyboardCharsCode::A);
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -222,7 +225,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonPressedEvent event(0); // Left mouse button
+	MouseButtonPressedEvent event(MouseButtonCode::Left);
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -242,7 +245,7 @@ TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonReleasedEvent event(0); // Left mouse button
+	MouseButtonReleasedEvent event(MouseButtonCode::Left);
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -322,7 +325,7 @@ TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent keyEvent(65, 0);
+	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
 	MouseMovedEvent mouseEvent(100.0f, 200.0f);
 	WindowResizeEvent resizeEvent(1024, 768);
 
@@ -358,7 +361,7 @@ TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 	});
 
 	// Handle events
-	KeyPressedEvent keyEvent(65, 0);
+	KeyPressedEvent keyEvent(KeyboardKeyCode::A, 0);
 	MouseMovedEvent mouseEvent(100.0f, 200.0f);
 
 	EXPECT_NO_THROW({

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-09
 //
 
 #pragma once
@@ -13,8 +13,8 @@
 #define CE_TYPES_WINDOW_WINDOWPROPS_HPP
 
 #include <functional>
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace CE::Events {
 class Event;
@@ -87,7 +87,7 @@ using CallbackFn = std::function<void(T&)>;
  */
 template<class T>
 struct WindowData: WindowProps {
-	CallbackFn<T> eventCallback;					///< Callback function for event handling
+	CallbackFn<T> EventCallback;					///< Callback function for event handling
 
 	WindowData() = default;
 	/**

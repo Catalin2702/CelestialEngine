@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types
+// Module: CelestialEngine/Engine/Modules/Types/Container
 // File: Vec.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-06

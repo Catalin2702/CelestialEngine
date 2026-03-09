@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 set(HEADERS
@@ -34,9 +34,14 @@ set_target_properties(CE_Events PROPERTIES
 target_link_libraries(CE_Events PUBLIC
 	CE_Config
 	CE_Define
+	CE_Types
 )
 
 target_include_directories(CE_Events PUBLIC
 	src/include
 	src/template
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Events)
+

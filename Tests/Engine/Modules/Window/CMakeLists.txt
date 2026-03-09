@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 enable_testing()
@@ -44,3 +44,7 @@ add_test(NAME WindowTests
 set_tests_properties(WindowTests PROPERTIES
 	LABELS "Engine;Window"
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_TestsWindow)
+
