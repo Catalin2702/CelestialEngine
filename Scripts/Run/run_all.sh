@@ -39,6 +39,7 @@ fi
 # Variable to track failures
 FAILED_TESTS=0
 TOTAL_TESTS=0
+FAILED_TESTS_FILE=$(mktemp)
 
 # Function to execute a command and verify the result
 run_command() {
@@ -52,9 +53,12 @@ run_command() {
 
     cd "${BINARIES_DIR}" || exit
 
+    # Create temporary file to capture output
+    local temp_output=$(mktemp)
+
     if [ "$is_gui" = "true" ]; then
         # For GUI applications, launch in background and terminate after 0.5 seconds
-        eval "${command}" &
+        eval "${command}" > "$temp_output" 2>&1 &
         local pid=$!
         echo "${YELLOW}Application started (PID: ${pid}), waiting 0.5 seconds...${NC}"
         sleep 0.5
@@ -75,18 +79,38 @@ run_command() {
 
         wait $pid 2>/dev/null
         local exit_code=0  # Consider success if the app started
+
+        # Display output
+        cat "$temp_output"
     else
-        # For tests and normal commands, execute normally
-        eval "${command}"
+        # For tests and normal commands, execute and capture output
+        # Use a subshell to capture both output and exit code
+        (eval "${command}") > "$temp_output" 2>&1
         local exit_code=$?
+        # Display the captured output
+        cat "$temp_output"
     fi
 
-    if [ $exit_code -eq 0 ] || [ "$is_gui" = "true" ]; then
+    if [ "$exit_code" -eq 0 ] || [ "$is_gui" = "true" ]; then
         echo "${GREEN}✓ ${name} completed successfully${NC}"
     else
         echo "${RED}✗ ${name} failed with exit code ${exit_code}${NC}"
         FAILED_TESTS=$((FAILED_TESTS + 1))
+
+        # Write failure details to file
+        echo "=======================================" >> "$FAILED_TESTS_FILE"
+        echo "Test: ${name}" >> "$FAILED_TESTS_FILE"
+        echo "Exit Code: ${exit_code}" >> "$FAILED_TESTS_FILE"
+        echo "Error details:" >> "$FAILED_TESTS_FILE"
+        echo "---------------------------------------" >> "$FAILED_TESTS_FILE"
+
+        # Extract only failure information from the output
+        grep -E "\[  FAILED  \]|Failure|Error|Expected:" "$temp_output" | head -30 >> "$FAILED_TESTS_FILE" 2>/dev/null || echo "(No specific error details captured)" >> "$FAILED_TESTS_FILE"
+        echo "" >> "$FAILED_TESTS_FILE"
     fi
+
+    # Clean up temporary file
+    rm -f "$temp_output"
 
     echo ""
     echo "----------------------------------------"
@@ -170,9 +194,23 @@ echo ""
 
 if [ $FAILED_TESTS -eq 0 ]; then
     echo "${GREEN}✓ All tests passed! (${TOTAL_TESTS}/${TOTAL_TESTS})${NC}"
+    rm -f "$FAILED_TESTS_FILE"
     exit 0
 else
     echo "${RED}✗ ${FAILED_TESTS}/${TOTAL_TESTS} tests failed${NC}"
+    echo ""
+
+    # Display details of failed tests
+    if [ -s "$FAILED_TESTS_FILE" ]; then
+        echo "${RED}========================================${NC}"
+        echo "${RED}Failed Tests Details${NC}"
+        echo "${RED}========================================${NC}"
+        echo ""
+
+        cat "$FAILED_TESTS_FILE"
+    fi
+
+    rm -f "$FAILED_TESTS_FILE"
     exit 1
 fi
 

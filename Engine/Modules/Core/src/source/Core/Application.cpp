@@ -4,19 +4,19 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-08
+// Updated: 2026-03-09
 //
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
+#include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/I_Window.hpp"
 
 #ifdef CE_PLATFORM_MACOS
-#include "Input/Platforms/Mac/MetalInput.hpp"
 #include "Window/Platforms/Mac/MetalWindow.hpp"
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #else
@@ -29,15 +29,8 @@
 #ifdef CE_PLATFORM_MACOS
 using MetalWindow = CE::Window::MetalWindow;		///< Use Metal window on macOS
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS as well (fallback)
-using MetalInput = CE::Input::MetalInput;			///< Use Metal input handling on macOS
 #else
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
-#endif
-
-// Platform-specific input type
-#ifdef CE_PLATFORM_MACOS
-using InputManager = CE::Input::MetalInputManager;	///< Use Metal input manager on macOS
-#else
 #endif
 
 
@@ -98,7 +91,7 @@ Application::~Application() {
 	_layerStack.Clear();
 
 	// Shutdown input system (deletes the singleton instance)
-	InputManager().Shutdown();
+	Input::ShutdownInput();
 
 	// Destroy the window (calls glfwDestroyWindow)
 	_window.reset();
@@ -224,7 +217,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
-	InputManager().Init();
+	Input::InitInput();
 }
 
 }

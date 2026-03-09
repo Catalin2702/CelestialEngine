@@ -44,7 +44,6 @@ protected:
 		_app.reset();
 	}
 
-	MetalInputManager _manager;
 	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal};
 	std::unique_ptr<Application> _app;
 };

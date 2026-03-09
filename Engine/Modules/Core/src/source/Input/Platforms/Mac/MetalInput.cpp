@@ -69,16 +69,16 @@ void MetalInput::_InitGLFWWindow() {
 	}
 }
 
-void MetalInputManager::Init() {
-	if (not MetalInput::_instance) {
-		MetalInput::_instance = new MetalInput();
+void InitInput() {
+	if (not I_Input::_instance) {
+		I_Input::_instance = new MetalInput();
 	}
 }
 
-void MetalInputManager::Shutdown() {
-	if (MetalInput::_instance) {
-		delete MetalInput::_instance;
-		MetalInput::_instance = nullptr;
+void ShutdownInput() {
+	if (I_Input::_instance) {
+		delete I_Input::_instance;
+		I_Input::_instance = nullptr;
 	}
 }
 

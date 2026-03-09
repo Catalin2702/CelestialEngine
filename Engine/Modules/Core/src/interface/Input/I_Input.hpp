@@ -24,21 +24,14 @@
  */
 namespace CE::Input {
 
-#ifdef CE_PLATFORM_MACOS
-	class MetalInputManager;
-	using InputManager = MetalInputManager;
-#else
-	class I_InputManager;
-	using InputManager = I_InputManager;
-#endif
-
 /**
  * @class I_Input
  * @brief Interface for input handling
  * @details Provides a platform-agnostic interface for querying input states such as keyboard keys and mouse buttons. This class is designed to be inherited by platform-specific implementations (e.g., MetalInput for macOS). It uses the singleton pattern to allow static access to input queries throughout the application without needing to pass around an instance.
  */
 class CE_API I_Input {
-	friend InputManager;
+	friend void InitInput();
+	friend void ShutdownInput();
 public:
 	/**
 	 * @brief Virtual destructor
@@ -139,27 +132,8 @@ private:
 	static I_Input* _instance;						///< Singleton instance of the I_Input class
 };
 
-/**
- * @class I_InputManager
- * @brief Interface for input manager
- * @details Provides an interface for initializing and shutting down the input handling system. This class is designed to be inherited by platform-specific input manager implementations (e.g., MetalInputManager for macOS). The input manager is responsible for setting up the appropriate input handling implementation as the singleton instance of I_Input.
- */
-class CE_API I_InputManager {
-public:
-	virtual ~I_InputManager() = default;
-
-public:
-	/**
-	 * @brief Initializes the input handling system
-	 * @details Pure virtual method that must be implemented by derived classes to perform any necessary setup for the input handling system, such as creating the appropriate I_Input implementation instance.
-	 */
-	virtual void Init() = 0;
-	/**
-	 * @brief Shuts down the input handling system
-	 * @details Pure virtual method that must be implemented by derived classes to perform any necessary cleanup for the input handling system, such as deleting the I_Input instance and releasing resources.
-	 */
-	virtual void Shutdown() = 0;
-};
+void InitInput();
+void ShutdownInput();
 
 }
 

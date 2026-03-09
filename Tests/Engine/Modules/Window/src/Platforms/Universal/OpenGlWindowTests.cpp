@@ -169,7 +169,10 @@ TEST_F(OpenGlWindowTest, SetVSync_DisableVSync_UpdatesState) {
  */
 TEST_F(OpenGlWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	OpenGlWindow window(props);
+
+	// Set an event callback before calling OnUpdate
+	window.SetEventCallback([](I_Event&) {});
 
 	EXPECT_NO_THROW(window.OnUpdate());
 }

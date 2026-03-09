@@ -213,7 +213,10 @@ TEST_F(MetalWindowTest, SetVSync_DisableVSync_UpdatesState) {
  */
 TEST_F(MetalWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::Metal};
-	const MetalWindow window(props);
+	MetalWindow window(props);
+
+	// Set an event callback before calling OnUpdate
+	window.SetEventCallback([](I_Event&) {});
 
 	EXPECT_NO_THROW(window.OnUpdate());
 }
