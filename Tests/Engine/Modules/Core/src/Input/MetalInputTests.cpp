@@ -14,6 +14,8 @@
 #include <Types/KeyCode/MouseButtonCode.hpp>
 #include <Types/Window/WindowProps.hpp>
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include <cmath>
 #include <memory>
 #include <gtest/gtest.h>
 
@@ -119,11 +121,11 @@ TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
  */
 TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_ReturnsBoolean) {
 	_InitInput();
-	// GLFW_KEY_SPACE = 32
-	const bool result = I_Input::IsKeyPressed(KeyboardKeyCode::Space);
 
-	// Result should be either true or false
-	EXPECT_TRUE(result == true || result == false);
+	EXPECT_NO_THROW({
+		[[maybe_unused]] const bool result = I_Input::IsKeyPressed(KeyboardKeyCode::Space);
+	});
+
 	_ShutdownInput();
 }
 
@@ -206,11 +208,11 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
  */
 TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_ReturnsBoolean) {
 	_InitInput();
-	// GLFW_MOUSE_BUTTON_LEFT = 0
-	const bool result = I_Input::IsMouseButtonPressed(MouseButtonCode::Left);
 
-	// Result should be either true or false
-	EXPECT_TRUE(result == true || result == false);
+	EXPECT_NO_THROW({
+		[[maybe_unused]] const bool result = I_Input::IsMouseButtonPressed(MouseButtonCode::Left);
+	});
+
 	_ShutdownInput();
 }
 

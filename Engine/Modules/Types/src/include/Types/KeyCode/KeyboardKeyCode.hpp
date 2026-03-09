@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include <cstdint>
+#include <ostream>
 #include <string>
 
 
