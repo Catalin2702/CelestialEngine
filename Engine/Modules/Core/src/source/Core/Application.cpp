@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-09
 //
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
+#include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/I_Window.hpp"
@@ -21,8 +22,6 @@
 #else
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #endif
-
-#include <GLFW/glfw3.h>
 
 #include <stdexcept>
 
@@ -88,10 +87,13 @@ Application::Application(const std::string& title, const unsigned int width, con
  *			try to clean up GLFW resources during their OnDetach.
  */
 Application::~Application() {
-	// First, detach all layers (they may use GLFW in their cleanup)
+	// Detach all layers (they may use GLFW in their cleanup)
 	_layerStack.Clear();
 
-	// Then destroy the window (calls glfwDestroyWindow)
+	// Shutdown input system (deletes the singleton instance)
+	Input::ShutdownInput();
+
+	// Destroy the window (calls glfwDestroyWindow)
 	_window.reset();
 
 	// Reset the singleton instance pointer
@@ -215,6 +217,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 	_running = true;
+	Input::InitInput();
 }
 
 }

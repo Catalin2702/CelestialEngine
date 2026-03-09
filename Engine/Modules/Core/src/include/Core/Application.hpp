@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -160,13 +160,6 @@ public:
 	 * @details Provides access to the window for rendering operations
 	 */
 	[[nodiscard]] Window::I_Window* GetWindow() const { return _window.get(); }
-
-	/**
-	 * @brief Forces a reset of the singleton instance pointer
-	 * @details FOR TESTING ONLY: Resets the instance pointer without calling destructor.
-	 *			Use this only when a test has crashed and left the instance in a bad state.
-	 */
-	static void ForceResetInstance() { _instance = nullptr; }
 
 protected:
 	/**

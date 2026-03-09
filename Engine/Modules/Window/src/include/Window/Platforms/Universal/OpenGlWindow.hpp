@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -91,7 +91,7 @@ public:
 	 * @details Provides access to the GLFW window for platform-specific operations.
 	 *			Returns the raw pointer from the smart pointer wrapper.
 	 */
-	[[nodiscard]] GLFWwindow* GetGLFWwindow() const override { return _glfwWindow.get(); }
+	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 	
 	/**
 	 * @brief Sets the event callback function

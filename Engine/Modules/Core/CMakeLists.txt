@@ -4,28 +4,40 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 set(HEADERS
 	src/include/Core/Application.hpp
-	src/include/Layers/I_Layer.hpp
 	src/include/Layers/LayerStack.hpp
-	src/include/Layers/ImGuiOpenGlLayer.hpp
-	src/include/Layers/ImGuiMetalLayer.hpp
-	src/include/Layers/I_ImGuiLayer.hpp
+	src/include/Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp
+	src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Input/Platforms/Mac/MetalInput.hpp
+	>
+)
+
+set(INTERFACES
+	src/interface/Layers/I_Layer.hpp
+	src/interface/Layers/ImGui/I_ImGuiLayer.hpp
+	src/interface/Input/I_Input.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
-	src/source/Layers/I_Layer.cpp
 	src/source/Layers/LayerStack.cpp
-	src/source/Layers/ImGuiOpenGlLayer.cpp
-	src/source/Layers/ImGuiMetalLayer.cpp
+	src/source/Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.cpp
+	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Input/Platforms/Mac/MetalInput.cpp
+	>
 )
 
 add_library(CE_Core SHARED
 	${HEADERS}
+	${INTERFACES}
 	${SOURCES}
 )
 
@@ -38,6 +50,7 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
+	CE_Glfw
 	CE_ImGui
 	CE_SpdLog
 	CE_Tools
@@ -48,14 +61,15 @@ target_link_libraries(CE_Core PUBLIC
 # Platform-specific
 target_link_libraries(CE_Core PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
-		MetalCpp
+		CE_MetalCpp
 	>
-)
-
-# Third-party
-target_link_libraries(CE_Core PUBLIC
 )
 
 target_include_directories(CE_Core PUBLIC
 	src/include
+	src/interface
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Core)
+

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
@@ -77,11 +77,9 @@ class ApplicationTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
-		Application::ForceResetInstance();
 	}
 
 	void TearDown() override {
-		Application::ForceResetInstance();
 		Log::Shutdown();
 	}
 };
@@ -171,7 +169,7 @@ TEST_F(ApplicationTest, GetWindow) {
  */
 TEST_F(ApplicationTest, PushLayer) {
 	const auto app = std::make_unique<Application>();
-	auto* layer = new MockAppLayer("TestLayer");
+	auto* layer = new MockAppLayer{"TestLayer"};
 
 	EXPECT_FALSE(layer->IsAttached());
 	EXPECT_FALSE(app->HasLayers());
@@ -205,7 +203,7 @@ TEST_F(ApplicationTest, PushOverlay) {
  */
 TEST_F(ApplicationTest, PopLayer) {
 	const auto app = std::make_unique<Application>();
-	auto* layer = new MockAppLayer("TestLayer");
+	auto* layer = new MockAppLayer{"TestLayer"};
 
 	app->PushLayer(layer);
 	EXPECT_TRUE(layer->IsAttached());
@@ -353,7 +351,7 @@ TEST_F(ApplicationTest, OnEventPropagation) {
 	app->PushOverlay(overlay);
 
 	// Create a mock event (use WindowResizeEvent for testing)
-	WindowResizeEvent event(800, 600);
+	WindowResizeEvent event{800, 600};
 
 	EXPECT_EQ(layer1->GetEventCount(), 0);
 	EXPECT_EQ(layer2->GetEventCount(), 0);
@@ -387,7 +385,7 @@ TEST_F(ApplicationTest, OnEventStopsPropagation) {
 	// Make layer2 handle the event
 	layer2->SetShouldHandleEvent(true);
 
-	WindowResizeEvent event(800, 600);
+	WindowResizeEvent event{800, 600};
 
 	app->OnEvent(event);
 

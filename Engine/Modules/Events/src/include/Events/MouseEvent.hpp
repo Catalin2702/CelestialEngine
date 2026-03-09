@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-09
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Event.hpp"
+#include "Types/KeyCode/MouseButtonCode.hpp"
 
 #include <string>
 
@@ -123,9 +124,9 @@ class CE_API I_MouseButtonEvent: public I_Event {
 public:
 	/**
 	 * @brief Gets the mouse button code
-	 * @return int Platform-specific mouse button code (0=left, 1=right, 2=middle, etc.)
+	 * @return KeyCode::MouseButtonCode Platform-specific mouse button code
 	 */
-	[[nodiscard]] int GetMouseButton() const { return _button; }
+	[[nodiscard]] KeyCode::MouseButtonCode GetMouseButton() const { return _button; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
 
@@ -135,10 +136,10 @@ protected:
 	 * @param button Platform-specific mouse button code
 	 * @details Only derived classes can construct a mouse button event
 	 */
-	I_MouseButtonEvent(int button);
+	I_MouseButtonEvent(KeyCode::MouseButtonCode button);
 
 protected:
-	int _button;									///< Platform-specific mouse button code
+	KeyCode::MouseButtonCode _button;									///< Platform-specific mouse button code
 };
 
 /**
@@ -155,7 +156,7 @@ public:
 	 * @param button Platform-specific mouse button code
 	 * @details Creates a mouse button pressed event with the specified button
 	 */
-	MouseButtonPressedEvent(int button);
+	MouseButtonPressedEvent(KeyCode::MouseButtonCode button);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -179,7 +180,7 @@ public:
 	 * @param button Platform-specific mouse button code
 	 * @details Creates a mouse button released event with the specified button
 	 */
-	MouseButtonReleasedEvent(int button);
+	MouseButtonReleasedEvent(KeyCode::MouseButtonCode button);
 
 	/**
 	 * @brief Converts the event to a string representation

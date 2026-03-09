@@ -4,9 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-09
 //
 
+#include <Events/I_Event.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 #include <Window/Platforms/Mac/MetalWindow.hpp>
@@ -16,6 +17,7 @@
 using namespace CE::Tools::Log;
 using namespace CE::Types::Window;
 using namespace CE::Window;
+using namespace CE::Events;
 
 /**
  * @brief Test fixture for MetalWindow tests
@@ -107,7 +109,7 @@ TEST_F(MetalWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"GLFW Test", 800, 600, false, GraphicsApi::Metal};
 	const MetalWindow window(props);
 
-	EXPECT_NE(window.GetGLFWwindow(), nullptr);
+	EXPECT_NE(window.GetNativeWindow(), nullptr);
 }
 
 // ============================================================================
@@ -211,7 +213,10 @@ TEST_F(MetalWindowTest, SetVSync_DisableVSync_UpdatesState) {
  */
 TEST_F(MetalWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::Metal};
-	const MetalWindow window(props);
+	MetalWindow window(props);
+
+	// Set an event callback before calling OnUpdate
+	window.SetEventCallback([](I_Event&) {});
 
 	EXPECT_NO_THROW(window.OnUpdate());
 }
@@ -221,7 +226,10 @@ TEST_F(MetalWindowTest, OnUpdate_Called_NoThrow) {
  */
 TEST_F(MetalWindowTest, OnUpdate_MultipleCalls_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::Metal};
-	const MetalWindow window(props);
+	MetalWindow window(props);
+
+	// Set an event callback before calling OnUpdate
+	window.SetEventCallback([](I_Event&) {});
 
 	EXPECT_NO_THROW({
 		window.OnUpdate();
@@ -303,6 +311,6 @@ TEST_F(MetalWindowTest, MetalResources_AfterConstruction_AllValid) {
 	EXPECT_NE(window.GetCommandQueue(), nullptr);
 	EXPECT_NE(window.GetMetalLayer(), nullptr);
 	EXPECT_NE(window.GetMetalWindow(), nullptr);
-	EXPECT_NE(window.GetGLFWwindow(), nullptr);
+	EXPECT_NE(window.GetNativeWindow(), nullptr);
 }
 

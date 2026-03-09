@@ -4,13 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-02
+# Updated: 2026-03-09
 #
 
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
+set(CE_LAST_BUILD_DIR "${CMAKE_SOURCE_DIR}/Binaries/Last")
 
 set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release)
 
@@ -63,3 +64,41 @@ if (NOT TARGET CE_Config)
 		>
 	)
 endif ()
+
+# Macro to copy targets to the Binaries/Last folder
+# Usage: ce_copy_to_last(target_name)
+macro(ce_copy_to_last TARGET_NAME)
+	# Create the Binaries/Last directory if it doesn't exist
+	file(MAKE_DIRECTORY "${CE_LAST_BUILD_DIR}")
+
+	# Get the target type
+	get_target_property(TARGET_TYPE ${TARGET_NAME} TYPE)
+
+	# For executables and libraries
+	if(TARGET_TYPE STREQUAL "EXECUTABLE" OR
+	   TARGET_TYPE STREQUAL "SHARED_LIBRARY" OR
+	   TARGET_TYPE STREQUAL "MODULE_LIBRARY")
+
+		# For macOS bundles (like CE_App.app)
+		get_target_property(IS_BUNDLE ${TARGET_NAME} MACOSX_BUNDLE)
+		if(IS_BUNDLE)
+			# Copy the entire bundle
+			add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove_directory "${CE_LAST_BUILD_DIR}/${TARGET_NAME}.app"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory
+					"$<TARGET_BUNDLE_DIR:${TARGET_NAME}>"
+					"${CE_LAST_BUILD_DIR}/${TARGET_NAME}.app"
+				COMMENT "Copying ${TARGET_NAME}.app to Binaries/Last"
+			)
+		else()
+			# Copy the executable or library file
+			add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					"$<TARGET_FILE:${TARGET_NAME}>"
+					"${CE_LAST_BUILD_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+				COMMENT "Copying ${TARGET_NAME} to Binaries/Last"
+			)
+		endif()
+	endif()
+endmacro()
+

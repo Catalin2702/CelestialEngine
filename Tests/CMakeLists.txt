@@ -4,14 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Tests LANGUAGES CXX VERSION 0.0.4)
+project(CE_Tests LANGUAGES CXX VERSION 0.0.5)
 
 find_package(GTest CONFIG REQUIRED)
 

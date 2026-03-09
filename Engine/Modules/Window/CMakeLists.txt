@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 set(HEADERS
@@ -58,7 +58,7 @@ target_link_libraries(CE_Window PUBLIC
 # Platform-specific
 target_link_libraries(CE_Window PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
-		MetalCpp
+		CE_MetalCpp
 	>
 )
 
@@ -68,3 +68,7 @@ target_include_directories(CE_Window PUBLIC
 	src/internal
 	src/template
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Window)
+

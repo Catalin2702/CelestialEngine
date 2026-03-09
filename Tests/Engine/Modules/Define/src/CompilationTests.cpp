@@ -282,4 +282,4 @@ TEST(DefineCompilationTests, TypeTraits_VerifyConstexprContext) {
 	EXPECT_EQ(flags, 41);
 }
 
-} // namespace CompilationTests
+}

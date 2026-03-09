@@ -4,15 +4,17 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-09
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp>
 #include <Tools/Log/Log.hpp>
+#include <Types/KeyCode/KeyboardKeyCode.hpp>
+#include <Types/KeyCode/MouseButtonCode.hpp>
 #include <Types/Window/WindowProps.hpp>
 
 #include <memory>
@@ -22,6 +24,7 @@ using namespace CE::Core;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
+using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
 /**
@@ -163,7 +166,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent event(65, 0); // 'A' key
+	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
 	_app->OnEvent(event);
 
 	// ImGui layers typically don't block event propagation
@@ -184,7 +187,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyReleased) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	KeyReleasedEvent event(65); // 'A' key
+	KeyReleasedEvent event{KeyboardKeyCode::A}; // 'A' key
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -204,7 +207,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyTyped) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	KeyTypedEvent event(65); // 'A' key
+	KeyTypedEvent event{KeyboardCharsCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -224,7 +227,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonPressed) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonPressedEvent event(0); // Left mouse button
+	MouseButtonPressedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -244,7 +247,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonReleased) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	MouseButtonReleasedEvent event(0); // Left mouse button
+	MouseButtonReleasedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -264,7 +267,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseMoved) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	MouseMovedEvent event(100.0f, 200.0f);
+	MouseMovedEvent event{100.0f, 200.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -284,7 +287,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseScrolled) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	MouseScrolledEvent event(0.0f, 1.0f); // Scroll up
+	MouseScrolledEvent event{0.0f, 1.0f}; // Scroll up
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -304,7 +307,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventWindowResize) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	WindowResizeEvent event(1024, 768);
+	WindowResizeEvent event{1024, 768};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -324,9 +327,9 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
 	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent keyEvent(65, 0);
-	MouseMovedEvent mouseEvent(100.0f, 200.0f);
-	WindowResizeEvent resizeEvent(1024, 768);
+	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
+	MouseMovedEvent mouseEvent{100.0f, 200.0f};
+	WindowResizeEvent resizeEvent{1024, 768};
 
 	EXPECT_NO_THROW({
 		_app->OnEvent(keyEvent);
@@ -360,8 +363,8 @@ TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
 	});
 
 	// Handle events
-	KeyPressedEvent keyEvent(65, 0);
-	MouseMovedEvent mouseEvent(100.0f, 200.0f);
+	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
+	MouseMovedEvent mouseEvent{100.0f, 200.0f};
 
 	EXPECT_NO_THROW({
 		_app->OnEvent(keyEvent);

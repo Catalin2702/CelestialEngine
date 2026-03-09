@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Engine LANGUAGES CXX VERSION 0.0.4)
+project(CE_Engine LANGUAGES CXX VERSION 0.0.5)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
@@ -48,6 +48,7 @@ add_library(CE_Engine SHARED
 
 set_target_properties(CE_Engine PROPERTIES LINKER_LANGUAGE CXX)
 
+# Modules
 target_link_libraries(CE_Engine PUBLIC
 	CE_Config
 	CE_Core
@@ -59,13 +60,11 @@ target_link_libraries(CE_Engine PUBLIC
 	CE_Window
 )
 
-if(APPLE)
-	target_link_libraries(CE_Engine PUBLIC
-		MetalCpp
-	)
-endif()
-
 target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_Engine)
+

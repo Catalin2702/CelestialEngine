@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-01
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -16,8 +16,6 @@
 #include "Types/Window/WindowProps.hpp"
 
 #include <memory>
-
-struct GLFWwindow;
 
 
 namespace CE::Events {
@@ -91,10 +89,10 @@ public:
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
-	 * @return GLFWwindow* Pointer to the GLFW window
+	 * @return void* Pointer to the GLFW window
 	 * @details Provides access to the GLFW window for platform-specific operations
 	 */
-	[[nodiscard]] virtual GLFWwindow* GetGLFWwindow() const = 0;
+	[[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
 	/**
 	 * @brief Sets the event callback function

@@ -4,14 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-02
+# Updated: 2026-03-09
 #
 
 cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_App LANGUAGES CXX VERSION 0.0.4)
+project(CE_App LANGUAGES CXX VERSION 0.0.5)
 
 set(SOURCES
 	src/App.cpp
@@ -76,3 +76,7 @@ target_link_libraries(CE_App PRIVATE
 	CE_Config
 	CE_Engine
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_App)
+

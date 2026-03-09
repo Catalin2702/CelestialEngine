@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-03
+# Updated: 2026-03-09
 #
 
 set(SOURCES
@@ -42,3 +42,7 @@ add_test(NAME EventsTests
 set_tests_properties(EventsTests PROPERTIES
 	LABELS "Engine;Events"
 )
+
+# Copy to Binaries/Last folder
+ce_copy_to_last(CE_TestsEvents)
+

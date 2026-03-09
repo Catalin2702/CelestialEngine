@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-09
 //
 
 #include "Events/MouseEvent.hpp"
@@ -53,13 +53,13 @@ std::string MouseScrolledEvent::ToString() const {
  * @brief I_MouseButtonEvent constructor implementation
  * @param button Platform-specific mouse button code
  */
-I_MouseButtonEvent::I_MouseButtonEvent(const int button): _button(button) {}
+I_MouseButtonEvent::I_MouseButtonEvent(const KeyCode::MouseButtonCode button): _button(button) {}
 
 /**
  * @brief MouseButtonPressedEvent constructor implementation
  * @param button Platform-specific mouse button code
  */
-MouseButtonPressedEvent::MouseButtonPressedEvent(const int button): I_MouseButtonEvent(button) {}
+MouseButtonPressedEvent::MouseButtonPressedEvent(const KeyCode::MouseButtonCode button): I_MouseButtonEvent(button) {}
 
 /**
  * @brief Converts MouseButtonPressedEvent to string representation
@@ -75,7 +75,7 @@ std::string MouseButtonPressedEvent::ToString() const {
  * @brief MouseButtonReleasedEvent constructor implementation
  * @param button Platform-specific mouse button code
  */
-MouseButtonReleasedEvent::MouseButtonReleasedEvent(const int button): I_MouseButtonEvent(button) {}
+MouseButtonReleasedEvent::MouseButtonReleasedEvent(const KeyCode::MouseButtonCode button): I_MouseButtonEvent(button) {}
 
 /**
  * @brief Converts MouseButtonReleasedEvent to string representation

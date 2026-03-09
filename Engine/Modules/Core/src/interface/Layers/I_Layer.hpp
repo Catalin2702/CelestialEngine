@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-06
 //
 
 #pragma once
@@ -33,14 +33,19 @@ namespace CE::Layers {
  *			Layers are updated and rendered in order, and events propagate through the layer stack.
  */
 class CE_API I_Layer {
-public:
+protected:
 	/**
 	 * @brief Constructor
 	 * @param name Debug name for the layer (only used in debug builds)
 	 * @details Creates a layer with an optional debug name for identification
 	 */
-	I_Layer([[maybe_unused]] const std::string& name = "Layer");
+	I_Layer([[maybe_unused]] const std::string& name = "Layer") {
+#ifdef CE_DEBUG
+		_debugName = name;
+#endif
+	}
 
+public:
 	/**
 	 * @brief Virtual destructor
 	 * @details Ensures proper cleanup of derived layer classes
