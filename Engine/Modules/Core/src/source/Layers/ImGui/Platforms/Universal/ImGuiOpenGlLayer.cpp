@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-10
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
@@ -12,15 +12,9 @@
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Application.hpp"
-#include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
 
-#include <glad/glad.h>
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -31,40 +25,25 @@
 
 namespace CE::Layers {
 
-/**
- * @brief ImGuiOpenGlLayer constructor implementation
- * @details Initializes the layer with the name "ImGuiOpenGlLayer"
- */
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
-/**
- * @brief Attaches the ImGui OpenGL layer to the application
- * @details Performs the following initialization:
- *			- Creates ImGui context and applies dark theme
- *			- Configures ImGui backend flags for mouse support
- *			- Caches OpenGL window and GLFW window pointers
- *			- Initializes ImGui_ImplGlfw backend
- *			- Initializes ImGui OpenGL3 rendering backend
- *			- Sets up custom dark theme colors
- *			Throws std::runtime_error if window is not an OpenGLWindow or if initialization fails.
- */
 void ImGuiOpenGlLayer::OnAttach() {
 	IMGUI_CHECKVERSION();
+
 	const auto context = ImGui::CreateContext();
 	ImGui::SetCurrentContext(context);
 	ImGui::StyleColorsDark();
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
 	const auto& app = Core::Application::Get();
-	_openGlWindow = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
-	if (not _openGlWindow) {
+	_window = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
+	if (not _window) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 	}
-	_glfwWindow = static_cast<GLFWwindow*>(_openGlWindow->GetNativeWindow());
+	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
@@ -73,48 +52,23 @@ void ImGuiOpenGlLayer::OnAttach() {
 	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);
 
 	ImGui_ImplOpenGL3_Init("#version 410");
-	unsigned char* pixels;
-	int width, height;
-	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 }
 
-/**
- * @brief Detaches the ImGui OpenGL layer from the application
- * @details Shuts down ImGui backends (OpenGL3 and GLFW) and destroys ImGui context
- */
 void ImGuiOpenGlLayer::OnDetach() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
-/**
- * @brief Updates the ImGui OpenGL layer every frame
- * @details Performs per-frame rendering:
- *			- Starts new ImGui frame (OpenGL3, GLFW, and ImGui)
- *			- Renders ImGui demo window
- *			- Finalizes ImGui rendering and renders to OpenGL
- */
-void ImGuiOpenGlLayer::OnUpdate() const {
-	const auto time = static_cast<float>(glfwGetTime());
+void ImGuiOpenGlLayer::OnRender() const {
+	if (not _currentFrameStarted)
+		return;
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = {static_cast<float>(_openGlWindow->GetWidth()), static_cast<float>(_openGlWindow->GetHeight())};
-	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
-	_time = time;
-
-	// Clear the buffer before rendering
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
+	const auto& io = ImGui::GetIO();
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with OpenGl!");
+	ImGui::Text("Hello from ImGui with OpenGL!");
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 	if (ImGui::Button("Click Me!")) {
 		CE_CORE_INFO("Button clicked!");
@@ -123,211 +77,32 @@ void ImGuiOpenGlLayer::OnUpdate() const {
 
 	static bool show = true;
 	ImGui::ShowDemoWindow(&show);
+}
+
+void ImGuiOpenGlLayer::Begin() {
+	_currentFrameStarted = false;
+
+	auto& io = ImGui::GetIO();
+	const auto time = static_cast<float>(glfwGetTime());
+	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
+	_time = time;
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	_currentFrameStarted = true;
+}
+
+void ImGuiOpenGlLayer::End() {
+	if (not _currentFrameStarted)
+		return;
+
+	auto& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-/**
- * @brief Dispatches events to appropriate handlers
- * @param event Reference to the event to process
- * @return bool True if event was handled
- * @details Uses EventDispatcher to route events to specific handler methods
- */
-bool ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
-	Events::EventDispatcher dispatcher(event);
-
-	switch (event.GetEventType()) {
-		case Events::EventType::KeyPressed: {
-			if (dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyPressed))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::KeyReleased: {
-			if (dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyReleased))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::KeyTyped: {
-			if (dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnKeyTyped))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::MouseButtonPressed: {
-			if (dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonPressed))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::MouseButtonReleased: {
-			if (dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseButtonReleased))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::MouseMoved: {
-			if (dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseMoved))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::MouseScrolled: {
-			if (dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnMouseScrolled))) return event.IsHandled();
-			break;
-		}
-		case Events::EventType::WindowResize: {
-			if (dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::OnWindowResized))) return event.IsHandled();
-			break;
-		}
-		default:
-			return false;
-	}
-
-	return false;
-}
-
-// Protected event handlers
-/**
- * @brief Handles key press events
- * @param event Key pressed event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
-		return false;
-
-	auto& io = ImGui::GetIO();
-
-	io.AddKeyEvent(key, true);
-
-	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
-		io.AddKeyEvent(ImGuiMod_Ctrl, true);
-		return false;
-	}
-	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
-		io.AddKeyEvent(ImGuiMod_Shift, true);
-		return false;
-	}
-	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
-		io.AddKeyEvent(ImGuiMod_Alt, true);
-		return false;
-	}
-	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
-		io.AddKeyEvent(ImGuiMod_Super, true);
-		return false;
-	}
-
-	return false;
-}
-
-/**
- * @brief Handles key release events
- * @param event Key released event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const ImGuiKey key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
-		return false;
-
-	auto& io = ImGui::GetIO();
-
-	io.AddKeyEvent(key, false);
-
-	if (key == ImGuiKey_LeftCtrl || key == ImGuiKey_RightCtrl) {
-		io.AddKeyEvent(ImGuiMod_Ctrl, false);
-		return false;
-	}
-	if (key == ImGuiKey_LeftShift || key == ImGuiKey_RightShift) {
-		io.AddKeyEvent(ImGuiMod_Shift, false);
-		return false;
-	}
-	if (key == ImGuiKey_LeftAlt || key == ImGuiKey_RightAlt) {
-		io.AddKeyEvent(ImGuiMod_Alt, false);
-		return false;
-	}
-	if (key == ImGuiKey_LeftSuper || key == ImGuiKey_RightSuper) {
-		io.AddKeyEvent(ImGuiMod_Super, false);
-		return false;
-	}
-
-	return false;
-}
-
-/**
- * @brief Handles key typed events (character input)
- * @param event Key typed event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnKeyTyped(Events::KeyTypedEvent& event) const {
-	const auto keycode = event.GetKeyCode();
-	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
-		return false;
-
-	auto& io = ImGui::GetIO();
-	io.AddInputCharacter(KeyCode::ToUInt(keycode));
-	return false;
-}
-
-/**
- * @brief Handles mouse button press events
- * @param event Mouse button pressed event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
-		return false;
-
-	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(button, true);
-
-	return false;
-}
-
-/**
- * @brief Handles mouse button release events
- * @param event Mouse button released event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
-		return false;
-
-	auto& io = ImGui::GetIO();
-	io.AddMouseButtonEvent(button, false);
-
-	return false;
-}
-
-/**
- * @brief Handles mouse moved events
- * @param event Mouse moved event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnMouseMoved(Events::MouseMovedEvent& event) const {
-	auto& io = ImGui::GetIO();
-	io.AddMousePosEvent(event.GetX(), event.GetY());
-
-	return false;
-}
-
-/**
- * @brief Handles mouse scroll events
- * @param event Mouse scrolled event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnMouseScrolled(Events::MouseScrolledEvent& event) const {
-	auto& io = ImGui::GetIO();
-	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
-
-	return false;
-}
-
-/**
- * @brief Handles window resize events
- * @param event Window resize event
- * @return bool Always returns false to allow event propagation
- */
-bool ImGuiOpenGlLayer::OnWindowResized(Events::WindowResizeEvent& event) const {
-	auto& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
-	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-	glViewport(0, 0, static_cast<int>(event.GetWidth()), static_cast<int>(event.GetHeight()));
-	return false;
 }
 
 }

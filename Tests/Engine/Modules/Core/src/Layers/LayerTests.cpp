@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-10
 //
 
 #include <Core/Application.hpp>
@@ -36,13 +36,16 @@ public:
 		_attached = false;
 	}
 
-	void OnUpdate() const override {
-		_updateCount++;
+	void OnRender() const override {
+		_renderCount++;
 	}
 
-	bool OnEvent([[maybe_unused]] I_Event& event) override {
+	void OnEvent([[maybe_unused]] I_Event& event) override {
 		_eventCount++;
-		return _shouldHandleEvent;
+	}
+
+	void OnUpdate() override {
+		_updateCount++;
 	}
 
 	// Test helper methods
@@ -54,6 +57,7 @@ public:
 private:
 	bool _attached = false;
 	mutable int _updateCount = 0;
+	mutable int _renderCount = 0;
 	mutable int _eventCount = 0;
 	bool _shouldHandleEvent = false;
 };
@@ -121,7 +125,7 @@ TEST_F(LayerTest, OnDetach) {
  * @brief Test Layer OnUpdate
  */
 TEST_F(LayerTest, OnUpdate) {
-	const MockLayer layer{"TestLayer"};
+	MockLayer layer{"TestLayer"};
 
 	EXPECT_EQ(layer.GetUpdateCount(), 0);
 
@@ -145,9 +149,7 @@ TEST_F(LayerTest, OnEventNotHandled) {
 	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
-	const bool handled = layer.OnEvent(event);
-
-	EXPECT_FALSE(handled);
+	layer.OnEvent(event);
 	EXPECT_EQ(layer.GetEventCount(), 1);
 }
 
@@ -161,9 +163,7 @@ TEST_F(LayerTest, OnEventHandled) {
 	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
 	EXPECT_EQ(layer.GetEventCount(), 0);
-	const bool handled = layer.OnEvent(event);
-
-	EXPECT_TRUE(handled);
+	layer.OnEvent(event);
 	EXPECT_EQ(layer.GetEventCount(), 1);
 }
 

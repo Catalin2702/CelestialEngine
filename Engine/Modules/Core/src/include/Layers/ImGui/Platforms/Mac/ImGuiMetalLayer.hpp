@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -14,14 +14,23 @@
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
+#include <Foundation/Foundation.hpp>
+
 struct GLFWwindow;
 
 namespace CA {
+class MetalDrawable;
 class MetalLayer;
 }
 namespace MTL {
+class CommandBuffer;
 class CommandQueue;
 class Device;
+class RenderCommandEncoder;
+class RenderPassDescriptor;
+}
+namespace NS {
+class AutoreleasePool;
 }
 namespace CE::Window {
 class MetalWindow;
@@ -74,76 +83,28 @@ public:
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
 	 *			and submits rendering commands to Metal command queue
 	 */
-	void OnUpdate() const override;
+	void OnRender() const override;
+
+	void OnUpdate() override {};
+
+	void OnEvent([[maybe_unused]] Events::I_Event& event) override {}
 
 	/**
-	 * @brief Handles and dispatches events to appropriate handlers
-	 * @param event Reference to the event to process
-	 * @return bool True if the event was handled
-	 * @details Uses EventDispatcher to route events to specific handler methods
+	 * @brief Called at the beginning of the frame to set up ImGui state for Metal rendering
+	 * @details Prepares ImGui for a new frame, updates display size and delta time, and sets up
+	 *			ImGui for rendering with Metal. Caches necessary pointers for use in End().
+	 *			Should be called at the beginning of each frame before rendering ImGui interfaces.
 	 */
-	bool OnEvent(Events::I_Event& event) override;
-
-protected:
-	/**
-	 * @brief Handles key pressed events
-	 * @param event Key pressed event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnKeyPressed(Events::KeyPressedEvent& event) const override;
+	void Begin() override;
 
 	/**
-	 * @brief Handles key released events
-	 * @param event Key released event
-	 * @return bool Always returns false to allow event propagation
+	 * @brief Handles the end of an ImGui frame for Metal rendering
+	 * @details Updates ImGui display size and delta time, finalizes ImGui rendering, and presents the frame
+	 *			to the screen using Metal command queue
 	 */
-	bool OnKeyReleased(Events::KeyReleasedEvent& event) const override;
-
-	/**
-	 * @brief Handles key typed events (character input)
-	 * @param event Key typed event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnKeyTyped(Events::KeyTypedEvent& event) const override;
-
-	/**
-	 * @brief Handles mouse button pressed events
-	 * @param event Mouse button pressed event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
-
-	/**
-	 * @brief Handles mouse button released events
-	 * @param event Mouse button released event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
-
-	/**
-	 * @brief Handles mouse moved events
-	 * @param event Mouse moved event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnMouseMoved(Events::MouseMovedEvent& event) const override;
-
-	/**
-	 * @brief Handles mouse scrolled events
-	 * @param event Mouse scrolled event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
-
-	/**
-	 * @brief Handles window resized events
-	 * @param event Window resize event
-	 * @return bool Always returns false to allow event propagation
-	 */
-	bool OnWindowResized(Events::WindowResizeEvent& event) const override;
+	void End() override;
 
 private:
-	mutable float _time = 0.0f;								///< Time accumulator for frame timing
-
 	// Cached pointers to avoid repeated lookups every frame
 	Window::MetalWindow* _window = nullptr;			///< Cached Metal window pointer
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
@@ -151,6 +112,12 @@ private:
 	MTL::CommandQueue* _commandQueue = nullptr;		///< Cached Metal command queue pointer
 	CA::MetalLayer* _metalLayer = nullptr;			///< Cached Metal layer pointer
 
+	// Cached pointers to pass from Begin() to End() without needing to look them up again
+	CA::MetalDrawable* _currentDrawable = nullptr;	///< Cached Metal drawable pointer
+	MTL::CommandBuffer* _currentCommandBuffer = nullptr;	///< Cached Metal command buffer pointer
+	MTL::RenderCommandEncoder* _currentRenderCommandEncoder = nullptr; ///< Cached Metal render command encoder pointer
+	MTL::RenderPassDescriptor* _currentRenderPassDescriptor = nullptr; ///< Cached Metal render pass descriptor pointer
+	NS::SharedPtr<NS::AutoreleasePool> _currentAutoreleasePool = nullptr; ///< Cached autorelease pool for current frame
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-10
 //
 
 #include "Core/Application.hpp"
@@ -14,15 +14,21 @@
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
 
 #ifdef CE_PLATFORM_MACOS
+#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 #include "Window/Platforms/Mac/MetalWindow.hpp"
+
+#include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #else
+#include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
 #endif
 
+#include <memory>
 #include <stdexcept>
 
 // Platform-specific window type selection
@@ -103,6 +109,12 @@ Application::~Application() {
 void Application::Update() {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
+
+	_imguiLayer->Begin();
+	for (const auto layer: _layerStack)
+		layer->OnRender();
+	_imguiLayer->End();
+
 	_window->OnUpdate();
 }
 
@@ -216,6 +228,29 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	}
 
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
+
+	std::unique_ptr<Layers::I_ImGuiLayer> overlay;
+	switch (windowProps.graphicsApi) {
+		case Types::Window::GraphicsApi::OpenGL: {
+			overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+			break;
+		}
+		case Types::Window::GraphicsApi::Metal: {
+			overlay = std::make_unique<Layers::ImGuiMetalLayer>();
+			break;
+		}
+		default: {
+			CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", windowProps.graphicsApi);
+			throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
+		}
+	}
+	if (not overlay) {
+		CE_CORE_ERROR("Application::_Init: Can't initialize the ImGui layer");
+		throw std::runtime_error("Can't initialize the ImGui layer");
+	}
+	_imguiLayer = overlay.release();
+	PushOverlay(_imguiLayer);
+
 	_running = true;
 	Input::InitInput();
 }

@@ -4,53 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-10
 //
 
 #include <CelestialEngine.hpp>
 #include <memory>
-#include <stdexcept>
 
-
-/**
- * @brief Example layer class for demonstration purposes
- * @details Simple layer implementation that can be used as a template for creating custom layers.
- *			This layer doesn't perform any specific operations in its callbacks.
- */
-class ExampleLayer: public Layers::I_Layer {
-public:
-	/**
-	 * @brief Constructor for ExampleLayer
-	 * @details Initializes the layer with the name "ExampleLayer"
-	 */
-	ExampleLayer(): I_Layer("ExampleLayer") {}
-
-	/**
-	 * @brief Updates the layer every frame
-	 * @details Currently empty implementation, can be overridden to add custom update logic
-	 */
-	void OnUpdate() const override {}
-
-	/**
-	 * @brief Handles events for this layer
-	 * @param event Reference to the event to be processed
-	 * @return bool Always returns false, indicating the event is not handled
-	 * @details Currently doesn't handle any events. Can be overridden to process specific events.
-	 */
-	bool OnEvent([[maybe_unused]] Events::I_Event& event) override {return false;}
-
-	/**
-	 * @brief Called when the layer is attached to the layer stack
-	 * @details Currently empty implementation. Can be used for initialization logic.
-	 */
-	void OnAttach() override {}
-
-	/**
-	 * @brief Called when the layer is detached from the layer stack
-	 * @details Currently empty implementation. Can be used for cleanup logic.
-	 */
-	void OnDetach() override {}
-};
 
 /**
  * @brief SandBox application class - main application entry point
@@ -65,7 +24,7 @@ public:
 	 * @details Creates the application with default window properties and initializes layers
 	 */
 	SandBox() {
-		_Init(TypeWindow::GraphicsApi::OpenGL);
+		// _Init(TypeWindow::GraphicsApi::OpenGL);
 	}
 
 	/**
@@ -74,7 +33,7 @@ public:
 	 * @details Creates the application with specified window properties and initializes layers
 	 */
 	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {
-		_Init(windowProps.graphicsApi);
+		// _Init(windowProps.graphicsApi);
 	}
 
 	/**
@@ -88,7 +47,7 @@ public:
 	 */
 	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi):
 		Application(title, width, height, VSync, graphicsApi) {
-		_Init(graphicsApi);
+		// _Init(graphicsApi);
 	}
 
 	/**
@@ -103,31 +62,31 @@ private:
 	 * @details Creates and pushes an ExampleLayer to the layer stack and an ImGuiLayer
 	 *			to the overlay stack for rendering the GUI
 	 */
-	void _Init(const TypeWindow::GraphicsApi graphicsApi) {
-		auto layer = std::make_unique<ExampleLayer>();
-		PushLayer(layer.release());
-
-		std::unique_ptr<Layers::I_ImGuiLayer> overlay;
-
-		switch (graphicsApi) {
-			case TypeWindow::GraphicsApi::OpenGL: {
-				overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
-				break;
-			}
-#ifdef CE_PLATFORM_MACOS
-			case TypeWindow::GraphicsApi::Metal: {
-				overlay = std::make_unique<Layers::ImGuiMetalLayer>();
-				break;
-			}
-#endif
-			default: {
-				CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", graphicsApi);
-				throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
-			}
-		}
-
-		PushOverlay(overlay.release());
-	}
+// 	void _Init(const TypeWindow::GraphicsApi graphicsApi) {
+// // 		auto layer = std::make_unique<ExampleLayer>();
+// // 		PushLayer(layer.release());
+// //
+// // 		std::unique_ptr<Layers::I_ImGuiLayer> overlay;
+// //
+// 		switch (graphicsApi) {
+// 			case TypeWindow::GraphicsApi::OpenGL: {
+// 				overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+// 				break;
+// 			}
+// #ifdef CE_PLATFORM_MACOS
+// 			case TypeWindow::GraphicsApi::Metal: {
+// 				overlay = std::make_unique<Layers::ImGuiMetalLayer>();
+// 				break;
+// 			}
+// #endif
+// 			default: {
+// 				CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", graphicsApi);
+// 				throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
+// 			}
+// 		}
+//
+// 		PushOverlay(overlay.release());
+	// }
 };
 
 /**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-10
 //
 
 #include <Core/Application.hpp>
@@ -41,16 +41,19 @@ public:
 		_detachCount++;
 	}
 
-	void OnUpdate() const override {
-		_updateCount++;
+	void OnRender() const override {
+		_renderCount++;
 	}
 
-	bool OnEvent(I_Event& event) override {
+	void OnEvent(I_Event& event) override {
 		_eventCount++;
 		if (_shouldHandleEvent) {
 			event.Consume();
 		}
-		return _shouldHandleEvent;
+	}
+
+	void OnUpdate() override {
+		_updateCount++;
 	}
 
 	// Test helper methods
@@ -67,6 +70,7 @@ private:
 	mutable int _attachCount = 0;
 	mutable int _detachCount = 0;
 	mutable int _updateCount = 0;
+	mutable int _renderCount = 0;
 	int _eventCount = 0;
 };
 
@@ -433,8 +437,9 @@ public:
 			*_detachedFlag = true;
 		}
 	}
-	void OnUpdate() const override {}
-	bool OnEvent([[maybe_unused]] I_Event& event) override { return false; }
+	void OnRender() const override {}
+	void OnEvent([[maybe_unused]] I_Event& event) override {}
+	void OnUpdate() override {}
 
 private:
 	bool* _detachedFlag;

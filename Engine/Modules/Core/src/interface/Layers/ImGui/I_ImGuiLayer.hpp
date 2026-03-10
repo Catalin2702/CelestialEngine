@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -67,70 +67,19 @@ public:
 	 */
 	~I_ImGuiLayer() override = default;
 
+public:
+	/**
+	 * @brief Pure virtual method for handling creation frame logic
+	 */
+	virtual void Begin() = 0;
+	/**
+	 * @brief Pure virtual method for handling rendering frame logic
+	 */
+	virtual void End() = 0;
+
 protected:
-	/**
-	 * @brief Handles key pressed events for ImGui
-	 * @param event Key pressed event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing keyboard key presses in ImGui context
-	 */
-	virtual bool OnKeyPressed(Events::KeyPressedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles key released events for ImGui
-	 * @param event Key released event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing keyboard key releases in ImGui context
-	 */
-	virtual bool OnKeyReleased(Events::KeyReleasedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles key typed events for ImGui
-	 * @param event Key typed event (character input)
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing character input for ImGui text fields
-	 */
-	virtual bool OnKeyTyped(Events::KeyTypedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles mouse button pressed events for ImGui
-	 * @param event Mouse button pressed event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing mouse button presses in ImGui context
-	 */
-	virtual bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles mouse button released events for ImGui
-	 * @param event Mouse button released event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing mouse button releases in ImGui context
-	 */
-	virtual bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles mouse moved events for ImGui
-	 * @param event Mouse moved event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for updating mouse cursor position in ImGui
-	 */
-	virtual bool OnMouseMoved(Events::MouseMovedEvent& event) const = 0;
-
-	/**
-	 * @brief Handles mouse scrolled events for ImGui
-	 * @param event Mouse scrolled event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for processing mouse wheel scrolling in ImGui
-	 */
-	virtual bool OnMouseScrolled(Events::MouseScrolledEvent& event) const = 0;
-
-	/**
-	 * @brief Handles window resized events for ImGui
-	 * @param event Window resize event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for updating ImGui window when window is resized
-	 */
-	virtual bool OnWindowResized(Events::WindowResizeEvent& event) const = 0;
+	mutable float _time = 0.0f;								///< Time accumulator for frame timing
+	bool _currentFrameStarted = false;						///< Flag to track if the current frame has started
 };
 
 }

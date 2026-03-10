@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -72,7 +72,13 @@ public:
 	 * @details Pure virtual method for per-frame update logic. Called once per frame
 	 *			for all active layers. Use this for game logic, animations, etc.
 	 */
-	virtual void OnUpdate() const = 0;
+	virtual void OnUpdate() = 0;
+	/**
+	 * @brief Called every frame to render the layer
+	 * @details Pure virtual method for rendering. Called once per frame after OnUpdate
+	 *			for all active layers. Use this for drawing graphics, UI, etc.
+	 */
+	virtual void OnRender() const = 0;
 
 	/**
 	 * @brief Called when an event occurs
@@ -81,7 +87,7 @@ public:
 	 * @details Pure virtual method for event handling. Events propagate through layers
 	 *			until one handles them. Return true to stop event propagation.
 	 */
-	virtual bool OnEvent(Events::I_Event& event) = 0;
+	virtual void OnEvent(Events::I_Event& event) = 0;
 
 #ifdef CE_DEBUG
 public:

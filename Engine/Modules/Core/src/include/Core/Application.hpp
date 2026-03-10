@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -24,6 +24,7 @@ class WindowCloseEvent;
 }
 namespace CE::Layers {
 class I_Layer;
+class I_ImGuiLayer;
 }
 namespace CE::Window {
 class I_Window;
@@ -172,6 +173,7 @@ protected:
 
 private:
 	std::unique_ptr<Window::I_Window> _window;		///< Application window
+	Layers::I_ImGuiLayer* _imguiLayer = nullptr;	///< ImGui layer for rendering UI
 	bool _running = false;							///< Flag indicating if application is running
 	Layers::LayerStack _layerStack;					///< Stack of layers and overlays
 	static Application* _instance;					///< Singleton application instance

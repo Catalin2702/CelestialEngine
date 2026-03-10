@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-10
 //
 
 #pragma once
@@ -67,32 +67,29 @@ public:
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
 	 *			and submits rendering commands to OpenGL
 	 */
-	void OnUpdate() const override;
+	void OnRender() const override;
+
+	void OnUpdate() override {}
+
+	void OnEvent([[maybe_unused]] Events::I_Event& event) override {}
 
 	/**
-	 * @brief Handles and dispatches events to appropriate handlers
-	 * @param event Reference to the event to process
-	 * @return bool True if the event was handled
-	 * @details Uses EventDispatcher to route events to specific handler methods
+	 * @brief Called at the beginning of the frame to set up ImGui state for OpenGL rendering
+	 * @details Prepares ImGui for a new frame by setting up the OpenGL rendering state and starting a new ImGui frame.
+	 * 			This is called before any ImGui rendering commands are issued each frame.
 	 */
-	bool OnEvent(Events::I_Event& event) override;
+	void Begin() override;
 
-protected:
-	bool OnKeyPressed(Events::KeyPressedEvent& event) const override;
-	bool OnKeyReleased(Events::KeyReleasedEvent& event) const override;
-	bool OnKeyTyped(Events::KeyTypedEvent& event) const override;
-
-	bool OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
-	bool OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
-	bool OnMouseMoved(Events::MouseMovedEvent& event) const override;
-	bool OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
-
-	bool OnWindowResized(Events::WindowResizeEvent& event) const override;
+	/**
+	 * @brief Called at the end of the frame to finalize ImGui rendering
+	 * @details Finalizes ImGui rendering by submitting draw data to OpenGL and resetting any modified state.
+	 * 			This is called after all ImGui rendering commands have been issued each frame.
+	 */
+	void End() override;
 
 private:
-	mutable float _time = 0.0f;								///< Time accumulator for frame timing
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::OpenGlWindow* _openGlWindow = nullptr;	///< Cached OpenGL window pointer
+	Window::OpenGlWindow* _window = nullptr;		///< Cached OpenGL window pointer
 };
 
 }
