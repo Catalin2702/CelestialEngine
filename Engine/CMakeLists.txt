@@ -25,6 +25,7 @@ set(HEADERS
 # Vendor libraries
 add_subdirectory(Vendor/Glad)
 add_subdirectory(Vendor/Glfw)
+add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
 add_subdirectory(Vendor/SpdLog)
 
