@@ -110,11 +110,11 @@ void Application::Update() {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
-	_imguiLayer->Begin();
+	_renderLayer->Begin();
 	for (const auto layer: _layerStack)
 		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
 			renderLayer->OnRender();
-	_imguiLayer->End();
+	_renderLayer->End();
 
 	_window->OnUpdate();
 }
@@ -249,8 +249,8 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 		CE_CORE_ERROR("Application::_Init: Can't initialize the ImGui layer");
 		throw std::runtime_error("Can't initialize the ImGui layer");
 	}
-	_imguiLayer = overlay.release();
-	PushOverlay(_imguiLayer);
+	_renderLayer = overlay.release();
+	PushOverlay(_renderLayer);
 
 	_running = true;
 	Input::InitInput();

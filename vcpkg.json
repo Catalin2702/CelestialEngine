@@ -13,7 +13,8 @@
 			"features": [
 				"glfw-binding",
 				"metal-binding",
-				"opengl3-binding"
+				"opengl3-binding",
+				"docking-experimental"
 			]
 		},
 		"spdlog"

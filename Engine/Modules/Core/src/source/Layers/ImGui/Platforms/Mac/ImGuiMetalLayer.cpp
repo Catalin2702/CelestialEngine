@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
@@ -106,6 +106,14 @@ void ImGuiMetalLayer::End() {
 	ImGui::Render();
 	Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _currentCommandBuffer, _currentRenderCommandEncoder);
 
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
+
 	_currentRenderCommandEncoder->endEncoding();
 	_currentCommandBuffer->presentDrawable(_currentDrawable);
 	_currentCommandBuffer->commit();
@@ -123,8 +131,11 @@ void ImGuiMetalLayer::_Init() {
 
 	auto& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	const auto& app = Core::Application::Get();
+
 	_window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
 	if (not _window) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
@@ -132,25 +143,27 @@ void ImGuiMetalLayer::_Init() {
 		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
 	}
 
-	// Cache dei puntatori per evitare lookup ripetuti ogni frame
 	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");
 	}
+
 	_metalDevice = _window->GetDevice();
 	if (not _metalDevice) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
 	}
+
 	_commandQueue = _window->GetCommandQueue();
 	if (not _commandQueue) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 	}
+
 	_metalLayer = _window->GetMetalLayer();
 	if (not _metalLayer) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
@@ -163,6 +176,13 @@ void ImGuiMetalLayer::_Init() {
 		CE_CORE_ERROR("Failed to initialize ImGui GLFW backend!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("Failed to initialize ImGui GLFW backend!");
+	}
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
 	Bridge::ImGuiMetalInit(_metalDevice);

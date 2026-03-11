@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
@@ -76,6 +76,14 @@ void ImGuiOpenGlLayer::End() {
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
 }
 
 void ImGuiOpenGlLayer::_Init() {
@@ -87,17 +95,28 @@ void ImGuiOpenGlLayer::_Init() {
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	const auto& app = Core::Application::Get();
+
 	_window = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
 	if (not _window) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 	}
+
 	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
+	}
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
 	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);
