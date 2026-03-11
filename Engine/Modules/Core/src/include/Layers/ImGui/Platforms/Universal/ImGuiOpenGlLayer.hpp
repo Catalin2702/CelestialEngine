@@ -47,21 +47,13 @@ public:
 	 * @details Creates an ImGui OpenGL layer with default initialization
 	 */
 	ImGuiOpenGlLayer();
+	/**
+	 * @brief Destructor
+	 * @details Shuts down ImGui OpenGL backend and releases resources if not already done in OnDetach
+	 */
+	~ImGuiOpenGlLayer() override;
 
 public:
-	/**
-	 * @brief Called when the layer is attached to the layer stack
-	 * @details Initializes ImGui context, sets up OpenGL rendering backend,
-	 *			configures ImGui for GLFW input, and caches window pointers
-	 */
-	void OnAttach() override;
-
-	/**
-	 * @brief Called when the layer is detached from the layer stack
-	 * @details Shuts down ImGui OpenGL backend, GLFW backend, and destroys ImGui context
-	 */
-	void OnDetach() override;
-
 	/**
 	 * @brief Called every frame to render ImGui
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
@@ -82,6 +74,20 @@ public:
 	 * 			This is called after all ImGui rendering commands have been issued each frame.
 	 */
 	void End() override;
+
+protected:
+	/**
+	 * @brief Platform-specific initialization logic for ImGui layer
+	 * @details Initializes ImGui for OpenGL rendering, sets up necessary context and resources,
+	 *			and caches pointers to the GLFW window and OpenGL window for use in rendering.
+	 */
+	void _Init() override;
+
+	/**
+	 * @brief Platform-specific shutdown logic for ImGui layer
+	 * @details Shuts down ImGui for OpenGL rendering and releases any resources allocated during initialization.
+	 */
+	void _Shutdown() override;
 
 private:
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer

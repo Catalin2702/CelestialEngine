@@ -29,13 +29,13 @@ namespace CE::Window {
  * @brief Static flag to track if GLFW has already been initialized
  * @details Ensures that glfwInit() is called only once during program execution
  */
-static bool s_GLFWInitialized = false;
+static bool _st_GLFWInitialized = false;
 
 /**
  * @brief Static counter to track the number of active windows
  * @details Used to determine when to call glfwTerminate() (when count reaches 0)
  */
-static int s_GLFWWindowCount = 0;
+static int _st_GLFWWindowCount = 0;
 
 /**
  * @brief Constructor of the OpenGLWindow class
@@ -46,7 +46,7 @@ static int s_GLFWWindowCount = 0;
  */
 OpenGlWindow::OpenGlWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
 	_Init();
-	s_GLFWWindowCount++;
+	_st_GLFWWindowCount++;
 }
 
 /**
@@ -203,7 +203,7 @@ void OpenGlWindow::SetHeight(const unsigned int height) {
  *			Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
  */
 void OpenGlWindow::SetVSync(const bool enabled) {
-	if (not s_GLFWInitialized) {
+	if (not _st_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
 	}
@@ -228,7 +228,7 @@ void OpenGlWindow::SetVSync(const bool enabled) {
 void OpenGlWindow::_Init() {
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
 
-	if (not s_GLFWInitialized) {
+	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");
 			throw std::runtime_error("Could not initialize GLFW!");
@@ -236,7 +236,7 @@ void OpenGlWindow::_Init() {
 		glfwSetErrorCallback([]([[maybe_unused]] const int error_code, [[maybe_unused]] const char* description) {
 			CE_CORE_ERROR("GLFW error: {0}\nDescription: {1}", error_code, description);
 		});
-		s_GLFWInitialized = true;
+		_st_GLFWInitialized = true;
 	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -278,10 +278,10 @@ void OpenGlWindow::_Init() {
 void OpenGlWindow::_Shutdown() {
 	_glfwWindow.reset();
 
-	s_GLFWWindowCount--;
-	if (s_GLFWWindowCount == 0 && s_GLFWInitialized) {
+	_st_GLFWWindowCount--;
+	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) {
 		glfwTerminate();
-		s_GLFWInitialized = false;
+		_st_GLFWInitialized = false;
 		CE_CORE_INFO("GLFW terminated - all OpenGL windows closed");
 	}
 }

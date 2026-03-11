@@ -64,20 +64,9 @@ public:
 	 */
 	ImGuiMetalLayer();
 
+	~ImGuiMetalLayer() override;
+
 public:
-	/**
-	 * @brief Called when the layer is attached to the layer stack
-	 * @details Initializes ImGui context, sets up Metal rendering backend,
-	 *			configures ImGui for GLFW input, and caches window pointers
-	 */
-	void OnAttach() override;
-
-	/**
-	 * @brief Called when the layer is detached from the layer stack
-	 * @details Shuts down ImGui Metal backend, GLFW backend, and destroys ImGui context
-	 */
-	void OnDetach() override;
-
 	/**
 	 * @brief Called every frame to render ImGui
 	 * @details Sets up new frame, renders ImGui demo window (if enabled),
@@ -99,6 +88,19 @@ public:
 	 *			to the screen using Metal command queue
 	 */
 	void End() override;
+
+protected:
+	/**
+	 * @brief Platform-specific initialization logic for ImGui Metal layer
+	 * @details Initializes ImGui context, sets up Metal rendering backend,
+	 *			configures ImGui for GLFW input, and caches window pointers
+	 */
+	void _Init() override;
+	/**
+	 * @brief Platform-specific shutdown logic for ImGui Metal layer
+	 * @details Shuts down ImGui Metal backend, GLFW backend, and destroys ImGui context
+	 */
+	void _Shutdown() override;
 
 private:
 	// Cached pointers to avoid repeated lookups every frame

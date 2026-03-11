@@ -25,39 +25,12 @@
 
 namespace CE::Layers {
 
+static int _st_imGuiOpenGlLayerCount = 0;
+
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
-void ImGuiOpenGlLayer::OnAttach() {
-	IMGUI_CHECKVERSION();
-
-	const auto context = ImGui::CreateContext();
-	ImGui::SetCurrentContext(context);
-	ImGui::StyleColorsDark();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-	const auto& app = Core::Application::Get();
-	_window = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
-	if (not _window) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
-	}
-	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
-	if (not _glfwWindow) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-	}
-
-	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);
-
-	ImGui_ImplOpenGL3_Init("#version 410");
-}
-
-void ImGuiOpenGlLayer::OnDetach() {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
+	_Shutdown();
 }
 
 void ImGuiOpenGlLayer::OnRender() const {
@@ -103,6 +76,50 @@ void ImGuiOpenGlLayer::End() {
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ImGuiOpenGlLayer::_Init() {
+	IMGUI_CHECKVERSION();
+
+	const auto context = ImGui::CreateContext();
+	ImGui::SetCurrentContext(context);
+	ImGui::StyleColorsDark();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	const auto& app = Core::Application::Get();
+	_window = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
+	if (not _window) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
+		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
+	}
+	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
+	if (not _glfwWindow) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
+		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
+	}
+
+	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);
+
+	ImGui_ImplOpenGL3_Init("#version 410");
+
+	_initialized = true;
+	_st_imGuiOpenGlLayerCount++;
+}
+
+void ImGuiOpenGlLayer::_Shutdown() {
+	if (not _initialized)
+		return;
+	_initialized = false;
+
+	_st_imGuiOpenGlLayerCount--;
+	if (_st_imGuiOpenGlLayerCount > 0)
+		return;
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 }

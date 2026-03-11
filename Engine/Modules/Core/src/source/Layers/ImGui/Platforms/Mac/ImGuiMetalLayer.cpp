@@ -32,57 +32,12 @@
 
 namespace CE::Layers {
 
+static int _st_imGuiMetalLayerCount = 0;
+
 ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 
-void ImGuiMetalLayer::OnAttach() {
-	IMGUI_CHECKVERSION();
-
-	const auto context = ImGui::CreateContext();
-	ImGui::SetCurrentContext(context);
-	ImGui::StyleColorsDark();
-
-	auto& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-	const auto& app = Core::Application::Get();
-	_window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
-	if (not _window) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
-		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
-	}
-
-	// Cache dei puntatori per evitare lookup ripetuti ogni frame
-	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
-	if (not _glfwWindow) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
-		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");
-	}
-	_metalDevice = _window->GetDevice();
-	if (not _metalDevice) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
-		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
-	}
-	_commandQueue = _window->GetCommandQueue();
-	if (not _commandQueue) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-	}
-	_metalLayer = _window->GetMetalLayer();
-	if (not _metalLayer) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-	}
-	_metalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
-
-	ImGui_ImplGlfw_InitForOther(_glfwWindow, false);
-
-	Bridge::ImGuiMetalInit(_metalDevice);
-}
-
-void ImGuiMetalLayer::OnDetach() {
-	Bridge::ImGuiMetalShutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+ImGuiMetalLayer::~ImGuiMetalLayer() {
+	_Shutdown();
 }
 
 void ImGuiMetalLayer::Begin() {
@@ -157,6 +112,77 @@ void ImGuiMetalLayer::End() {
 	_currentRenderPassDescriptor->release();
 
 	_currentAutoreleasePool.reset();
+}
+
+void ImGuiMetalLayer::_Init() {
+	IMGUI_CHECKVERSION();
+
+	const auto context = ImGui::CreateContext();
+	ImGui::SetCurrentContext(context);
+	ImGui::StyleColorsDark();
+
+	auto& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	const auto& app = Core::Application::Get();
+	_window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
+	if (not _window) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
+	}
+
+	// Cache dei puntatori per evitare lookup ripetuti ogni frame
+	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
+	if (not _glfwWindow) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");
+	}
+	_metalDevice = _window->GetDevice();
+	if (not _metalDevice) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
+	}
+	_commandQueue = _window->GetCommandQueue();
+	if (not _commandQueue) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
+	}
+	_metalLayer = _window->GetMetalLayer();
+	if (not _metalLayer) {
+		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
+	}
+	_metalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+
+	if (!ImGui_ImplGlfw_InitForOther(_glfwWindow, false)) {
+		CE_CORE_ERROR("Failed to initialize ImGui GLFW backend!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("Failed to initialize ImGui GLFW backend!");
+	}
+
+	Bridge::ImGuiMetalInit(_metalDevice);
+
+	_initialized = true;
+	_st_imGuiMetalLayerCount++;
+}
+
+void ImGuiMetalLayer::_Shutdown() {
+	if (not _initialized)
+		return;
+	_initialized = false;
+
+	_st_imGuiMetalLayerCount--;
+	if (_st_imGuiMetalLayerCount > 0)
+		return;
+
+	Bridge::ImGuiMetalShutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 }
