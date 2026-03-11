@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #include <Core/Application.hpp>
@@ -41,10 +41,6 @@ public:
 		_detachCount++;
 	}
 
-	void OnRender() const override {
-		_renderCount++;
-	}
-
 	void OnEvent(I_Event& event) override {
 		_eventCount++;
 		if (_shouldHandleEvent) {
@@ -70,7 +66,6 @@ private:
 	mutable int _attachCount = 0;
 	mutable int _detachCount = 0;
 	mutable int _updateCount = 0;
-	mutable int _renderCount = 0;
 	int _eventCount = 0;
 };
 
@@ -97,7 +92,8 @@ TEST_F(ApplicationTest, ConstructionDefault) {
 	ASSERT_NE(app, nullptr);
 	EXPECT_EQ(&Application::Get(), app.get());
 	EXPECT_NE(app->GetWindow(), nullptr);
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 }
 
 /**
@@ -176,13 +172,15 @@ TEST_F(ApplicationTest, PushLayer) {
 	auto* layer = new MockAppLayer{"TestLayer"};
 
 	EXPECT_FALSE(layer->IsAttached());
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 
 	app->PushLayer(layer);
 
 	EXPECT_TRUE(layer->IsAttached());
 	EXPECT_EQ(layer->GetAttachCount(), 1);
 	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 2);
 }
 
 /**
@@ -193,13 +191,15 @@ TEST_F(ApplicationTest, PushOverlay) {
 	auto* overlay = new MockAppLayer("TestOverlay");
 
 	EXPECT_FALSE(overlay->IsAttached());
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 
 	app->PushOverlay(overlay);
 
 	EXPECT_TRUE(overlay->IsAttached());
 	EXPECT_EQ(overlay->GetAttachCount(), 1);
 	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 2);
 }
 
 /**
@@ -212,12 +212,14 @@ TEST_F(ApplicationTest, PopLayer) {
 	app->PushLayer(layer);
 	EXPECT_TRUE(layer->IsAttached());
 	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 2);
 
 	app->PopLayer(layer);
 
 	EXPECT_FALSE(layer->IsAttached());
 	EXPECT_EQ(layer->GetDetachCount(), 1);
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 
 	// PopLayer doesn't delete, so we must do it manually
 	delete layer;
@@ -233,12 +235,14 @@ TEST_F(ApplicationTest, PopOverlay) {
 	app->PushOverlay(overlay);
 	EXPECT_TRUE(overlay->IsAttached());
 	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 2);
 
 	app->PopOverlay(overlay);
 
 	EXPECT_FALSE(overlay->IsAttached());
 	EXPECT_EQ(overlay->GetDetachCount(), 1);
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 
 	// PopOverlay doesn't delete, so we must do it manually
 	delete overlay;
@@ -249,7 +253,7 @@ TEST_F(ApplicationTest, PopOverlay) {
  */
 TEST_F(ApplicationTest, HasLayers) {
 	const auto app = std::make_unique<Application>();
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
 
 	auto* layer1 = new MockAppLayer("Layer1");
 	app->PushLayer(layer1);
@@ -263,7 +267,7 @@ TEST_F(ApplicationTest, HasLayers) {
 	EXPECT_TRUE(app->HasLayers());
 
 	app->PopLayer(layer2);
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
 
 	delete layer1;
 	delete layer2;
@@ -297,7 +301,7 @@ TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
 	app->PopLayer(layer2);
 	app->PopLayer(layer1);
 
-	EXPECT_FALSE(app->HasLayers());
+	EXPECT_TRUE(app->HasLayers());
 
 	delete layer1;
 	delete layer2;
@@ -437,7 +441,6 @@ public:
 			*_detachedFlag = true;
 		}
 	}
-	void OnRender() const override {}
 	void OnEvent([[maybe_unused]] I_Event& event) override {}
 	void OnUpdate() override {}
 

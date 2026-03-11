@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #pragma once
@@ -12,8 +12,8 @@
 #ifndef CE_LAYERS_I_LAYER_HPP
 #define CE_LAYERS_I_LAYER_HPP
 
-#include <Define/DynamicLinker.hpp>
-#include <Events/I_Event.hpp>
+#include "Define/DynamicLinker.hpp"
+#include "Events/I_Event.hpp"
 
 
 /**
@@ -73,12 +73,6 @@ public:
 	 *			for all active layers. Use this for game logic, animations, etc.
 	 */
 	virtual void OnUpdate() = 0;
-	/**
-	 * @brief Called every frame to render the layer
-	 * @details Pure virtual method for rendering. Called once per frame after OnUpdate
-	 *			for all active layers. Use this for drawing graphics, UI, etc.
-	 */
-	virtual void OnRender() const = 0;
 
 	/**
 	 * @brief Called when an event occurs

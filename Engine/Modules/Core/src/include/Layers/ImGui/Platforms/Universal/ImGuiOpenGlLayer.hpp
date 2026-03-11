@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #pragma once
@@ -68,10 +68,6 @@ public:
 	 *			and submits rendering commands to OpenGL
 	 */
 	void OnRender() const override;
-
-	void OnUpdate() override {}
-
-	void OnEvent([[maybe_unused]] Events::I_Event& event) override {}
 
 	/**
 	 * @brief Called at the beginning of the frame to set up ImGui state for OpenGL rendering

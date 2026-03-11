@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #include "Core/Application.hpp"
@@ -112,7 +112,8 @@ void Application::Update() {
 
 	_imguiLayer->Begin();
 	for (const auto layer: _layerStack)
-		layer->OnRender();
+		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
+			renderLayer->OnRender();
 	_imguiLayer->End();
 
 	_window->OnUpdate();

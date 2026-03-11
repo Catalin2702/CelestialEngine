@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-11
 //
 
 #pragma once
@@ -96,6 +96,12 @@ public:
 	 * @return bool True if the stack has no layers, false otherwise
 	 */
 	[[nodiscard]] bool Empty() const { return _layers.empty(); }
+
+	/**
+	 * @brief Gets the number of layers in the stack
+	 * @return size_t The number of layers currently in the stack
+	 */
+	[[nodiscard]] size_t Size() const { return _layers.size(); }
 
 	/**
 	 * @brief Gets an iterator to the beginning of the layer stack

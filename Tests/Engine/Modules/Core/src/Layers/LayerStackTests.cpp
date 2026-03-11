@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-11
 //
 
 #include <Events/I_Event.hpp>
@@ -33,10 +33,6 @@ public:
 		_detachCount++;
 	}
 
-	void OnRender() const override {
-		_renderCount++;
-	}
-
 	void OnEvent([[maybe_unused]] CE::Events::I_Event& event) override {
 		_eventCount++;
 	}
@@ -57,7 +53,6 @@ private:
 	mutable int _attachCount = 0;
 	mutable int _detachCount = 0;
 	mutable int _updateCount = 0;
-	mutable int _renderCount = 0;
 	mutable int _eventCount = 0;
 };
 

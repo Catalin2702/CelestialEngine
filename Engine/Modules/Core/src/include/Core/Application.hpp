@@ -147,6 +147,13 @@ public:
 	 */
 	[[nodiscard]] bool HasLayers() const { return not _layerStack.Empty(); }
 
+	/**
+	 * @brief Gets the number of layers in the stack
+	 * @return size_t Number of layers in the stack
+	 * @details Utility method to get the current size of the layer stack
+	 */
+	[[nodiscard]] size_t LayersSize() const { return _layerStack.Size(); }
+
 public:
 	/**
 	 * @brief Gets the singleton application instance
