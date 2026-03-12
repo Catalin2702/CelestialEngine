@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-12
 //
 
 #pragma once
@@ -159,6 +159,8 @@ protected:
  *			type safety by checking the event type at runtime before casting.
  */
 class EventDispatcher {
+template <typename T>
+using EventFn = std::function<bool(T&)>;
 
 public:
 	/**
@@ -179,7 +181,7 @@ public:
 	 *			on the handler's return value.
 	 */
 	template<typename T>
-	bool Dispatch(std::function<bool(T&)> func) {
+	bool Dispatch(EventFn<T> func) {
 		if (_event.GetEventType() == T::GetStaticType()) {
 			if (func(static_cast<T&>(_event)))
 				_event.Consume();

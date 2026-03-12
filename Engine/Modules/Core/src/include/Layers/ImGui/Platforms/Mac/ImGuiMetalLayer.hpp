@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-12
 //
 
 #pragma once
@@ -74,6 +74,8 @@ public:
 	 */
 	void OnRender() const override;
 
+	void OnEvent(Events::I_Event& event) override;
+
 	/**
 	 * @brief Called at the beginning of the frame to set up ImGui state for Metal rendering
 	 * @details Prepares ImGui for a new frame, updates display size and delta time, and sets up
@@ -101,6 +103,17 @@ protected:
 	 * @details Shuts down ImGui Metal backend, GLFW backend, and destroys ImGui context
 	 */
 	void _Shutdown() override;
+
+	bool _OnMouseMoved(Events::MouseMovedEvent& event) const override;
+	bool _OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
+	bool _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
+	bool _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
+
+	bool _OnKeyPressed(Events::KeyPressedEvent& event) const override;
+	bool _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
+	bool _OnKeyTyped(Events::KeyTypedEvent& event) const override;
+
+	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
 	// Cached pointers to avoid repeated lookups every frame

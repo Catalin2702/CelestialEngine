@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/KeyboardKeyCode
+// Module: CelestialEngine/Engine/Modules/Types/KeyCode
 // File: MouseButtonCode.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-12
 //
 
 #pragma once
@@ -111,12 +111,25 @@ int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
  */
 int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
 
+/**
+ * @brief Converts a MouseButton enum value to its string representation
+ * @param buttonCode The MouseButton enum value to convert
+ * @return std::string A string representation of the MouseButton
+ * @details This function provides a way to get a human-readable name for each MouseButton enum value as a std::string.
+ *			It uses the ToString function to get the C-style string and then constructs a std::string from it.
+ *			This can be useful for logging, debugging, or displaying mouse button names in the user interface where a std::string
+ *			is more convenient to work with than a const char*.
+ */
+inline std::string format_as(const MouseButtonCode buttonCode) {
+	return ToString(buttonCode);
+}
+
 inline std::ostream& operator<<(std::ostream& os, const MouseButtonCode buttonCode) {
 	return os << std::string(ToString(buttonCode));
 }
 
-inline std::string format_as(const MouseButtonCode buttonCode) {
-	return ToString(buttonCode);
+inline auto operator<=>(const unsigned lhs, const MouseButtonCode rhs) {
+	return lhs <=> ToUInt(rhs);
 }
 
 }

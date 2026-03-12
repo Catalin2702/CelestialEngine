@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/KeyboardKeyCode
+// Module: CelestialEngine/Engine/Modules/Types/KeyCode
 // File: KeyboardKeyCode.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-12
 //
 
 #include "Types/KeyCode/KeyboardKeyCode.hpp"

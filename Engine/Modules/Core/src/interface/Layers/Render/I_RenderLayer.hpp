@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
+// Module: CelestialEngine/Engine/Modules/Layers/Render
 // File: I_RenderLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-11
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-12
 //
 
 #pragma once
@@ -12,7 +12,7 @@
 #ifndef CE_LAYERS_I_RENDERLAYER_HPP
 #define CE_LAYERS_I_RENDERLAYER_HPP
 
-#include "I_Layer.hpp"
+#include "Layers/I_Layer.hpp"
 
 #include <string>
 

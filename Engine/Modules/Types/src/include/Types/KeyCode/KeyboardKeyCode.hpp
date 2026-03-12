@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/KeyboardKeyCode
+// Module: CelestialEngine/Engine/Modules/Types/KeyCode
 // File: KeyboardKeyCode.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-12
 //
 
 #pragma once
 
-#ifndef CE_TYPES_KEYCODE_KEYBOARDKEYS_HPP
-#define CE_TYPES_KEYCODE_KEYBOARDKEYS_HPP
+#ifndef CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
+#define CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -92,25 +92,16 @@ enum class CE_API KeyboardCharsCode: uint32_t {
 	Unknown = 0
 };
 
+
 /**
  *
- * @param key The KeyCode to convert to an integer
+ * @param key The KeyboardCharsCode to convert to an integer
  * @return int The integer representation of the KeyCode
  * @details Converts the KeyCode enum value to its underlying integer representation.
  *			This is useful for interfacing with APIs that expect key codes as integers (e.g., GLFW).
  *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint16_t) and then to int for compatibility with typical key code representations.
  */
 inline int ToInt(KeyboardKeyCode key) { return static_cast<int>(key); }
-
-/**
- *
- * @param key The KeyboardCharsCode to convert to an integer
- * @return int The integer representation of the KeyboardCharsCode
- * @details Converts the KeyboardCharsCode enum value to its underlying integer representation.
- *			This can be useful for contexts where character codes are expected as integers, such as text input handling or when interfacing with APIs that use integer types for character codes.
- *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint8_t) and then to int for compatibility with such systems.
- */
-inline int ToInt(KeyboardCharsCode key) { return static_cast<int>(key); }
 
 /**
  *
@@ -123,16 +114,6 @@ inline int ToInt(KeyboardCharsCode key) { return static_cast<int>(key); }
 inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned int>(key); }
 
 /**
- *
- * @param key The KeyboardCharsCode to convert to an unsigned integer
- * @return unsigned int The unsigned integer representation of the KeyboardCharsCode
- * @details Converts the KeyboardCharsCode enum value to its underlying unsigned integer representation.
- *			This can be useful in contexts where character codes are expected as unsigned integers, such as text input handling or when interfacing with APIs that use unsigned types for character codes.
- *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint8_t) and then to unsigned int for compatibility with such systems.
- */
-inline unsigned int ToUInt(KeyboardCharsCode key) { return static_cast<unsigned int>(key); }
-
-/**
  * @brief Converts a KeyCode enum value to its string representation
  * @param key The KeyCode to convert to a string
  * @return const char* A string representation of the KeyCode
@@ -140,15 +121,6 @@ inline unsigned int ToUInt(KeyboardCharsCode key) { return static_cast<unsigned 
  *			The function uses a switch statement to map each KeyCode value to its corresponding string name. If the KeyCode does not match any known value, it returns "Unknown".
  */
 const char* ToString(KeyboardKeyCode key);
-
-/**
- * @brief Converts a KeyboardCharsCode enum value to its string representation
- * @param key The KeyboardCharsCode to convert to a string
- * @return const char* A string representation of the KeyboardCharsCode
- * @details Provides a human-readable string representation of the KeyboardCharsCode enum value. This is useful for debugging, logging, or displaying character names in the user interface.
- *			The function uses a switch statement to map each KeyboardCharsCode value to its corresponding string name. If the KeyboardCharsCode does not match any known value, it returns "Unknown".
- */
-const char* ToString(KeyboardCharsCode key);
 
 /**
  * @brief Converts a GLFW key code to a KeyCode enum value
@@ -162,17 +134,6 @@ const char* ToString(KeyboardCharsCode key);
 KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
 
 /**
- * @brief Converts a GLFW character code to a KeyboardCharsCode enum value
- * @param charCode The unsigned integer character code from GLFW to convert
- * @return KeyboardCharsCode The corresponding KeyboardCharsCode enum value
- * @details Maps GLFW character codes to the corresponding KeyboardCharsCode enum values defined in this module.
- *			This allows for easy integration with GLFW's text input handling while maintaining a consistent set of character codes within the engine.
- *			The function uses a switch statement to match known GLFW character codes to their KeyboardCharsCode equivalents.
- *			If the provided charCode does not match any known GLFW character code, it returns KeyboardCharsCode::Unknown.
- */
-KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
-
-/**
  * @brief Converts a KeyCode enum value to a GLFW key code
  * @param keycode The KeyCode enum value to convert
  * @return int The corresponding integer key code for GLFW
@@ -182,17 +143,6 @@ KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
  *			If the provided keycode does not match any known KeyCode value, it returns -1 to indicate an invalid key code for GLFW.
  */
 int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
-
-/**
- * @brief Converts a KeyboardCharsCode enum value to a GLFW character code
- * @param charCode The KeyboardCharsCode enum value to convert
- * @return unsigned int The corresponding unsigned integer character code for GLFW
- * @details Maps KeyboardCharsCode enum values to the corresponding unsigned integer codes used by GLFW for text input.
- *			This allows for easy integration with GLFW's text input handling when generating events or querying character states.
- *			The function uses a switch statement to match known KeyboardCharsCode enum values to their GLFW unsigned integer equivalents.
- *			If the provided charCode does not match any known KeyboardCharsCode value, it returns 0 to indicate an invalid character code for GLFW.
- */
-unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
 
 /**
  * @brief Converts a KeyCode enum value to an ImGuiKey
@@ -206,6 +156,79 @@ unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
 ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
 
 /**
+ *  @brief Formats a KeyboardKeyCode enum value as a string
+ * @param keycode The KeyboardKeyCode to format as a string
+ * @return std::string A string representation of the KeyboardKeyCode
+ * @details Provides a convenient way to get a string representation of a KeyboardKeyCode enum value.
+ *			This can be useful for logging, debugging, or displaying key names in the user interface.
+ *			The function simply calls ToString to get the string representation of the key code and returns it as a std::string
+ *			for easier use in C++ contexts where std::string is preferred over const char*.
+ */
+inline std::string format_as(const KeyboardKeyCode keycode) {
+	return ToString(keycode);
+}
+
+inline std::ostream& operator<<(std::ostream& os, const KeyboardKeyCode keycode) {
+	return os << std::string(ToString(keycode));
+}
+
+inline auto operator<=>(const unsigned lhs, const KeyboardKeyCode rhs) {
+	return lhs <=> ToUInt(rhs);
+};
+
+
+/**
+ *
+ * @param key The KeyCode to convert to an integer
+ * @return int The integer representation of the KeyboardCharsCode
+ * @details Converts the KeyboardCharsCode enum value to its underlying integer representation.
+ *			This can be useful for contexts where character codes are expected as integers, such as text input handling or when interfacing with APIs that use integer types for character codes.
+ *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint8_t) and then to int for compatibility with such systems.
+ */
+inline int ToInt(KeyboardCharsCode key) { return static_cast<int>(key); }
+
+/**
+ *
+ * @param key The KeyboardCharsCode to convert to an unsigned integer
+ * @return unsigned int The unsigned integer representation of the KeyboardCharsCode
+ * @details Converts the KeyboardCharsCode enum value to its underlying unsigned integer representation.
+ *			This can be useful in contexts where character codes are expected as unsigned integers, such as text input handling or when interfacing with APIs that use unsigned types for character codes.
+ *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint8_t) and then to unsigned int for compatibility with such systems.
+ */
+inline unsigned int ToUInt(KeyboardCharsCode key) { return static_cast<unsigned int>(key); }
+
+/**
+ * @brief Converts a KeyboardCharsCode enum value to its string representation
+ * @param key The KeyboardCharsCode to convert to a string
+ * @return const char* A string representation of the KeyboardCharsCode
+ * @details Provides a human-readable string representation of the KeyboardCharsCode enum value. This is useful for debugging, logging, or displaying character names in the user interface.
+ *			The function uses a switch statement to map each KeyboardCharsCode value to its corresponding string name. If the KeyboardCharsCode does not match any known value, it returns "Unknown".
+ */
+const char* ToString(KeyboardCharsCode key);
+
+/**
+ * @brief Converts a GLFW character code to a KeyboardCharsCode enum value
+ * @param charCode The unsigned integer character code from GLFW to convert
+ * @return KeyboardCharsCode The corresponding KeyboardCharsCode enum value
+ * @details Maps GLFW character codes to the corresponding KeyboardCharsCode enum values defined in this module.
+ *			This allows for easy integration with GLFW's text input handling while maintaining a consistent set of character codes within the engine.
+ *			The function uses a switch statement to match known GLFW character codes to their KeyboardCharsCode equivalents.
+ *			If the provided charCode does not match any known GLFW character code, it returns KeyboardCharsCode::Unknown.
+ */
+KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
+
+/**
+ * @brief Converts a KeyboardCharsCode enum value to a GLFW character code
+ * @param charCode The KeyboardCharsCode enum value to convert
+ * @return unsigned int The corresponding unsigned integer character code for GLFW
+ * @details Maps KeyboardCharsCode enum values to the corresponding unsigned integer codes used by GLFW for text input.
+ *			This allows for easy integration with GLFW's text input handling when generating events or querying character states.
+ *			The function uses a switch statement to match known KeyboardCharsCode enum values to their GLFW unsigned integer equivalents.
+ *			If the provided charCode does not match any known KeyboardCharsCode value, it returns 0 to indicate an invalid character code for GLFW.
+ */
+unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
+
+/**
  * @brief Converts a KeyboardCharsCode enum value to an ImGuiKey
  * @param charCode The KeyboardCharsCode enum value to convert
  * @return unsigned int The corresponding ImGuiKey for the given KeyboardCharsCode, or ImGuiKey_None if no mapping exists
@@ -216,22 +239,18 @@ ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
  */
 unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
 
-inline std::ostream& operator<<(std::ostream& os, const KeyboardKeyCode keycode) {
-	return os << std::string(ToString(keycode));
+inline std::string format_as(const KeyboardCharsCode charCode) {
+	return ToString(charCode);
 }
 
 inline std::ostream& operator<<(std::ostream& os, const KeyboardCharsCode charCode) {
 	return os << std::string(ToString(charCode));
 }
 
-inline std::string format_as(const KeyboardKeyCode keycode) {
-	return ToString(keycode);
-}
-
-inline std::string format_as(const KeyboardCharsCode charCode) {
-	return ToString(charCode);
+inline auto operator<=>(const unsigned lhs, const KeyboardCharsCode rhs) {
+	return lhs <=> ToUInt(rhs);
 }
 
 }
 
-#endif //CE_TYPES_KEYCODE_KEYBOARDKEYS_HPP
+#endif //CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP

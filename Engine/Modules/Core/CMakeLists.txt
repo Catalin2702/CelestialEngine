@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-11
+# Updated: 2026-03-12
 #
 
 set(HEADERS
@@ -20,7 +20,7 @@ set(HEADERS
 
 set(INTERFACES
 	src/interface/Layers/I_Layer.hpp
-	src/interface/Layers/I_RenderLayer.hpp
+	src/interface/Layers/Render/I_RenderLayer.hpp
 	src/interface/Layers/ImGui/I_ImGuiLayer.hpp
 	src/interface/Input/I_Input.hpp
 )

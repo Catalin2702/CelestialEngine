@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-12
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
@@ -12,7 +12,11 @@
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
 #include "Core/Application.hpp"
+#include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
+#include "Events/I_Event.hpp"
+#include "Events/KeyEvent.hpp"
+#include "Events/MouseEvent.hpp"
 #include "MetalBridge/ImGui/ImGuiBridge.h"
 #include "Tools/Log/Log.hpp"
 
@@ -38,6 +42,57 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 
 ImGuiMetalLayer::~ImGuiMetalLayer() {
 	_Shutdown();
+}
+
+void ImGuiMetalLayer::OnRender() const {
+	if (not _currentFrameStarted)
+		return;
+
+	ImGui::DockSpaceOverViewport();
+	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Test Window");
+	ImGui::Text("Hello from ImGui with Metal!");
+	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
+	if (ImGui::Button("Click Me!")) {
+		CE_CORE_INFO("Button clicked!");
+	}
+	ImGui::End();
+
+	static bool show = true;
+	ImGui::ShowDemoWindow(&show);
+}
+
+void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
+	Events::EventDispatcher dispatcher(event);
+	switch (event.GetEventType()) {
+	case Events::EventType::MouseMoved:
+		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyPressed));
+		break;
+	case Events::EventType::MouseScrolled:
+		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseScrolled));
+		break;
+	case Events::EventType::MouseButtonPressed:
+		dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonPressed));
+		break;
+	case Events::EventType::MouseButtonReleased:
+		dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonReleased));
+		break;
+	case Events::EventType::KeyPressed:
+		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyPressed));
+		break;
+	case Events::EventType::KeyReleased:
+		dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyReleased));
+		break;
+	case Events::EventType::KeyTyped:
+		dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyTyped));
+		break;
+	case Events::EventType::WindowResize:
+		dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnWindowResized));
+		break;
+	default:
+		break;
+	}
 }
 
 void ImGuiMetalLayer::Begin() {
@@ -77,36 +132,14 @@ void ImGuiMetalLayer::Begin() {
 	_currentFrameStarted = true;
 }
 
-void ImGuiMetalLayer::OnRender() const {
-	if (not _currentFrameStarted)
-		return;
-
-	const auto& io = ImGui::GetIO();
-	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
-	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with Metal!");
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-	if (ImGui::Button("Click Me!")) {
-		CE_CORE_INFO("Button clicked!");
-	}
-	ImGui::End();
-
-	static bool show = true;
-	ImGui::ShowDemoWindow(&show);
-}
-
 void ImGuiMetalLayer::End() {
 	if (not _currentFrameStarted)
 		return;
 
-	auto& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
-
 	ImGui::Render();
 	Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _currentCommandBuffer, _currentRenderCommandEncoder);
 
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
@@ -143,6 +176,8 @@ void ImGuiMetalLayer::_Init() {
 		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
 	}
 
+	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
+
 	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
@@ -178,9 +213,9 @@ void ImGuiMetalLayer::_Init() {
 		throw std::runtime_error("Failed to initialize ImGui GLFW backend!");
 	}
 
-	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
+		auto& style = ImGui::GetStyle();
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
@@ -203,6 +238,78 @@ void ImGuiMetalLayer::_Shutdown() {
 	Bridge::ImGuiMetalShutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+}
+
+bool ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+	auto& io = ImGui::GetIO();
+	io.AddMousePosEvent(event.GetX(), event.GetY());
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
+	auto& io = ImGui::GetIO();
+	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	if (button >= ImGuiMouseButton_COUNT)
+		return false;
+
+	ImGui::GetIO().AddMouseButtonEvent(button, true);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	if (button >= ImGuiMouseButton_COUNT)
+		return false;
+
+	ImGui::GetIO().AddMouseButtonEvent(button, false);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
+	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	ImGui::GetIO().AddKeyEvent(key, true);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
+	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	if (key == ImGuiKey_None)
+		return false;
+
+	ImGui::GetIO().AddKeyEvent(key, false);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
+	const auto keycode = KeyCode::ToUInt(event.GetKeyCode());
+	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
+		return false;
+
+	ImGui::GetIO().AddInputCharacter(keycode);
+
+	return false;
+}
+
+bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+	auto& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
+	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+
+	return false;
 }
 
 }
