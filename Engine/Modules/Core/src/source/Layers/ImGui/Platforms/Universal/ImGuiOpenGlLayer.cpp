@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-13
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
@@ -18,6 +18,7 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/Build/Build.hpp"
 
 #include <glad/glad.h>
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
@@ -47,6 +48,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
 	ImGui::Text("Hello from ImGui with OpenGL!");
+	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
 	if (ImGui::Button("Click Me!")) {
 		CE_CORE_INFO("Button clicked!");

@@ -4,8 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-13
 #
+
+if(NOT CMAKE_C_COMPILER)
+	set(CMAKE_C_COMPILER "" CACHE STRING "No C compiler needed" FORCE)
+endif()
 
 set(CMAKE_CXX_STANDARD 23)
 

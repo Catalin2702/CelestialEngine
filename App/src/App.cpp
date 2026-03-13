@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-13
 //
 
 #include <CelestialEngine.hpp>
@@ -23,18 +23,14 @@ public:
 	 * @brief Default constructor
 	 * @details Creates the application with default window properties and initializes layers
 	 */
-	SandBox() {
-		// _Init(TypeWindow::GraphicsApi::OpenGL);
-	}
+	SandBox() = default;
 
 	/**
 	 * @brief Constructor with window properties
 	 * @param windowProps Window configuration properties (title, width, height, VSync)
 	 * @details Creates the application with specified window properties and initializes layers
 	 */
-	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {
-		// _Init(windowProps.graphicsApi);
-	}
+	SandBox(const TypeWindow::WindowProps& windowProps):Application(windowProps) {}
 
 	/**
 	 * @brief Constructor with individual window parameters
@@ -46,47 +42,13 @@ public:
 	 * @details Creates the application with individual window parameters and initializes layers
 	 */
 	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi):
-		Application(title, width, height, VSync, graphicsApi) {
-		// _Init(graphicsApi);
-	}
+		Application(title, width, height, VSync, graphicsApi) {}
 
 	/**
 	 * @brief Destructor
 	 * @details Default destructor for cleanup
 	 */
 	~SandBox() override = default;
-
-private:
-	/**
-	 * @brief Initializes the application layers
-	 * @details Creates and pushes an ExampleLayer to the layer stack and an ImGuiLayer
-	 *			to the overlay stack for rendering the GUI
-	 */
-// 	void _Init(const TypeWindow::GraphicsApi graphicsApi) {
-// // 		auto layer = std::make_unique<ExampleLayer>();
-// // 		PushLayer(layer.release());
-// //
-// // 		std::unique_ptr<Layers::I_ImGuiLayer> overlay;
-// //
-// 		switch (graphicsApi) {
-// 			case TypeWindow::GraphicsApi::OpenGL: {
-// 				overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
-// 				break;
-// 			}
-// #ifdef CE_PLATFORM_MACOS
-// 			case TypeWindow::GraphicsApi::Metal: {
-// 				overlay = std::make_unique<Layers::ImGuiMetalLayer>();
-// 				break;
-// 			}
-// #endif
-// 			default: {
-// 				CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", graphicsApi);
-// 				throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
-// 			}
-// 		}
-//
-// 		PushOverlay(overlay.release());
-	// }
 };
 
 /**

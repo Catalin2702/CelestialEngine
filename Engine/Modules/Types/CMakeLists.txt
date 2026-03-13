@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-13
 #
 
 set(HEADERS
@@ -20,6 +20,8 @@ set(SOURCES
 	src/source/Types/Window/WindowDestructor.cpp
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
+	src/include/Types/Build/Build.hpp
+	src/source/Types/Build/Build.cpp
 )
 
 add_library(CE_Types SHARED
