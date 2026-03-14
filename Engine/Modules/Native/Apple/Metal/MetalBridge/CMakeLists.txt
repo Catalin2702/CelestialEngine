@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-26
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-14
 #
 
 set(HEADERS
@@ -38,7 +38,10 @@ target_link_libraries(CE_MetalBridge PUBLIC
 )
 
 target_compile_options(CE_MetalBridge
-	PUBLIC -ObjC++ -fno-objc-arc
+	PUBLIC -ObjC++
+	$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+		-fno-objc-arc
+	>
 )
 
 target_include_directories(CE_MetalBridge PUBLIC
