@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-15
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
+#include <dispatch/dispatch.h>
 #include <Foundation/Foundation.hpp>
 
 struct GLFWwindow;
@@ -57,6 +58,22 @@ namespace CE::Layers {
  *			It caches window resources to avoid repeated lookups every frame.
  */
 class ImGuiMetalLayer final: public I_ImGuiLayer {
+	struct MetalContext {
+		Window::MetalWindow* window = nullptr;			///< Pointer to the Metal window
+		GLFWwindow* glfwWindow = nullptr;				///< Pointer to the GLFW window
+		MTL::Device* metalDevice = nullptr;			///< Pointer to the Metal device
+		MTL::CommandQueue* commandQueue = nullptr;		///< Pointer to the Metal command queue
+		CA::MetalLayer* metalLayer = nullptr;			///< Pointer to the Core Animation Metal layer
+		MTL::RenderPassDescriptor* renderPassDescriptor = nullptr; ///< Pointer to the Metal render pass descriptor
+	};
+
+	struct MetalFrameContext {
+		CA::MetalDrawable* drawable = nullptr;	///< Pointer to the Metal drawable
+		MTL::CommandBuffer* commandBuffer = nullptr;	///< Pointer to the Metal command buffer
+		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr; ///< Pointer to the Metal render command encoder
+		NS::SharedPtr<NS::AutoreleasePool> autoreleasePool = nullptr; ///< Shared pointer to the autorelease pool for the frame
+	};
+
 public:
 	/**
 	 * @brief Constructor
@@ -116,19 +133,11 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	// Cached pointers to avoid repeated lookups every frame
-	Window::MetalWindow* _window = nullptr;			///< Cached Metal window pointer
-	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	MTL::Device* _metalDevice = nullptr;			///< Cached Metal device pointer
-	MTL::CommandQueue* _commandQueue = nullptr;		///< Cached Metal command queue pointer
-	CA::MetalLayer* _metalLayer = nullptr;			///< Cached Metal layer pointer
+	MetalContext _metalContext;						///< Struct to hold cached Metal context pointers
+	MetalFrameContext _frameContext;				///< Struct to hold cached Metal frame-specific pointers
 
-	// Cached pointers to pass from Begin() to End() without needing to look them up again
-	CA::MetalDrawable* _currentDrawable = nullptr;	///< Cached Metal drawable pointer
-	MTL::CommandBuffer* _currentCommandBuffer = nullptr;	///< Cached Metal command buffer pointer
-	MTL::RenderCommandEncoder* _currentRenderCommandEncoder = nullptr; ///< Cached Metal render command encoder pointer
-	MTL::RenderPassDescriptor* _currentRenderPassDescriptor = nullptr; ///< Cached Metal render pass descriptor pointer
-	NS::SharedPtr<NS::AutoreleasePool> _currentAutoreleasePool = nullptr; ///< Cached autorelease pool for current frame
+	dispatch_semaphore_t _renderSemaphore;			///< Semaphore to synchronize rendering frames
+	const int _maxFramesInFlight = 3;				///< Maximum number of frames that can be in flight for rendering
 };
 
 }

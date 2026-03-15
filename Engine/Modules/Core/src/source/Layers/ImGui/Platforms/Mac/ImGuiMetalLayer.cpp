@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-13
+// Updated: 2026-03-15
 //
 
 #include "Window/Platforms/Mac/MetalWindow.hpp"
@@ -39,7 +39,9 @@ namespace CE::Layers {
 
 static int _st_imGuiMetalLayerCount = 0;
 
-ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
+ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {
+	_renderSemaphore = dispatch_semaphore_create(_maxFramesInFlight);
+}
 
 ImGuiMetalLayer::~ImGuiMetalLayer() {
 	_Shutdown();
@@ -98,6 +100,7 @@ void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 }
 
 void ImGuiMetalLayer::Begin() {
+	dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_FOREVER);
 	_currentFrameStarted = false;
 
 	auto& io = ImGui::GetIO();
@@ -105,30 +108,29 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 
-	_currentAutoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+	_frameContext.autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
 	int width, height;
-	glfwGetFramebufferSize(_glfwWindow, &width, &height);
-	_metalLayer->setDrawableSize(CGSizeMake(width, height));
+	glfwGetFramebufferSize(_metalContext.glfwWindow, &width, &height);
+	_metalContext.metalLayer->setDrawableSize(CGSizeMake(width, height));
 
-	_currentDrawable = _metalLayer->nextDrawable();
-	if (not _currentDrawable) {
+	_frameContext.drawable = _metalContext.metalLayer->nextDrawable();
+	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		return;
 	}
 
-	_currentCommandBuffer = _commandQueue->commandBuffer();
-	_currentRenderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+	_frameContext.commandBuffer = _metalContext.commandQueue->commandBuffer();
 
-	const auto colorAttachment = _currentRenderPassDescriptor->colorAttachments()->object(0);
+	const auto colorAttachment = _metalContext.renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
-	colorAttachment->setTexture(_currentDrawable->texture());
+	colorAttachment->setTexture(_frameContext.drawable->texture());
 	colorAttachment->setLoadAction(MTL::LoadActionClear);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
-	_currentRenderCommandEncoder = _currentCommandBuffer->renderCommandEncoder(_currentRenderPassDescriptor);
+	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(_metalContext.renderPassDescriptor);
 
-	Bridge::ImGuiMetalNewFrame(_currentRenderPassDescriptor);
+	Bridge::ImGuiMetalNewFrame(_metalContext.renderPassDescriptor);
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	_currentFrameStarted = true;
@@ -139,22 +141,24 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _currentCommandBuffer, _currentRenderCommandEncoder);
+	Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
 	}
 
-	_currentRenderCommandEncoder->endEncoding();
-	_currentCommandBuffer->presentDrawable(_currentDrawable);
-	_currentCommandBuffer->commit();
-	_currentRenderPassDescriptor->release();
+	_frameContext.renderCommandEncoder->endEncoding();
 
-	_currentAutoreleasePool.reset();
+	_frameContext.commandBuffer->addCompletedHandler([this](...) {
+		dispatch_semaphore_signal(_renderSemaphore);
+	});
+
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
+	_frameContext.commandBuffer->commit();
+
+	_frameContext.autoreleasePool.reset();
 }
 
 void ImGuiMetalLayer::_Init() {
@@ -171,49 +175,70 @@ void ImGuiMetalLayer::_Init() {
 
 	const auto& app = Core::Application::Get();
 
-	_window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
-	if (not _window) {
+	_metalContext.window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
+
+	if (not _metalContext.window) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
 	}
 
-	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
-
-	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
-	if (not _glfwWindow) {
+	_metalContext.glfwWindow = static_cast<GLFWwindow*>(_metalContext.window->GetNativeWindow());
+	if (not _metalContext.glfwWindow) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid GLFWwindow!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid GLFWwindow!");
 	}
 
-	_metalDevice = _window->GetDevice();
-	if (not _metalDevice) {
+	_metalContext.metalDevice = _metalContext.window->GetDevice();
+	if (not _metalContext.metalDevice) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
 	}
 
-	_commandQueue = _window->GetCommandQueue();
-	if (not _commandQueue) {
+	_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
+	if (not _metalContext.commandQueue) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 	}
 
-	_metalLayer = _window->GetMetalLayer();
-	if (not _metalLayer) {
+	_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
+	if (not _metalContext.metalLayer) {
 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 	}
-	_metalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
 
-	if (!ImGui_ImplGlfw_InitForOther(_glfwWindow, false)) {
+	_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+	if (not _metalContext.renderPassDescriptor) {
+		CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
+	}
+
+	if (!ImGui_ImplGlfw_InitForOther(_metalContext.glfwWindow, false)) {
 		CE_CORE_ERROR("Failed to initialize ImGui GLFW backend!");
 		ImGui::DestroyContext(context);
 		throw std::runtime_error("Failed to initialize ImGui GLFW backend!");
 	}
+
+	_metalContext.metalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+	if (const auto contentView = _metalContext.window->GetMetalWindow()->contentView()) {
+		contentView->setLayer(_metalContext.metalLayer);
+		contentView->setWantsLayer(true);
+	} else {
+		CE_CORE_ERROR("Failed to get content view from Metal window!");
+		ImGui::DestroyContext(context);
+		throw std::runtime_error("Failed to get content view from Metal window!");
+	}
+
+	io.DisplaySize = ImVec2(static_cast<float>(_metalContext.window->GetWidth()), static_cast<float>(_metalContext.window->GetHeight()));
+
+	float x, y;
+	glfwGetWindowContentScale(_metalContext.glfwWindow, &x, &y);
+	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -222,7 +247,7 @@ void ImGuiMetalLayer::_Init() {
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	Bridge::ImGuiMetalInit(_metalDevice);
+	Bridge::ImGuiMetalInit(_metalContext.metalDevice);
 
 	_initialized = true;
 	_st_imGuiMetalLayerCount++;
@@ -236,6 +261,8 @@ void ImGuiMetalLayer::_Shutdown() {
 	_st_imGuiMetalLayerCount--;
 	if (_st_imGuiMetalLayerCount > 0)
 		return;
+
+	_metalContext.renderPassDescriptor->release();
 
 	Bridge::ImGuiMetalShutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -309,7 +336,10 @@ bool ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
-	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+	float x, y;
+	glfwGetWindowContentScale(_metalContext.glfwWindow, &x, &y);
+
+	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	return false;
 }

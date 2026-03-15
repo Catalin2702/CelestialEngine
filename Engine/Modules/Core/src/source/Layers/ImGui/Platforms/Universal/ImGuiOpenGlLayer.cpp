@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-13
+// Updated: 2026-03-15
 //
 
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
@@ -99,8 +99,6 @@ void ImGuiOpenGlLayer::Begin() {
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -113,6 +111,14 @@ void ImGuiOpenGlLayer::End() {
 		return;
 
 	ImGui::Render();
+
+	int width, height;
+	glfwGetFramebufferSize(_glfwWindow, &width, &height);
+
+	glViewport(0, 0, static_cast<int>(_window->GetWidth()), static_cast<int>(_window->GetHeight()));
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -144,11 +150,17 @@ void ImGuiOpenGlLayer::_Init() {
 		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
 	}
 
+	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
+
 	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
 	}
+
+	float x, y;
+	glfwGetWindowContentScale(_glfwWindow, &x, &y);
+	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -246,7 +258,10 @@ bool ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 bool ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
-	io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+
+	float x, y;
+	glfwGetWindowContentScale(_glfwWindow, &x, &y);
+	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	glViewport(0, 0, static_cast<int>(event.GetWidth()), static_cast<int>(event.GetHeight()));
 
