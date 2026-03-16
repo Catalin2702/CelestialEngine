@@ -4,16 +4,16 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-12
+# Updated: 2026-03-16
 #
 
 set(HEADERS
 	src/include/Core/Application.hpp
 	src/include/Layers/LayerStack.hpp
-	src/include/Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp
-	src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp
+	src/include/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
 		src/include/Input/Platforms/Mac/MetalInput.hpp
 	>
 )
@@ -28,10 +28,11 @@ set(INTERFACES
 set(SOURCES
 	src/source/Core/Application.cpp
 	src/source/Layers/LayerStack.cpp
-	src/source/Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.cpp
-	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.cpp
+	src/source/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.cpp
+
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
 		src/source/Input/Platforms/Mac/MetalInput.cpp
 	>
 )

@@ -1,6 +1,6 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
-// File: ImGuiOpenGlLayer.cpp
+// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common
+// File: ImGuiOpenGlGlfwLayer.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
@@ -9,7 +9,7 @@
 
 #include "Window/Platforms/Common/CommonGlfwWindow.hpp"
 
-#include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
+#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
@@ -31,15 +31,15 @@
 
 namespace CE::Layers {
 
-static int _st_imGuiOpenGlLayerCount = 0;
+static int _st_imGuiOpenGlGlfwLayerCount = 0;
 
-ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
+ImGuiOpenGlGlfwLayer::ImGuiOpenGlGlfwLayer(): I_ImGuiLayer("ImGuiOpenGlGlfwLayer") {}
 
-ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
+ImGuiOpenGlGlfwLayer::~ImGuiOpenGlGlfwLayer() {
 	_Shutdown();
 }
 
-void ImGuiOpenGlLayer::OnRender() const {
+void ImGuiOpenGlGlfwLayer::OnRender() const {
 	if (not _currentFrameStarted)
 		return;
 
@@ -47,7 +47,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with OpenGL!");
+	ImGui::Text("Hello from ImGui with OpenGL and GLFW!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
 	if (ImGui::Button("Click Me!")) {
@@ -59,39 +59,39 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::ShowDemoWindow(&show);
 }
 
-void ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
+void ImGuiOpenGlGlfwLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 	switch (event.GetEventType()) {
 	case Events::EventType::MouseMoved:
-		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyPressed));
+		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnKeyPressed));
 		break;
 	case Events::EventType::MouseScrolled:
-		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseScrolled));
+		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnMouseScrolled));
 		break;
 	case Events::EventType::MouseButtonPressed:
-		dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseButtonPressed));
+		dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnMouseButtonPressed));
 		break;
 	case Events::EventType::MouseButtonReleased:
-		dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseButtonReleased));
+		dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnMouseButtonReleased));
 		break;
 	case Events::EventType::KeyPressed:
-		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyPressed));
+		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnKeyPressed));
 		break;
 	case Events::EventType::KeyReleased:
-		dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyReleased));
+		dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnKeyReleased));
 		break;
 	case Events::EventType::KeyTyped:
-		dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyTyped));
+		dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnKeyTyped));
 		break;
 	case Events::EventType::WindowResize:
-		dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnWindowResized));
+		dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnWindowResized));
 		break;
 	default:
 		break;
 	}
 }
 
-void ImGuiOpenGlLayer::Begin() {
+void ImGuiOpenGlGlfwLayer::Begin() {
 	_currentFrameStarted = false;
 
 	auto& io = ImGui::GetIO();
@@ -106,7 +106,7 @@ void ImGuiOpenGlLayer::Begin() {
 	_currentFrameStarted = true;
 }
 
-void ImGuiOpenGlLayer::End() {
+void ImGuiOpenGlGlfwLayer::End() {
 	if (not _currentFrameStarted)
 		return;
 
@@ -130,7 +130,7 @@ void ImGuiOpenGlLayer::End() {
 	}
 }
 
-void ImGuiOpenGlLayer::_Init() {
+void ImGuiOpenGlGlfwLayer::_Init() {
 	IMGUI_CHECKVERSION();
 
 	const auto context = ImGui::CreateContext();
@@ -146,16 +146,16 @@ void ImGuiOpenGlLayer::_Init() {
 
 	_window = dynamic_cast<Window::CommonGlfwWindow*>(app.GetWindow());
 	if (not _window) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an CommonGlfwWindow window!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires an CommonGlfwWindow window!");
+		CE_CORE_ERROR("ImGuiOpenGlGlfwLayer requires an CommonGlfwWindow window!");
+		throw std::runtime_error("ImGuiOpenGlGlfwLayer requires an CommonGlfwWindow window!");
 	}
 
 	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
 
 	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
 	if (not _glfwWindow) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
+		CE_CORE_ERROR("ImGuiOpenGlGlfwLayer requires a valid GLFWwindow!");
+		throw std::runtime_error("ImGuiOpenGlGlfwLayer requires a valid GLFWwindow!");
 	}
 
 	float x, y;
@@ -174,16 +174,16 @@ void ImGuiOpenGlLayer::_Init() {
 	ImGui_ImplOpenGL3_Init("#version 410");
 
 	_initialized = true;
-	_st_imGuiOpenGlLayerCount++;
+	_st_imGuiOpenGlGlfwLayerCount++;
 }
 
-void ImGuiOpenGlLayer::_Shutdown() {
+void ImGuiOpenGlGlfwLayer::_Shutdown() {
 	if (not _initialized)
 		return;
 	_initialized = false;
 
-	_st_imGuiOpenGlLayerCount--;
-	if (_st_imGuiOpenGlLayerCount > 0)
+	_st_imGuiOpenGlGlfwLayerCount--;
+	if (_st_imGuiOpenGlGlfwLayerCount > 0)
 		return;
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -191,21 +191,21 @@ void ImGuiOpenGlLayer::_Shutdown() {
 	ImGui::DestroyContext();
 }
 
-bool ImGuiOpenGlLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
@@ -215,7 +215,7 @@ bool ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
@@ -225,7 +225,7 @@ bool ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& 
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
@@ -235,7 +235,7 @@ bool ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
@@ -245,7 +245,7 @@ bool ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const auto keycode = KeyCode::ToUInt(event.GetKeyCode());
 	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
 		return false;
@@ -255,7 +255,7 @@ bool ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+bool ImGuiOpenGlGlfwLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 

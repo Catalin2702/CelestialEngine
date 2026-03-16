@@ -1,6 +1,6 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
-// File: ImGuiOpenGlLayer.hpp
+// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common
+// File: ImGuiOpenGlGlfwLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUIOPENGLLAYER_HPP
-#define CE_LAYERS_IMGUIOPENGLLAYER_HPP
+#ifndef CE_LAYERS_IMGUIOPENGLGLFWLAYER_HPP
+#define CE_LAYERS_IMGUIOPENGLGLFWLAYER_HPP
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -24,7 +24,7 @@ class CommonGlfwWindow;
 /**
  * @namespace CE::Layers
  * @brief Layer system for organizing application logic into stackable components
- * @details Provides the ImGuiOpenGlLayer class, a concrete implementation of I_ImGuiLayer
+ * @details Provides the ImGuiOpenGlGlfwLayer class, a concrete implementation of I_ImGuiLayer
  *			that integrates ImGui with OpenGL for rendering on Windows and Linux. This layer
  *			handles initialization, rendering, and input events specific to ImGui interactions
  *			in an OpenGL context. It caches pointers to the OpenGL window and GLFW window
@@ -33,25 +33,25 @@ class CommonGlfwWindow;
 namespace CE::Layers {
 
 /**
- * @class ImGuiOpenGlLayer
+ * @class ImGuiOpenGlGlfwLayer
  * @brief ImGui layer implementation for OpenGL rendering
  * @details Concrete implementation of I_ImGuiLayer that uses OpenGL for rendering
  *			ImGui interfaces. This is the cross-platform implementation that works
  *			on Windows, Linux, and macOS. It integrates ImGui with OpenGL windows
  *			and handles all input events through GLFW.
  */
-class ImGuiOpenGlLayer final: public I_ImGuiLayer {
+class ImGuiOpenGlGlfwLayer final: public I_ImGuiLayer {
 public:
 	/**
 	 * @brief Constructor
 	 * @details Creates an ImGui OpenGL layer with default initialization
 	 */
-	ImGuiOpenGlLayer();
+	ImGuiOpenGlGlfwLayer();
 	/**
 	 * @brief Destructor
 	 * @details Shuts down ImGui OpenGL backend and releases resources if not already done in OnDetach
 	 */
-	~ImGuiOpenGlLayer() override;
+	~ImGuiOpenGlGlfwLayer() override;
 
 public:
 	/**
@@ -109,4 +109,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_IMGUIOPENGLLAYER_HPP
+#endif //CE_LAYERS_IMGUIOPENGLGLFWLAYER_HPP

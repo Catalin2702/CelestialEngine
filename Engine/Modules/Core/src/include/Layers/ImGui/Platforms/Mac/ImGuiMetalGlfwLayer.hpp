@@ -1,6 +1,6 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
-// File: ImGuiMetalLayer.hpp
+// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac
+// File: ImGuiMetalGlfwLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUIMETALLAYER_HPP
-#define CE_LAYERS_IMGUIMETALLAYER_HPP
+#ifndef CE_LAYERS_IMGUIMETALGLFWLAYER_HPP
+#define CE_LAYERS_IMGUIMETALGLFWLAYER_HPP
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -41,7 +41,7 @@ class MetalGlfwWindow;
 /**
  * @namespace CE::Layers
  * @brief Layer system for organizing application logic into stackable components
- * @details Provides the ImGuiMetalLayer class, a concrete implementation of I_ImGuiLayer
+ * @details Provides the ImGuiMetalGlfwLayer class, a concrete implementation of I_ImGuiLayer
  *			that integrates ImGui with Apple's Metal API for rendering on macOS. This layer
  *			handles initialization, rendering, and input events specific to ImGui interactions
  *			in a Metal context. It caches pointers to the Metal window, device, command queue,
@@ -50,14 +50,14 @@ class MetalGlfwWindow;
 namespace CE::Layers {
 
 /**
- * @class ImGuiMetalLayer
+ * @class ImGuiMetalGlfwLayer
  * @brief ImGui layer implementation for Metal rendering on macOS
  * @details Concrete implementation of I_ImGuiLayer that uses Apple's Metal API
  *			for rendering ImGui interfaces. This layer integrates ImGui with the
  *			Metal window, handling initialization, rendering, and input events.
  *			It caches window resources to avoid repeated lookups every frame.
  */
-class ImGuiMetalLayer final: public I_ImGuiLayer {
+class ImGuiMetalGlfwLayer final: public I_ImGuiLayer {
 	struct MetalContext {
 		Window::MetalGlfwWindow* window = nullptr;			///< Pointer to the Metal window
 		GLFWwindow* glfwWindow = nullptr;				///< Pointer to the GLFW window
@@ -79,9 +79,9 @@ public:
 	 * @brief Constructor
 	 * @details Creates an ImGui Metal layer with default initialization
 	 */
-	ImGuiMetalLayer();
+	ImGuiMetalGlfwLayer();
 
-	~ImGuiMetalLayer() override;
+	~ImGuiMetalGlfwLayer() override;
 
 public:
 	/**
@@ -142,4 +142,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_IMGUIMETALLAYER_HPP
+#endif //CE_LAYERS_IMGUIMETALGLFWLAYER_HPP

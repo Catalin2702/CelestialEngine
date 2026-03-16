@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-16
 //
 
 /**
@@ -52,8 +52,8 @@
 
 // ---- Layer ------------------------------------
 #include <Layers/I_Layer.hpp>
-#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
-#include <Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp>
+#include <Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp>
 // -----------------------------------------------
 
 // ---- Tools ------------------------------------

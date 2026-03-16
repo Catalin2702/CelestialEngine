@@ -11,7 +11,7 @@
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -67,7 +67,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, Construction) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	EXPECT_NE(layer, nullptr);
 
 #ifdef CE_DEBUG
@@ -85,7 +85,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnAttach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
 	});
@@ -103,7 +103,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnDetach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	EXPECT_NO_THROW({
@@ -121,7 +121,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	EXPECT_NO_THROW({
@@ -140,7 +140,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, MultipleOnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	EXPECT_NO_THROW({
@@ -161,7 +161,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyPressed) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	KeyPressedEvent event{KeyboardKeyCode::A, 0};
@@ -182,7 +182,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyReleased) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	KeyReleasedEvent event{KeyboardKeyCode::A};
@@ -202,7 +202,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyTyped) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	KeyTypedEvent event{KeyboardCharsCode::A};
@@ -222,7 +222,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseButtonPressed) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	MouseButtonPressedEvent event{MouseButtonCode::Left};
@@ -242,7 +242,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseButtonReleased) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	MouseButtonReleasedEvent event{MouseButtonCode::Left};
@@ -262,7 +262,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseMoved) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	MouseMovedEvent event{100.0f, 200.0f};
@@ -282,7 +282,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseScrolled) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	MouseScrolledEvent event{0.0f, 1.0f};
@@ -302,7 +302,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, OnEventWindowResize) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	WindowResizeEvent event{1024, 768};
@@ -322,7 +322,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, MultipleEvents) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 	_app->PushLayer(layer);
 
 	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
@@ -347,7 +347,7 @@ TEST_F(ImGuiMetalGlfwLayerTest, FullLifecycle) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiMetalLayer();
+	const auto layer = new ImGuiMetalGlfwLayer();
 
 	// Attach
 	EXPECT_NO_THROW({

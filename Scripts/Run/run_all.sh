@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-09
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-16
 #
 
 # Script to run the CE_App application and all tests
@@ -123,13 +123,13 @@ run_command() {
 # Execute CE_App with Metal
 run_command \
     "CE_App (Metal)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll Metal\" -w 1280 -h 720 -v true -g metal" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGLFW\" -w 1280 -h 720 -v true -g metal -wa glfw" \
     "true"
 
 # Execute CE_App with OpenGL
 run_command \
     "CE_App (OpenGL)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGL\" -w 1280 -h 720 -v true -g opengl" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGLGLFW\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
     "true"
 
 # Execute all tests
