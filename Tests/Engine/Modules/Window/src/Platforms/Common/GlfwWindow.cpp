@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Tests/Engine/Modules/Window/Platforms/Common
-// File: CommonGlfwWindowTests.cpp
+// File: GlfwWindowTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
@@ -10,7 +10,7 @@
 #include <Events/I_Event.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
-#include <Window/Platforms/Common/CommonGlfwWindow.hpp>
+#include <Window/Platforms/Common/GlfwWindow.hpp>
 
 #include <gtest/gtest.h>
 
@@ -22,7 +22,7 @@ using namespace CE::Events;
 /**
  * @brief Test fixture for OpenGL tests
  */
-class CommonGlfwWindowTest: public ::testing::Test {
+class GlfwWindowTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
@@ -37,24 +37,24 @@ protected:
 // ============================================================================
 
 /**
- * @brief Test that CommonGlfwWindow can be constructed with default properties
+ * @brief Test that GlfwWindow can be constructed with default properties
  */
-TEST_F(CommonGlfwWindowTest, Constructor_DefaultProperties_CreatesWindow) {
+TEST_F(GlfwWindowTest, Constructor_DefaultProperties_CreatesWindow) {
 	const WindowProps props{"Test-Window", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 	EXPECT_NO_THROW({
-		CommonGlfwWindow window(props);
+		GlfwWindow window(props);
 	});
 }
 
 /**
- * @brief Test that CommonGlfwWindow constructor with valid properties succeeds
+ * @brief Test that GlfwWindow constructor with valid properties succeeds
  */
-TEST_F(CommonGlfwWindowTest, Constructor_ValidProperties_Succeeds) {
+TEST_F(GlfwWindowTest, Constructor_ValidProperties_Succeeds) {
 	const WindowProps props{"OpenGL Test Window", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 	EXPECT_NO_THROW({
-		CommonGlfwWindow window(props);
+		GlfwWindow window(props);
 	});
 }
 
@@ -65,9 +65,9 @@ TEST_F(CommonGlfwWindowTest, Constructor_ValidProperties_Succeeds) {
 /**
  * @brief Test that GetWidth returns the correct width
  */
-TEST_F(CommonGlfwWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
+TEST_F(GlfwWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Width Test", 1280, 720, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const CommonGlfwWindow window(props);
+	const GlfwWindow window(props);
 
 	EXPECT_EQ(window.GetWidth(), 1280);
 }
@@ -75,9 +75,9 @@ TEST_F(CommonGlfwWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
 /**
  * @brief Test that GetHeight returns the correct height
  */
-TEST_F(CommonGlfwWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
+TEST_F(GlfwWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Height Test", 1280, 720, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const CommonGlfwWindow window(props);
+	const GlfwWindow window(props);
 
 	EXPECT_EQ(window.GetHeight(), 720);
 }
@@ -85,9 +85,9 @@ TEST_F(CommonGlfwWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
 /**
  * @brief Test that IsVSync returns the correct VSync state
  */
-TEST_F(CommonGlfwWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
+TEST_F(GlfwWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
 	const WindowProps props{"VSync Test", 800, 600, true, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const CommonGlfwWindow window(props);
+	const GlfwWindow window(props);
 
 	EXPECT_TRUE(window.IsVSync());
 }
@@ -95,9 +95,9 @@ TEST_F(CommonGlfwWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
 /**
  * @brief Test that IsVSync returns false when VSync is disabled
  */
-TEST_F(CommonGlfwWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
+TEST_F(GlfwWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
 	const WindowProps props{"VSync Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const CommonGlfwWindow window(props);
+	const GlfwWindow window(props);
 
 	EXPECT_FALSE(window.IsVSync());
 }
@@ -105,9 +105,9 @@ TEST_F(CommonGlfwWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
 /**
  * @brief Test that GetGLFWwindow returns a valid pointer
  */
-TEST_F(CommonGlfwWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
+TEST_F(GlfwWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"GLFW Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const CommonGlfwWindow window(props);
+	const GlfwWindow window(props);
 
 	EXPECT_NE(window.GetNativeWindow(), nullptr);
 }
@@ -119,9 +119,9 @@ TEST_F(CommonGlfwWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer
 /**
  * @brief Test that SetWidth updates the width correctly
  */
-TEST_F(CommonGlfwWindowTest, SetWidth_NewValue_UpdatesWidth) {
+TEST_F(GlfwWindowTest, SetWidth_NewValue_UpdatesWidth) {
 	const WindowProps props{"Width Setter Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 	window.SetWidth(1920);
 
 	EXPECT_EQ(window.GetWidth(), 1920);
@@ -130,9 +130,9 @@ TEST_F(CommonGlfwWindowTest, SetWidth_NewValue_UpdatesWidth) {
 /**
  * @brief Test that SetHeight updates the height correctly
  */
-TEST_F(CommonGlfwWindowTest, SetHeight_NewValue_UpdatesHeight) {
+TEST_F(GlfwWindowTest, SetHeight_NewValue_UpdatesHeight) {
 	const WindowProps props{"Height Setter Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 	window.SetHeight(1080);
 
 	EXPECT_EQ(window.GetHeight(), 1080);
@@ -141,9 +141,9 @@ TEST_F(CommonGlfwWindowTest, SetHeight_NewValue_UpdatesHeight) {
 /**
  * @brief Test that SetVSync updates the VSync state
  */
-TEST_F(CommonGlfwWindowTest, SetVSync_EnableVSync_UpdatesState) {
+TEST_F(GlfwWindowTest, SetVSync_EnableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 	window.SetVSync(true);
 
 	EXPECT_TRUE(window.IsVSync());
@@ -152,9 +152,9 @@ TEST_F(CommonGlfwWindowTest, SetVSync_EnableVSync_UpdatesState) {
 /**
  * @brief Test that SetVSync can disable VSync
  */
-TEST_F(CommonGlfwWindowTest, SetVSync_DisableVSync_UpdatesState) {
+TEST_F(GlfwWindowTest, SetVSync_DisableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, true, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 	window.SetVSync(false);
 
 	EXPECT_FALSE(window.IsVSync());
@@ -167,9 +167,9 @@ TEST_F(CommonGlfwWindowTest, SetVSync_DisableVSync_UpdatesState) {
 /**
  * @brief Test that OnUpdate can be called without errors
  */
-TEST_F(CommonGlfwWindowTest, OnUpdate_Called_NoThrow) {
+TEST_F(GlfwWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 
 	// Set an event callback before calling OnUpdate
 	window.SetEventCallback([](I_Event&) {});
@@ -180,9 +180,9 @@ TEST_F(CommonGlfwWindowTest, OnUpdate_Called_NoThrow) {
 /**
  * @brief Test that OnUpdate can be called multiple times
  */
-TEST_F(CommonGlfwWindowTest, OnUpdate_MultipleCalls_NoThrow) {
+TEST_F(GlfwWindowTest, OnUpdate_MultipleCalls_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 
 	// Set an event callback before calling OnUpdate
 	window.SetEventCallback([](I_Event&) {});
@@ -201,9 +201,9 @@ TEST_F(CommonGlfwWindowTest, OnUpdate_MultipleCalls_NoThrow) {
 /**
  * @brief Test that SetEventCallback can be called
  */
-TEST_F(CommonGlfwWindowTest, SetEventCallback_WithCallback_NoThrow) {
+TEST_F(GlfwWindowTest, SetEventCallback_WithCallback_NoThrow) {
 	const WindowProps props{"Callback Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 
 	EventCallbackFn callback = []([[maybe_unused]] CE::Events::I_Event& e) {
 		// Empty callback
@@ -215,9 +215,9 @@ TEST_F(CommonGlfwWindowTest, SetEventCallback_WithCallback_NoThrow) {
 /**
  * @brief Test that SetWindowCallbacks can be called
  */
-TEST_F(CommonGlfwWindowTest, SetWindowCallbacks_Called_NoThrow) {
+TEST_F(GlfwWindowTest, SetWindowCallbacks_Called_NoThrow) {
 	const WindowProps props{"Callbacks Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	CommonGlfwWindow window(props);
+	GlfwWindow window(props);
 
 	EXPECT_NO_THROW(window.SetWindowCallbacks());
 }
@@ -229,11 +229,11 @@ TEST_F(CommonGlfwWindowTest, SetWindowCallbacks_Called_NoThrow) {
 /**
  * @brief Test that small window can be created
  */
-TEST_F(CommonGlfwWindowTest, Constructor_SmallWindow_Succeeds) {
+TEST_F(GlfwWindowTest, Constructor_SmallWindow_Succeeds) {
 	const WindowProps props{"Small Window", 320, 240, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 	EXPECT_NO_THROW({
-		const CommonGlfwWindow window(props);
+		const GlfwWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 320);
 		EXPECT_EQ(window.GetHeight(), 240);
 	});
@@ -242,11 +242,11 @@ TEST_F(CommonGlfwWindowTest, Constructor_SmallWindow_Succeeds) {
 /**
  * @brief Test that large window can be created
  */
-TEST_F(CommonGlfwWindowTest, Constructor_LargeWindow_Succeeds) {
+TEST_F(GlfwWindowTest, Constructor_LargeWindow_Succeeds) {
 	const WindowProps props{"Large Window", 2560, 1440, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 	EXPECT_NO_THROW({
-		const CommonGlfwWindow window(props);
+		const GlfwWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 2560);
 		EXPECT_EQ(window.GetHeight(), 1440);
 	});

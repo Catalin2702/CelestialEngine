@@ -22,10 +22,10 @@
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
-#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
+#include "Window/Platforms/Common/GlfwWindow.hpp"
 #else
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlGlfwLayer.hpp"
-#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
+#include "Window/Platforms/Common/GlfwWindow.hpp"
 #endif
 
 #include <memory>
@@ -127,7 +127,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 // 	switch (windowProps.windowApi) {
 // 		case TypeWindow::WindowApi::GLFW:
 // 			_window = std::unique_ptr<Window::I_Window>(
-// 				Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
+// 				Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
 // 			);
 // 			break;
 // #ifdef CE_PLATFORM_MACOS
@@ -148,7 +148,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			switch (windowProps.graphicsApi) {
 				case TypeWindow::GraphicsApi::OpenGL: {
 					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
+						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
 					);
 					break;
 				}
@@ -178,7 +178,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			switch (windowProps.graphicsApi) {
 				case TypeWindow::GraphicsApi::OpenGL: {
 					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
+						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
 					);
 					break;
 				}
@@ -202,7 +202,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			switch (windowProps.graphicsApi) {
 				case TypeWindow::GraphicsApi::OpenGL: {
 					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
+						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
 					);
 					break;
 				}

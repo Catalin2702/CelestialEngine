@@ -1,13 +1,13 @@
 //
 // Module: CelestialEngine/Engine/Modules/Window/Platforms/Common
-// File: CommonGlfwWindow.cpp
+// File: GlfwWindow.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
 // Updated: 2026-03-16
 //
 
-#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
+#include "Window/Platforms/Common/GlfwWindow.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -44,7 +44,7 @@ static int _st_GLFWWindowCount = 0;
  *			and configure the GLFW window with OpenGL 4.1 Core Profile context.
  *			Increments the window count.
  */
-CommonGlfwWindow::CommonGlfwWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
+GlfwWindow::GlfwWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
 	_Init();
 	_st_GLFWWindowCount++;
 }
@@ -54,7 +54,7 @@ CommonGlfwWindow::CommonGlfwWindow(const TypeWindow::WindowProps& windowProps): 
  * @details Calls _Shutdown() to release GLFW window resources and clean up state
  *			before the object is destroyed
  */
-CommonGlfwWindow::~CommonGlfwWindow() {
+GlfwWindow::~GlfwWindow() {
 	_Shutdown();
 }
 
@@ -63,7 +63,7 @@ CommonGlfwWindow::~CommonGlfwWindow() {
  * @details Processes all queued events via glfwPollEvents() and swaps front/back buffers
  *			with glfwSwapBuffers() to display the rendered content
  */
-void CommonGlfwWindow::OnUpdate() const {
+void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 	glfwSwapBuffers(_glfwWindow.get());
 }
@@ -74,7 +74,7 @@ void CommonGlfwWindow::OnUpdate() const {
  * @details This function will be called whenever an event occurs (resize, close,
  *			keyboard input, mouse, etc.)
  */
-void CommonGlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
+void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.EventCallback = callback;
 }
 
@@ -90,7 +90,7 @@ void CommonGlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
  *			- Mouse movement: generates MouseMovedEvent
  *			Verifies that _glfwWindow is valid before registering callbacks
  */
-void CommonGlfwWindow::SetWindowCallbacks() {
+void GlfwWindow::SetWindowCallbacks() {
 	if (not _glfwWindow)
 		return;
 
@@ -181,7 +181,7 @@ void CommonGlfwWindow::SetWindowCallbacks() {
  * @details Updates the internal value in the _data structure. Note: this method only updates
  *			the stored value, it does not actually resize the window
  */
-void CommonGlfwWindow::SetWidth(const unsigned int width) {
+void GlfwWindow::SetWidth(const unsigned int width) {
 	_data.width = width;
 }
 
@@ -191,7 +191,7 @@ void CommonGlfwWindow::SetWidth(const unsigned int width) {
  * @details Updates the internal value in the _data structure. Note: this method only updates
  *			the stored value, it does not actually resize the window
  */
-void CommonGlfwWindow::SetHeight(const unsigned int height) {
+void GlfwWindow::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
 
@@ -202,7 +202,7 @@ void CommonGlfwWindow::SetHeight(const unsigned int height) {
  *			If GLFW has not been initialized, prints a warning and returns without making changes.
  *			Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
  */
-void CommonGlfwWindow::SetVSync(const bool enabled) {
+void GlfwWindow::SetVSync(const bool enabled) {
 	if (not _st_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
@@ -225,7 +225,7 @@ void CommonGlfwWindow::SetVSync(const bool enabled) {
  *			9. Registers all event callbacks
  *			Throws std::runtime_error if window creation or GLAD initialization fails.
  */
-void CommonGlfwWindow::_Init() {
+void GlfwWindow::_Init() {
 	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
 
 	if (not _st_GLFWInitialized) {
@@ -275,7 +275,7 @@ void CommonGlfwWindow::_Init() {
  *			Decrements the window count and calls glfwTerminate() when the last
  *			window is destroyed to properly clean up GLFW resources.
  */
-void CommonGlfwWindow::_Shutdown() {
+void GlfwWindow::_Shutdown() {
 	_glfwWindow.reset();
 
 	_st_GLFWWindowCount--;

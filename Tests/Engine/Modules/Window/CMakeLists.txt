@@ -10,7 +10,7 @@
 enable_testing()
 
 set(SOURCES
-	src/Platforms/Common/CommonGlfwWindow.cpp
+	src/Platforms/Common/GlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 	src/Platforms/Mac/MetalGlfwWindowTests.cpp

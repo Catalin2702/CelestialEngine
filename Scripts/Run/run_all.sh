@@ -54,6 +54,7 @@ run_command() {
     cd "${BINARIES_DIR}" || exit
 
     # Create temporary file to capture output
+    # shellcheck disable=SC2155
     local temp_output=$(mktemp)
 
     if [ "$is_gui" = "true" ]; then
@@ -98,6 +99,7 @@ run_command() {
         FAILED_TESTS=$((FAILED_TESTS + 1))
 
         # Write failure details to file
+        # shellcheck disable=SC2129
         echo "=======================================" >> "$FAILED_TESTS_FILE"
         echo "Test: ${name}" >> "$FAILED_TESTS_FILE"
         echo "Exit Code: ${exit_code}" >> "$FAILED_TESTS_FILE"
@@ -123,13 +125,13 @@ run_command() {
 # Execute CE_App with Metal
 run_command \
     "CE_App (Metal)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGLFW\" -w 1280 -h 720 -v true -g metal -wa glfw" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGlfw\" -w 1280 -h 720 -v true -g metal -wa glfw" \
     "true"
 
 # Execute CE_App with OpenGL
 run_command \
     "CE_App (OpenGL)" \
-    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGLGLFW\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
+    "./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGlGlfw\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
     "true"
 
 # Execute all tests

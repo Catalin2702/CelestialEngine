@@ -8,7 +8,7 @@
 #
 
 set(HEADERS
-	src/include/Window/Platforms/Common/CommonGlfwWindow.hpp
+	src/include/Window/Platforms/Common/GlfwWindow.hpp
 )
 
 list(APPEND HEADERS
@@ -22,7 +22,7 @@ set(INTERFACES
 )
 
 set(SOURCES
-	src/source/Window/Platforms/Common/CommonGlfwWindow.cpp
+	src/source/Window/Platforms/Common/GlfwWindow.cpp
 )
 
 # Platform-specific

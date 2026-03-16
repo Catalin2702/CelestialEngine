@@ -17,7 +17,7 @@
 struct GLFWwindow;
 
 namespace CE::Window {
-class CommonGlfwWindow;
+class GlfwWindow;
 }
 
 
@@ -104,7 +104,7 @@ protected:
 
 private:
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::CommonGlfwWindow* _window = nullptr;		///< Cached OpenGL window pointer
+	Window::GlfwWindow* _window = nullptr;		///< Cached OpenGL window pointer
 };
 
 }
