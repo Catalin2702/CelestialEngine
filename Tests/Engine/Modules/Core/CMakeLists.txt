@@ -4,14 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-16
 #
 
 set(SOURCES
 	src/Core/ApplicationTests.cpp
 	src/Input/MetalInputTests.cpp
-	src/Layers/ImGuiMetalLayerTests.cpp
-	src/Layers/ImGuiOpenGlLayerTests.cpp
+	src/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayerTests.cpp
+	src/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayerTests.cpp
 	src/Layers/LayerStackTests.cpp
 	src/Layers/LayerTests.cpp
 )

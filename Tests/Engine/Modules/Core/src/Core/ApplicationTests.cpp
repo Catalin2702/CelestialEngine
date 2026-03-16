@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-16
 //
 
 #include <Core/Application.hpp>
@@ -100,7 +100,7 @@ TEST_F(ApplicationTest, ConstructionDefault) {
  * @brief Test Application construction with WindowProps
  */
 TEST_F(ApplicationTest, ConstructionWithWindowProps) {
-	WindowProps props{"TestApp", 800, 600, false, GraphicsApi::OpenGL};
+	WindowProps props{"TestApp", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 	const auto app = std::make_unique<Application>(props);
 
 	ASSERT_NE(app, nullptr);
@@ -117,7 +117,7 @@ TEST_F(ApplicationTest, ConstructionWithWindowProps) {
  * @brief Test Application construction with individual parameters
  */
 TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
-	const auto app = std::make_unique<Application>("MyApp", 1024, 768, true, GraphicsApi::OpenGL);
+	const auto app = std::make_unique<Application>("MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW);
 
 	ASSERT_NE(app, nullptr);
 	EXPECT_EQ(&Application::Get(), app.get());

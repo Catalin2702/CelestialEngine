@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-16
 //
 
 #pragma once
@@ -70,9 +70,10 @@ public:
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
 	 * @param graphicsApi Graphics API to use for rendering
+	 * @param windowApi Windowing API to use for window management
 	 * @details Creates an application with individual window parameters
 	 */
-	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
+	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync, TypeWindow::GraphicsApi graphicsApi, TypeWindow::WindowApi windowApi);
 
 	/**
 	 * @brief Virtual destructor
@@ -208,10 +209,11 @@ std::unique_ptr<Application> CreateApplication(const TypeWindow::WindowProps& wi
  * @param height Window height in pixels
  * @param VSync Enable or disable vertical synchronization
  * @param graphicsApi Graphics API to use for rendering
+ * @param windowApi Windowing API to use for window management
  * @return Application* Pointer to the created application
  * @details Must be implemented by the client application
  */
-std::unique_ptr<Application> CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi);
+std::unique_ptr<Application> CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi, Types::Window::WindowApi windowApi);
 
 }
 

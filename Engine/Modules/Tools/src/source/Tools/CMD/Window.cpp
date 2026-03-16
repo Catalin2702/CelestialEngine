@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-16
 //
 
 #include "Tools/CMD/Window.hpp"
@@ -37,6 +37,7 @@ Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	unsigned int height = 720;
 	auto VSync = true;
 	auto graphicsApi = Types::Window::GraphicsApi::OpenGL;
+	auto windowApi = Types::Window::WindowApi::GLFW;
 
 	// Start from 1 to skip executable path
 	for (int i = 1; i < argc; ++i) {
@@ -99,11 +100,31 @@ Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 				graphicsApi = Types::Window::GraphicsApi::OpenGL;
 			}
 		}
+		else if ((arg == "--window-api" or arg == "-wa") and i + 1 < argc) {
+			// ReSharper disable once CppTooWideScopeInitStatement
+			const std::string apiArg = Manipulation::ToLowerCase(argv[++i]);
+			if (apiArg == "glfw") {
+				windowApi = Types::Window::WindowApi::GLFW;
+			}
+			else if (apiArg == "win32") {
+				windowApi = Types::Window::WindowApi::Win32;
+			}
+			else if (apiArg == "x11") {
+				windowApi = Types::Window::WindowApi::X11;
+			}
+			else if (apiArg == "cocoa") {
+				windowApi = Types::Window::WindowApi::Cocoa;
+			}
+			else {
+				CE_CORE_WARN("Unsupported window API specified: ({0}). Defaulting to GLFW.", argv[i]);
+				windowApi = Types::Window::WindowApi::GLFW;
+			}
+		}
 		else {
 			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
 		}
 	}
-	return {title, width, height, VSync, graphicsApi};
+	return {title, width, height, VSync, graphicsApi, windowApi};
 }
 
 }

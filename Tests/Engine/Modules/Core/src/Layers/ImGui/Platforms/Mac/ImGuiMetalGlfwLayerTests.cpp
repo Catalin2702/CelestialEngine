@@ -1,17 +1,17 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Core/Layers
-// File: ImGuiOpenGlLayerTests.cpp
+// Module: CelestialEngine/Tests/Engine/Modules/Core/Layers/ImGui/Platforms/Mac
+// File: ImGuiMetalGlfwLayerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-16
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -27,18 +27,20 @@ using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
+
 /**
- * @brief Test fixture for ImGuiOpenGlLayer tests
- * @details These tests require an Application instance because ImGuiOpenGlLayer
- *			needs a valid OpenGL context and window to initialize properly
+ * @brief Test fixture for ImGuiMetalGlfwLayer tests
+ * @details These tests require an Application instance because ImGuiMetalGlfwLayer
+ *			needs a valid Metal context and window to initialize properly.
+ *			Metal is only available on macOS.
  */
-class ImGuiOpenGlLayerTest: public ::testing::Test {
+class ImGuiMetalGlfwLayerTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
 
 		try {
-			_app = std::make_unique<Application>(WindowProps{"Test-ImGuiOpenGlLayer", 800, 600, false, GraphicsApi::OpenGL});
+			_app = std::make_unique<Application>(WindowProps{"Test-ImGuiMetalGlfwLayer", 800, 600, false, GraphicsApi::Metal, WindowApi::GLFW});
 		}
 		catch (...) {
 			_windowAvailable = false;
@@ -56,35 +58,34 @@ protected:
 	bool _windowAvailable = false;
 	std::unique_ptr<Application> _app = nullptr;
 };
-//
+
 /**
- * @brief Test ImGuiOpenGlLayer construction
+ * @brief Test ImGuiMetalGlfwLayer construction
  */
-TEST_F(ImGuiOpenGlLayerTest, Construction) {
+TEST_F(ImGuiMetalGlfwLayerTest, Construction) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	EXPECT_NE(layer, nullptr);
 
 #ifdef CE_DEBUG
-	EXPECT_EQ(layer->GetDebugName(), "ImGuiOpenGlLayer");
+	EXPECT_EQ(layer->GetDebugName(), "ImGuiMetalGlfwLayer");
 #endif
 
 	delete layer;
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnAttach
+ * @brief Test ImGuiMetalGlfwLayer OnAttach
  */
-TEST_F(ImGuiOpenGlLayerTest, OnAttach) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnAttach) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
-
+	const auto layer = new ImGuiMetalLayer();
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
 	});
@@ -95,19 +96,16 @@ TEST_F(ImGuiOpenGlLayerTest, OnAttach) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnDetach after OnAttach
+ * @brief Test ImGuiMetalGlfwLayer OnDetach after OnAttach
  */
-TEST_F(ImGuiOpenGlLayerTest, OnDetach) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnDetach) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
-
-	// First attach the layer
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	// Then detach it
 	EXPECT_NO_THROW({
 		_app->PopLayer(layer);
 	});
@@ -116,14 +114,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnDetach) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnUpdate
+ * @brief Test ImGuiMetalGlfwLayer OnUpdate
  */
-TEST_F(ImGuiOpenGlLayerTest, OnUpdate) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnUpdate) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	EXPECT_NO_THROW({
@@ -135,14 +133,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnUpdate) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer multiple OnUpdate calls
+ * @brief Test ImGuiMetalGlfwLayer multiple OnUpdate calls
  */
-TEST_F(ImGuiOpenGlLayerTest, MultipleOnUpdate) {
+TEST_F(ImGuiMetalGlfwLayerTest, MultipleOnUpdate) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	EXPECT_NO_THROW({
@@ -156,17 +154,17 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleOnUpdate) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with KeyPressed
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with KeyPressed
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
+	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 	_app->OnEvent(event);
 
 	// ImGui layers typically don't block event propagation
@@ -177,17 +175,17 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with KeyReleased
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with KeyReleased
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventKeyReleased) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	KeyReleasedEvent event{KeyboardKeyCode::A}; // 'A' key
+	KeyReleasedEvent event{KeyboardKeyCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -197,14 +195,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyReleased) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with KeyTyped
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with KeyTyped
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventKeyTyped) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventKeyTyped) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	KeyTypedEvent event{KeyboardCharsCode::A};
@@ -217,14 +215,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyTyped) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with MouseButtonPressed
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with MouseButtonPressed
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonPressed) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseButtonPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	MouseButtonPressedEvent event{MouseButtonCode::Left};
@@ -237,14 +235,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonPressed) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with MouseButtonReleased
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with MouseButtonReleased
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonReleased) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseButtonReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	MouseButtonReleasedEvent event{MouseButtonCode::Left};
@@ -257,14 +255,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonReleased) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with MouseMoved
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with MouseMoved
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventMouseMoved) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseMoved) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	MouseMovedEvent event{100.0f, 200.0f};
@@ -277,17 +275,17 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseMoved) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with MouseScrolled
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with MouseScrolled
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventMouseScrolled) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventMouseScrolled) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
-	MouseScrolledEvent event{0.0f, 1.0f}; // Scroll up
+	MouseScrolledEvent event{0.0f, 1.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
@@ -297,14 +295,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseScrolled) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer OnEvent with WindowResize
+ * @brief Test ImGuiMetalGlfwLayer OnEvent with WindowResize
  */
-TEST_F(ImGuiOpenGlLayerTest, OnEventWindowResize) {
+TEST_F(ImGuiMetalGlfwLayerTest, OnEventWindowResize) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	WindowResizeEvent event{1024, 768};
@@ -317,14 +315,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventWindowResize) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer handling multiple events
+ * @brief Test ImGuiMetalGlfwLayer handling multiple events
  */
-TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
+TEST_F(ImGuiMetalGlfwLayerTest, MultipleEvents) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 	_app->PushLayer(layer);
 
 	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
@@ -342,14 +340,14 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
 }
 
 /**
- * @brief Test ImGuiOpenGlLayer full lifecycle
+ * @brief Test ImGuiMetalGlfwLayer full lifecycle
  */
-TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
+TEST_F(ImGuiMetalGlfwLayerTest, FullLifecycle) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlLayer();
+	const auto layer = new ImGuiMetalLayer();
 
 	// Attach
 	EXPECT_NO_THROW({
@@ -383,4 +381,3 @@ TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
 
 	delete layer;
 }
-

@@ -34,56 +34,23 @@
 
 namespace CE::Core {
 
-/**
- * @brief Static singleton instance pointer
- */
 Application* Application::_instance = nullptr;
 
-/**
- * @brief Default constructor implementation
- * @details Asserts that no other Application instance exists (singleton pattern),
- *			then initializes with default window properties: "CelestialEngine" title,
- *			1280x720 resolution, VSync enabled
- */
 Application::Application() {
 	assert(_instance == nullptr && "Application already exists!");
-	_Init({"CelestialEngine", 1280, 720, true, Types::Window::GraphicsApi::OpenGL});
+	_Init({"CelestialEngine", 1280, 720, true, TypeWindow::GraphicsApi::OpenGL, TypeWindow::WindowApi::GLFW});
 }
 
-/**
- * @brief Constructor with window properties implementation
- * @param windowProps Window configuration (title, width, height, VSync)
- * @details Initializes the application with the specified window properties
- */
 Application::Application(const TypeWindow::WindowProps& windowProps) {
 	assert(_instance == nullptr && "Application already exists!");
 	_Init(windowProps);
 }
 
-/**
- * @brief Constructor with individual window parameters implementation
- * @param title Window title string
- * @param width Window width in pixels
- * @param height Window height in pixels
- * @param VSync Enable or disable vertical synchronization
- * @param graphicsApi Graphics API to use for rendering
- * @details Initializes the application with individual window parameters by
- *			constructing a WindowProps object and passing it to _Init
- */
-Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Types::Window::GraphicsApi graphicsApi) {
+Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi, const TypeWindow::WindowApi windowApi) {
 	assert(_instance == nullptr && "Application already exists!");
-	_Init({title, width, height, VSync, graphicsApi});
+	_Init({title, width, height, VSync, graphicsApi, windowApi});
 }
 
-/**
- * @brief Destructor implementation
- * @details Cleans up application resources in the correct order:
- *			1. Clear layer stack (detaches all layers, which may use GLFW)
- *			2. Destroy window (calls glfwDestroyWindow)
- *			3. Terminate GLFW library
- *			This order is critical to avoid GLFW errors when layers (e.g., ImGui)
- *			try to clean up GLFW resources during their OnDetach.
- */
 Application::~Application() {
 	// Detach all layers (they may use GLFW in their cleanup)
 	_layerStack.Clear();
@@ -111,28 +78,12 @@ void Application::Update() {
 	_window->OnUpdate();
 }
 
-/**
- * @brief Main application loop implementation
- * @details Runs continuously while _running is true. Each iteration:
- *			1. Updates all layers in the layer stack (OnUpdate)
- *			2. Updates the window (polls events and swaps buffers)
- *			The loop exits when _running is set to false (typically by window close event)
- */
 void Application::Run() {
 	while (_running) {
 		Update();
 	}
 }
 
-/**
- * @brief Event handling implementation
- * @param event Reference to the event to be processed
- * @details Handles events in the following order:
- *			1. Dispatches window close events to OnWindowClose handler
- *			2. Propagates event through layer stack in reverse order (overlays first)
- *			3. Stops propagation if any layer handles the event
- *			This allows overlays (like ImGui) to intercept events before game layers
- */
 void Application::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher eventDispatcher(event);
 	eventDispatcher.Dispatch<Events::WindowCloseEvent>(BIND_FN_ONE_PARAM(Application::OnWindowClose));
@@ -144,35 +95,16 @@ void Application::OnEvent(Events::I_Event& event) {
 	}
 }
 
-/**
- * @brief Window close event handler implementation
- * @return bool Always returns true to indicate the event was handled
- * @details Sets _running to false, which causes the main loop to exit,
- *			and logs the window close event. The event parameter is unnamed
- *			as its content is not needed for this handler.
- */
 bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	_running = false;
 	CE_CORE_INFO("Application::OnWindowClose: Window closed");
 	return true;
 }
 
-/**
- * @brief Adds a layer to the layer stack
- * @param layer Pointer to the layer to add
- * @details Delegates to LayerStack::PushLayer, which inserts the layer
- *			before overlays and calls its OnAttach method
- */
 void Application::PushLayer(Layers::I_Layer *layer) {
 	_layerStack.PushLayer(layer);
 }
 
-/**
- * @brief Adds an overlay to the layer stack
- * @param overlay Pointer to the overlay to add
- * @details Delegates to LayerStack::PushOverlay, which inserts the overlay
- *			at the end of the stack (after all layers) and calls its OnAttach method
- */
 void Application::PushOverlay(Layers::I_Layer *overlay) {
 	_layerStack.PushOverlay(overlay);
 }
@@ -185,34 +117,29 @@ void Application::PopOverlay(Layers::I_Layer* overlay) {
 	_layerStack.PopOverlay(overlay);
 }
 
-/**
- * @brief Private initialization method implementation
- * @param windowProps Window configuration properties
- * @details Performs the following initialization steps:
- *			1. Sets the singleton instance pointer
- *			2. Creates the appropriate window (Metal on macOS, OpenGL elsewhere)
- *			3. Sets up the event callback to route events to OnEvent
- *			4. Sets _running to true to start the main loop
- *			Throws std::runtime_error if window creation fails or API is unsupported.
- */
 void Application::_Init(const TypeWindow::WindowProps& windowProps) {
+	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+		CE_CORE_ERROR("Application::_Init: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
+		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
+	}
+
 	_instance = this;
-	switch (windowProps.graphicsApi) {
-		case Types::Window::GraphicsApi::OpenGL:
+	switch (windowProps.windowApi) {
+		case TypeWindow::WindowApi::GLFW:
 			_window = std::unique_ptr<Window::I_Window>(
 				Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
 			);
 			break;
 #ifdef CE_PLATFORM_MACOS
-		case Types::Window::GraphicsApi::Metal:
+		case TypeWindow::WindowApi::Cocoa:
 			_window = std::unique_ptr<Window::I_Window>(
 				Window::I_Window::CreateWindow<Window::MetalGlfwWindow>(windowProps)
 			);
 			break;
 #endif
 		default:
-			CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties. Graphics API: {0}", windowProps.graphicsApi);
-			throw std::runtime_error("Unsupported graphics API specified in window properties");
+			CE_CORE_ERROR("Application::_Init: Unsupported window API specified in window properties. Window API: {0}", windowProps.windowApi);
+			throw std::runtime_error("Unsupported window API specified in window properties");
 	}
 
 	if (not _window) {
@@ -224,11 +151,11 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 
 	std::unique_ptr<Layers::I_ImGuiLayer> overlay;
 	switch (windowProps.graphicsApi) {
-		case Types::Window::GraphicsApi::OpenGL: {
+		case TypeWindow::GraphicsApi::OpenGL: {
 			overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
 			break;
 		}
-		case Types::Window::GraphicsApi::Metal: {
+		case TypeWindow::GraphicsApi::Metal: {
 			overlay = std::make_unique<Layers::ImGuiMetalLayer>();
 			break;
 		}

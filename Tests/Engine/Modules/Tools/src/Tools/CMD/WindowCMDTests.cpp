@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-03-16
 //
 
 #include <Tools/CMD/Window.hpp>
@@ -46,6 +46,7 @@ TEST_F(WindowCMDTest, GetWindowProps_NoArguments_ReturnsDefaults) {
 	EXPECT_EQ(props.height, 720);
 	EXPECT_TRUE(props.VSync);
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::OpenGL);
+	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
 }
 
 /**
@@ -337,6 +338,118 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToOpenGL) {
 }
 
 /**
+ * @brief Test window API GLFW with long form
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWLongForm_SetsGLFW) {
+	const char* argv[] = {
+		"program",
+		"--window-api",
+		"glfw"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
+}
+
+/**
+ * @brief Test window API GLFW with short form
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWShortForm_SetsGLFW) {
+	const char* argv[] = {
+		"program",
+		"-wa",
+		"glfw"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
+}
+
+/**
+ * @brief Test window API Win32
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiWin32_SetsWin32) {
+	const char* argv[] = {
+		"program",
+		"--window-api",
+		"win32"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::Win32);
+}
+
+/**
+ * @brief Test window API X11
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiX11_SetsX11) {
+	const char* argv[] = {
+		"program",
+		"-wa",
+		"x11"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::X11);
+}
+
+/**
+ * @brief Test window API Cocoa
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiCocoa_SetsCocoa) {
+	const char* argv[] = {
+		"program",
+		"-wa",
+		"cocoa"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::Cocoa);
+}
+
+/**
+ * @brief Test window API with unsupported value defaults to GLFW
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToGLFW) {
+	const char* argv[] = {
+		"program",
+		"-wa",
+		"unsupported"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
+}
+
+/**
+ * @brief Test window API case insensitivity
+ */
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiUppercase_ParsesCorrectly) {
+	const char* argv[] = {
+		"program",
+		"--window-api",
+		"GLFW"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
+}
+
+/**
  * @brief Test multiple arguments combined
  */
 TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
@@ -351,9 +464,11 @@ TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
 		"--vsync",
 		"false",
 		"-g",
-		"vulkan"
+		"vulkan",
+		"-wa",
+		"cocoa"
 	};
-	constexpr int argc = 11;
+	constexpr int argc = 13;
 
 	const WindowProps props = GetWindowProps(argc, argv);
 
@@ -362,6 +477,7 @@ TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
 	EXPECT_EQ(props.height, 1080);
 	EXPECT_FALSE(props.VSync);
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::Vulkan);
+	EXPECT_EQ(props.windowApi, WindowApi::Cocoa);
 }
 
 /**

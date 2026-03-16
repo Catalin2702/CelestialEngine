@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-16
 //
 
 #pragma once
@@ -28,6 +28,12 @@ class Event;
  */
 namespace CE::Types::Window {
 
+/**
+ * @enum GraphicsApi
+ * @brief Enumeration of supported graphics APIs
+ * @details Defines the graphics APIs that can be used for rendering in the window.
+ *			Includes options for OpenGL, Metal, Vulkan, and DirectX (Windows).
+ */
 enum class GraphicsApi: uint8_t {
 	None,											///< No graphics API specified
 	OpenGL,											///< OpenGL graphics API
@@ -35,6 +41,20 @@ enum class GraphicsApi: uint8_t {
 	Vulkan,											///< Vulkan graphics API
 	DirectX11,										///< DirectX 11 graphics API (Windows)
 	DirectX12,										///< DirectX 12 graphics API (Windows)
+};
+
+/**
+ * @enum WindowApi
+ * @brief Enumeration of supported windowing APIs
+ * @details Defines the windowing APIs that can be used for creating and managing windows.
+ *			Includes options for GLFW (cross-platform), Win32 (Windows), X11 (Linux), and Cocoa (macOS).
+ */
+enum class WindowApi: uint8_t {
+	None,											///< No window API specified
+	GLFW,											///< GLFW windowing library
+	Win32,											///< Win32 API (Windows)
+	X11,											///< X11 (Linux)
+	Cocoa,											///< Cocoa (macOS)
 };
 
 /**
@@ -49,6 +69,7 @@ struct WindowProps {
 	unsigned int height = 0;						///< Window height in pixels
 	bool VSync = false;								///< Vertical synchronization enabled/disabled
 	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
+	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management (GLFW, Win32, X11, Cocoa)
 
 	/**
 	 * @brief Default constructor
@@ -63,10 +84,11 @@ struct WindowProps {
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
 	 * @param graphicsApi Graphics API to use for rendering
+	 * @param windowApi Windowing API to use for window management
 	 * @details Initializes the WindowProps structure with the provided values.
 	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
-	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi);
+	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
 };
 
 /**
@@ -89,7 +111,14 @@ template<class T>
 struct WindowData: WindowProps {
 	CallbackFn<T> EventCallback;					///< Callback function for event handling
 
+	/**
+	 * @brief Default constructor
+	 * @details Initializes the WindowData structure with default values by calling
+	 *			the base WindowProps default constructor. The EventCallback is
+	 *			default-initialized to an empty function.
+	 */
 	WindowData() = default;
+
 	/**
 	 * @brief Constructor
 	 * @param title Window title string
@@ -97,53 +126,94 @@ struct WindowData: WindowProps {
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
 	 * @param graphicsApi Graphics API to use for rendering
+	 * @param windowApi Windowing API to use for window management
+	 * @details Initializes the WindowData structure with the provided values by
+	 *			calling the base WindowProps constructor.
+	 *			This structure is used internally by window implementations to store both configuration and event callback information.
 	 */
-	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi)
-		: WindowProps(title, width, height, VSync, graphicsApi) {}
+	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi)
+		: WindowProps(title, width, height, VSync, graphicsApi, windowApi) {}
 	/**
 	 * @brief Constructor from WindowProps
 	 * @param props WindowProps structure to initialize from
+	 * @details Initializes the WindowData structure with the provided values by
+	 *			calling the base WindowProps constructor.
+	 *			This structure is used internally by window implementations to store both configuration and event callback information.
 	 */
 	WindowData(const WindowProps& props): WindowProps(props) {}
 };
 
-inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
+inline std::string format_as(const GraphicsApi& event) {
 	switch (event) {
-		case GraphicsApi::None:
-			return os << "None";
-		case GraphicsApi::OpenGL:
-			return os << "OpenGL";
-		case GraphicsApi::Metal:
-			return os << "Metal";
-		case GraphicsApi::Vulkan:
-			return os << "Vulkan";
-		case GraphicsApi::DirectX11:
-			return os << "DirectX11";
-		case GraphicsApi::DirectX12:
-			return os << "DirectX12";
-		default:
-			return os << "Unknown Graphics API";
+	case GraphicsApi::None:
+		return "None";
+	case GraphicsApi::OpenGL:
+		return "OpenGL";
+	case GraphicsApi::Metal:
+		return "Metal";
+	case GraphicsApi::Vulkan:
+		return "Vulkan";
+	case GraphicsApi::DirectX11:
+		return "DirectX11";
+	case GraphicsApi::DirectX12:
+		return "DirectX12";
+	default:
+		return "Unknown Graphics API";
 	}
 }
 
-inline std::string format_as(const GraphicsApi& event) {
+inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
+	return os << format_as(event);
+}
+
+inline std::string format_as(const WindowApi& event) {
 	switch (event) {
-		case GraphicsApi::None:
-			return "None";
-		case GraphicsApi::OpenGL:
-			return "OpenGL";
-		case GraphicsApi::Metal:
-			return "Metal";
-		case GraphicsApi::Vulkan:
-			return "Vulkan";
-		case GraphicsApi::DirectX11:
-			return "DirectX11";
-		case GraphicsApi::DirectX12:
-			return "DirectX12";
-		default:
-			return "Unknown Graphics API";
+	case WindowApi::None:
+		return "None";
+	case WindowApi::GLFW:
+		return "GLFW";
+	case WindowApi::Win32:
+		return "Win32";
+	case WindowApi::X11:
+		return "X11";
+	case WindowApi::Cocoa:
+		return "Cocoa";
+	default:
+		return "Unknown Window API";
 	}
 }
+
+inline std::ostream& operator<<(std::ostream& os, const WindowApi& event) {
+	return os << format_as(event);
+}
+
+/**
+ * @brief Checks if the specified graphics API is supported on the current platform
+ * @param api Graphics API to check
+ * @return bool True if the graphics API is supported, false otherwise
+ * @details This function checks if the given graphics API is supported on the current platform.
+ *			For example, Metal is only supported on macOS, while DirectX is only supported on Windows.
+ */
+bool IsGraphicsApiSupported(const GraphicsApi& api);
+
+/**
+ * @brief Checks if the specified window API is supported on the current platform
+ * @param api Window API to check
+ * @return bool True if the window API is supported, false otherwise
+ * @details This function checks if the given window API is supported on the current platform.
+ *			For example, Cocoa is only supported on macOS, while Win32 is only supported on Windows.
+ */
+bool IsWindowApiSupported(const WindowApi& api);
+
+/**
+ * @brief Checks if the specified graphics API is compatible with the specified window API
+ * @param graphicsApi Graphics API to check
+ * @param windowApi Window API to check
+ * @return bool True if the graphics API is compatible with the window API, false otherwise
+ * @details This function checks if the given graphics API can be used with the given window API.
+ *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
+ */
+bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 

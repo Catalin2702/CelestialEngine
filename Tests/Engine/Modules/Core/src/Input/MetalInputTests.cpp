@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-16
 //
 
 #include <Core/Application.hpp>
@@ -46,7 +46,10 @@ protected:
 		_app.reset();
 	}
 
-	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal};
+	/**
+	 *
+	 */
+	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal, WindowApi::GLFW};
 	std::unique_ptr<Application> _app;
 };
 

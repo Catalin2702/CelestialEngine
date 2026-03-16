@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-13
+// Updated: 2026-03-16
 //
 
 #include <CelestialEngine.hpp>
@@ -39,10 +39,11 @@ public:
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
 	 * @param graphicsApi Graphics API to use for rendering
+	 * @param windowApi Windowing API to use for window management
 	 * @details Creates the application with individual window parameters and initializes layers
 	 */
-	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi):
-		Application(title, width, height, VSync, graphicsApi) {}
+	SandBox(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi, const TypeWindow::WindowApi windowApi):
+		Application(title, width, height, VSync, graphicsApi, windowApi) {}
 
 	/**
 	 * @brief Destructor
@@ -51,38 +52,14 @@ public:
 	~SandBox() override = default;
 };
 
-/**
- * @brief Factory function to create the application instance with default properties
- * @return Core::Application* Pointer to the newly created SandBox application
- * @details This function is called by the engine's entry point to instantiate the application.
- *			Must be implemented by the client application.
- */
 std::unique_ptr<Core::Application> Core::CreateApplication() {
 	return std::make_unique<SandBox>();
 }
 
-/**
- * @brief Factory function to create the application instance with window properties
- * @param windowProps Window configuration properties (title, width, height, VSync)
- * @return Core::Application* Pointer to the newly created SandBox application
- * @details This function is called by the engine's entry point to instantiate the application
- *			with specific window properties. Must be implemented by the client application.
- */
 std::unique_ptr<Core::Application> Core::CreateApplication(const TypeWindow::WindowProps& windowProps) {
 	return std::make_unique<SandBox>(windowProps);
 }
 
-/**
- * @brief Factory function to create the application instance with individual window parameters
- * @param title Window title string
- * @param width Window width in pixels
- * @param height Window height in pixels
- * @param VSync Enable or disable vertical synchronization
- * @param graphicsApi Graphics API to use for rendering
- * @return Core::Application* Pointer to the newly created SandBox application
- * @details This function is called by the engine's entry point to instantiate the application
- *			with individual window parameters. Must be implemented by the client application.
- */
-std::unique_ptr<Core::Application> Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi) {
-	return std::make_unique<SandBox>(title, width, height, VSync, graphicsApi);
+std::unique_ptr<Core::Application> Core::CreateApplication(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi, const TypeWindow::WindowApi windowApi) {
+	return std::make_unique<SandBox>(title, width, height, VSync, graphicsApi, windowApi);
 }

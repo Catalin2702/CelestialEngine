@@ -4,16 +4,16 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-16
 #
 
 enable_testing()
 
 set(SOURCES
-	src/Platforms/Universal/OpenGlWindowTests.cpp
+	src/Platforms/Common/CommonGlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Platforms/Mac/MetalWindowTests.cpp
+	src/Platforms/Mac/MetalGlfwWindowTests.cpp
 	>
 )
 
