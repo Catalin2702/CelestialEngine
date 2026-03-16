@@ -44,6 +44,8 @@ ImGuiMetalGlfwLayer::ImGuiMetalGlfwLayer(): I_ImGuiLayer("ImGuiMetalGlfwLayer") 
 }
 
 ImGuiMetalGlfwLayer::~ImGuiMetalGlfwLayer() {
+	dispatch_release(_renderSemaphore);
+	_renderSemaphore = nullptr;
 	_Shutdown();
 }
 

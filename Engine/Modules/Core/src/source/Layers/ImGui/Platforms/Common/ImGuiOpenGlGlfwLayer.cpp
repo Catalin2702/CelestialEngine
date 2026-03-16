@@ -115,7 +115,7 @@ void ImGuiOpenGlGlfwLayer::End() {
 	int width, height;
 	glfwGetFramebufferSize(_glfwWindow, &width, &height);
 
-	glViewport(0, 0, static_cast<int>(_window->GetWidth()), static_cast<int>(_window->GetHeight()));
+	glViewport(0, 0, width, height);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -262,8 +262,6 @@ bool ImGuiOpenGlGlfwLayer::_OnWindowResized(Events::WindowResizeEvent& event) co
 	float x, y;
 	glfwGetWindowContentScale(_glfwWindow, &x, &y);
 	io.DisplayFramebufferScale = ImVec2(x, y);
-
-	glViewport(0, 0, static_cast<int>(event.GetWidth()), static_cast<int>(event.GetHeight()));
 
 	return false;
 }
