@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_MAC_METALWINDOW_HPP
-#define CE_WINDOW_MAC_METALWINDOW_HPP
+#ifndef CE_WINDOW_MAC_METALGLFWWINDOW_HPP
+#define CE_WINDOW_MAC_METALGLFWWINDOW_HPP
 
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -39,7 +39,7 @@ namespace CE::Window {
 
 /**
  * @class MetalGlfwWindow
- * @brief macOS-specific window implementation using Metal API
+ * @brief macOS-specific window implementation using Metal API and GLFW
  * @details Provides a window implementation for macOS that uses Metal for rendering.
  *			Manages both GLFW window for input handling and Metal resources for graphics.
  *			This class integrates GLFW's cross-platform windowing with Apple's Metal API.
@@ -186,4 +186,4 @@ private:
 
 }
 
-#endif //CE_WINDOW_MAC_METALWINDOW_HPP
+#endif //CE_WINDOW_MAC_METALGLFWWINDOW_HPP

@@ -22,22 +22,14 @@
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
-#include "Window/Platforms/Universal/OpenGlWindow.hpp"
+#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
 #else
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
-#include "Window/Platforms/Universal/OpenGlWindow.hpp"
+#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
 #endif
 
 #include <memory>
 #include <stdexcept>
-
-// Platform-specific window type selection
-#ifdef CE_PLATFORM_MACOS
-using MetalWindow = CE::Window::MetalGlfwWindow;		///< Use Metal window on macOS
-using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS as well (fallback)
-#else
-using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
-#endif
 
 
 namespace CE::Core {
@@ -208,13 +200,13 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	switch (windowProps.graphicsApi) {
 		case Types::Window::GraphicsApi::OpenGL:
 			_window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<OpenGlWindow>(windowProps)
+				Window::I_Window::CreateWindow<Window::CommonGlfwWindow>(windowProps)
 			);
 			break;
 #ifdef CE_PLATFORM_MACOS
 		case Types::Window::GraphicsApi::Metal:
 			_window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<MetalWindow>(windowProps)
+				Window::I_Window::CreateWindow<Window::MetalGlfwWindow>(windowProps)
 			);
 			break;
 #endif

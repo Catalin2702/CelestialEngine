@@ -8,7 +8,7 @@
 #
 
 set(HEADERS
-	src/include/Window/Platforms/Universal/OpenGlWindow.hpp
+	src/include/Window/Platforms/Common/CommonGlfwWindow.hpp
 )
 
 list(APPEND HEADERS
@@ -22,7 +22,7 @@ set(INTERFACES
 )
 
 set(SOURCES
-	src/source/Window/Platforms/Universal/OpenGlWindow.cpp
+	src/source/Window/Platforms/Common/CommonGlfwWindow.cpp
 )
 
 # Platform-specific

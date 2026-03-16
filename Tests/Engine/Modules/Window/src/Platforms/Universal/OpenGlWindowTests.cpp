@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-16
 //
 
 #include <Events/I_Event.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
-#include <Window/Platforms/Universal/OpenGlWindow.hpp>
+#include <Window/Platforms/Common/CommonGlfwWindow.hpp>
 
 #include <gtest/gtest.h>
 
@@ -43,7 +43,7 @@ TEST_F(OpenGlWindowTest, Constructor_DefaultProperties_CreatesWindow) {
 	const WindowProps props{"Test-Window", 800, 600, false, GraphicsApi::OpenGL};
 
 	EXPECT_NO_THROW({
-		OpenGlWindow window(props);
+		CommonGlfwWindow window(props);
 	});
 }
 
@@ -54,7 +54,7 @@ TEST_F(OpenGlWindowTest, Constructor_ValidProperties_Succeeds) {
 	const WindowProps props{"OpenGL Test Window", 1024, 768, true, GraphicsApi::OpenGL};
 
 	EXPECT_NO_THROW({
-		OpenGlWindow window(props);
+		CommonGlfwWindow window(props);
 	});
 }
 
@@ -67,7 +67,7 @@ TEST_F(OpenGlWindowTest, Constructor_ValidProperties_Succeeds) {
  */
 TEST_F(OpenGlWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Width Test", 1280, 720, false, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	const CommonGlfwWindow window(props);
 
 	EXPECT_EQ(window.GetWidth(), 1280);
 }
@@ -77,7 +77,7 @@ TEST_F(OpenGlWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
  */
 TEST_F(OpenGlWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Height Test", 1280, 720, false, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	const CommonGlfwWindow window(props);
 
 	EXPECT_EQ(window.GetHeight(), 720);
 }
@@ -87,7 +87,7 @@ TEST_F(OpenGlWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
  */
 TEST_F(OpenGlWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
 	const WindowProps props{"VSync Test", 800, 600, true, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	const CommonGlfwWindow window(props);
 
 	EXPECT_TRUE(window.IsVSync());
 }
@@ -97,7 +97,7 @@ TEST_F(OpenGlWindowTest, IsVSync_VSyncEnabled_ReturnsTrue) {
  */
 TEST_F(OpenGlWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
 	const WindowProps props{"VSync Test", 800, 600, false, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	const CommonGlfwWindow window(props);
 
 	EXPECT_FALSE(window.IsVSync());
 }
@@ -107,7 +107,7 @@ TEST_F(OpenGlWindowTest, IsVSync_VSyncDisabled_ReturnsFalse) {
  */
 TEST_F(OpenGlWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"GLFW Test", 800, 600, false, GraphicsApi::OpenGL};
-	const OpenGlWindow window(props);
+	const CommonGlfwWindow window(props);
 
 	EXPECT_NE(window.GetNativeWindow(), nullptr);
 }
@@ -121,7 +121,7 @@ TEST_F(OpenGlWindowTest, GetGLFWwindow_AfterConstruction_ReturnsValidPointer) {
  */
 TEST_F(OpenGlWindowTest, SetWidth_NewValue_UpdatesWidth) {
 	const WindowProps props{"Width Setter Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 	window.SetWidth(1920);
 
 	EXPECT_EQ(window.GetWidth(), 1920);
@@ -132,7 +132,7 @@ TEST_F(OpenGlWindowTest, SetWidth_NewValue_UpdatesWidth) {
  */
 TEST_F(OpenGlWindowTest, SetHeight_NewValue_UpdatesHeight) {
 	const WindowProps props{"Height Setter Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 	window.SetHeight(1080);
 
 	EXPECT_EQ(window.GetHeight(), 1080);
@@ -143,7 +143,7 @@ TEST_F(OpenGlWindowTest, SetHeight_NewValue_UpdatesHeight) {
  */
 TEST_F(OpenGlWindowTest, SetVSync_EnableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 	window.SetVSync(true);
 
 	EXPECT_TRUE(window.IsVSync());
@@ -154,7 +154,7 @@ TEST_F(OpenGlWindowTest, SetVSync_EnableVSync_UpdatesState) {
  */
 TEST_F(OpenGlWindowTest, SetVSync_DisableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, true, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 	window.SetVSync(false);
 
 	EXPECT_FALSE(window.IsVSync());
@@ -169,7 +169,7 @@ TEST_F(OpenGlWindowTest, SetVSync_DisableVSync_UpdatesState) {
  */
 TEST_F(OpenGlWindowTest, OnUpdate_Called_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 
 	// Set an event callback before calling OnUpdate
 	window.SetEventCallback([](I_Event&) {});
@@ -182,7 +182,7 @@ TEST_F(OpenGlWindowTest, OnUpdate_Called_NoThrow) {
  */
 TEST_F(OpenGlWindowTest, OnUpdate_MultipleCalls_NoThrow) {
 	const WindowProps props{"Update Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 
 	// Set an event callback before calling OnUpdate
 	window.SetEventCallback([](I_Event&) {});
@@ -203,7 +203,7 @@ TEST_F(OpenGlWindowTest, OnUpdate_MultipleCalls_NoThrow) {
  */
 TEST_F(OpenGlWindowTest, SetEventCallback_WithCallback_NoThrow) {
 	const WindowProps props{"Callback Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 
 	EventCallbackFn callback = []([[maybe_unused]] CE::Events::I_Event& e) {
 		// Empty callback
@@ -217,7 +217,7 @@ TEST_F(OpenGlWindowTest, SetEventCallback_WithCallback_NoThrow) {
  */
 TEST_F(OpenGlWindowTest, SetWindowCallbacks_Called_NoThrow) {
 	const WindowProps props{"Callbacks Test", 800, 600, false, GraphicsApi::OpenGL};
-	OpenGlWindow window(props);
+	CommonGlfwWindow window(props);
 
 	EXPECT_NO_THROW(window.SetWindowCallbacks());
 }
@@ -233,7 +233,7 @@ TEST_F(OpenGlWindowTest, Constructor_SmallWindow_Succeeds) {
 	const WindowProps props{"Small Window", 320, 240, false, GraphicsApi::OpenGL};
 
 	EXPECT_NO_THROW({
-		const OpenGlWindow window(props);
+		const CommonGlfwWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 320);
 		EXPECT_EQ(window.GetHeight(), 240);
 	});
@@ -246,7 +246,7 @@ TEST_F(OpenGlWindowTest, Constructor_LargeWindow_Succeeds) {
 	const WindowProps props{"Large Window", 2560, 1440, false, GraphicsApi::OpenGL};
 
 	EXPECT_NO_THROW({
-		const OpenGlWindow window(props);
+		const CommonGlfwWindow window(props);
 		EXPECT_EQ(window.GetWidth(), 2560);
 		EXPECT_EQ(window.GetHeight(), 1440);
 	});

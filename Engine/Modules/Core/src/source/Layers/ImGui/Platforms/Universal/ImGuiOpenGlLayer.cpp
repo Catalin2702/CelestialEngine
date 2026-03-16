@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-15
+// Updated: 2026-03-16
 //
 
-#include "Window/Platforms/Universal/OpenGlWindow.hpp"
+#include "Window/Platforms/Common/CommonGlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 
@@ -144,10 +144,10 @@ void ImGuiOpenGlLayer::_Init() {
 
 	const auto& app = Core::Application::Get();
 
-	_window = dynamic_cast<Window::OpenGlWindow*>(app.GetWindow());
+	_window = dynamic_cast<Window::CommonGlfwWindow*>(app.GetWindow());
 	if (not _window) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an OpenGlWindow window!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires an OpenGlWindow window!");
+		CE_CORE_ERROR("ImGuiOpenGlLayer requires an CommonGlfwWindow window!");
+		throw std::runtime_error("ImGuiOpenGlLayer requires an CommonGlfwWindow window!");
 	}
 
 	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));

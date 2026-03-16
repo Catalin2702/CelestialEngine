@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-16
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 struct GLFWwindow;
 
 namespace CE::Window {
-class OpenGlWindow;
+class CommonGlfwWindow;
 }
 
 
@@ -104,7 +104,7 @@ protected:
 
 private:
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::OpenGlWindow* _window = nullptr;		///< Cached OpenGL window pointer
+	Window::CommonGlfwWindow* _window = nullptr;		///< Cached OpenGL window pointer
 };
 
 }

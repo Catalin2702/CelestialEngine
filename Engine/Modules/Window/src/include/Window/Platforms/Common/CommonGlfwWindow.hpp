@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Universal
-// File: OpenGlWindow.hpp
+// Module: CelestialEngine/Engine/Modules/Window/Platforms/Common
+// File: CommonGlfwWindow.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-16
 //
 
 #pragma once
 
-#ifndef CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP
-#define CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP
+#ifndef CE_WINDOW_COMMON_COMMONGLFWWINDOW_HPP
+#define CE_WINDOW_COMMON_COMMONGLFWWINDOW_HPP
 
 #include "Window/I_Window.hpp"
 
@@ -32,14 +32,14 @@ namespace TypeWindow = CE::Types::Window;
 namespace CE::Window {
 
 /**
- * @class OpenGlWindow
- * @brief Cross-platform window implementation using OpenGL rendering
+ * @class CommonGlfwWindow
+ * @brief Cross-platform window implementation using GLFW
  * @details Concrete implementation of I_Window that uses GLFW for window management
  *			and OpenGL for rendering. This is the primary cross-platform implementation
  *			that works on Windows, Linux, and macOS. It provides a complete windowing
  *			system with event handling, VSync control, and OpenGL context management.
  */
-class OpenGlWindow final: public I_Window {
+class CommonGlfwWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
@@ -47,13 +47,13 @@ public:
 	 * @details Creates and initializes an OpenGL-based window with the specified properties.
 	 *			Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
 	 */
-	OpenGlWindow(const TypeWindow::WindowProps& windowProps);
+	CommonGlfwWindow(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up GLFW window resources by calling _Shutdown()
 	 */
-	~OpenGlWindow() override;
+	~CommonGlfwWindow() override;
 
 public:
 	/**
@@ -171,4 +171,4 @@ private:
 
 }
 
-#endif //CE_WINDOW_UNIVERSAL_OPENGLWINDOW_HPP
+#endif //CE_WINDOW_COMMON_COMMONGLFWWINDOW_HPP
