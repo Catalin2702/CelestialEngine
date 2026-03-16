@@ -4,14 +4,13 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-17
 #
 
 enable_testing()
 
 set(SOURCES
 	$<$<PLATFORM_ID:Darwin>:
-		src/Apple/Metal/MetalBridge/Cocoa/CocoaBridgeTests.cpp
 		src/Apple/Metal/MetalBridge/ImGui/ImGuiBridgeTests.cpp
 	>
 )

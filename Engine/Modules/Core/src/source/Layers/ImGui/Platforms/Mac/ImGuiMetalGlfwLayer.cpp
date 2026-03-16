@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
@@ -227,14 +227,6 @@ void ImGuiMetalGlfwLayer::_Init() {
 	}
 
 	_metalContext.metalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
-	if (const auto contentView = _metalContext.window->GetMetalWindow()->contentView()) {
-		contentView->setLayer(_metalContext.metalLayer);
-		contentView->setWantsLayer(true);
-	} else {
-		CE_CORE_ERROR("Failed to get content view from Metal window!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("Failed to get content view from Metal window!");
-	}
 
 	io.DisplaySize = ImVec2(static_cast<float>(_metalContext.window->GetWidth()), static_cast<float>(_metalContext.window->GetHeight()));
 

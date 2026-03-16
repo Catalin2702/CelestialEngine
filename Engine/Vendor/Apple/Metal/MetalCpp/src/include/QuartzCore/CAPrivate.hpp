@@ -141,6 +141,8 @@ namespace Private
             "setMaximumDrawableCount:");
         _CA_PRIVATE_DEF_SEL(setPixelFormat_,
             "setPixelFormat:");
+        _CA_PRIVATE_DEF_SEL(setContentsScale_,
+            "setContentsScale:");
         _CA_PRIVATE_DEF_SEL(texture,
             "texture");
     } // Class

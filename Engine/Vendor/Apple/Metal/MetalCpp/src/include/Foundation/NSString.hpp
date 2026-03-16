@@ -253,3 +253,37 @@ _NS_INLINE NS::ComparisonResult NS::String::caseInsensitiveCompare(const String*
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Run Loop Mode Constants
+#if defined(NS_PRIVATE_IMPLEMENTATION)
+
+#ifdef __OBJC__
+_NS_EXTERN NSString* const NSDefaultRunLoopMode __attribute__((weak_import));
+inline NS::String* _getDefaultRunLoopMode() {
+    static NS::String* mode = (__bridge NS::String*)NSDefaultRunLoopMode;
+    return mode;
+}
+#else
+extern "C" {
+    extern const void* NSDefaultRunLoopMode __attribute__((weak_import));
+}
+inline NS::String* _getDefaultRunLoopMode() {
+    static NS::String* mode = (NS::String*)NSDefaultRunLoopMode;
+    return mode;
+}
+#endif
+
+namespace NS {
+    inline String* getDefaultRunLoopMode() { return _getDefaultRunLoopMode(); }
+}
+
+#else
+
+namespace NS {
+    inline String* getDefaultRunLoopMode() { return (String*)nullptr; }
+}
+
+#endif // NS_PRIVATE_IMPLEMENTATION
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+

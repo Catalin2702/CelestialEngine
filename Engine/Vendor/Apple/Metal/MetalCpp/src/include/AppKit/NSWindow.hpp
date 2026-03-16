@@ -31,6 +31,8 @@
 
 #include <CoreGraphics/CGGeometry.h>
 
+#include "Metal/MTLEvent.hpp"
+
 
 namespace NS
 {
@@ -46,6 +48,8 @@ namespace NS
 			void				setTitle( const String* pTitle );
 
 			void				close();
+
+			CGFloat				backingScaleFactor() const;
 	};
 
 }
@@ -84,4 +88,9 @@ _NS_INLINE void NS::Window::setTitle( const String* pTitle )
 _NS_INLINE void NS::Window::close()
 {
 	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( close ) );
+}
+
+_NS_INLINE CGFloat NS::Window::backingScaleFactor() const
+{
+	return Object::sendMessage< CGFloat >( this, _APPKIT_PRIVATE_SEL( backingScaleFactor ) );
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -110,6 +110,12 @@ int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
  *			If the provided buttonCode does not match any known MouseButton value, it returns ImGuiKey_None to indicate that there is no valid mapping for that button.
  */
 int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
+
+/**
+ * @brief Converts NSEvent button numbers to CE::KeyCode::MouseButtonCode
+ * @details Maps the NSEvent buttonNumber to the engine's mouse button key codes
+ */
+MouseButtonCode MouseButtonKeyCodeFromCocoa(int buttonNumber);
 
 /**
  * @brief Converts a MouseButton enum value to its string representation

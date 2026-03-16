@@ -49,6 +49,8 @@ public:
     MTL::PixelFormat         pixelFormat() const;
     void                     setPixelFormat(MTL::PixelFormat pixelFormat);
 
+    void                     setContentsScale(CGFloat contentsScale) const;
+
     bool                     framebufferOnly() const;
     void                     setFramebufferOnly(bool framebufferOnly);
 
@@ -107,6 +109,13 @@ _CA_INLINE void CA::MetalLayer::setPixelFormat(MTL::PixelFormat pixelFormat)
 {
     return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setPixelFormat_),
         pixelFormat);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+_CA_INLINE void CA::MetalLayer::setContentsScale(const CGFloat contentsScale) const {
+    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setContentsScale_),
+        contentsScale);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

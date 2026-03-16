@@ -28,6 +28,7 @@
 
 #include <Foundation/Foundation.hpp>
 #include "AppKitPrivate.hpp"
+#include "NSEvent.hpp"
 
 namespace NS
 {
@@ -85,6 +86,10 @@ namespace NS
 			void					setMainMenu( const class Menu* pMenu );
 
 			NS::Array*				windows() const;
+
+			class Event*			nextEventMatchingMask( EventMask mask, class Date* expiration, class String* mode, bool dequeue );
+
+			void					sendEvent( class Event* event );
 
 			void					run();
 
@@ -151,6 +156,16 @@ _NS_INLINE void NS::Application::setMainMenu( const class Menu* pMenu )
 _NS_INLINE NS::Array* NS::Application::windows() const
 {
 	return Object::sendMessage< NS::Array* >( this, _APPKIT_PRIVATE_SEL( windows ) );
+}
+
+_NS_INLINE NS::Event* NS::Application::nextEventMatchingMask( EventMask mask, class Date* expiration, class String* mode, bool dequeue )
+{
+	return Object::sendMessage< NS::Event* >( this, _APPKIT_PRIVATE_SEL( nextEventMatchingMask_untilDate_inMode_dequeue_ ), mask, expiration, mode, dequeue );
+}
+
+_NS_INLINE void NS::Application::sendEvent( class Event* event )
+{
+	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( sendEvent_ ), event );
 }
 
 _NS_INLINE void NS::Application::run()

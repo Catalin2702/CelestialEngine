@@ -72,6 +72,7 @@ _APPKIT_PRIVATE_DEF_CLS( NSSavePanel );
 _APPKIT_PRIVATE_DEF_CLS( NSWindow );
 _APPKIT_PRIVATE_DEF_CLS( NSMenu );
 _APPKIT_PRIVATE_DEF_CLS( NSMenuItem );
+_APPKIT_PRIVATE_DEF_CLS( NSEvent );
 
 } // Class
 
@@ -98,6 +99,9 @@ _APPKIT_PRIVATE_DEF_SEL( applicationWillFinishLaunching_,
 _APPKIT_PRIVATE_DEF_SEL( close,
 						"close" );
 
+_APPKIT_PRIVATE_DEF_SEL( backingScaleFactor,
+						"backingScaleFactor" );
+
 _APPKIT_PRIVATE_DEF_SEL( currentApplication,
 						"currentApplication" );
 
@@ -121,6 +125,12 @@ _APPKIT_PRIVATE_DEF_SEL( activateIgnoringOtherApps_,
 
 _APPKIT_PRIVATE_DEF_SEL( run,
 						"run" );
+
+_APPKIT_PRIVATE_DEF_SEL( nextEventMatchingMask_untilDate_inMode_dequeue_,
+						"nextEventMatchingMask:untilDate:inMode:dequeue:" );
+
+_APPKIT_PRIVATE_DEF_SEL( sendEvent_,
+						"sendEvent:" );
 
 _APPKIT_PRIVATE_DEF_SEL( terminate_,
 						"terminate:" );
@@ -175,6 +185,187 @@ _APPKIT_PRIVATE_DEF_SEL( beginSheetModalForWindow_completionHandler_,
 
 _APPKIT_PRIVATE_DEF_SEL( urls_,
 						"URLs" );
+
+// NSEvent selectors
+_APPKIT_PRIVATE_DEF_SEL( type,
+						"type" );
+
+_APPKIT_PRIVATE_DEF_SEL( modifierFlags,
+						"modifierFlags" );
+
+_APPKIT_PRIVATE_DEF_SEL( window,
+						"window" );
+
+_APPKIT_PRIVATE_DEF_SEL( windowNumber,
+						"windowNumber" );
+
+_APPKIT_PRIVATE_DEF_SEL( timestamp,
+						"timestamp" );
+
+_APPKIT_PRIVATE_DEF_SEL( pressure,
+						"pressure" );
+
+_APPKIT_PRIVATE_DEF_SEL( clickCount,
+						"clickCount" );
+
+_APPKIT_PRIVATE_DEF_SEL( buttonNumber,
+						"buttonNumber" );
+
+_APPKIT_PRIVATE_DEF_SEL( eventNumber,
+						"eventNumber" );
+
+_APPKIT_PRIVATE_DEF_SEL( locationInWindow,
+						"locationInWindow" );
+
+_APPKIT_PRIVATE_DEF_SEL( deltaX,
+						"deltaX" );
+
+_APPKIT_PRIVATE_DEF_SEL( deltaY,
+						"deltaY" );
+
+_APPKIT_PRIVATE_DEF_SEL( deltaZ,
+						"deltaZ" );
+
+_APPKIT_PRIVATE_DEF_SEL( hasPreciseScrollingDeltas,
+						"hasPreciseScrollingDeltas" );
+
+_APPKIT_PRIVATE_DEF_SEL( scrollingDeltaX,
+						"scrollingDeltaX" );
+
+_APPKIT_PRIVATE_DEF_SEL( scrollingDeltaY,
+						"scrollingDeltaY" );
+
+_APPKIT_PRIVATE_DEF_SEL( momentumPhase,
+						"momentumPhase" );
+
+_APPKIT_PRIVATE_DEF_SEL( isDirectionInvertedFromDevice,
+						"isDirectionInvertedFromDevice" );
+
+_APPKIT_PRIVATE_DEF_SEL( characters,
+						"characters" );
+
+_APPKIT_PRIVATE_DEF_SEL( charactersIgnoringModifiers,
+						"charactersIgnoringModifiers" );
+
+_APPKIT_PRIVATE_DEF_SEL( charactersByApplyingModifiers_,
+						"charactersByApplyingModifiers:" );
+
+_APPKIT_PRIVATE_DEF_SEL( isARepeat,
+						"isARepeat" );
+
+_APPKIT_PRIVATE_DEF_SEL( keyCode,
+						"keyCode" );
+
+_APPKIT_PRIVATE_DEF_SEL( trackingNumber,
+						"trackingNumber" );
+
+_APPKIT_PRIVATE_DEF_SEL( userData,
+						"userData" );
+
+_APPKIT_PRIVATE_DEF_SEL( subtype,
+						"subtype" );
+
+_APPKIT_PRIVATE_DEF_SEL( data1,
+						"data1" );
+
+_APPKIT_PRIVATE_DEF_SEL( data2,
+						"data2" );
+
+_APPKIT_PRIVATE_DEF_SEL( magnification,
+						"magnification" );
+
+_APPKIT_PRIVATE_DEF_SEL( rotation,
+						"rotation" );
+
+_APPKIT_PRIVATE_DEF_SEL( deviceID,
+						"deviceID" );
+
+_APPKIT_PRIVATE_DEF_SEL( absoluteX,
+						"absoluteX" );
+
+_APPKIT_PRIVATE_DEF_SEL( absoluteY,
+						"absoluteY" );
+
+_APPKIT_PRIVATE_DEF_SEL( absoluteZ,
+						"absoluteZ" );
+
+_APPKIT_PRIVATE_DEF_SEL( buttonMask,
+						"buttonMask" );
+
+_APPKIT_PRIVATE_DEF_SEL( tilt,
+						"tilt" );
+
+_APPKIT_PRIVATE_DEF_SEL( tangentialPressure,
+						"tangentialPressure" );
+
+_APPKIT_PRIVATE_DEF_SEL( vendorID,
+						"vendorID" );
+
+_APPKIT_PRIVATE_DEF_SEL( tabletID,
+						"tabletID" );
+
+_APPKIT_PRIVATE_DEF_SEL( pointingDeviceID,
+						"pointingDeviceID" );
+
+_APPKIT_PRIVATE_DEF_SEL( systemTabletID,
+						"systemTabletID" );
+
+_APPKIT_PRIVATE_DEF_SEL( vendorPointingDeviceType,
+						"vendorPointingDeviceType" );
+
+_APPKIT_PRIVATE_DEF_SEL( pointingDeviceSerialNumber,
+						"pointingDeviceSerialNumber" );
+
+_APPKIT_PRIVATE_DEF_SEL( uniqueID,
+						"uniqueID" );
+
+_APPKIT_PRIVATE_DEF_SEL( capabilityMask,
+						"capabilityMask" );
+
+_APPKIT_PRIVATE_DEF_SEL( pointingDeviceType,
+						"pointingDeviceType" );
+
+_APPKIT_PRIVATE_DEF_SEL( isEnteringProximity,
+						"isEnteringProximity" );
+
+_APPKIT_PRIVATE_DEF_SEL( phase,
+						"phase" );
+
+_APPKIT_PRIVATE_DEF_SEL( stage,
+						"stage" );
+
+_APPKIT_PRIVATE_DEF_SEL( stageTransition,
+						"stageTransition" );
+
+_APPKIT_PRIVATE_DEF_SEL( associatedEventsMask,
+						"associatedEventsMask" );
+
+_APPKIT_PRIVATE_DEF_SEL( pressureBehavior,
+						"pressureBehavior" );
+
+_APPKIT_PRIVATE_DEF_SEL( mouseLocation,
+						"mouseLocation" );
+
+_APPKIT_PRIVATE_DEF_SEL( pressedMouseButtons,
+						"pressedMouseButtons" );
+
+_APPKIT_PRIVATE_DEF_SEL( doubleClickInterval,
+						"doubleClickInterval" );
+
+_APPKIT_PRIVATE_DEF_SEL( keyRepeatDelay,
+						"keyRepeatDelay" );
+
+_APPKIT_PRIVATE_DEF_SEL( keyRepeatInterval,
+						"keyRepeatInterval" );
+
+_APPKIT_PRIVATE_DEF_SEL( isMouseCoalescingEnabled,
+						"isMouseCoalescingEnabled" );
+
+_APPKIT_PRIVATE_DEF_SEL( setMouseCoalescingEnabled_,
+						"setMouseCoalescingEnabled:" );
+
+_APPKIT_PRIVATE_DEF_SEL( isSwipeTrackingFromScrollEventsEnabled,
+						"isSwipeTrackingFromScrollEventsEnabled" );
 
 }
 

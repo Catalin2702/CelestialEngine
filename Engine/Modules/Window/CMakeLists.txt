@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-16
+# Updated: 2026-03-17
 #
 
 set(HEADERS
@@ -13,7 +13,8 @@ set(HEADERS
 
 list(APPEND HEADERS
 	$<$<PLATFORM_ID:Darwin>:
-	src/include/Window/Platforms/Mac/MetalGlfwWindow.hpp
+		src/include/Window/Platforms/Mac/MetalCocoaWindow.hpp
+		src/include/Window/Platforms/Mac/MetalGlfwWindow.hpp
 	>
 )
 
@@ -28,7 +29,8 @@ set(SOURCES
 # Platform-specific
 list(APPEND SOURCES
 	$<$<PLATFORM_ID:Darwin>:
-	src/source/Window/Platforms/Mac/MetalGlfwWindow.cpp
+		src/source/Window/Platforms/Mac/MetalCocoaWindow.cpp
+		src/source/Window/Platforms/Mac/MetalGlfwWindow.cpp
 	>
 )
 

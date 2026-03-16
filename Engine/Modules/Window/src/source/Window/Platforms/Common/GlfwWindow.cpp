@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -46,7 +46,6 @@ static int _st_GLFWWindowCount = 0;
  */
 GlfwWindow::GlfwWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
 	_Init();
-	_st_GLFWWindowCount++;
 }
 
 /**
@@ -265,6 +264,8 @@ void GlfwWindow::_Init() {
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 	SetVSync(_data.VSync);
 	SetWindowCallbacks();
+
+	_st_GLFWWindowCount++;
 }
 
 /**

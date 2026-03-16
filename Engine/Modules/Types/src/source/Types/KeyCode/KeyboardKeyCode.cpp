@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-17
 //
 
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -402,6 +402,88 @@ ImGuiKey ImGuiKeyFromKeyboard(const KeyboardKeyCode keycode) {
 
 		case KeyboardKeyCode::Unknown:
 		default: return ImGuiKey_None;
+	}
+}
+
+KeyboardKeyCode KeyboardKeyCodeFromCocoa(const unsigned short keyCode) {
+	// macOS virtual key codes from HIToolbox/Events.h
+	switch (keyCode) {
+		// Letters
+		case 0: return KeyCode::KeyboardKeyCode::A;
+		case 11: return KeyCode::KeyboardKeyCode::B;
+		case 8: return KeyCode::KeyboardKeyCode::C;
+		case 2: return KeyCode::KeyboardKeyCode::D;
+		case 14: return KeyCode::KeyboardKeyCode::E;
+		case 3: return KeyCode::KeyboardKeyCode::F;
+		case 5: return KeyCode::KeyboardKeyCode::G;
+		case 4: return KeyCode::KeyboardKeyCode::H;
+		case 34: return KeyCode::KeyboardKeyCode::I;
+		case 38: return KeyCode::KeyboardKeyCode::J;
+		case 40: return KeyCode::KeyboardKeyCode::K;
+		case 37: return KeyCode::KeyboardKeyCode::L;
+		case 46: return KeyCode::KeyboardKeyCode::M;
+		case 45: return KeyCode::KeyboardKeyCode::N;
+		case 31: return KeyCode::KeyboardKeyCode::O;
+		case 35: return KeyCode::KeyboardKeyCode::P;
+		case 12: return KeyCode::KeyboardKeyCode::Q;
+		case 15: return KeyCode::KeyboardKeyCode::R;
+		case 1: return KeyCode::KeyboardKeyCode::S;
+		case 17: return KeyCode::KeyboardKeyCode::T;
+		case 32: return KeyCode::KeyboardKeyCode::U;
+		case 9: return KeyCode::KeyboardKeyCode::V;
+		case 13: return KeyCode::KeyboardKeyCode::W;
+		case 7: return KeyCode::KeyboardKeyCode::X;
+		case 16: return KeyCode::KeyboardKeyCode::Y;
+		case 6: return KeyCode::KeyboardKeyCode::Z;
+
+		// Numbers
+		case 29: return KeyCode::KeyboardKeyCode::Num0;
+		case 18: return KeyCode::KeyboardKeyCode::Num1;
+		case 19: return KeyCode::KeyboardKeyCode::Num2;
+		case 20: return KeyCode::KeyboardKeyCode::Num3;
+		case 21: return KeyCode::KeyboardKeyCode::Num4;
+		case 23: return KeyCode::KeyboardKeyCode::Num5;
+		case 22: return KeyCode::KeyboardKeyCode::Num6;
+		case 26: return KeyCode::KeyboardKeyCode::Num7;
+		case 28: return KeyCode::KeyboardKeyCode::Num8;
+		case 25: return KeyCode::KeyboardKeyCode::Num9;
+
+		// Function keys
+		case 122: return KeyCode::KeyboardKeyCode::F1;
+		case 120: return KeyCode::KeyboardKeyCode::F2;
+		case 99: return KeyCode::KeyboardKeyCode::F3;
+		case 118: return KeyCode::KeyboardKeyCode::F4;
+		case 96: return KeyCode::KeyboardKeyCode::F5;
+		case 97: return KeyCode::KeyboardKeyCode::F6;
+		case 98: return KeyCode::KeyboardKeyCode::F7;
+		case 100: return KeyCode::KeyboardKeyCode::F8;
+		case 101: return KeyCode::KeyboardKeyCode::F9;
+		case 109: return KeyCode::KeyboardKeyCode::F10;
+		case 103: return KeyCode::KeyboardKeyCode::F11;
+		case 111: return KeyCode::KeyboardKeyCode::F12;
+
+		// Arrow keys
+		case 123: return KeyCode::KeyboardKeyCode::Left;
+		case 124: return KeyCode::KeyboardKeyCode::Right;
+		case 125: return KeyCode::KeyboardKeyCode::Down;
+		case 126: return KeyCode::KeyboardKeyCode::Up;
+
+		// Special keys
+		case 49: return KeyCode::KeyboardKeyCode::Space;
+		case 36: return KeyCode::KeyboardKeyCode::Enter;
+		case 53: return KeyCode::KeyboardKeyCode::Escape;
+		case 48: return KeyCode::KeyboardKeyCode::Tab;
+		case 51: return KeyCode::KeyboardKeyCode::Backspace;
+		case 56: return KeyCode::KeyboardKeyCode::LeftShift;
+		case 60: return KeyCode::KeyboardKeyCode::RightShift;
+		case 59: return KeyCode::KeyboardKeyCode::LeftControl;
+		case 62: return KeyCode::KeyboardKeyCode::RightControl;
+		case 58: return KeyCode::KeyboardKeyCode::LeftAlt;
+		case 61: return KeyCode::KeyboardKeyCode::RightAlt;
+		case 55: return KeyCode::KeyboardKeyCode::LeftSuper;  // Command key
+		case 54: return KeyCode::KeyboardKeyCode::RightSuper; // Command key
+
+		default: return KeyCode::KeyboardKeyCode::Unknown;
 	}
 }
 

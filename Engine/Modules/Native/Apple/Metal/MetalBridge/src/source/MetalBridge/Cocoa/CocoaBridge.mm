@@ -4,15 +4,130 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-17
 //
 
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import <math.h>
 
+// Forward declaration for callback type
+namespace CE::Bridge {
+	typedef void (*WindowEventCallback)(void* userData, int eventType, unsigned int width, unsigned int height);
+}
+
+/**
+ * @brief Objective-C delegate class for handling NSWindow events
+ * @details Implements NSWindowDelegate protocol to intercept window events
+ *          and forward them to a C++ callback function
+ */
+@interface CocoaWindowDelegateImpl : NSObject <NSWindowDelegate>
+{
+	@public
+	CE::Bridge::WindowEventCallback callback;
+	void* userData;
+}
+@end
+
+@implementation CocoaWindowDelegateImpl
+
+- (void)windowDidResize:(NSNotification *)notification {
+	if (callback) {
+		NSWindow* window = [notification object];
+		NSRect contentRect = [[window contentView] frame];
+		unsigned int width = static_cast<unsigned int>(contentRect.size.width);
+		unsigned int height = static_cast<unsigned int>(contentRect.size.height);
+
+		// Event type 0 = resize
+		callback(userData, 0, width, height);
+	}
+}
+
+- (BOOL)windowShouldClose:(NSWindow *)sender {
+	if (callback) {
+		// Event type 1 = close
+		callback(userData, 1, 0, 0);
+	}
+	return YES;
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+	if (callback) {
+		// Event type 2 = focus gained
+		callback(userData, 2, 0, 0);
+	}
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+	if (callback) {
+		// Event type 3 = focus lost
+		callback(userData, 3, 0, 0);
+	}
+}
+
+- (void)windowDidMiniaturize:(NSNotification *)notification {
+	if (callback) {
+		// Event type 4 = minimize
+		callback(userData, 4, 0, 0);
+	}
+}
+
+- (void)windowDidDeminiaturize:(NSNotification *)notification {
+	if (callback) {
+		NSWindow* window = [notification object];
+		NSRect contentRect = [[window contentView] frame];
+		unsigned int width = static_cast<unsigned int>(contentRect.size.width);
+		unsigned int height = static_cast<unsigned int>(contentRect.size.height);
+
+		// Event type 5 = restore
+		callback(userData, 5, width, height);
+	}
+}
+
+@end
 
 namespace CE::Bridge {
+
+/**
+ * @brief Creates a Cocoa window delegate for handling window events
+ */
+void* CreateCocoaWindowDelegate(WindowEventCallback callbackFunc, void* userDataPtr) {
+	if (!callbackFunc)
+		return nullptr;
+
+	CocoaWindowDelegateImpl* delegate = [[CocoaWindowDelegateImpl alloc] init];
+	delegate->callback = callbackFunc;
+	delegate->userData = userDataPtr;
+
+	// Without ARC, alloc/init already returns a retained object (+1)
+	// We want to transfer ownership to C++, so just bridge without additional retain
+	return (__bridge void*)delegate;
+}
+
+/**
+ * @brief Destroys a Cocoa window delegate
+ */
+void DestroyCocoaWindowDelegate(void* delegate) {
+	if (!delegate)
+		return;
+
+	// Without ARC, we need to manually release the object
+	CocoaWindowDelegateImpl* delegateObj = (__bridge CocoaWindowDelegateImpl*)delegate;
+	[delegateObj release];
+}
+
+/**
+ * @brief Sets a delegate for a Cocoa window
+ */
+void SetCocoaWindowDelegate(void* cocoaWindow, void* delegate) {
+	if (!cocoaWindow || !delegate)
+		return;
+
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	CocoaWindowDelegateImpl* delegateObj = (__bridge CocoaWindowDelegateImpl*)delegate;
+
+	[window setDelegate:delegateObj];
+}
 
 /**
  * @brief Gets the content view of a Cocoa window

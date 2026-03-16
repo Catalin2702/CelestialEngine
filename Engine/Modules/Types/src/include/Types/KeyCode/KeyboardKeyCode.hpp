@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -154,6 +154,12 @@ int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
  *			If the provided keycode does not match any known KeyCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that key.
  */
 ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
+
+/**
+ * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
+ * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
+ */
+KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
 
 /**
  *  @brief Formats a KeyboardKeyCode enum value as a string

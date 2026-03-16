@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
@@ -12,7 +12,6 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/Cocoa/CocoaBridge.h"
 #include "Tools/Log/Log.hpp"
 
 #define GLFW_INCLUDE_NONE
@@ -50,7 +49,6 @@ static int _st_GLFWWindowCount = 0;
  */
 MetalGlfwWindow::MetalGlfwWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps) {
 	_Init();
-	_st_GLFWWindowCount++;
 }
 
 /**
@@ -237,8 +235,11 @@ void MetalGlfwWindow::SetVSync(const bool enabled) {
 void MetalGlfwWindow::_Init() {
 	_InitDevice();
 	_InitWindow();
+
 	SetVSync(_data.VSync);
 	SetWindowCallbacks();
+
+	_st_GLFWWindowCount++;
 }
 
 /**
@@ -317,13 +318,6 @@ void MetalGlfwWindow::_InitWindow() {
 
 	_metalWindow = static_cast<NS::Window*>(cocoaWindow);
 
-	// Get GLFW's content view
-	void* contentView = Bridge::GetCocoaContentView(cocoaWindow);
-	if (not contentView) {
-		CE_CORE_ERROR("Could not get content view from GLFW window!");
-		throw std::runtime_error("Could not get content view from GLFW window!");
-	}
-
 	// Create CAMetalLayer
 	// Using NS::RetainPtr for layer() because it returns an autoreleased object (+0).
 	// RetainPtr will automatically retain() it to get +1 ownership, which is then transferred to SharedPtr.
@@ -335,18 +329,22 @@ void MetalGlfwWindow::_InitWindow() {
 
 	// Configure Metal layer
 	_metalLayer->setDevice(_metalDevice.get());
-	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-	_metalLayer->setDrawableSize(CGSizeMake(_data.width, _data.height));
+	_metalLayer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm);
+
+	if (const auto contentView = _metalWindow->contentView()) {
+		contentView->setLayer(_metalLayer.get());
+		contentView->setWantsLayer(true);
+	}
+	else {
+		CE_CORE_ERROR("Failed to get content view from Metal window!");
+		throw std::runtime_error("Failed to get content view from Metal window!");
+	}
 
 	// Optimize for triple buffering (reduces latency)
 	_metalLayer->setMaximumDrawableCount(3);
 
 	// Allow next drawable to be acquired while the previous frame is still rendering
 	_metalLayer->setAllowsNextDrawableTimeout(false);
-
-	// Set Metal layer as the layer for GLFW's content view
-	// This doesn't replace the view, just sets its backing layer
-	Bridge::SetCocoaViewLayer(contentView, _metalLayer.get());
 }
 
 /**
@@ -362,7 +360,7 @@ void MetalGlfwWindow::_Shutdown() {
 	_glfwWindow.reset();
 
 	_st_GLFWWindowCount--;
-	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) {
+	if (_st_GLFWWindowCount <= 0 and _st_GLFWInitialized) {
 		glfwTerminate();
 		_st_GLFWInitialized = false;
 		CE_CORE_INFO("GLFW terminated - all Metal windows closed");

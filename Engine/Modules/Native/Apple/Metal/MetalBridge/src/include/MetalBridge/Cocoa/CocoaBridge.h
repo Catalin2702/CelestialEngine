@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -20,6 +20,40 @@
  *			between C++ and Objective-C objects.
  */
 namespace CE::Bridge {
+
+/**
+ * @brief Callback function signature for window events
+ * @param userData User data pointer passed when creating the delegate
+ * @param eventType Type of event (0=resize, 1=close, 2=focus, 3=unfocus, 4=minimize, 5=restore)
+ * @param width Window width (for resize events)
+ * @param height Window height (for resize events)
+ */
+typedef void (*WindowEventCallback)(void* userData, int eventType, unsigned int width, unsigned int height);
+
+/**
+ * @brief Creates a Cocoa window delegate for handling window events
+ * @param callback Function to call when window events occur
+ * @param userData User data to pass to the callback
+ * @return void* Opaque pointer to the delegate object
+ * @details Creates an NSWindowDelegate that intercepts window events and forwards them
+ *          to the provided C++ callback function
+ */
+void* CreateCocoaWindowDelegate(WindowEventCallback callback, void* userData);
+
+/**
+ * @brief Destroys a Cocoa window delegate
+ * @param delegate Opaque pointer to the delegate object created by CreateCocoaWindowDelegate
+ * @details Releases the NSWindowDelegate object and cleans up associated resources
+ */
+void DestroyCocoaWindowDelegate(void* delegate);
+
+/**
+ * @brief Sets a delegate for a Cocoa window
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @param delegate Delegate object created by CreateCocoaWindowDelegate
+ * @details Assigns the delegate to the window to receive window events
+ */
+void SetCocoaWindowDelegate(void* cocoaWindow, void* delegate);
 
 /**
  * @brief Gets the content view of a Cocoa window

@@ -204,6 +204,8 @@ namespace Private
             "count");
         _NS_PRIVATE_DEF_SEL(dateWithTimeIntervalSinceNow_,
             "dateWithTimeIntervalSinceNow:");
+        _NS_PRIVATE_DEF_SEL(distantPast,
+            "distantPast");
         _NS_PRIVATE_DEF_SEL(defaultCenter,
             "defaultCenter");
         _NS_PRIVATE_DEF_SEL(descriptionWithLocale_,

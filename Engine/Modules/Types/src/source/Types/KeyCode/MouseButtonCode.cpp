@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-17
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -77,6 +77,15 @@ int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 		case MouseButtonCode::WheelY: return 2;
 
 		default: return 5; // No valid mapping for this button
+	}
+}
+
+MouseButtonCode MouseButtonKeyCodeFromCocoa(const int buttonNumber) {
+	switch (buttonNumber) {
+		case 0: return KeyCode::MouseButtonCode::Left;
+		case 1: return KeyCode::MouseButtonCode::Right;
+		case 2: return KeyCode::MouseButtonCode::Middle;
+		default: return KeyCode::MouseButtonCode::Unknown;
 	}
 }
 
