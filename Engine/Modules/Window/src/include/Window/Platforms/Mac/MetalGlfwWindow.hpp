@@ -1,10 +1,10 @@
 //
 // Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac
-// File: MetalWindow.hpp
+// File: MetalGlfwWindow.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-16
 //
 
 #pragma once
@@ -38,26 +38,26 @@ namespace TypeWindow = CE::Types::Window;
 namespace CE::Window {
 
 /**
- * @class MetalWindow
+ * @class MetalGlfwWindow
  * @brief macOS-specific window implementation using Metal API
  * @details Provides a window implementation for macOS that uses Metal for rendering.
  *			Manages both GLFW window for input handling and Metal resources for graphics.
  *			This class integrates GLFW's cross-platform windowing with Apple's Metal API.
  */
-class MetalWindow final: public I_Window {
+class MetalGlfwWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
 	 * @param windowProps Window configuration properties (title, dimensions, VSync)
 	 * @details Creates and initializes a Metal-based window with the specified properties
 	 */
-	MetalWindow(const TypeWindow::WindowProps& windowProps);
+	MetalGlfwWindow(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up Metal and GLFW resources
 	 */
-	~MetalWindow() override;
+	~MetalGlfwWindow() override;
 
 public:
 	/**

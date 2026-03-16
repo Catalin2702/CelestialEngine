@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-15
+// Updated: 2026-03-16
 //
 
 #pragma once
@@ -34,7 +34,7 @@ namespace NS {
 class AutoreleasePool;
 }
 namespace CE::Window {
-class MetalWindow;
+class MetalGlfwWindow;
 }
 
 
@@ -59,7 +59,7 @@ namespace CE::Layers {
  */
 class ImGuiMetalLayer final: public I_ImGuiLayer {
 	struct MetalContext {
-		Window::MetalWindow* window = nullptr;			///< Pointer to the Metal window
+		Window::MetalGlfwWindow* window = nullptr;			///< Pointer to the Metal window
 		GLFWwindow* glfwWindow = nullptr;				///< Pointer to the GLFW window
 		MTL::Device* metalDevice = nullptr;			///< Pointer to the Metal device
 		MTL::CommandQueue* commandQueue = nullptr;		///< Pointer to the Metal command queue

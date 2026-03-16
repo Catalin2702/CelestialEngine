@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-15
+// Updated: 2026-03-16
 //
 
-#include "Window/Platforms/Mac/MetalWindow.hpp"
+#include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
@@ -175,12 +175,12 @@ void ImGuiMetalLayer::_Init() {
 
 	const auto& app = Core::Application::Get();
 
-	_metalContext.window = dynamic_cast<Window::MetalWindow*>(app.GetWindow());
+	_metalContext.window = dynamic_cast<Window::MetalGlfwWindow*>(app.GetWindow());
 
 	if (not _metalContext.window) {
-		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalWindow window!");
+		CE_CORE_ERROR("ImGuiMetalLayer requires a MetalGlfwWindow window!");
 		ImGui::DestroyContext(context);
-		throw std::runtime_error("ImGuiMetalLayer requires a MetalWindow window!");
+		throw std::runtime_error("ImGuiMetalLayer requires a MetalGlfwWindow window!");
 	}
 
 	_metalContext.glfwWindow = static_cast<GLFWwindow*>(_metalContext.window->GetNativeWindow());

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-03-16
 //
 
 #include "Core/Application.hpp"
@@ -19,7 +19,7 @@
 
 #ifdef CE_PLATFORM_MACOS
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
-#include "Window/Platforms/Mac/MetalWindow.hpp"
+#include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlLayer.hpp"
 #include "Window/Platforms/Universal/OpenGlWindow.hpp"
@@ -33,7 +33,7 @@
 
 // Platform-specific window type selection
 #ifdef CE_PLATFORM_MACOS
-using MetalWindow = CE::Window::MetalWindow;		///< Use Metal window on macOS
+using MetalWindow = CE::Window::MetalGlfwWindow;		///< Use Metal window on macOS
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on macOS as well (fallback)
 #else
 using OpenGlWindow = CE::Window::OpenGlWindow;		///< Use OpenGL window on other platforms
