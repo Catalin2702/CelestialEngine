@@ -13,10 +13,11 @@ set(HEADERS
 	src/include/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Input/Platforms/Mac/MetalInput.hpp
+	src/include/Input/Platforms/Common/GlfwInput.hpp
 		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp
 		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
 	>
+	src/include/Input/Platforms/Mac/CocoaInput.hpp
 )
 
 set(INTERFACES
@@ -33,10 +34,12 @@ set(SOURCES
 
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Input/Platforms/Mac/MetalInput.cpp
+	src/source/Input/Platforms/Common/GlfwInput.cpp
 	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.cpp
 		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
 	>
+	src/source/Input/InputImpl.cpp
+	src/source/Input/Platforms/Mac/CocoaInput.cpp
 )
 
 add_library(CE_Core SHARED

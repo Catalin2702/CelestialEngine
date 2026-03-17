@@ -34,6 +34,7 @@ static int _st_CocoaWindowCount = 0;
  * @details Intercepts and processes mouse and keyboard events from Cocoa
  */
 static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* data) {
+	// ReSharper disable All
 	if (!event or !data or !data->EventCallback)
 		return;
 
@@ -185,16 +186,15 @@ MetalCocoaWindow::~MetalCocoaWindow() {
 void MetalCocoaWindow::OnUpdate() const {
 	const auto pool = NS::AutoreleasePool::alloc()->init();
 
-	const auto app = NS::Application::sharedApplication();
-	NS::Event* event = nullptr;
+	// Process all pending Cocoa events using the bridge
+	Apple::Bridge::ProcessCocoaEvents([](void* userData, void* eventPtr) {
+		if (!userData || !eventPtr)
+			return;
 
-	while ((event = app->nextEventMatchingMask(NS::EventMaskAny, NS::Date::distantPast(), NS::getDefaultRunLoopMode(), true))) {
-		// Process the event for our custom handling (keyboard, mouse, etc.)
-		ProcessCocoaEvent(event, &_data);
-
-		// Also send to the system for standard window handling
-		app->sendEvent(event);
-	}
+		const auto* data = static_cast<EventWindowData*>(userData);
+		const auto* event = static_cast<NS::Event*>(eventPtr);
+		ProcessCocoaEvent(event, data);
+	}, const_cast<EventWindowData*>(&_data));
 
 	pool->release();
 }
@@ -295,6 +295,9 @@ void MetalCocoaWindow::_InitWindow() {
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 
+	// Set frame autosave name to remember window position between launches
+	Apple::Bridge::SetWindowFrameAutosaveName(_window, "CelestialEngineMainWindow");
+
 	_layer = NS::RetainPtr(CA::MetalLayer::layer());
 	if (not _layer) {
 		CE_CORE_ERROR("Could not create CAMetalLayer!");
@@ -318,6 +321,15 @@ void MetalCocoaWindow::_InitWindow() {
 	_layer->setAllowsNextDrawableTimeout(false);
 
 	_UpdateLayerSize();
+
+	// Make the window visible
+	_window->makeKeyAndOrderFront(nullptr);
+
+	// Activate the application
+	const auto app = NS::Application::sharedApplication();
+	app->activateIgnoringOtherApps(true);
+
+	CE_CORE_INFO("Cocoa window created and made visible");
 }
 
 void MetalCocoaWindow::_Shutdown() {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 /**
@@ -46,8 +46,9 @@
 
 // ---- Input ------------------------------------
 #ifdef CE_PLATFORM_MACOS
-	#include <Input/Platforms/Mac/MetalInput.hpp>
+	#include <Input/Platforms/Mac/CocoaInput.hpp>
 #endif
+#include <Input/Platforms/Common/GlfwInput.hpp>
 // -----------------------------------------------
 
 // ---- Layer ------------------------------------

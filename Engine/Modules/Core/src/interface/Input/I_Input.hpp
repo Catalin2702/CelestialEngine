@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-10
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Types/Window/WindowProps.hpp"
 
 #include <utility>
 
@@ -31,7 +32,7 @@ namespace CE::Input {
  * @details Provides a platform-agnostic interface for querying input states such as keyboard keys and mouse buttons. This class is designed to be inherited by platform-specific implementations (e.g., MetalInput for macOS). It uses the singleton pattern to allow static access to input queries throughout the application without needing to pass around an instance.
  */
 class CE_API I_Input {
-	friend void InitInput();
+	friend void InitInput(Types::Window::WindowApi windowApi);
 	friend void ShutdownInput();
 public:
 	/**
@@ -133,7 +134,7 @@ private:
 	static I_Input* _instance;						///< Singleton instance of the I_Input class
 };
 
-void InitInput();
+void InitInput(Types::Window::WindowApi windowApi);
 void ShutdownInput();
 
 }

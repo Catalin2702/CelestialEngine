@@ -73,7 +73,7 @@ void ImGuiMetalGlfwLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 	switch (event.GetEventType()) {
 	case Events::EventType::MouseMoved:
-		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalGlfwLayer::_OnKeyPressed));
+		dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalGlfwLayer::_OnMouseMoved));
 		break;
 	case Events::EventType::MouseScrolled:
 		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalGlfwLayer::_OnMouseScrolled));

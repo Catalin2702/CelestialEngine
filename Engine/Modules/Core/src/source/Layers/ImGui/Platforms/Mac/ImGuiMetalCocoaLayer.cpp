@@ -49,7 +49,7 @@ void ImGuiMetalCocoaLayer::OnRender() const {
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with Metal and GLFW on macOS!");
+	ImGui::Text("Hello from ImGui with Metal and Cocoa on macOS!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
 	if (ImGui::Button("Click Me!")) {
@@ -65,7 +65,7 @@ void ImGuiMetalCocoaLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 	switch (event.GetEventType()) {
 		case Events::EventType::MouseMoved:
-			dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnKeyPressed));
+			dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseMoved));
 			break;
 		case Events::EventType::MouseScrolled:
 			dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseScrolled));
@@ -169,7 +169,7 @@ void ImGuiMetalCocoaLayer::_Init() {
 	auto& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
 
 	const auto& app = Core::Application::Get();
 

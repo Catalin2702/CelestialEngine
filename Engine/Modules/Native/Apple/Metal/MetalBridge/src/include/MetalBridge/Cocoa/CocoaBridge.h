@@ -31,6 +31,13 @@ namespace CE::Apple::Bridge {
 typedef void (*WindowEventCallback)(void* userData, int eventType, unsigned int width, unsigned int height);
 
 /**
+ * @brief Callback function signature for NSEvent processing
+ * @param userData User data pointer
+ * @param event Opaque pointer to NSEvent
+ */
+typedef void (*EventProcessCallback)(void* userData, void* event);
+
+/**
  * @brief Creates a Cocoa window delegate for handling window events
  * @param callback Function to call when window events occur
  * @param userData User data to pass to the callback
@@ -95,6 +102,24 @@ void AddSubviewToContentView(void* cocoaWindow, void* subview);
  * @details Queries the display's nominal refresh rate, useful for VSync settings
  */
 int GetDisplayRefreshRate(void* cocoaWindow);
+
+/**
+ * @brief Sets the autosave name for the window's frame
+ * @param cocoaWindow Pointer to NSWindow (as void*)
+ * @param name Name to use for autosaving the window frame (position and size)
+ * @details Enables automatic saving and restoration of window position/size.
+ *          The window will remember its position between application launches.
+ */
+void SetWindowFrameAutosaveName(void* cocoaWindow, const char* name);
+
+/**
+ * @brief Processes pending Cocoa events
+ * @param processCallback Function to call for each event (optional, can be nullptr)
+ * @param userData User data to pass to callback
+ * @details Polls all pending NSEvents and processes them. If processCallback is provided,
+ *          it will be called for each event before the event is sent to the application.
+ */
+void ProcessCocoaEvents(EventProcessCallback processCallback, void* userData);
 
 }
 

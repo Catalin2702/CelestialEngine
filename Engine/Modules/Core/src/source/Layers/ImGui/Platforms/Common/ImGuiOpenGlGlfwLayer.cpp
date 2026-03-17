@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -63,7 +63,7 @@ void ImGuiOpenGlGlfwLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 	switch (event.GetEventType()) {
 	case Events::EventType::MouseMoved:
-		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnKeyPressed));
+		dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnMouseMoved));
 		break;
 	case Events::EventType::MouseScrolled:
 		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlGlfwLayer::_OnMouseScrolled));

@@ -1,13 +1,13 @@
 //
 // Module: CelestialEngine/Engine/Modules/Input/Platforms/Mac
-// File: MetalInput.cpp
+// File: GlfwInput.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-17
 //
 
-#include "Input/Platforms/Mac/MetalInput.hpp"
+#include "../../../../include/Input/Platforms/Common/GlfwInput.hpp"
 
 #include "Core/Application.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -18,9 +18,9 @@
 
 namespace CE::Input {
 
-I_Input* I_Input::_instance = new MetalInput();
+I_Input* I_Input::_instance = new GlfwInput();
 
-bool MetalInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
+bool GlfwInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}
@@ -28,7 +28,7 @@ bool MetalInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
 	return state == GLFW_PRESS or state == GLFW_REPEAT;
 }
 
-bool MetalInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode buttonCode) {
+bool GlfwInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode buttonCode) {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}
@@ -36,7 +36,7 @@ bool MetalInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode button
 	return state == GLFW_PRESS;
 }
 
-float MetalInput::_GetMouseXImpl() {
+float GlfwInput::_GetMouseXImpl() {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}
@@ -45,7 +45,7 @@ float MetalInput::_GetMouseXImpl() {
 	return static_cast<float>(mouseX);
 }
 
-float MetalInput::_GetMouseYImpl() {
+float GlfwInput::_GetMouseYImpl() {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}
@@ -54,7 +54,7 @@ float MetalInput::_GetMouseYImpl() {
 	return static_cast<float>(mouseY);
 }
 
-std::pair<float, float> MetalInput::_GetMouseXYImpl() {
+std::pair<float, float> GlfwInput::_GetMouseXYImpl() {
 	if (not _glfWwindow) {
 		_InitGLFWWindow();
 	}
@@ -63,22 +63,9 @@ std::pair<float, float> MetalInput::_GetMouseXYImpl() {
 	return {static_cast<float>(mouseX), static_cast<float>(mouseY)};
 }
 
-void MetalInput::_InitGLFWWindow() {
+void GlfwInput::_InitGLFWWindow() {
 	if (const auto window = Core::Application::Get().GetWindow()) {
 		_glfWwindow = static_cast<GLFWwindow*>(window->GetNativeWindow());
-	}
-}
-
-void InitInput() {
-	if (not I_Input::_instance) {
-		I_Input::_instance = new MetalInput();
-	}
-}
-
-void ShutdownInput() {
-	if (I_Input::_instance) {
-		delete I_Input::_instance;
-		I_Input::_instance = nullptr;
 	}
 }
 

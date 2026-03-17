@@ -11,9 +11,10 @@
 #import <QuartzCore/CAMetalLayer.h>
 #import <math.h>
 
-// Forward declaration for callback type
+// Forward declaration for callback types
 namespace CE::Apple::Bridge {
 	typedef void (*WindowEventCallback)(void* userData, int eventType, unsigned int width, unsigned int height);
+	typedef void (*EventProcessCallback)(void* userData, void* event);
 }
 
 /**
@@ -257,6 +258,36 @@ int GetDisplayRefreshRate(void* cocoaWindow) {
 	}
 
 	return 60; // Default fallback
+}
+
+void SetWindowFrameAutosaveName(void* cocoaWindow, const char* name) {
+	if (!cocoaWindow || !name)
+		return;
+
+	NSWindow* window = (__bridge NSWindow*)cocoaWindow;
+	NSString* nsName = [NSString stringWithUTF8String:name];
+	[window setFrameAutosaveName:nsName];
+}
+
+void ProcessCocoaEvents(EventProcessCallback processCallback, void* userData) {
+	@autoreleasepool {
+		NSApplication* app = [NSApplication sharedApplication];
+		NSEvent* event;
+
+		// Process all pending events
+		while ((event = [app nextEventMatchingMask:NSEventMaskAny
+										 untilDate:[NSDate distantPast]
+											inMode:NSDefaultRunLoopMode
+										   dequeue:YES])) {
+			// Call custom event processor if provided
+			if (processCallback) {
+				processCallback(userData, event);
+			}
+
+			// Send event to application for standard handling
+			[app sendEvent:event];
+		}
+	}
 }
 
 }

@@ -13,20 +13,19 @@
 #include "Events/I_Event.hpp"
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
+#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
+#include "Window/Platforms/Common/GlfwWindow.hpp"
+
 
 #ifdef CE_PLATFORM_MACOS
+#include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp"
+
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
-
-#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
-#include "Window/Platforms/Common/GlfwWindow.hpp"
-#else
-#include "Layers/ImGui/Platforms/Universal/ImGuiOpenGlGlfwLayer.hpp"
-#include "Window/Platforms/Common/GlfwWindow.hpp"
 #endif
 
 #include <memory>
@@ -157,6 +156,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			_window = std::unique_ptr<Window::I_Window>(
 				Window::I_Window::CreateWindow<Window::MetalCocoaWindow>(windowProps)
 			);
+			break;
 		}
 #elifdef CE_PLATFORM_WINDOWS
 		case Types::Window::WindowApi::GLFW: {
@@ -176,13 +176,14 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 					throw std::runtime_error("Unsupported graphics API specified in window properties for GLFW on Windows");
 				}
 			}
+			break;
 		}
 		case Types::Window::WindowApi::Win32: {
 			CE_CORE_ERROR("Application::_Init: Win32 window API is not supported. Please use GLFW with OpenGL instead.");
 			throw std::runtime_error("Win32 window API is not supported");
 			break;
 		}
-#elifdef
+#elifdef E_PLATFORM_LINUX
 		case Types::Window::WindowApi::GLFW: {
 			switch (windowProps.graphicsApi) {
 				case TypeWindow::GraphicsApi::OpenGL: {
@@ -235,8 +236,8 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 					break;
 				}
 				case TypeWindow::WindowApi::Cocoa: {
-					CE_CORE_ERROR("Application::_Init: ImGuiMetalGlfwLayer is not compatible with Cocoa window API. Please use GLFW with Metal instead.");
-					throw std::runtime_error("ImGuiMetalGlfwLayer is not compatible with Cocoa window API");
+					overlay = std::make_unique<Layers::ImGuiMetalCocoaLayer>();
+					break;
 				}
 				default: {
 					CE_CORE_ERROR("Application::_Init: Unsupported window API specified in window properties for Metal graphics API on macOS. Window API: {0}", windowProps.windowApi);
@@ -251,6 +252,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 			throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
 		}
 	}
+
 	if (not overlay) {
 		CE_CORE_ERROR("Application::_Init: Can't initialize the ImGui layer");
 		throw std::runtime_error("Can't initialize the ImGui layer");
@@ -259,7 +261,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 	PushOverlay(_renderLayer);
 
 	_running = true;
-	Input::InitInput();
+	Input::InitInput(windowProps.windowApi);
 }
 
 }
