@@ -33,39 +33,173 @@ class Window;
 
 namespace TypeWindow = CE::Types::Window;
 
+/**
+ * @namespace CE::Window
+ * @brief Window management and window interfaces
+ * @details Contains the I_Window interface and related type definitions for window management.
+ *			This namespace defines the common interface for all window implementations,
+ *			allowing for platform-specific implementations while maintaining a consistent API.
+ *			The MetalCocoaWindow class provides a macOS-specific implementation of the I_Window interface using Metal for rendering and Cocoa for window management,
+ *			offering a native experience for applications targeting macOS with Metal.
+ */
 namespace CE::Window {
 
+/**
+ * @class MetalCocoaWindow
+ * @brief macOS-specific window implementation using Metal API and Cocoa
+ * @details Provides a window implementation for macOS that uses Metal for rendering and Cocoa for window management.
+ *			Manages a native macOS window and Metal resources for graphics.
+ *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
+ */
 class MetalCocoaWindow final: public I_Window {
 public:
+	/**
+	 * @brief Constructor
+	 * @param windowProps Window configuration properties (title, dimensions, VSync)
+	 * @details Creates and initializes a Metal-based window with the specified properties using Cocoa APIs
+	 */
 	MetalCocoaWindow(const TypeWindow::WindowProps& windowProps);
+
+	/**
+	 * @brief Destructor
+	 * @details Cleans up Metal and Cocoa resources
+	 */
 	~MetalCocoaWindow() override;
 
 public:
+	/**
+	 * @brief Updates the window (processes events and manages rendering)
+	 * @details This method should be called every frame to ensure the window remains responsive and updates its contents.
+	 *			It processes any pending events and can be used to trigger rendering operations.
+	 */
 	void OnUpdate() const override;
 
 public:
+	/**
+	 * @brief Gets the current width of the window
+	 * @return unsigned int Current width in pixels
+	 */
 	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
+
+	/**
+	 * @brief Gets the current height of the window
+	 * @return unsigned int Current height in pixels
+	 */
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
+
+	/**
+	 * @brief Gets the current size of the window
+	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
+	 */
+	[[nodiscard]] std::pair<unsigned int, unsigned int> GetSize() const override { return {_data.width, _data.height}; }
+
+	/**
+	 * @brief Checks if VSync is enabled
+	 * @return bool True if VSync is enabled, false otherwise
+	 */
 	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
+
+	/**
+	 * @brief Gets the native macOS window
+	 * @return void* Pointer to the native macOS window (NS::Window*)
+	 * @details Provides access to the underlying macOS window for platform-specific operations. The returned pointer can be cast to NS::Window* for use with Cocoa APIs.
+	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return GetMetalWindow(); }
 
+	/**
+	 * @brief Gets the Metal command queue
+	 * @return MTL::CommandQueue* Pointer to the Metal command queue
+	 * @details Provides access to the Metal command queue for issuing rendering commands. This is essential for any rendering operations performed using Metal.
+	 */
 	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _commandQueue.get(); }
+
+	/**
+	 * @brief Gets the Metal device
+	 * @return MTL::Device* Pointer to the Metal device (GPU)
+	 * @details Provides access to the Metal device, which represents the GPU. This is required for creating resources and issuing rendering commands with Metal.
+	 */
 	[[nodiscard]] MTL::Device* GetDevice() const { return _device.get(); }
+
+	/**
+	 * @brief Gets the Metal layer
+	 * @return CA::MetalLayer* Pointer to the Core Animation Metal layer
+	 * @details Provides access to the Metal layer, which is the rendering surface for Metal content. This layer is used to present rendered frames to the screen.
+	 */
 	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const { return _layer.get(); }
+
+	/**
+	 * @brief Gets the native macOS window
+	 * @return NS::Window* Pointer to the AppKit window
+	 * @details Provides access to the underlying macOS window for platform-specific operations. This allows for direct interaction with the Cocoa window when necessary.
+	 */
 	[[nodiscard]] NS::Window* GetMetalWindow() const { return _window; }
 
+	/**
+	 * @brief Gets the content view of the macOS window
+	 * @return void* Pointer to the NSView (content view)
+	 * @details Provides access to the content view of the window, which is needed for ImGui OSX backend initialization.
+	 */
+	[[nodiscard]] void* GetContentView() const { return _window ? _window->contentView() : nullptr; }
+
 public:
+	/**
+	 * @brief Sets the event callback function
+	 * @param callback Function to be called when events occur
+	 * @details The callback will be invoked for all window and input events, allowing the application to respond to user interactions and window changes.
+	 */
 	void SetEventCallback(const EventCallbackFn& callback) override;
+
+	/**
+	 * @brief Configures all window event callbacks
+	 * @details Sets up Cocoa callbacks for window events such as resize, close, focus, minimize, etc. This allows the application to handle these events appropriately.
+	 */
 	void SetWindowCallbacks() override;
+
+	/**
+	 * @brief Sets the window width
+	 * @param width New width in pixels
+	 * @details Updates the window's width and resizes the Metal layer accordingly to ensure proper rendering.
+	 */
 	void SetWidth(unsigned int width) override;
+
+	/**
+	 * @brief Sets the window height
+	 * @param height New height in pixels
+	 * @details Updates the window's height and resizes the Metal layer accordingly to ensure proper rendering.
+	 */
 	void SetHeight(unsigned int height) override;
+
+	/**
+	 * @brief Enables or disables VSync
+	 * @param enabled True to enable VSync, false to disable
+	 * @details VSync synchronizes rendering with the monitor's refresh rate to prevent screen tearing. This method updates the Metal layer's display sync setting accordingly.
+	 */
 	void SetVSync(bool enabled) override;
 
 private:
+	/** @brief Initializes the window and Metal resources
+	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
+	 */
 	void _Init();
+
+	/** @brief Initializes the Metal device
+	 * @details Creates the Metal device (GPU) that will be used for rendering. This is a crucial step for any Metal application, as the device is required to create resources and issue rendering commands.
+	 */
 	void _InitDevice();
+
+	/** @brief Initializes the Cocoa window and Metal layer
+	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering. This includes configuring the layer's properties and attaching it to the window's content view.
+	 */
 	void _InitWindow();
+
+	/** @brief Shuts down the window and cleans up resources
+	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
+	 */
 	void _Shutdown();
+
+	/** @brief Updates the size of the Metal layer to match the window dimensions
+	 * @details This method is called whenever the window is resized to ensure that the Metal layer's drawable area matches the new window size, allowing for correct rendering.
+	 */
 	void _UpdateLayerSize() const;
 
 private:

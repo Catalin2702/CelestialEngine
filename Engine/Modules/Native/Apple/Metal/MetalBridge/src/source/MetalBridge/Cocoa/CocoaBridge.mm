@@ -12,7 +12,7 @@
 #import <math.h>
 
 // Forward declaration for callback type
-namespace CE::Bridge {
+namespace CE::Apple::Bridge {
 	typedef void (*WindowEventCallback)(void* userData, int eventType, unsigned int width, unsigned int height);
 }
 
@@ -24,7 +24,7 @@ namespace CE::Bridge {
 @interface CocoaWindowDelegateImpl : NSObject <NSWindowDelegate>
 {
 	@public
-	CE::Bridge::WindowEventCallback callback;
+	CE::Apple::Bridge::WindowEventCallback callback;
 	void* userData;
 }
 @end
@@ -86,7 +86,7 @@ namespace CE::Bridge {
 
 @end
 
-namespace CE::Bridge {
+namespace CE::Apple::Bridge {
 
 /**
  * @brief Creates a Cocoa window delegate for handling window events

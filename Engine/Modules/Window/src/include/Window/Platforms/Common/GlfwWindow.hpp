@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -77,6 +77,12 @@ public:
 	 * @details Inline getter that returns the cached height value from _data
 	 */
 	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
+
+	/**
+	 * @brief Gets the current size of the window
+	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
+	 */
+	[[nodiscard]] std::pair<unsigned int, unsigned int> GetSize() const override { return {_data.width, _data.height}; }
 
 	/**
 	 * @brief Checks if VSync is enabled

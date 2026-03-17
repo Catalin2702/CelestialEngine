@@ -13,6 +13,7 @@
 			"features": [
 				"glfw-binding",
 				"metal-binding",
+				"osx-binding",
 				"opengl3-binding",
 				"docking-experimental"
 			]

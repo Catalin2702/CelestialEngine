@@ -4,15 +4,17 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-17
 //
 
+#import <AppKit/AppKit.h>
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
 #import <imgui_impl_metal.h>
+#import <imgui_impl_osx.h>
 
 
-namespace CE::Bridge {
+namespace CE::Apple::Bridge {
 
 /**
  * @brief Initializes the ImGui Metal rendering backend
@@ -64,6 +66,40 @@ void ImGuiMetalRenderDrawData(void* drawData, void* commandBuffer, void* renderE
 		static_cast<id<MTLCommandBuffer>>(commandBuffer),
 		static_cast<id<MTLRenderCommandEncoder>>(renderEncoder)
 	);
+}
+
+/**
+ * @brief Initializes the ImGui OSX/Cocoa platform backend
+ * @param view Void pointer to NSView (will be cast to NSView*)
+ * @return bool True if initialization was successful, false otherwise
+ * @details Wraps ImGui_ImplOSX_Init() from the ImGui OSX backend.
+ *			Casts the void pointer to the appropriate Objective-C NSView type
+ *			and initializes all platform resources needed for ImGui input handling.
+ */
+bool ImGuiOSXInit(void* view) {
+	return ImGui_ImplOSX_Init(static_cast<NSView*>(view));
+}
+
+/**
+ * @brief Shuts down the ImGui OSX/Cocoa platform backend
+ * @details Wraps ImGui_ImplOSX_Shutdown() from the ImGui OSX backend.
+ *			Releases all platform resources allocated for ImGui.
+ *			Should be called before destroying the window or view.
+ */
+void ImGuiOSXShutdown() {
+	ImGui_ImplOSX_Shutdown();
+}
+
+/**
+ * @brief Prepares ImGui for a new frame with OSX/Cocoa
+ * @param view Void pointer to NSView (can be nullptr)
+ * @details Wraps ImGui_ImplOSX_NewFrame() from the ImGui OSX backend.
+ *			Casts the void pointer to NSView and updates ImGui's input state
+ *			from the Cocoa view. Must be called at the start of each frame
+ *			before any ImGui rendering commands.
+ */
+void ImGuiOSXNewFrame(void* view) {
+	ImGui_ImplOSX_NewFrame(static_cast<NSView*>(view));
 }
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-06
+// Updated: 2026-03-17
 //
 
 #pragma once
@@ -80,6 +80,8 @@ public:
 	 * @return unsigned int Height in pixels
 	 */
 	[[nodiscard]] virtual unsigned int GetHeight() const = 0;
+
+	[[nodiscard]] virtual std::pair<unsigned int, unsigned int> GetSize() const = 0;
 
 	/**
 	 * @brief Checks if VSync is enabled

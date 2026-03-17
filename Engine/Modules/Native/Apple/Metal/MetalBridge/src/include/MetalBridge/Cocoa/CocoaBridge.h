@@ -13,13 +13,13 @@
 #define CE_APPLE_METAL_METALBRIDGE_COCOABRIDGE_H
 
 /**
- * @namespace CE::Bridge
+ * @namespace CE::Apple::Bridge
  * @brief Bridge functions for integrating Metal with Cocoa windows
  * @details Provides C++ functions to interact with Objective-C/Cocoa APIs for setting up
  *			Metal rendering in GLFW windows on macOS. These functions handle the conversion
  *			between C++ and Objective-C objects.
  */
-namespace CE::Bridge {
+namespace CE::Apple::Bridge {
 
 /**
  * @brief Callback function signature for window events

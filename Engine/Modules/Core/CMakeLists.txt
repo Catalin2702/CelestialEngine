@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-16
+# Updated: 2026-03-17
 #
 
 set(HEADERS
@@ -13,8 +13,9 @@ set(HEADERS
 	src/include/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
 		src/include/Input/Platforms/Mac/MetalInput.hpp
+		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp
+		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
 	>
 )
 
@@ -32,8 +33,9 @@ set(SOURCES
 
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
 		src/source/Input/Platforms/Mac/MetalInput.cpp
+	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.cpp
+		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
 	>
 )
 
@@ -50,6 +52,7 @@ set_target_properties(CE_Core PROPERTIES
 # Modules
 target_link_libraries(CE_Core PUBLIC
 	CE_Config
+	CE_AppleUtility
 	CE_Define
 	CE_Events
 	CE_Glfw

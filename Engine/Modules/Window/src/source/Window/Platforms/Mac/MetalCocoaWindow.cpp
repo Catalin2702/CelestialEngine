@@ -208,9 +208,9 @@ void MetalCocoaWindow::SetWindowCallbacks() {
 		return;
 
 	// Create delegate and set it for the window
-	_windowDelegate = Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
+	_windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
 	if (_windowDelegate) {
-		Bridge::SetCocoaWindowDelegate(_window, _windowDelegate);
+		Apple::Bridge::SetCocoaWindowDelegate(_window, _windowDelegate);
 		CE_CORE_INFO("Cocoa window delegate configured for event handling");
 	}
 	else {
@@ -323,7 +323,7 @@ void MetalCocoaWindow::_InitWindow() {
 void MetalCocoaWindow::_Shutdown() {
 	// Cleanup delegate before closing window
 	if (_windowDelegate) {
-		Bridge::DestroyCocoaWindowDelegate(_windowDelegate);
+		Apple::Bridge::DestroyCocoaWindowDelegate(_windowDelegate);
 		_windowDelegate = nullptr;
 	}
 

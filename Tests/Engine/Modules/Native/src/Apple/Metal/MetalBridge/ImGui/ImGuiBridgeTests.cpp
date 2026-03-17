@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-17
 //
 
 #include <MetalBridge/ImGui/ImGuiBridge.h>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Bridge;
+using namespace CE::Apple::Bridge;
 
 /**
  * @brief Test fixture for ImGuiBridge tests
@@ -109,10 +109,10 @@ TEST_F(ImGuiBridgeTest, AllFunctions_HaveUniqueAddresses) {
  */
 TEST_F(ImGuiBridgeTest, Namespace_IsCorrectlyResolved) {
 	// If this compiles, the namespace is correctly resolved
-	using CE::Bridge::ImGuiMetalInit;
-	using CE::Bridge::ImGuiMetalShutdown;
-	using CE::Bridge::ImGuiMetalNewFrame;
-	using CE::Bridge::ImGuiMetalRenderDrawData;
+	using CE::Apple::Bridge::ImGuiMetalInit;
+	using CE::Apple::Bridge::ImGuiMetalShutdown;
+	using CE::Apple::Bridge::ImGuiMetalNewFrame;
+	using CE::Apple::Bridge::ImGuiMetalRenderDrawData;
 
 	SUCCEED();
 }
