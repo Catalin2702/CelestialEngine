@@ -24,9 +24,57 @@ SCRIPT_DIR="${0:A:h}"
 PROJECT_DIR="${SCRIPT_DIR}/../.."
 BINARIES_DIR="${PROJECT_DIR}/Binaries/Last"
 
+# Parse command line arguments
+RUN_GUI_APPS=true
+RUN_TESTS=true
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		--no-gui)
+			RUN_GUI_APPS=false
+			shift
+			;;
+		--no-tests)
+			RUN_TESTS=false
+			shift
+			;;
+		--tests-only)
+			RUN_GUI_APPS=false
+			RUN_TESTS=true
+			shift
+			;;
+		--gui-only)
+			RUN_GUI_APPS=true
+			RUN_TESTS=false
+			shift
+			;;
+		-h|--help)
+			echo "Usage: $0 [OPTIONS]"
+			echo ""
+			echo "Options:"
+			echo "  --no-gui       Skip GUI application tests"
+			echo "  --no-tests     Skip unit tests"
+			echo "  --tests-only   Run only unit tests (no GUI apps)"
+			echo "  --gui-only     Run only GUI apps (no unit tests)"
+			echo "  -h, --help     Show this help message"
+			exit 0
+			;;
+		*)
+			echo "${RED}Unknown option: $1${NC}"
+			exit 1
+			;;
+	esac
+done
+
 echo "${BLUE}========================================${NC}"
 echo "${BLUE}CelestialEngine - Run All${NC}"
 echo "${BLUE}========================================${NC}"
+if [ "$RUN_GUI_APPS" = false ]; then
+	echo "${YELLOW}GUI apps: SKIPPED${NC}"
+fi
+if [ "$RUN_TESTS" = false ]; then
+	echo "${YELLOW}Unit tests: SKIPPED${NC}"
+fi
 echo ""
 
 # Verify that the Binaries/Last folder exists
@@ -69,17 +117,21 @@ run_command() {
 			echo "${YELLOW}Closing application...${NC}"
 			# First try with SIGTERM (graceful shutdown)
 			kill -TERM $pid 2>/dev/null
-			sleep 0.1
+			sleep 0.2
 
 			# If the process is still active, use SIGKILL (forced shutdown)
 			if ps -p $pid > /dev/null 2>&1; then
 				kill -KILL $pid 2>/dev/null
-				sleep 0.1
+				sleep 0.2
 			fi
 		fi
 
 		wait $pid 2>/dev/null
 		local exit_code=0  # Consider success if the app started
+
+		# Wait additional time to ensure window system cleanup
+		# This prevents conflicts with subsequent tests
+		sleep 0.3
 
 		# Display output
 		cat "$temp_output"
@@ -106,8 +158,15 @@ run_command() {
 		echo "Error details:" >> "$FAILED_TESTS_FILE"
 		echo "---------------------------------------" >> "$FAILED_TESTS_FILE"
 
-		# Extract only failure information from the output
-		grep -E "\[  FAILED  \]|Failure|Error|Expected:" "$temp_output" | head -30 >> "$FAILED_TESTS_FILE" 2>/dev/null || echo "(No specific error details captured)" >> "$FAILED_TESTS_FILE"
+		# For crashes (exit codes > 128), capture full output
+		# For normal test failures, extract failure information
+		if [ "$exit_code" -gt 128 ]; then
+			echo "CRASH DETECTED (Signal $((exit_code - 128)))" >> "$FAILED_TESTS_FILE"
+			echo "Full output:" >> "$FAILED_TESTS_FILE"
+			tail -100 "$temp_output" >> "$FAILED_TESTS_FILE" 2>/dev/null
+		else
+			grep -E "\[  FAILED  \]|Failure|Error|Expected:" "$temp_output" | head -30 >> "$FAILED_TESTS_FILE" 2>/dev/null || echo "(No specific error details captured)" >> "$FAILED_TESTS_FILE"
+		fi
 		echo "" >> "$FAILED_TESTS_FILE"
 	fi
 
@@ -122,28 +181,55 @@ run_command() {
 	return $exit_code
 }
 
-# Execute CE_App with Metal
-run_command \
-	"CE_App (MetalGlfw)" \
-	"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGlfw\" -w 1280 -h 720 -v true -g metal -wa glfw" \
-	"true"
+# Execute GUI applications if requested
+if [ "$RUN_GUI_APPS" = true ]; then
+	echo "${BLUE}========================================${NC}"
+	echo "${BLUE}Executing GUI Applications${NC}"
+	echo "${BLUE}========================================${NC}"
+	echo ""
 
-# Execute CE_App with OpenGL
-run_command \
-	"CE_App (OpenGLGlfw)" \
-	"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGlGlfw\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
-	"true"
-	
-run_command \
-	"CE_App (MetalCocoa)" \
-	"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalCocoa\" -w 1280 -h 720 -v true -g metal -wa cocoa" \
-	"true"
+	# Execute CE_App with Metal
+	run_command \
+		"CE_App (MetalGlfw)" \
+		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGlfw\" -w 1280 -h 720 -v true -g metal -wa glfw" \
+		"true"
+
+	# Execute CE_App with OpenGL
+	run_command \
+		"CE_App (OpenGLGlfw)" \
+		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGlGlfw\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
+		"true"
+
+	run_command \
+		"CE_App (MetalCocoa)" \
+		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalCocoa\" -w 1280 -h 720 -v true -g metal -wa cocoa" \
+		"true"
+
+	# Wait for window system to stabilize after GUI tests
+	echo "${YELLOW}Waiting for window system cleanup...${NC}"
+	sleep 1
+
+	# Ensure all CE_App processes are terminated
+	echo "${YELLOW}Checking for remaining CE_App processes...${NC}"
+	if pgrep -f "CE_App" > /dev/null 2>&1; then
+		echo "${YELLOW}Found running CE_App processes, terminating...${NC}"
+		pkill -TERM -f "CE_App" 2>/dev/null
+		sleep 0.5
+		# Force kill if still running
+		if pgrep -f "CE_App" > /dev/null 2>&1; then
+			echo "${YELLOW}Force killing remaining CE_App processes...${NC}"
+			pkill -KILL -f "CE_App" 2>/dev/null
+			sleep 0.5
+		fi
+		echo "${GREEN}✓ All CE_App processes terminated${NC}"
+	else
+		echo "${GREEN}✓ No CE_App processes running${NC}"
+	fi
+	echo ""
+fi
 
 # Execute all tests
-echo "${BLUE}========================================${NC}"
-echo "${BLUE}Executing Test Suite${NC}"
-echo "${BLUE}========================================${NC}"
-echo ""
+if [ "$RUN_TESTS" = true ]; then
 
 # Test Core
 if [ -f "${BINARIES_DIR}/CE_TestsCore" ]; then
@@ -192,6 +278,8 @@ else
 	echo "${YELLOW}⚠ CE_TestsWindow not found, skipping${NC}"
 	echo ""
 fi
+
+fi  # End of RUN_TESTS block
 
 # Final summary
 echo "${BLUE}========================================${NC}"

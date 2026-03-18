@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
@@ -52,9 +52,6 @@ void ImGuiMetalCocoaLayer::OnRender() const {
 	ImGui::Text("Hello from ImGui with Metal and Cocoa on macOS!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
-	if (ImGui::Button("Click Me!")) {
-		CE_CORE_INFO("Button clicked!");
-	}
 	ImGui::End();
 
 	static bool show = true;
@@ -217,7 +214,6 @@ void ImGuiMetalCocoaLayer::_Init() {
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
 		}
-		CE_CORE_INFO("ImGui OSX backend initialized successfully");
 	}
 	else {
 		CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");

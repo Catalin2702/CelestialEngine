@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
@@ -211,7 +211,6 @@ void MetalCocoaWindow::SetWindowCallbacks() {
 	_windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
 	if (_windowDelegate) {
 		Apple::Bridge::SetCocoaWindowDelegate(_window, _windowDelegate);
-		CE_CORE_INFO("Cocoa window delegate configured for event handling");
 	}
 	else {
 		CE_CORE_WARN("Failed to create Cocoa window delegate");
@@ -238,7 +237,6 @@ void MetalCocoaWindow::SetVSync(const bool enabled) {
 	if (_layer) {
 		_data.VSync = enabled;
 		_layer->setDisplaySyncEnabled(enabled);
-		CE_CORE_INFO("VSync {0}", enabled ? "enabled" : "disabled");
 	}
 	else {
 		CE_CORE_WARN("Could not set VSync because Metal layer is not initialized.");
@@ -328,8 +326,6 @@ void MetalCocoaWindow::_InitWindow() {
 	// Activate the application
 	const auto app = NS::Application::sharedApplication();
 	app->activateIgnoringOtherApps(true);
-
-	CE_CORE_INFO("Cocoa window created and made visible");
 }
 
 void MetalCocoaWindow::_Shutdown() {

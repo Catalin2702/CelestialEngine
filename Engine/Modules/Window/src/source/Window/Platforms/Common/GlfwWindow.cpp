@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -225,8 +225,6 @@ void GlfwWindow::SetVSync(const bool enabled) {
  *			Throws std::runtime_error if window creation or GLAD initialization fails.
  */
 void GlfwWindow::_Init() {
-	CE_INFO("Creating window {0}, ({1}x{2}), VSync: {3}, Graphics api: {4}", _data.title, _data.width, _data.height, _data.VSync, _data.graphicsApi);
-
 	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");
@@ -283,7 +281,6 @@ void GlfwWindow::_Shutdown() {
 	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) {
 		glfwTerminate();
 		_st_GLFWInitialized = false;
-		CE_CORE_INFO("GLFW terminated - all OpenGL windows closed");
 	}
 }
 

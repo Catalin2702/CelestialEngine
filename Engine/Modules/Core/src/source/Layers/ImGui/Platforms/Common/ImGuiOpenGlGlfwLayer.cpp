@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -50,9 +50,6 @@ void ImGuiOpenGlGlfwLayer::OnRender() const {
 	ImGui::Text("Hello from ImGui with OpenGL and GLFW!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
-	if (ImGui::Button("Click Me!")) {
-		CE_CORE_INFO("Button clicked!");
-	}
 	ImGui::End();
 
 	static bool show = true;

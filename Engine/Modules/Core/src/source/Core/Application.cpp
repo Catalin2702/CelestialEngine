@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Core/Application.hpp"
@@ -97,7 +97,6 @@ void Application::OnEvent(Events::I_Event& event) {
 
 bool Application::OnWindowClose(const Events::WindowCloseEvent&) {
 	_running = false;
-	CE_CORE_INFO("Application::OnWindowClose: Window closed");
 	return true;
 }
 
