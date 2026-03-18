@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
-#include "../../../../include/Input/Platforms/Common/GlfwInput.hpp"
+#include "Input/Platforms/Common/GlfwInput.hpp"
 
 #include "Core/Application.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -17,8 +17,6 @@
 #include <GLFW/glfw3.h>
 
 namespace CE::Input {
-
-I_Input* I_Input::_instance = new GlfwInput();
 
 bool GlfwInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
 	if (not _glfWwindow) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #pragma once
@@ -116,6 +116,12 @@ int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
  * @details Maps the NSEvent buttonNumber to the engine's mouse button key codes
  */
 MouseButtonCode MouseButtonKeyCodeFromCocoa(int buttonNumber);
+
+/**
+ * @brief Converts CE::KeyCode::MouseButtonCode to NSEvent button numbers
+ * @details Maps the engine's mouse button key codes to NSEvent buttonNumber values
+ */
+int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to its string representation

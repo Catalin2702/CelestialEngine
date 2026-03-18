@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Input/I_Input.hpp"
@@ -18,6 +18,8 @@
 #endif
 
 namespace CE::Input {
+
+I_Input* I_Input::_instance = nullptr;
 
 void InitInput(const Types::Window::WindowApi windowApi) {
 	if (I_Input::_instance) {

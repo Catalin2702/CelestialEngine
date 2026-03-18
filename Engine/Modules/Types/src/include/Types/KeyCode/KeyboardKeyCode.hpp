@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #pragma once
@@ -160,6 +160,12 @@ ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
  * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
  */
 KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
+
+/**
+ * @brief Converts CE::KeyCode::KeyboardKeyCode to macOS/Cocoa virtual key codes
+ * @details Maps the engine's keyboard key codes to NSEvent keyCode values
+ */
+unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  *  @brief Formats a KeyboardKeyCode enum value as a string

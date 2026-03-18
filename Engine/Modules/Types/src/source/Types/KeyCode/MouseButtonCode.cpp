@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -86,6 +86,19 @@ MouseButtonCode MouseButtonKeyCodeFromCocoa(const int buttonNumber) {
 		case 1: return KeyCode::MouseButtonCode::Right;
 		case 2: return KeyCode::MouseButtonCode::Middle;
 		default: return KeyCode::MouseButtonCode::Unknown;
+	}
+}
+
+int CocoaButtonNumberFromMouseButton(const MouseButtonCode buttonCode) {
+	switch (buttonCode) {
+		case MouseButtonCode::Left: return 0;
+		case MouseButtonCode::Right: return 1;
+		case MouseButtonCode::Middle:
+		case MouseButtonCode::WheelX:
+		case MouseButtonCode::WheelY: return 2;
+
+		case MouseButtonCode::Unknown:
+		default: return -1;
 	}
 }
 

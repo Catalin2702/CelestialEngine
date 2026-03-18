@@ -4,50 +4,60 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-18
 //
 
 #include "Input/Platforms/Mac/CocoaInput.hpp"
 
 #include "Core/Application.hpp"
+#include "MetalBridge/Cocoa/CocoaBridge.h"
+#include "Types/KeyCode/KeyboardKeyCode.hpp"
+#include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
 
 
 namespace CE::Input {
 
-bool CocoaInput::_IsKeyPressedImpl([[maybe_unused]] KeyCode::KeyboardKeyCode keyCode) {
-	if (not _cocoaWindow) {
-		_InitCocoaWindow();
-	}
-	return false;
+bool CocoaInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
+	// Convert CE keycode to macOS virtual key code and check state
+	const auto cocoaKeyCode = KeyCode::CocoaKeyCodeFromKeyboard(keyCode);
+	return Apple::Bridge::IsKeyPressed(cocoaKeyCode);
 }
 
-bool CocoaInput::_IsMouseButtonPressedImpl([[maybe_unused]] KeyCode::MouseButtonCode buttonCode) {
-	if (not _cocoaWindow) {
-		_InitCocoaWindow();
-	}
-	return false;
+bool CocoaInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode buttonCode) {
+	// Convert CE mouse button code to Cocoa button number
+	const auto cocoaButton = KeyCode::CocoaButtonNumberFromMouseButton(buttonCode);
+	return Apple::Bridge::IsMouseButtonPressed(cocoaButton);
 }
 
 float CocoaInput::_GetMouseXImpl() {
 	if (not _cocoaWindow) {
 		_InitCocoaWindow();
 	}
-	return 0.0f;
+
+	float x = 0.0f, y = 0.0f;
+	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	return x;
 }
 
 float CocoaInput::_GetMouseYImpl() {
 	if (not _cocoaWindow) {
 		_InitCocoaWindow();
 	}
-	return 0.0f;
+
+	float x = 0.0f, y = 0.0f;
+	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	return y;
 }
 
 std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
 	if (not _cocoaWindow) {
 		_InitCocoaWindow();
 	}
-	return {0.0f, 0.0f};
+
+	float x = 0.0f, y = 0.0f;
+	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	return {x, y};
 }
 
 void CocoaInput::_InitCocoaWindow() {
