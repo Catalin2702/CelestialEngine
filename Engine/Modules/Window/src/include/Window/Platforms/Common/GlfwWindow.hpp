@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <utility>
 
 struct GLFWwindow;
 
@@ -99,6 +100,8 @@ public:
 	 *			Returns the raw pointer from the smart pointer wrapper.
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
+
+	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 	
 	/**
 	 * @brief Sets the event callback function

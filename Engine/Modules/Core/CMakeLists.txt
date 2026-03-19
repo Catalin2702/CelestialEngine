@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-19
+# Updated: 2026-03-20
 #
 
 set(HEADERS
@@ -15,7 +15,7 @@ set(HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 	src/include/Input/Platforms/Common/GlfwInput.hpp
 		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp
-		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
+#		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
 	>
 	src/include/Input/Platforms/Mac/CocoaInput.hpp
 )
@@ -36,7 +36,7 @@ set(SOURCES
 	$<$<PLATFORM_ID:Darwin>:
 	src/source/Input/Platforms/Common/GlfwInput.cpp
 	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.cpp
-		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
+#		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
 	>
 	src/source/Input/InputImpl.cpp
 	src/source/Input/Platforms/Mac/CocoaInput.cpp

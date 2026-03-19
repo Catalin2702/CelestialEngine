@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -64,6 +64,16 @@ GlfwWindow::~GlfwWindow() {
  */
 void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
+}
+
+std::pair<float, float> GlfwWindow::GetContentScale() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("Could not get content scale because window is not initialized.");
+		return {1.0f, 1.0f};
+	}
+	float xScale = 1.0f, yScale = 1.0f;
+	glfwGetWindowContentScale(_glfwWindow.get(), &xScale, &yScale);
+	return {xScale, yScale};
 }
 
 /**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -164,6 +164,8 @@ public:
 	 * @details Provides access to the window for rendering operations
 	 */
 	[[nodiscard]] Window::I_Window* GetWindow() const { return _window.get(); }
+
+	[[nodiscard]] Render::Context::I_Context* GetContext() const { return _context.get(); }
 
 public:
 	/**

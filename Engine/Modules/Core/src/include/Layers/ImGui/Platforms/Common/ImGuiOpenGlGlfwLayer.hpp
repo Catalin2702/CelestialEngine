@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -110,7 +110,7 @@ protected:
 
 private:
 	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
-	Window::GlfwWindow* _window = nullptr;		///< Cached OpenGL window pointer
+	Window::GlfwWindow* _window = nullptr;			///< Cached OpenGL window pointer
 };
 
 }

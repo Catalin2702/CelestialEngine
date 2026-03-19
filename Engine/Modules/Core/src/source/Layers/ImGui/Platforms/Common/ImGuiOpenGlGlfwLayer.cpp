@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-20
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -256,9 +256,10 @@ bool ImGuiOpenGlGlfwLayer::_OnWindowResized(Events::WindowResizeEvent& event) co
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	float x, y;
-	glfwGetWindowContentScale(_glfwWindow, &x, &y);
-	io.DisplayFramebufferScale = ImVec2(x, y);
+	// float x, y;
+	// glfwGetWindowContentScale(_glfwWindow, &x, &y);
+	const auto [xScale, yScale] = _window->GetContentScale();
+	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
@@ -67,7 +67,7 @@ static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* dat
 		case NS::EventTypeLeftMouseDown:
 		case NS::EventTypeRightMouseDown:
 		case NS::EventTypeOtherMouseDown: {
-			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(event->buttonNumber());
+			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
 			Events::MouseButtonPressedEvent mouseEvent{button};
 			data->EventCallback(mouseEvent);
 			break;
@@ -76,7 +76,7 @@ static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* dat
 		case NS::EventTypeLeftMouseUp:
 		case NS::EventTypeRightMouseUp:
 		case NS::EventTypeOtherMouseUp: {
-			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(event->buttonNumber());
+			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
 			Events::MouseButtonReleasedEvent mouseEvent{button};
 			data->EventCallback(mouseEvent);
 			break;
@@ -89,7 +89,7 @@ static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* dat
 		case NS::EventTypeOtherMouseDragged: {
 			const auto [x, y] = event->locationInWindow();
 			// Flip Y coordinate (Cocoa uses bottom-left origin, we use top-left)
-			const float flippedY = data->height - y;
+			const auto flippedY = static_cast<float>(data->height - y);
 			Events::MouseMovedEvent mouseEvent{static_cast<float>(x), flippedY};
 			data->EventCallback(mouseEvent);
 			break;
@@ -144,9 +144,6 @@ static void CocoaWindowEventCallback(void* userData, const int eventType, const 
 			break;
 
 		case 2: // Focus gained
-			// Could emit WindowFocusEvent if implemented
-			break;
-
 		case 3: // Focus lost
 			// Could emit WindowLostFocusEvent if implemented
 			break;
@@ -197,6 +194,15 @@ void MetalCocoaWindow::OnUpdate() const {
 	}, const_cast<EventWindowData*>(&_data));
 
 	pool->release();
+}
+
+std::pair<float, float> MetalCocoaWindow::GetContentScale() const {
+	if (not _window) {
+		CE_CORE_WARN("Could not get content scale because window is not initialized.");
+		return {1.0f, 1.0f};
+	}
+	const auto scale = _window->backingScaleFactor();
+	return {scale, scale};
 }
 
 void MetalCocoaWindow::SetEventCallback(const EventCallbackFn& callback) {

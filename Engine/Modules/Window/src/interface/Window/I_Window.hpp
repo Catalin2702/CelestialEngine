@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -16,7 +16,7 @@
 #include "Types/Window/WindowProps.hpp"
 
 #include <memory>
-
+#include <utility>
 
 namespace CE::Events {
 class I_Event;
@@ -84,6 +84,8 @@ public:
 	[[nodiscard]] virtual std::pair<unsigned int, unsigned int> GetSize() const = 0;
 
 	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
+
+	[[nodiscard]] virtual std::pair<float, float> GetContentScale() const = 0;
 
 	/**
 	 * @brief Checks if VSync is enabled

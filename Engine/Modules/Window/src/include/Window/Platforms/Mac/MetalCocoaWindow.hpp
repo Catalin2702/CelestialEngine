@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 #include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <utility>
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
@@ -106,6 +107,8 @@ public:
 	 * @details Provides access to the underlying macOS window for platform-specific operations. The returned pointer can be cast to NS::Window* for use with Cocoa APIs.
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return GetMetalWindow(); }
+
+	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 	/**
 	 * @brief Gets the Metal command queue

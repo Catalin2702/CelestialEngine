@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
@@ -304,9 +304,8 @@ bool ImGuiMetalCocoaLayer::_OnWindowResized(Events::WindowResizeEvent& event) co
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const CGFloat frameBufferScale = _metalContext.window->GetMetalWindow()->backingScaleFactor();
-
-	io.DisplayFramebufferScale = ImVec2(static_cast<float>(frameBufferScale), static_cast<float>(frameBufferScale));
+	const auto [xScale, yScale] = _metalContext.window->GetContentScale();
+	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;
 }
