@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-13
+# Updated: 2026-03-19
 #
 
 set(HEADERS
@@ -13,6 +13,7 @@ set(HEADERS
 	src/include/Types/Container/Vec.hpp
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
+	src/include/Types/Render/Render.hpp
 )
 
 set(SOURCES
@@ -22,6 +23,7 @@ set(SOURCES
 	src/source/Types/KeyCode/MouseButtonCode.cpp
 	src/include/Types/Build/Build.hpp
 	src/source/Types/Build/Build.cpp
+	src/source/Types/Render/Render.cpp
 )
 
 add_library(CE_Types SHARED

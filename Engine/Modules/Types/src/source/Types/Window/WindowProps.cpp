@@ -12,27 +12,8 @@
 
 namespace CE::Types::Window {
 
-WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
+WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
 	title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
-
-bool IsGraphicsApiSupported(const GraphicsApi& api) {
-	if (api == GraphicsApi::None)
-		return false;
-
-	if (api == GraphicsApi::OpenGL or api == GraphicsApi::Vulkan)
-		return true;
-
-#ifdef CE_PLATFORM_MACOS
-	if (api == GraphicsApi::Metal)
-		return true;
-#elifdef CE_PLATFORM_WINDOWS
-	if (api == GraphicsApi::DirectX11 or api == GraphicsApi::DirectX12)
-		return true;
-#else
-		#error Unsupported platform for graphics API support check
-#endif
-	return false;
-}
 
 bool IsWindowApiSupported(const WindowApi& api) {
 	if (api == WindowApi::None)
@@ -56,24 +37,21 @@ bool IsWindowApiSupported(const WindowApi& api) {
 	return false;
 }
 
-bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
-	if (graphicsApi == GraphicsApi::None or windowApi == WindowApi::None)
+bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi) {
+	if (windowApi == WindowApi::None or graphicsApi == Render::GraphicsApi::None)
 		return false;
 
-	if (windowApi == WindowApi::GLFW)
-		return true;
-
-	if (graphicsApi == GraphicsApi::OpenGL)
-		return true;
-
-	if (graphicsApi == GraphicsApi::Vulkan)
+	if (windowApi == WindowApi::GLFW and graphicsApi == Render::GraphicsApi::OpenGL)
 		return true;
 
 #ifdef CE_PLATFORM_MACOS
-	if (graphicsApi == GraphicsApi::Metal and windowApi == WindowApi::Cocoa)
+	if (windowApi == WindowApi::Cocoa and (graphicsApi == Render::GraphicsApi::Metal or graphicsApi == Render::GraphicsApi::Vulkan))
 		return true;
 #elifdef CE_PLATFORM_WINDOWS
-	if ((graphicsApi == GraphicsApi::DirectX11 or graphicsApi == GraphicsApi::DirectX12) and windowApi == WindowApi::Win32)
+	if (windowApi == WindowApi::Win32 and (graphicsApi == Render::GraphicsApi::DirectX11 or graphicsApi == Render::GraphicsApi::DirectX12 or graphicsApi == Render::GraphicsApi::Vulkan))
+		return true;
+#elifdef CE_PLATFORM_LINUX
+	if (windowApi == WindowApi::X11 and graphicsApi == GraphicsApi::Vulkan)
 		return true;
 #endif
 

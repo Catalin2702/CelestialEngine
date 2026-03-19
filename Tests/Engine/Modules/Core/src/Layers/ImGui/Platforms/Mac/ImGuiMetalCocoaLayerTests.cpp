@@ -25,6 +25,7 @@ using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
+using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 
 constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};

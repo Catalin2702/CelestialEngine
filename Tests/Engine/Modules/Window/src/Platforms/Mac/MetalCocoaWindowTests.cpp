@@ -14,10 +14,11 @@
 
 #include <gtest/gtest.h>
 
+using namespace CE::Events;
 using namespace CE::Tools::Log;
+using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 using namespace CE::Window;
-using namespace CE::Events;
 
 /**
  * @brief Test fixture for MetalCocoaWindow tests

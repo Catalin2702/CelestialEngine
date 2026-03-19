@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-03-19
 #
 
 set(HEADERS
@@ -13,6 +13,8 @@ set(HEADERS
 	src/include/Define/Event.hpp
 	src/include/Define/Log.hpp
 	src/include/Define/Type.hpp
+	src/include/Define/Window.hpp
+	src/include/Define/Render.hpp
 )
 
 add_library(CE_Define SHARED

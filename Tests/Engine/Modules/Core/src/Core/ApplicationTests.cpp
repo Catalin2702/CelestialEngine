@@ -21,6 +21,7 @@ using namespace CE::Core;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
+using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 
 

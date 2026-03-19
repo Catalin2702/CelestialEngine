@@ -12,8 +12,10 @@
 #ifndef CE_WINDOW_MAC_METALCOCOAWINDOW_HPP
 #define CE_WINDOW_MAC_METALCOCOAWINDOW_HPP
 
-#include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
+
+#include "Define/Window.hpp"
+#include "Types/Window/WindowProps.hpp"
 
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
@@ -174,6 +176,8 @@ public:
 	 * @details VSync synchronizes rendering with the monitor's refresh rate to prevent screen tearing. This method updates the Metal layer's display sync setting accordingly.
 	 */
 	void SetVSync(bool enabled) override;
+
+	WINDOW_API_TYPE(Cocoa)
 
 private:
 	/** @brief Initializes the window and Metal resources

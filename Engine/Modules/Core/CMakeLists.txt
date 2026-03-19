@@ -60,6 +60,7 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Events
 	CE_Glfw
 	CE_ImGui
+	CE_Render
 	CE_SpdLog
 	CE_Tools
 	CE_Types

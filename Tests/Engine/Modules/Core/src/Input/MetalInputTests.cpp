@@ -23,6 +23,7 @@ using namespace CE::Core;
 using namespace CE::Input;
 using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
+using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 
 /**

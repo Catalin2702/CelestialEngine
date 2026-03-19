@@ -16,6 +16,8 @@
 #include <sstream>
 #include <string>
 
+#include "Types/Render/Render.hpp"
+
 namespace CE::Events {
 class Event;
 }
@@ -27,21 +29,6 @@ class Event;
  *			including properties for window creation and event handling.
  */
 namespace CE::Types::Window {
-
-/**
- * @enum GraphicsApi
- * @brief Enumeration of supported graphics APIs
- * @details Defines the graphics APIs that can be used for rendering in the window.
- *			Includes options for OpenGL, Metal, Vulkan, and DirectX (Windows).
- */
-enum class GraphicsApi: uint8_t {
-	None,											///< No graphics API specified
-	OpenGL,											///< OpenGL graphics API
-	Metal,											///< Metal graphics API (macOS)
-	Vulkan,											///< Vulkan graphics API
-	DirectX11,										///< DirectX 11 graphics API (Windows)
-	DirectX12,										///< DirectX 12 graphics API (Windows)
-};
 
 /**
  * @enum WindowApi
@@ -68,7 +55,7 @@ struct WindowProps {
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
 	bool VSync = false;								///< Vertical synchronization enabled/disabled
-	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
+	Render::GraphicsApi graphicsApi = Render::GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
 	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management (GLFW, Win32, X11, Cocoa)
 
 	/**
@@ -88,7 +75,7 @@ struct WindowProps {
 	 * @details Initializes the WindowProps structure with the provided values.
 	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
-	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
+	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, Render::GraphicsApi graphicsApi, WindowApi windowApi);
 
 	/**
 	 * @brief Constexpr constructor
@@ -101,7 +88,7 @@ struct WindowProps {
 	 * @details Initializes the WindowProps structure with the provided values, converting the title from a C-style string to std::string.
 	 *			This constructor provides convenience when using string literals for the window title.
 	 */
-	constexpr WindowProps(const char* title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi):
+	constexpr WindowProps(const char* title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi):
 		title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 };
 
@@ -145,7 +132,7 @@ struct WindowData: WindowProps {
 	 *			calling the base WindowProps constructor.
 	 *			This structure is used internally by window implementations to store both configuration and event callback information.
 	 */
-	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi)
+	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi)
 		: WindowProps(title, width, height, VSync, graphicsApi, windowApi) {}
 	/**
 	 * @brief Constructor from WindowProps
@@ -156,29 +143,6 @@ struct WindowData: WindowProps {
 	 */
 	WindowData(const WindowProps& props): WindowProps(props) {}
 };
-
-inline std::string format_as(const GraphicsApi& event) {
-	switch (event) {
-	case GraphicsApi::None:
-		return "None";
-	case GraphicsApi::OpenGL:
-		return "OpenGL";
-	case GraphicsApi::Metal:
-		return "Metal";
-	case GraphicsApi::Vulkan:
-		return "Vulkan";
-	case GraphicsApi::DirectX11:
-		return "DirectX11";
-	case GraphicsApi::DirectX12:
-		return "DirectX12";
-	default:
-		return "Unknown Graphics API";
-	}
-}
-
-inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
-	return os << format_as(event);
-}
 
 inline std::string format_as(const WindowApi& event) {
 	switch (event) {
@@ -202,15 +166,6 @@ inline std::ostream& operator<<(std::ostream& os, const WindowApi& event) {
 }
 
 /**
- * @brief Checks if the specified graphics API is supported on the current platform
- * @param api Graphics API to check
- * @return bool True if the graphics API is supported, false otherwise
- * @details This function checks if the given graphics API is supported on the current platform.
- *			For example, Metal is only supported on macOS, while DirectX is only supported on Windows.
- */
-bool IsGraphicsApiSupported(const GraphicsApi& api);
-
-/**
  * @brief Checks if the specified window API is supported on the current platform
  * @param api Window API to check
  * @return bool True if the window API is supported, false otherwise
@@ -227,7 +182,7 @@ bool IsWindowApiSupported(const WindowApi& api);
  * @details This function checks if the given graphics API can be used with the given window API.
  *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
  */
-bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
+bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 

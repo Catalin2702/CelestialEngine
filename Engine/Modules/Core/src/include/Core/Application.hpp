@@ -169,6 +169,8 @@ public:
 	 */
 	void InitWindow(const TypeWindow::WindowProps& windowProps);
 
+	void InitRenderer(const TypeWindow::WindowProps& windowProps);
+
 	/**
 	 * @brief Initializes the ImGui layer based on window properties
 	 * @param windowProps Window configuration properties

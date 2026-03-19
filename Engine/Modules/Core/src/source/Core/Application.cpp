@@ -14,6 +14,7 @@
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
+#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
@@ -23,6 +24,8 @@
 #ifdef CE_PLATFORM_MACOS
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp"
+
+#include "Render/Context/Platforms/Mac/MetalContext.hpp"
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
 #endif
@@ -153,6 +156,10 @@ void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 	Input::InitInput(windowProps.windowApi);
 }
 
+void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
+
+}
+
 void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 	if (not _window) {
 		CE_CORE_ERROR("Application::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
@@ -162,12 +169,12 @@ void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 	std::unique_ptr<Layers::I_ImGuiLayer> overlay;
 
 	switch (windowProps.graphicsApi) {
-		case TypeWindow::GraphicsApi::OpenGL: {
+		case Types::Render::GraphicsApi::OpenGL: {
 			overlay = std::make_unique<Layers::ImGuiOpenGlGlfwLayer>();
 			break;
 		}
 #ifdef CE_PLATFORM_MACOS
-		case TypeWindow::GraphicsApi::Metal: {
+		case Types::Render::GraphicsApi::Metal: {
 			switch (windowProps.windowApi) {
 				case TypeWindow::WindowApi::GLFW: {
 					overlay = std::make_unique<Layers::ImGuiMetalGlfwLayer>();

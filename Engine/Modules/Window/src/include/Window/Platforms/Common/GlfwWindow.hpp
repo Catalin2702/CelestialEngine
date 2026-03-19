@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Window/I_Window.hpp"
 
+#include "Define/Window.hpp"
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -145,6 +146,8 @@ public:
 	 *			a warning and returns without making changes.
 	 */
 	void SetVSync(bool enabled) override;
+
+	WINDOW_API_TYPE(GLFW)
 
 private:
 	/**

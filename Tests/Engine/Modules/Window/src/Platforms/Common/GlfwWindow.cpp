@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include <Events/I_Event.hpp>
@@ -14,10 +14,11 @@
 
 #include <gtest/gtest.h>
 
+using namespace CE::Events;
 using namespace CE::Tools::Log;
+using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 using namespace CE::Window;
-using namespace CE::Events;
 
 /**
  * @brief Test fixture for OpenGL tests

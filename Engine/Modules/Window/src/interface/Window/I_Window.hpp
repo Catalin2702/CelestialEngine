@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -83,6 +83,8 @@ public:
 
 	[[nodiscard]] virtual std::pair<unsigned int, unsigned int> GetSize() const = 0;
 
+	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
+
 	/**
 	 * @brief Checks if VSync is enabled
 	 * @return bool True if VSync is enabled, false otherwise
@@ -145,4 +147,4 @@ public:
 
 }
 
-#endif // CE_WINDOW_I_WINDOW_HPP
+#endif //CE_WINDOW_I_WINDOW_HPP

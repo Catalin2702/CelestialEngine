@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-13
+# Updated: 2026-03-19
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -39,6 +39,7 @@ add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
 add_subdirectory(Modules/Native)
+add_subdirectory(Modules/Render)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Window)
@@ -56,6 +57,7 @@ target_link_libraries(CE_Engine PUBLIC
 	CE_Define
 	CE_Events
 	CE_Native
+	CE_Render
 	CE_Tools
 	CE_Types
 	CE_Window

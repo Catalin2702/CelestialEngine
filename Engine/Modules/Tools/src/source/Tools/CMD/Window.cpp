@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include "Tools/CMD/Window.hpp"
@@ -36,7 +36,7 @@ Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	unsigned int width = 1280;
 	unsigned int height = 720;
 	auto VSync = true;
-	auto graphicsApi = Types::Window::GraphicsApi::OpenGL;
+	auto graphicsApi = Types::Render::GraphicsApi::OpenGL;
 	auto windowApi = Types::Window::WindowApi::GLFW;
 
 	// Start from 1 to skip executable path
@@ -81,23 +81,23 @@ Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 			// ReSharper disable once CppTooWideScopeInitStatement
 			const std::string apiArg = Manipulation::ToLowerCase(argv[++i]);
 			if (apiArg == "opengl") {
-				graphicsApi = Types::Window::GraphicsApi::OpenGL;
+				graphicsApi = Types::Render::GraphicsApi::OpenGL;
 			}
 			else if (apiArg == "metal") {
-				graphicsApi = Types::Window::GraphicsApi::Metal;
+				graphicsApi = Types::Render::GraphicsApi::Metal;
 			}
 			else if (apiArg == "vulkan") {
-				graphicsApi = Types::Window::GraphicsApi::Vulkan;
+				graphicsApi = Types::Render::GraphicsApi::Vulkan;
 			}
 			else if (apiArg == "directx11" or apiArg == "dx11" or apiArg == "d3d11") {
-				graphicsApi = Types::Window::GraphicsApi::DirectX11;
+				graphicsApi = Types::Render::GraphicsApi::DirectX11;
 			}
 			else if (apiArg == "directx12" or apiArg == "dx12" or apiArg == "d3d12") {
-				graphicsApi = Types::Window::GraphicsApi::DirectX12;
+				graphicsApi = Types::Render::GraphicsApi::DirectX12;
 			}
 			else {
 				CE_CORE_WARN("Unsupported graphics API specified: ({0}). Defaulting to OpenGL.", argv[i]);
-				graphicsApi = Types::Window::GraphicsApi::OpenGL;
+				graphicsApi = Types::Render::GraphicsApi::OpenGL;
 			}
 		}
 		else if ((arg == "--window-api" or arg == "-wa") and i + 1 < argc) {
