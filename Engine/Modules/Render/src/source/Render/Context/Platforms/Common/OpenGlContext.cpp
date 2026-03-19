@@ -9,14 +9,29 @@
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 
+#include "Tools/Log/Log.hpp"
+
+#include <cassert>
+#include <stdexcept>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 namespace CE::Render::Context {
 
-OpenGlContext::OpenGlContext(GLFWwindow* window) {
-}
+OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {}
 
 void OpenGlContext::Init() {
+	assert(_window && "OpenGlContext requires a valid GLFW window pointer");
+	glfwMakeContextCurrent(_window);
+
+	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
+		CE_CORE_ERROR("OpenGlContext::Init: Could not load GLAD");
+		throw std::runtime_error("OpenGlContext::Init: Could not load GLAD");
+	}
 }
 
 void OpenGlContext::SwapBuffers() {
+	glfwSwapBuffers(_window);
 }
+
 }

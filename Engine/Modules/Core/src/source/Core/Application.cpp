@@ -23,13 +23,13 @@
 
 #ifdef CE_PLATFORM_MACOS
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
-#include "Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp"
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
 #endif
 
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 
@@ -144,10 +144,7 @@ void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 		}
 	}
 
-	if (not window) {
-		CE_CORE_ERROR("Application::_Init: Can't initialize the window");
-		throw std::runtime_error("Can't initialize the window");
-	}
+	assert(window && "Application::_Init: Failed to create window instance");
 
 	window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
 
@@ -157,14 +154,44 @@ void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 }
 
 void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
+	assert(_window && "Application::InitRenderer: Window must be initialized before initializing renderer");
 
+	std::unique_ptr<Render::Context::I_Context> context;
+
+	switch (windowProps.graphicsApi) {
+		case Types::Render::GraphicsApi::OpenGL: {
+			if (_window->GetWindowApi() != TypeWindow::WindowApi::GLFW) {
+				CE_CORE_ERROR("Application::InitRenderer: OpenGL graphics API is only supported with GLFW window API. Current window API: {0}", _window->GetWindowApi());
+				throw std::runtime_error("OpenGL graphics API is only supported with GLFW window API");
+			}
+			context = std::make_unique<Render::Context::OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+			break;
+		}
+#ifdef CE_PLATFORM_MACOS
+		case Types::Render::GraphicsApi::Metal: {
+			if (_window->GetWindowApi() != TypeWindow::WindowApi::Cocoa) {
+				CE_CORE_ERROR("Application::InitRenderer: Metal graphics API on macOS is only supported with Cocoa window API. Current window API: {0}", _window->GetWindowApi());
+				throw std::runtime_error("Metal graphics API on macOS is only supported with Cocoa window API");
+			}
+			context = std::make_unique<Render::Context::MetalContext>(static_cast<NS::Window*>(_window->GetNativeWindow()));
+			break;
+		}
+#endif
+		default: {
+			CE_CORE_ERROR("Application::InitRenderer: Unsupported graphics API specified in window properties for renderer initialization. Graphics API: {0}", windowProps.graphicsApi);
+			throw std::runtime_error("Unsupported graphics API specified in window properties for renderer initialization");
+		}
+	}
+
+	assert(context && "Application::InitRenderer: Failed to create graphics context instance");
+
+	_context = std::move(context);
+
+	_context->Init();
 }
 
 void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
-	if (not _window) {
-		CE_CORE_ERROR("Application::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
-		throw std::runtime_error("Window must be initialized before initializing ImGui layer");
-	}
+	assert(_window && "Application::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
 
 	std::unique_ptr<Layers::I_ImGuiLayer> overlay;
 
@@ -175,20 +202,7 @@ void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 		}
 #ifdef CE_PLATFORM_MACOS
 		case Types::Render::GraphicsApi::Metal: {
-			switch (windowProps.windowApi) {
-				case TypeWindow::WindowApi::GLFW: {
-					overlay = std::make_unique<Layers::ImGuiMetalGlfwLayer>();
-					break;
-				}
-				case TypeWindow::WindowApi::Cocoa: {
-					overlay = std::make_unique<Layers::ImGuiMetalCocoaLayer>();
-					break;
-				}
-				default: {
-					CE_CORE_ERROR("Application::InitImGuiLayer: Unsupported window API specified in window properties for Metal graphics API on macOS. Window API: {0}", windowProps.windowApi);
-					throw std::runtime_error("Unsupported window API specified in window properties for Metal graphics API on macOS");
-				}
-			}
+			overlay = std::make_unique<Layers::ImGuiMetalCocoaLayer>();
 			break;
 		}
 #endif
@@ -198,10 +212,7 @@ void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 		}
 	}
 
-	if (not overlay) {
-		CE_CORE_ERROR("Application::InitImGuiLayer: Can't initialize the ImGui layer");
-		throw std::runtime_error("Can't initialize the ImGui layer");
-	}
+	assert(overlay && "Application::InitImGuiLayer: Failed to create ImGui layer instance");
 
 	_renderLayer = overlay.release();
 	PushOverlay(_renderLayer);

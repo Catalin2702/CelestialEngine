@@ -22,10 +22,16 @@ namespace CE::Events {
 class I_Event;
 class WindowCloseEvent;
 }
+
 namespace CE::Layers {
 class I_Layer;
 class I_RenderLayer;
 }
+
+namespace CE::Render::Context {
+class I_Context;
+}
+
 namespace CE::Window {
 class I_Window;
 }
@@ -185,6 +191,7 @@ private:
 
 private:
 	std::unique_ptr<Window::I_Window> _window;		///< Application window
+	std::unique_ptr<Render::Context::I_Context> _context;	///< Graphics context for rendering
 	Layers::I_RenderLayer* _renderLayer = nullptr;	///< ImGui layer for rendering UI
 	bool _running = false;							///< Flag indicating if application is running
 	Layers::LayerStack _layerStack;					///< Stack of layers and overlays

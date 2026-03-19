@@ -43,6 +43,8 @@ set_target_properties(CE_Render PROPERTIES
 target_link_libraries(CE_Render PUBLIC
 	CE_Config
 	CE_Define
+	CE_Native
+	CE_Tools
 	CE_Types
 )
 

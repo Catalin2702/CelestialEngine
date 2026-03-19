@@ -20,6 +20,8 @@
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
+#include "Define/Window.hpp"
+
 
 struct GLFWwindow;
 namespace CA {
@@ -180,6 +182,8 @@ private:
 	 * @details Releases all Metal resources and destroys the GLFW window
 	 */
 	void _Shutdown();
+
+	WINDOW_API_TYPE(GLFW)
 
 private:
 	EventWindowData _data;										///< Window data including event callback
