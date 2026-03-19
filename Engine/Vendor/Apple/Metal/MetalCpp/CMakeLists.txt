@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-14
+# Updated: 2026-03-19
 #
 
 set(SOURCES
@@ -35,10 +35,7 @@ target_link_libraries(CE_MetalCpp PUBLIC
 )
 
 target_compile_options(CE_MetalCpp
-	PUBLIC -ObjC++
-	$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
-		-fno-objc-arc
-	>
+	PUBLIC -ObjC++ -fno-objc-arc
 	$<$<CONFIG:Dist>:
 		-Wno-nan-infinity-disabled
 	>

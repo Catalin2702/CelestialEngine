@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-26
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-17
+# Updated: 2026-03-19
 #
 
 set(HEADERS
@@ -40,9 +40,10 @@ target_link_libraries(CE_MetalBridge PUBLIC
 )
 
 target_compile_options(CE_MetalBridge
-	PUBLIC -ObjC++
-	$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
-		-fno-objc-arc
+	PUBLIC -ObjC++ -fno-objc-arc
+
+	$<$<CONFIG:Dist>:
+		-Wno-nan-infinity-disabled
 	>
 )
 

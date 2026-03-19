@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-19
 //
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
@@ -210,7 +210,7 @@ void MetalCocoaWindow::SetWindowCallbacks() {
 	// Create delegate and set it for the window
 	_windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
 	if (_windowDelegate) {
-		Apple::Bridge::SetCocoaWindowDelegate(_window, _windowDelegate);
+		Apple::Bridge::SetCocoaWindowDelegate(_window.get(), _windowDelegate);
 	}
 	else {
 		CE_CORE_WARN("Failed to create Cocoa window delegate");
@@ -275,26 +275,36 @@ void MetalCocoaWindow::_InitWindow() {
 	}
 
 	const CGRect frame = {
-		{0, 0},
-		{static_cast<float>(_data.width), static_cast<float>(_data.height)}
+		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
+		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
 	};
 
-	_window = NS::Window::alloc()->init(
-		frame,
-		NS::WindowStyleMaskTitled | NS::WindowStyleMaskClosable |
-		NS::WindowStyleMaskResizable | NS::WindowStyleMaskMiniaturizable,
-		NS::BackingStoreBuffered,
-		false
-	);
-	if (not _window) {
-		CE_CORE_ERROR("Could not create Cocoa window!");
-		throw std::runtime_error("Could not create Cocoa window!");
+	NS::Window* rawWindow;
+
+	try {
+		rawWindow = NS::Window::alloc()->init(
+			frame,
+			NS::WindowStyleMaskTitled | NS::WindowStyleMaskClosable |
+			NS::WindowStyleMaskResizable | NS::WindowStyleMaskMiniaturizable,
+			NS::BackingStoreBuffered,
+			false
+		);
+		if (not rawWindow) {
+			CE_CORE_ERROR("Could not create Cocoa window!");
+			throw std::runtime_error("Could not create Cocoa window!");
+		}
 	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("Exception while creating Cocoa window: {0}", e.what());
+		throw;
+	}
+
+	_window = NS::RetainPtr(rawWindow);
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 
 	// Set frame autosave name to remember window position between launches
-	Apple::Bridge::SetWindowFrameAutosaveName(_window, "CelestialEngineMainWindow");
+	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), "CelestialEngineMainWindow");
 
 	_layer = NS::RetainPtr(CA::MetalLayer::layer());
 	if (not _layer) {

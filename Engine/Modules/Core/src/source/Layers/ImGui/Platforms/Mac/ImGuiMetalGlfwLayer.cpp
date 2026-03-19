@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-19
 //
 
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
@@ -39,13 +39,10 @@ namespace CE::Layers {
 
 static int _st_imGuiMetalGlfwLayerCount = 0;
 
-ImGuiMetalGlfwLayer::ImGuiMetalGlfwLayer(): I_ImGuiLayer("ImGuiMetalGlfwLayer") {
-	_renderSemaphore = dispatch_semaphore_create(_maxFramesInFlight);
-}
+ImGuiMetalGlfwLayer::ImGuiMetalGlfwLayer(): I_ImGuiLayer("ImGuiMetalGlfwLayer") {}
 
 ImGuiMetalGlfwLayer::~ImGuiMetalGlfwLayer() {
-	dispatch_release(_renderSemaphore);
-	_renderSemaphore = nullptr;
+	// Ensure _Shutdown is called if OnDetach was not called
 	_Shutdown();
 }
 
@@ -99,7 +96,7 @@ void ImGuiMetalGlfwLayer::OnEvent(Events::I_Event& event) {
 }
 
 void ImGuiMetalGlfwLayer::Begin() {
-	dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_FOREVER);
+	_renderSemaphore.acquire();
 	_currentFrameStarted = false;
 
 	auto& io = ImGui::GetIO();
@@ -150,8 +147,9 @@ void ImGuiMetalGlfwLayer::End() {
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
+
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
-		dispatch_semaphore_signal(_renderSemaphore);
+		_renderSemaphore.release();
 	});
 
 	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
@@ -248,7 +246,10 @@ void ImGuiMetalGlfwLayer::_Shutdown() {
 		return;
 	_initialized = false;
 
-	_metalContext.renderPassDescriptor->release();
+	if (_metalContext.renderPassDescriptor) {
+		_metalContext.renderPassDescriptor->release();
+		_metalContext.renderPassDescriptor = nullptr;
+	}
 
 	_st_imGuiMetalGlfwLayerCount--;
 	if (_st_imGuiMetalGlfwLayerCount > 0)

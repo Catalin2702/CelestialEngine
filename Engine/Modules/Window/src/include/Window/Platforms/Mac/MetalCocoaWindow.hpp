@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -16,7 +16,6 @@
 #include "Window/I_Window.hpp"
 
 #include <AppKit/AppKit.hpp>
-#include <CoreData/CoreData.h>
 #include <Foundation/Foundation.hpp>
 
 namespace CA {
@@ -132,7 +131,7 @@ public:
 	 * @return NS::Window* Pointer to the AppKit window
 	 * @details Provides access to the underlying macOS window for platform-specific operations. This allows for direct interaction with the Cocoa window when necessary.
 	 */
-	[[nodiscard]] NS::Window* GetMetalWindow() const { return _window; }
+	[[nodiscard]] NS::Window* GetMetalWindow() const { return _window.get(); }
 
 	/**
 	 * @brief Gets the content view of the macOS window
@@ -208,7 +207,7 @@ private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue;	///< Metal command queue
 	NS::SharedPtr<MTL::Device> _device;				///< Metal device (GPU)
 	NS::SharedPtr<CA::MetalLayer> _layer;			///< Core Animation Metal layer
-	NS::Window* _window;							///< Native macOS window
+	NS::SharedPtr<NS::Window> _window;							///< Native macOS window
 	void* _windowDelegate;							///< Cocoa window delegate for handling events
 };
 

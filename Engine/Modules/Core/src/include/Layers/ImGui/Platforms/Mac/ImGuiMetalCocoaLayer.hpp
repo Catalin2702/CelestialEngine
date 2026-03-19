@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
-#include <dispatch/dispatch.h>
+#include <semaphore>
 #include <Foundation/Foundation.hpp>
 
 namespace CA {
@@ -48,10 +48,9 @@ class ImGuiMetalCocoaLayer final: public I_ImGuiLayer {
 	};
 
 	struct MetalFrameContext {
-		CA::MetalDrawable* drawable = nullptr;							///< Pointer to the Metal drawable
-		MTL::CommandBuffer* commandBuffer = nullptr;					///< Pointer to the Metal command buffer
+		NS::SharedPtr<CA::MetalDrawable> drawable = nullptr;							///< Pointer to the Metal drawable
+		NS::SharedPtr<MTL::CommandBuffer> commandBuffer = nullptr;					///< Pointer to the Metal command buffer
 		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder
-		NS::SharedPtr<NS::AutoreleasePool> autoreleasePool = nullptr;	///< Shared pointer to the autorelease pool for the frame
 	};
 
 public:
@@ -93,8 +92,7 @@ private:
 	MetalContext _metalContext;							///< Cached Metal context for rendering
 	MetalFrameContext _frameContext;					///< Cached frame context for the current frame
 
-	dispatch_semaphore_t _renderSemaphore = nullptr;	///< Semaphore to synchronize frame rendering with Metal
-	const unsigned int _maxFramesInFlight = 3;			///< Maximum number of frames that can be in flight for rendering
+	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-19
 //
 
 #include "Core/Application.hpp"
@@ -25,7 +25,6 @@
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp"
 
 #include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
-#include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
 #endif
 
 #include <memory>
@@ -38,17 +37,7 @@ Application* Application::_instance = nullptr;
 
 Application::Application() {
 	assert(_instance == nullptr && "Application already exists!");
-	_Init({"CelestialEngine", 1280, 720, true, TypeWindow::GraphicsApi::OpenGL, TypeWindow::WindowApi::GLFW});
-}
-
-Application::Application(const TypeWindow::WindowProps& windowProps) {
-	assert(_instance == nullptr && "Application already exists!");
-	_Init(windowProps);
-}
-
-Application::Application(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const TypeWindow::GraphicsApi graphicsApi, const TypeWindow::WindowApi windowApi) {
-	assert(_instance == nullptr && "Application already exists!");
-	_Init({title, width, height, VSync, graphicsApi, windowApi});
+	_Init();
 }
 
 Application::~Application() {
@@ -109,102 +98,40 @@ void Application::PushOverlay(Layers::I_Layer *overlay) {
 }
 
 void Application::PopLayer(Layers::I_Layer* layer) {
+	if (layer == _renderLayer)
+		_renderLayer = nullptr;
+
 	_layerStack.PopLayer(layer);
 }
 
 void Application::PopOverlay(Layers::I_Layer* overlay) {
+	if (overlay == _renderLayer)
+		_renderLayer = nullptr;
+
 	_layerStack.PopOverlay(overlay);
 }
 
-void Application::_Init(const TypeWindow::WindowProps& windowProps) {
+void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("Application::_Init: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
 		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
 	}
 
-	_instance = this;
+	std::unique_ptr<Window::I_Window> window;
 
 	switch (windowProps.windowApi) {
-#ifdef CE_PLATFORM_MACOS
 		case TypeWindow::WindowApi::GLFW: {
-			switch (windowProps.graphicsApi) {
-				case TypeWindow::GraphicsApi::OpenGL: {
-					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
-					);
-					break;
-				}
-				case TypeWindow::GraphicsApi::Metal: {
-					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::MetalGlfwWindow>(windowProps)
-					);
-					break;
-				}
-				case Types::Window::GraphicsApi::Vulkan: {
-					CE_CORE_ERROR("Application::_Init: Vulkan graphics API is not supported on macOS with GLFW. Please use Metal or OpenGL instead.");
-					throw std::runtime_error("Vulkan graphics API is not supported on macOS with GLFW");
-				}
-				default: {
-					CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties for GLFW on macOS. Graphics API: {0}", windowProps.graphicsApi);
-					throw std::runtime_error("Unsupported graphics API specified in window properties for GLFW on macOS");
-				}
-			}
-			break;
-		}
-		case TypeWindow::WindowApi::Cocoa: {
-			_window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<Window::MetalCocoaWindow>(windowProps)
+			window = std::unique_ptr<Window::I_Window>(
+				Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
 			);
 			break;
 		}
-#elifdef CE_PLATFORM_WINDOWS
-		case Types::Window::WindowApi::GLFW: {
-			switch (windowProps.graphicsApi) {
-				case TypeWindow::GraphicsApi::OpenGL: {
-					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
-					);
-					break;
-				}
-				case TypeWindow::GraphicsApi::Vulkan: {
-					CE_CORE_ERROR("Application::_Init: Vulkan graphics API is not supported on Windows with GLFW. Please use OpenGL instead.");
-					throw std::runtime_error("Vulkan graphics API is not supported on Windows with GLFW");
-				}
-				default: {
-					CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties for GLFW on Windows. Graphics API: {0}", windowProps.graphicsApi);
-					throw std::runtime_error("Unsupported graphics API specified in window properties for GLFW on Windows");
-				}
-			}
+#ifdef CE_PLATFORM_MACOS
+		case TypeWindow::WindowApi::Cocoa: {
+			window = std::unique_ptr<Window::I_Window>(
+				Window::I_Window::CreateWindow<Window::MetalCocoaWindow>(windowProps)
+			);
 			break;
-		}
-		case Types::Window::WindowApi::Win32: {
-			CE_CORE_ERROR("Application::_Init: Win32 window API is not supported. Please use GLFW with OpenGL instead.");
-			throw std::runtime_error("Win32 window API is not supported");
-			break;
-		}
-#elifdef E_PLATFORM_LINUX
-		case Types::Window::WindowApi::GLFW: {
-			switch (windowProps.graphicsApi) {
-				case TypeWindow::GraphicsApi::OpenGL: {
-					_window = std::unique_ptr<Window::I_Window>(
-						Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
-					);
-					break;
-				}
-				case TypeWindow::GraphicsApi::Vulkan: {
-					CE_CORE_ERROR("Application::_Init: Vulkan graphics API is not supported on this platform with GLFW. Please use OpenGL instead.");
-					throw std::runtime_error("Vulkan graphics API is not supported on this platform with GLFW");
-				}
-				default: {
-					CE_CORE_ERROR("Application::_Init: Unsupported graphics API specified in window properties for GLFW on this platform. Graphics API: {0}", windowProps.graphicsApi);
-					throw std::runtime_error("Unsupported graphics API specified in window properties for GLFW on this platform");
-				}
-			}
-			break;
-		}
-		default: {
-			CE_CORE_ERROR("Application::_Init: Unsupported window API specified in window properties. Window API: {0}", windowProps.windowApi);
-			throw std::runtime_error("Unsupported window API specified in window properties");
 		}
 #endif
 		case TypeWindow::WindowApi::None:
@@ -214,14 +141,26 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 		}
 	}
 
-	if (not _window) {
+	if (not window) {
 		CE_CORE_ERROR("Application::_Init: Can't initialize the window");
 		throw std::runtime_error("Can't initialize the window");
 	}
 
-	_window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
+	window->SetEventCallback(BIND_FN_ONE_PARAM(Application::OnEvent));
+
+	_window = std::move(window);
+
+	Input::InitInput(windowProps.windowApi);
+}
+
+void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
+	if (not _window) {
+		CE_CORE_ERROR("Application::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
+		throw std::runtime_error("Window must be initialized before initializing ImGui layer");
+	}
 
 	std::unique_ptr<Layers::I_ImGuiLayer> overlay;
+
 	switch (windowProps.graphicsApi) {
 		case TypeWindow::GraphicsApi::OpenGL: {
 			overlay = std::make_unique<Layers::ImGuiOpenGlGlfwLayer>();
@@ -239,7 +178,7 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 					break;
 				}
 				default: {
-					CE_CORE_ERROR("Application::_Init: Unsupported window API specified in window properties for Metal graphics API on macOS. Window API: {0}", windowProps.windowApi);
+					CE_CORE_ERROR("Application::InitImGuiLayer: Unsupported window API specified in window properties for Metal graphics API on macOS. Window API: {0}", windowProps.windowApi);
 					throw std::runtime_error("Unsupported window API specified in window properties for Metal graphics API on macOS");
 				}
 			}
@@ -247,20 +186,23 @@ void Application::_Init(const TypeWindow::WindowProps& windowProps) {
 		}
 #endif
 		default: {
-			CE_CORE_ERROR("Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", windowProps.graphicsApi);
+			CE_CORE_ERROR("Application::InitImGuiLayer: Unsupported graphics API specified in window properties for ImGui layer. Graphics API: {0}", windowProps.graphicsApi);
 			throw std::runtime_error("Unsupported graphics API specified in window properties for ImGui layer");
 		}
 	}
 
 	if (not overlay) {
-		CE_CORE_ERROR("Application::_Init: Can't initialize the ImGui layer");
+		CE_CORE_ERROR("Application::InitImGuiLayer: Can't initialize the ImGui layer");
 		throw std::runtime_error("Can't initialize the ImGui layer");
 	}
+
 	_renderLayer = overlay.release();
 	PushOverlay(_renderLayer);
+}
 
+void Application::_Init() {
+	_instance = this;
 	_running = true;
-	Input::InitInput(windowProps.windowApi);
 }
 
 }

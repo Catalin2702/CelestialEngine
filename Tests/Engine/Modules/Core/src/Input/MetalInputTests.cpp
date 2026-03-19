@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #include <Core/Application.hpp>
@@ -39,8 +39,10 @@ protected:
 	}
 
 	void _InitInput() {
-		if (not _app)
-			_app = std::make_unique<Application>(_props);
+		if (not _app) {
+			_app = std::make_unique<Application>();
+			_app->InitWindow(_props);
+		}
 	}
 	void _ShutdownInput() {
 		_app.reset();

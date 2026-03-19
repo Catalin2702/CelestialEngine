@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include <Core/Application.hpp>
@@ -81,27 +81,34 @@ protected:
 	void TearDown() override {
 		Log::Shutdown();
 	}
+
+	static std::unique_ptr<Application> CreateApplication() {
+		return std::make_unique<Application>();
+	}
 };
+
+constexpr WindowProps defaultProps{"AppTest", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 /**
  * @brief Test Application construction with default parameters
  */
 TEST_F(ApplicationTest, ConstructionDefault) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
+	app->InitWindow(defaultProps);
 
 	ASSERT_NE(app, nullptr);
 	EXPECT_EQ(&Application::Get(), app.get());
 	EXPECT_NE(app->GetWindow(), nullptr);
-	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
+	EXPECT_FALSE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 0);
 }
 
 /**
  * @brief Test Application construction with WindowProps
  */
 TEST_F(ApplicationTest, ConstructionWithWindowProps) {
-	WindowProps props{"TestApp", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	const auto app = std::make_unique<Application>(props);
+	const auto app = CreateApplication();
+	app->InitWindow(defaultProps);
 
 	ASSERT_NE(app, nullptr);
 	EXPECT_EQ(&Application::Get(), app.get());
@@ -117,7 +124,9 @@ TEST_F(ApplicationTest, ConstructionWithWindowProps) {
  * @brief Test Application construction with individual parameters
  */
 TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
-	const auto app = std::make_unique<Application>("MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW);
+	constexpr WindowProps props{"MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW};
+	const auto app = CreateApplication();
+	app->InitWindow(props);
 
 	ASSERT_NE(app, nullptr);
 	EXPECT_EQ(&Application::Get(), app.get());
@@ -133,7 +142,7 @@ TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
  * @brief Test singleton pattern - only one instance allowed
  */
 TEST_F(ApplicationTest, SingletonPattern) {
-	const auto app1 = std::make_unique<Application>();
+	const auto app1 = CreateApplication();
 	EXPECT_EQ(&Application::Get(), app1.get());
 
 	// Note: Creating a second instance would trigger an assertion in debug builds
@@ -145,7 +154,9 @@ TEST_F(ApplicationTest, SingletonPattern) {
  * @brief Test Application::Get() returns correct instance
  */
 TEST_F(ApplicationTest, GetInstance) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
+	app->InitWindow(defaultProps);
+
 	Application& instance = Application::Get();
 
 	EXPECT_EQ(&instance, app.get());
@@ -156,7 +167,8 @@ TEST_F(ApplicationTest, GetInstance) {
  * @brief Test GetWindow returns valid window pointer
  */
 TEST_F(ApplicationTest, GetWindow) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
+	app->InitWindow(defaultProps);
 	const auto* window = app->GetWindow();
 
 	ASSERT_NE(window, nullptr);
@@ -168,58 +180,55 @@ TEST_F(ApplicationTest, GetWindow) {
  * @brief Test PushLayer adds layer and calls OnAttach
  */
 TEST_F(ApplicationTest, PushLayer) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 	auto* layer = new MockAppLayer{"TestLayer"};
 
 	EXPECT_FALSE(layer->IsAttached());
-	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
+	EXPECT_FALSE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 0);
 
 	app->PushLayer(layer);
 
 	EXPECT_TRUE(layer->IsAttached());
 	EXPECT_EQ(layer->GetAttachCount(), 1);
 	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 2);
+	EXPECT_EQ(app->LayersSize(), 1);
 }
 
 /**
  * @brief Test PushOverlay adds overlay and calls OnAttach
  */
 TEST_F(ApplicationTest, PushOverlay) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 	auto* overlay = new MockAppLayer("TestOverlay");
 
 	EXPECT_FALSE(overlay->IsAttached());
-	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
 
 	app->PushOverlay(overlay);
 
 	EXPECT_TRUE(overlay->IsAttached());
 	EXPECT_EQ(overlay->GetAttachCount(), 1);
 	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 2);
+	EXPECT_EQ(app->LayersSize(), 1);
 }
 
 /**
  * @brief Test PopLayer removes layer and calls OnDetach
  */
 TEST_F(ApplicationTest, PopLayer) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 	auto* layer = new MockAppLayer{"TestLayer"};
 
 	app->PushLayer(layer);
 	EXPECT_TRUE(layer->IsAttached());
 	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 2);
 
 	app->PopLayer(layer);
 
 	EXPECT_FALSE(layer->IsAttached());
 	EXPECT_EQ(layer->GetDetachCount(), 1);
-	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
+	EXPECT_FALSE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 0);
 
 	// PopLayer doesn't delete, so we must do it manually
 	delete layer;
@@ -229,20 +238,19 @@ TEST_F(ApplicationTest, PopLayer) {
  * @brief Test PopOverlay removes overlay and calls OnDetach
  */
 TEST_F(ApplicationTest, PopOverlay) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 	auto* overlay = new MockAppLayer("TestOverlay");
 
 	app->PushOverlay(overlay);
 	EXPECT_TRUE(overlay->IsAttached());
 	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 2);
 
 	app->PopOverlay(overlay);
 
 	EXPECT_FALSE(overlay->IsAttached());
 	EXPECT_EQ(overlay->GetDetachCount(), 1);
-	EXPECT_TRUE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 1); // ImGuiLayer should be present by default
+	EXPECT_FALSE(app->HasLayers());
+	EXPECT_EQ(app->LayersSize(), 0);
 
 	// PopOverlay doesn't delete, so we must do it manually
 	delete overlay;
@@ -252,8 +260,8 @@ TEST_F(ApplicationTest, PopOverlay) {
  * @brief Test HasLayers returns correct state
  */
 TEST_F(ApplicationTest, HasLayers) {
-	const auto app = std::make_unique<Application>();
-	EXPECT_TRUE(app->HasLayers());
+	const auto app = CreateApplication();
+	EXPECT_FALSE(app->HasLayers());
 
 	auto* layer1 = new MockAppLayer("Layer1");
 	app->PushLayer(layer1);
@@ -267,7 +275,7 @@ TEST_F(ApplicationTest, HasLayers) {
 	EXPECT_TRUE(app->HasLayers());
 
 	app->PopLayer(layer2);
-	EXPECT_TRUE(app->HasLayers());
+	EXPECT_FALSE(app->HasLayers());
 
 	delete layer1;
 	delete layer2;
@@ -277,12 +285,12 @@ TEST_F(ApplicationTest, HasLayers) {
  * @brief Test multiple layers and overlays
  */
 TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 
-	auto* layer1 = new MockAppLayer("Layer1");
-	auto* layer2 = new MockAppLayer("Layer2");
-	auto* overlay1 = new MockAppLayer("Overlay1");
-	auto* overlay2 = new MockAppLayer("Overlay2");
+	const auto layer1 = new MockAppLayer("Layer1");
+	const auto layer2 = new MockAppLayer("Layer2");
+	const auto overlay1 = new MockAppLayer("Overlay1");
+	const auto overlay2 = new MockAppLayer("Overlay2");
 
 	app->PushLayer(layer1);
 	app->PushLayer(layer2);
@@ -301,7 +309,7 @@ TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
 	app->PopLayer(layer2);
 	app->PopLayer(layer1);
 
-	EXPECT_TRUE(app->HasLayers());
+	EXPECT_FALSE(app->HasLayers());
 
 	delete layer1;
 	delete layer2;
@@ -313,11 +321,13 @@ TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
  * @brief Test Update calls OnUpdate on all layers
  */
 TEST_F(ApplicationTest, UpdateCallsLayerOnUpdate) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
+	app->InitWindow(defaultProps);
+	app->InitImGuiLayer(defaultProps);
 
-	auto* layer1 = new MockAppLayer("Layer1");
-	auto* layer2 = new MockAppLayer("Layer2");
-	auto* overlay = new MockAppLayer("Overlay");
+	const auto layer1 = new MockAppLayer("Layer1");
+	const auto layer2 = new MockAppLayer("Layer2");
+	const auto overlay = new MockAppLayer("Overlay");
 
 	app->PushLayer(layer1);
 	app->PushLayer(layer2);
@@ -348,11 +358,11 @@ TEST_F(ApplicationTest, UpdateCallsLayerOnUpdate) {
  * @brief Test OnEvent propagates to layers in reverse order
  */
 TEST_F(ApplicationTest, OnEventPropagation) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 
-	auto* layer1 = new MockAppLayer("Layer1");
-	auto* layer2 = new MockAppLayer("Layer2");
-	auto* overlay = new MockAppLayer("Overlay");
+	const auto layer1 = new MockAppLayer("Layer1");
+	const auto layer2 = new MockAppLayer("Layer2");
+	const auto overlay = new MockAppLayer("Overlay");
 
 	app->PushLayer(layer1);
 	app->PushLayer(layer2);
@@ -380,11 +390,11 @@ TEST_F(ApplicationTest, OnEventPropagation) {
  * @brief Test OnEvent stops propagation when handled
  */
 TEST_F(ApplicationTest, OnEventStopsPropagation) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 
-	auto* layer1 = new MockAppLayer("Layer1");
-	auto* layer2 = new MockAppLayer("Layer2");
-	auto* overlay = new MockAppLayer("Overlay");
+	const auto layer1 = new MockAppLayer("Layer1");
+	const auto layer2 = new MockAppLayer("Layer2");
+	const auto overlay = new MockAppLayer("Overlay");
 
 	app->PushLayer(layer1);
 	app->PushLayer(layer2);
@@ -412,7 +422,7 @@ TEST_F(ApplicationTest, OnEventStopsPropagation) {
  * @brief Test OnWindowClose event handling
  */
 TEST_F(ApplicationTest, OnWindowCloseEvent) {
-	const auto app = std::make_unique<Application>();
+	const auto app = CreateApplication();
 
 	WindowCloseEvent closeEvent;
 	EXPECT_FALSE(closeEvent.IsHandled());
@@ -456,7 +466,7 @@ TEST_F(ApplicationTest, DestructorCleanup) {
 	bool layer2Detached = false;
 
 	{
-		const auto app = std::make_unique<Application>();
+		const auto app = CreateApplication();
 
 		// Create layers that set flags when detached
 		auto* layer1 = new MockAppLayerWithFlag("Layer1", &layer1Detached);

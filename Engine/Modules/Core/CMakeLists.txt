@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-17
+# Updated: 2026-03-19
 #
 
 set(HEADERS
@@ -70,6 +70,12 @@ target_link_libraries(CE_Core PUBLIC
 target_link_libraries(CE_Core PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
 		CE_MetalCpp
+	>
+)
+
+target_compile_options(CE_Core PUBLIC
+	$<$<PLATFORM_ID:Darwin>:
+		-ObjC++ -fno-objc-arc
 	>
 )
 

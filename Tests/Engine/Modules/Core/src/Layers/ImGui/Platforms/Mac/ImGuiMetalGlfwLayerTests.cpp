@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include <Core/Application.hpp>
@@ -27,6 +27,8 @@ using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
+constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::Metal, WindowApi::GLFW};
+
 
 /**
  * @brief Test fixture for ImGuiMetalGlfwLayer tests
@@ -40,7 +42,9 @@ protected:
 		Log::Init();
 
 		try {
-			_app = std::make_unique<Application>(WindowProps{"Test-ImGuiMetalGlfwLayer", 800, 600, false, GraphicsApi::Metal, WindowApi::GLFW});
+			_app = std::make_unique<Application>();
+			_app->InitWindow(windowProps);
+			_app->InitImGuiLayer(windowProps);
 		}
 		catch (...) {
 			_windowAvailable = false;

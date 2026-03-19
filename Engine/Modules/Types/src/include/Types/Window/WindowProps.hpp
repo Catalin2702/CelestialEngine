@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -89,6 +89,20 @@ struct WindowProps {
 	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
 	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
+
+	/**
+	 * @brief Constexpr constructor
+	 * @param title Window title as a C-style string
+	 * @param width Window width in pixels
+	 * @param height Window height in pixels
+	 * @param VSync Enable or disable vertical synchronization
+	 * @param graphicsApi Graphics API to use for rendering
+	 * @param windowApi Windowing API to use for window management
+	 * @details Initializes the WindowProps structure with the provided values, converting the title from a C-style string to std::string.
+	 *			This constructor provides convenience when using string literals for the window title.
+	 */
+	constexpr WindowProps(const char* title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi):
+		title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 };
 
 /**

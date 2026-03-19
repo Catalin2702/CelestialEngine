@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -52,6 +52,12 @@ public:
 	 * @details Shuts down ImGui OpenGL backend and releases resources if not already done in OnDetach
 	 */
 	~ImGuiOpenGlGlfwLayer() override;
+
+	// Disable copy and move to prevent issues with cached window pointers
+	ImGuiOpenGlGlfwLayer(const ImGuiOpenGlGlfwLayer&) = delete;
+	ImGuiOpenGlGlfwLayer& operator=(const ImGuiOpenGlGlfwLayer&) = delete;
+	ImGuiOpenGlGlfwLayer(ImGuiOpenGlGlfwLayer&&) = delete;
+	ImGuiOpenGlGlfwLayer& operator=(ImGuiOpenGlGlfwLayer&&) = delete;
 
 public:
 	/**

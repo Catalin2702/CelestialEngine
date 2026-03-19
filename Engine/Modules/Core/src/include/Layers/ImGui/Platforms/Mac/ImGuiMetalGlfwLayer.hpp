@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
-#include <dispatch/dispatch.h>
+#include <semaphore>
 #include <Foundation/Foundation.hpp>
 
 struct GLFWwindow;
@@ -136,8 +136,7 @@ private:
 	MetalContext _metalContext;							///< Struct to hold cached Metal context pointers
 	MetalFrameContext _frameContext;					///< Struct to hold cached Metal frame-specific pointers
 
-	dispatch_semaphore_t _renderSemaphore = nullptr;	///< Semaphore to synchronize rendering frames
-	const unsigned int _maxFramesInFlight = 3;			///< Maximum number of frames that can be in flight for rendering
+	std::counting_semaphore<3> _renderSemaphore{3};	///< Semaphore to synchronize rendering frames
 };
 
 }

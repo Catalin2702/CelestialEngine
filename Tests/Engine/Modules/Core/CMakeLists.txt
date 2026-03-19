@@ -4,16 +4,20 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-16
+# Updated: 2026-03-19
 #
 
 set(SOURCES
 	src/Core/ApplicationTests.cpp
 	src/Input/MetalInputTests.cpp
-	src/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayerTests.cpp
 	src/Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayerTests.cpp
 	src/Layers/LayerStackTests.cpp
 	src/Layers/LayerTests.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayerTests.cpp
+		src/Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayerTests.cpp
+	>
 )
 
 add_executable(CE_TestsCore

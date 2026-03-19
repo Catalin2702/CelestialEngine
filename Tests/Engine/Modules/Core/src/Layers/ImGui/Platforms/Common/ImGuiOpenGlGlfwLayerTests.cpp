@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include <Core/Application.hpp>
@@ -27,6 +27,8 @@ using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Window;
 
+constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
+
 /**
  * @brief Test fixture for ImGuiOpenGlGlfwLayer tests
  * @details These tests require an Application instance because ImGuiOpenGlGlfwLayer
@@ -38,7 +40,8 @@ protected:
 		Log::Init();
 
 		try {
-			_app = std::make_unique<Application>(WindowProps{"Test-ImGuiOpenGlGlfwLayer", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW});
+			_app = std::make_unique<Application>();
+			_app->InitWindow(windowProps);
 		}
 		catch (...) {
 			_windowAvailable = false;
@@ -87,6 +90,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnAttach) {
 
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
+		_app->SetRenderLayer(layer);
 	});
 
 	// Clean up - pop the layer before the test ends
@@ -106,6 +110,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnDetach) {
 
 	// First attach the layer
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	// Then detach it
 	EXPECT_NO_THROW({
@@ -125,6 +130,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnUpdate) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	EXPECT_NO_THROW({
 		_app->Update();
@@ -144,6 +150,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleOnUpdate) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	EXPECT_NO_THROW({
 		_app->Update();
@@ -165,6 +172,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyPressed) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
 	_app->OnEvent(event);
@@ -186,6 +194,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyReleased) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	KeyReleasedEvent event{KeyboardKeyCode::A}; // 'A' key
 	_app->OnEvent(event);
@@ -206,6 +215,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyTyped) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	KeyTypedEvent event{KeyboardCharsCode::A};
 	_app->OnEvent(event);
@@ -226,6 +236,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonPressed) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	MouseButtonPressedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
@@ -246,6 +257,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonReleased) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	MouseButtonReleasedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
@@ -266,6 +278,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseMoved) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	MouseMovedEvent event{100.0f, 200.0f};
 	_app->OnEvent(event);
@@ -286,6 +299,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseScrolled) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	MouseScrolledEvent event{0.0f, 1.0f}; // Scroll up
 	_app->OnEvent(event);
@@ -306,6 +320,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventWindowResize) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	WindowResizeEvent event{1024, 768};
 	_app->OnEvent(event);
@@ -326,6 +341,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleEvents) {
 
 	const auto layer = new ImGuiOpenGlGlfwLayer();
 	_app->PushLayer(layer);
+	_app->SetRenderLayer(layer);
 
 	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
 	MouseMovedEvent mouseEvent{100.0f, 200.0f};
@@ -354,6 +370,7 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, FullLifecycle) {
 	// Attach
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
+		_app->SetRenderLayer(layer);
 	});
 
 	// Update multiple times

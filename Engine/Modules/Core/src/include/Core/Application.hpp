@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #pragma once
@@ -55,25 +55,6 @@ public:
 	 * @details Creates an application with default window properties
 	 */
 	Application();
-
-	/**
-	 * @brief Constructor with window properties
-	 * @param windowProps Window configuration (title, dimensions, VSync)
-	 * @details Creates an application with specified window properties
-	 */
-	Application(const TypeWindow::WindowProps& windowProps);
-
-	/**
-	 * @brief Constructor with individual window parameters
-	 * @param title Window title string
-	 * @param width Window width in pixels
-	 * @param height Window height in pixels
-	 * @param VSync Enable or disable vertical synchronization
-	 * @param graphicsApi Graphics API to use for rendering
-	 * @param windowApi Windowing API to use for window management
-	 * @details Creates an application with individual window parameters
-	 */
-	Application(const std::string& title, unsigned int width, unsigned int height, bool VSync, TypeWindow::GraphicsApi graphicsApi, TypeWindow::WindowApi windowApi);
 
 	/**
 	 * @brief Virtual destructor
@@ -142,6 +123,14 @@ public:
 	void PopOverlay(Layers::I_Layer* overlay);
 
 	/**
+	 * @brief Sets the render layer (e.g. ImGui layer) for the application
+	 * @param renderLayer Pointer to the render layer to set
+	 * @details The render layer is used for rendering UI and is typically an ImGui layer.
+	 *			This method allows setting or changing the render layer at runtime.
+	 */
+	void SetRenderLayer(Layers::I_RenderLayer* renderLayer) { _renderLayer = renderLayer; }
+
+	/**
 	 * @brief Checks if the application has any layers
 	 * @return bool True if there are layers in the stack, false otherwise
 	 * @details Utility method to check if the layer stack is empty
@@ -170,20 +159,35 @@ public:
 	 */
 	[[nodiscard]] Window::I_Window* GetWindow() const { return _window.get(); }
 
-protected:
+public:
 	/**
-	 * @brief Initializes the application with window properties
+	 * @brief Initializes window property
 	 * @param windowProps Window configuration properties
-	 * @details Protected initialization method called by constructors. Creates the window
-	 *			and sets up event callbacks.
+	 * @details Public window initializer method. Creates the window
+	 *			and sets up event callbacks based on the provided window properties.
+	 *			Initialize the appropriate Input system based on the window API.
 	 */
-	void _Init(const TypeWindow::WindowProps& windowProps);
+	void InitWindow(const TypeWindow::WindowProps& windowProps);
+
+	/**
+	 * @brief Initializes the ImGui layer based on window properties
+	 * @param windowProps Window configuration properties
+	 * @details Public ImGui layer initializer method. Creates the appropriate
+	 *			ImGui layer based on the graphics API and window API specified
+	 *			in the window properties, and pushes it as an overlay.
+	 */
+	void InitImGuiLayer(const TypeWindow::WindowProps& windowProps);
+
+private:
+	void _Init();
 
 private:
 	std::unique_ptr<Window::I_Window> _window;		///< Application window
 	Layers::I_RenderLayer* _renderLayer = nullptr;	///< ImGui layer for rendering UI
 	bool _running = false;							///< Flag indicating if application is running
 	Layers::LayerStack _layerStack;					///< Stack of layers and overlays
+
+private:
 	static Application* _instance;					///< Singleton application instance
 };
 
@@ -193,27 +197,6 @@ private:
  * @details Must be implemented by the client application
  */
 std::unique_ptr<Application> CreateApplication();
-
-/**
- * @brief Factory function to create the application with window properties
- * @param windowProps Window configuration properties
- * @return Application* Pointer to the created application
- * @details Must be implemented by the client application
- */
-std::unique_ptr<Application> CreateApplication(const TypeWindow::WindowProps& windowProps);
-
-/**
- * @brief Factory function to create the application with individual window parameters
- * @param title Window title string
- * @param width Window width in pixels
- * @param height Window height in pixels
- * @param VSync Enable or disable vertical synchronization
- * @param graphicsApi Graphics API to use for rendering
- * @param windowApi Windowing API to use for window management
- * @return Application* Pointer to the created application
- * @details Must be implemented by the client application
- */
-std::unique_ptr<Application> CreateApplication(const std::string& title, unsigned int width, unsigned int height, bool VSync, Types::Window::GraphicsApi graphicsApi, Types::Window::WindowApi windowApi);
 
 }
 

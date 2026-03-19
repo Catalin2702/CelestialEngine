@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-19
 //
 
 #include "Types/Window/WindowProps.hpp"
@@ -60,27 +60,23 @@ bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const 
 	if (graphicsApi == GraphicsApi::None or windowApi == WindowApi::None)
 		return false;
 
-	if (graphicsApi == GraphicsApi::OpenGL and windowApi == WindowApi::GLFW)
+	if (windowApi == WindowApi::GLFW)
 		return true;
 
-	if (graphicsApi == GraphicsApi::Vulkan and windowApi == WindowApi::GLFW)
+	if (graphicsApi == GraphicsApi::OpenGL)
+		return true;
+
+	if (graphicsApi == GraphicsApi::Vulkan)
 		return true;
 
 #ifdef CE_PLATFORM_MACOS
 	if (graphicsApi == GraphicsApi::Metal and windowApi == WindowApi::Cocoa)
 		return true;
-
-	if (graphicsApi == GraphicsApi::Metal and windowApi == WindowApi::GLFW)
-		return true;
 #elifdef CE_PLATFORM_WINDOWS
 	if ((graphicsApi == GraphicsApi::DirectX11 or graphicsApi == GraphicsApi::DirectX12) and windowApi == WindowApi::Win32)
 		return true;
-#elifdef CE_PLATFORM_LINUX
-	if (graphicsApi == GraphicsApi::Vulkan and windowApi == WindowApi::X11)
-		return true;
-#else
-		#error Unsupported platform for graphics API and window API compatibility check
 #endif
+
 	return false;
 }
 

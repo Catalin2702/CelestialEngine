@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-19
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
@@ -29,15 +29,10 @@
 
 namespace CE::Layers {
 
-static int _st_imGuiMetalCocoaLayerCount = 0;
-
-ImGuiMetalCocoaLayer::ImGuiMetalCocoaLayer(): I_ImGuiLayer("ImGuiMetalCocoaLayer") {
-	_renderSemaphore = dispatch_semaphore_create(_maxFramesInFlight);
-}
+ImGuiMetalCocoaLayer::ImGuiMetalCocoaLayer(): I_ImGuiLayer("ImGuiMetalCocoaLayer") {}
 
 ImGuiMetalCocoaLayer::~ImGuiMetalCocoaLayer() {
-	dispatch_release(_renderSemaphore);
-	_renderSemaphore = nullptr;
+	// Ensure _Shutdown is called if OnDetach was not called
 	_Shutdown();
 }
 
@@ -91,15 +86,13 @@ void ImGuiMetalCocoaLayer::OnEvent(Events::I_Event& event) {
 }
 
 void ImGuiMetalCocoaLayer::Begin() {
-	dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_FOREVER);
+	_renderSemaphore.acquire();
 	_currentFrameStarted = false;
 
 	auto& io = ImGui::GetIO();
 	const auto time = Apple::Utility::GetTime();
 	io.DeltaTime = _time > 0.0 ? static_cast<float>(time - _time) : 1.0f / 60.0f;
 	_time = time;
-
-	_frameContext.autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
 	const auto scale = _metalContext.window->GetMetalWindow()->backingScaleFactor();
 	const auto [width, height] = _metalContext.window->GetSize();
@@ -108,13 +101,13 @@ void ImGuiMetalCocoaLayer::Begin() {
 		static_cast<float>(height) * scale
 	});
 
-	_frameContext.drawable = _metalContext.metalLayer->nextDrawable();
+	_frameContext.drawable = NS::TransferPtr(_metalContext.metalLayer->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		return;
 	}
 
-	_frameContext.commandBuffer = _metalContext.commandQueue->commandBuffer();
+	_frameContext.commandBuffer = NS::TransferPtr(_metalContext.commandQueue->commandBuffer());
 
 	const auto colorAttachment = _metalContext.renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
@@ -136,7 +129,7 @@ void ImGuiMetalCocoaLayer::End() {
 		return;
 
 	ImGui::Render();
-	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
+	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -147,78 +140,84 @@ void ImGuiMetalCocoaLayer::End() {
 	_frameContext.renderCommandEncoder->endEncoding();
 
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
-		dispatch_semaphore_signal(_renderSemaphore);
+		_renderSemaphore.release();
 	});
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
 	_frameContext.commandBuffer->commit();
-
-	_frameContext.autoreleasePool.reset();
 }
 
 void ImGuiMetalCocoaLayer::_Init() {
 	IMGUI_CHECKVERSION();
-	
-	const auto context = ImGui::CreateContext();
-	ImGui::SetCurrentContext(context);
-	ImGui::StyleColorsDark();
 
-	auto& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
+	try {
+		const auto context = ImGui::CreateContext();
+		ImGui::SetCurrentContext(context);
+		ImGui::StyleColorsDark();
 
-	const auto& app = Core::Application::Get();
+		auto& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
 
-	_metalContext.window = dynamic_cast<Window::MetalCocoaWindow*>(app.GetWindow());
-	if (not _metalContext.window) {
-		CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
-	}
+		const auto& app = Core::Application::Get();
 
-	_metalContext.metalDevice = _metalContext.window->GetDevice();
-	if (not _metalContext.metalDevice) {
-		CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
-	}
-
-	_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
-	if (not _metalContext.commandQueue) {
-		CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
-	}
-
-	_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
-	if (not _metalContext.metalLayer) {
-		CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
-	}
-
-	_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
-	if (not _metalContext.renderPassDescriptor) {
-		CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
-	}
-
-	Apple::Bridge::ImGuiMetalInit(_metalContext.metalDevice);
-
-	// Initialize OSX backend for platform handling
-	if (const auto contentView = _metalContext.window->GetContentView()) {
-		if (not Apple::Bridge::ImGuiOSXInit(contentView)) {
-			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
+		_metalContext.window = dynamic_cast<Window::MetalCocoaWindow*>(app.GetWindow());
+		if (not _metalContext.window) {
+			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
 			ImGui::DestroyContext(context);
-			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+			throw std::runtime_error("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
 		}
+
+		_metalContext.metalDevice = _metalContext.window->GetDevice();
+		if (not _metalContext.metalDevice) {
+			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
+		}
+
+		_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
+		if (not _metalContext.commandQueue) {
+			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
+		}
+
+		_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
+		if (not _metalContext.metalLayer) {
+			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
+		}
+
+		_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+		if (not _metalContext.renderPassDescriptor) {
+			CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
+		}
+
+		Apple::Bridge::ImGuiMetalInit(_metalContext.metalDevice);
+
+		// Initialize OSX backend for platform handling
+		if (const auto contentView = _metalContext.window->GetContentView()) {
+			if (not Apple::Bridge::ImGuiOSXInit(contentView)) {
+				CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
+				ImGui::DestroyContext(context);
+				throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+			}
+		}
+		else {
+			CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("Failed to get content view for ImGui OSX backend!");
+		}
+
+		_initialized = true;
 	}
-	else {
-		CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");
-		ImGui::DestroyContext(context);
-		throw std::runtime_error("Failed to get content view for ImGui OSX backend!");
+	catch (...) {
+		_initialized = false;
+		throw;
 	}
 }
 
@@ -227,11 +226,10 @@ void ImGuiMetalCocoaLayer::_Shutdown() {
 		return;
 	_initialized = false;
 
-	_metalContext.renderPassDescriptor->release();
-
-	_st_imGuiMetalCocoaLayerCount--;
-	if (_st_imGuiMetalCocoaLayerCount > 0)
-		return;
+	if (_metalContext.renderPassDescriptor) {
+		_metalContext.renderPassDescriptor->release();
+		_metalContext.renderPassDescriptor = nullptr;
+	}
 
 	Apple::Bridge::ImGuiMetalShutdown();
 	Apple::Bridge::ImGuiOSXShutdown();
