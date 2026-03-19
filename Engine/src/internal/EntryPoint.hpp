@@ -42,8 +42,7 @@ int main(const int argc, const char* argv[]) {
 #endif
 			const auto windowProps = CMD::GetWindowProps(argc, argv);
 			const auto app = Core::CreateApplication();
-			app->InitWindow(windowProps);
-			app->InitImGuiLayer(windowProps);
+			app->InitAll(windowProps);
 			app->Run();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
 			CE_CORE_ERROR("Runtime error: {0}", _err.what());

@@ -68,6 +68,7 @@ void Application::Update() {
 	_renderLayer->End();
 
 	_window->OnUpdate();
+	_context->SwapBuffers();
 }
 
 void Application::Run() {
@@ -173,7 +174,11 @@ void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
 				CE_CORE_ERROR("Application::InitRenderer: Metal graphics API on macOS is only supported with Cocoa window API. Current window API: {0}", _window->GetWindowApi());
 				throw std::runtime_error("Metal graphics API on macOS is only supported with Cocoa window API");
 			}
-			context = std::make_unique<Render::Context::MetalContext>(static_cast<NS::Window*>(_window->GetNativeWindow()));
+			const Render::Context::MetalContextProps props {
+				.window = static_cast<NS::Window*>(_window->GetNativeWindow()),
+				.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm
+			};
+			context = std::make_unique<Render::Context::MetalContext>(props);
 			break;
 		}
 #endif
@@ -216,6 +221,12 @@ void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 
 	_renderLayer = overlay.release();
 	PushOverlay(_renderLayer);
+}
+
+void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
+	InitWindow(windowProps);
+	InitRenderer(windowProps);
+	InitImGuiLayer(windowProps);
 }
 
 void Application::_Init() {

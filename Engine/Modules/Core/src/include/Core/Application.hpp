@@ -186,6 +186,8 @@ public:
 	 */
 	void InitImGuiLayer(const TypeWindow::WindowProps& windowProps);
 
+	void InitAll(const TypeWindow::WindowProps& windowProps);
+
 private:
 	void _Init();
 

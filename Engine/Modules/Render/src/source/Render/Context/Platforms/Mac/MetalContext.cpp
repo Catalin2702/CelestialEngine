@@ -21,6 +21,8 @@ namespace CE::Render::Context {
 
 MetalContext::MetalContext(const MetalContextProps& props): _props(props) {}
 
+MetalContext::~MetalContext() = default;
+
 void MetalContext::Init() {
 	assert(_props.window && "MetalContext requires a valid NS::Window pointer");
 	const auto window = _props.window;

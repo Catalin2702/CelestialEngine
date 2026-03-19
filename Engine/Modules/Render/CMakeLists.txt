@@ -48,6 +48,10 @@ target_link_libraries(CE_Render PUBLIC
 	CE_Types
 )
 
+target_link_libraries(CE_Render PUBLIC
+	CE_Glad
+)
+
 target_include_directories(CE_Render PUBLIC
 	src/include
 	src/interface

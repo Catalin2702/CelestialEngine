@@ -40,7 +40,7 @@ struct MetalContextProps {
 class MetalContext final: public I_Context {
 public:
 	MetalContext(const MetalContextProps& props);
-	~MetalContext() override = default;
+	~MetalContext() override;
 
 public:
 	void Init() override;

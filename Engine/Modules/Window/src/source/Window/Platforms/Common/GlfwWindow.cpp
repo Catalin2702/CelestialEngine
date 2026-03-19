@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-19
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -64,7 +64,6 @@ GlfwWindow::~GlfwWindow() {
  */
 void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
-	glfwSwapBuffers(_glfwWindow.get());
 }
 
 /**
