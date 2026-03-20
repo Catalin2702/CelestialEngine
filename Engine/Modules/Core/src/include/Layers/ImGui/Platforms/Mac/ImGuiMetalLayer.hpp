@@ -1,16 +1,16 @@
 //
 // Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac
-// File: ImGuiMetalCocoaLayer.hpp
+// File: ImGuiMetalLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUIMETALCOCOALAYER_HPP
-#define CE_LAYERS_IMGUIMETALCOCOALAYER_HPP
+#ifndef CE_LAYERS_IMGUIMETALLAYER_HPP
+#define CE_LAYERS_IMGUIMETALLAYER_HPP
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -32,15 +32,15 @@ namespace NS {
 class AutoreleasePool;
 }
 namespace CE::Window {
-class MetalCocoaWindow;
+class CocoaWindow;
 }
 
 
 namespace CE::Layers {
 
-class ImGuiMetalCocoaLayer final: public I_ImGuiLayer {
+class ImGuiMetalLayer final: public I_ImGuiLayer {
 	struct MetalContext {
-		Window::MetalCocoaWindow* window = nullptr;						///< Pointer to the Metal window
+		Window::CocoaWindow* window = nullptr;						///< Pointer to the Metal window
 		MTL::Device* metalDevice = nullptr;								///< Pointer to the Metal device
 		MTL::CommandQueue* commandQueue = nullptr;						///< Pointer to the Metal command queue
 		CA::MetalLayer* metalLayer = nullptr;							///< Pointer to the Core Animation Metal layer
@@ -54,9 +54,9 @@ class ImGuiMetalCocoaLayer final: public I_ImGuiLayer {
 	};
 
 public:
-	ImGuiMetalCocoaLayer();
+	ImGuiMetalLayer();
 
-	~ImGuiMetalCocoaLayer() override;
+	~ImGuiMetalLayer() override;
 
 public:
 	void OnRender() const override;
@@ -97,4 +97,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_IMGUIMETALCOCOALAYER_HPP
+#endif //CE_LAYERS_IMGUIMETALLAYER_HPP

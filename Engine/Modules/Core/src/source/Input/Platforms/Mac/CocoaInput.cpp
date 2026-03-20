@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-20
 //
 
 #include "Input/Platforms/Mac/CocoaInput.hpp"
@@ -13,7 +13,7 @@
 #include "MetalBridge/Cocoa/CocoaBridge.h"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
-#include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 
 namespace CE::Input {
@@ -62,7 +62,7 @@ std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
 
 void CocoaInput::_InitCocoaWindow() {
 	if (const auto window = Core::Application::Get().GetWindow()) {
-		if (const auto cocoaWindow = dynamic_cast<Window::MetalCocoaWindow*>(window)) {
+		if (const auto cocoaWindow = dynamic_cast<Window::CocoaWindow*>(window)) {
 			_cocoaWindow = cocoaWindow->GetMetalWindow();
 		}
 	}

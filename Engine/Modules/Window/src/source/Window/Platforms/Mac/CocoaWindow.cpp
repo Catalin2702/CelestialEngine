@@ -1,13 +1,13 @@
 //
 // Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac
-// File: MetalCocoaWindow.cpp
+// File: CocoaWindow.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
 // Updated: 2026-03-20
 //
 
-#include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -171,18 +171,16 @@ static void CocoaWindowEventCallback(void* userData, const int eventType, const 
 	}
 }
 
-MetalCocoaWindow::MetalCocoaWindow(const TypeWindow::WindowProps& windowProps):
+CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
 	_data(windowProps), _commandQueue(nullptr), _device(nullptr), _layer(nullptr), _window(nullptr), _windowDelegate(nullptr) {
 	_Init();
 }
 
-MetalCocoaWindow::~MetalCocoaWindow() {
+CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
 
-void MetalCocoaWindow::OnUpdate() const {
-	const auto pool = NS::AutoreleasePool::alloc()->init();
-
+void CocoaWindow::OnUpdate() const {
 	// Process all pending Cocoa events using the bridge
 	Apple::Bridge::ProcessCocoaEvents([](void* userData, void* eventPtr) {
 		if (!userData || !eventPtr)
@@ -192,11 +190,9 @@ void MetalCocoaWindow::OnUpdate() const {
 		const auto* event = static_cast<NS::Event*>(eventPtr);
 		ProcessCocoaEvent(event, data);
 	}, const_cast<EventWindowData*>(&_data));
-
-	pool->release();
 }
 
-std::pair<float, float> MetalCocoaWindow::GetContentScale() const {
+std::pair<float, float> CocoaWindow::GetContentScale() const {
 	if (not _window) {
 		CE_CORE_WARN("Could not get content scale because window is not initialized.");
 		return {1.0f, 1.0f};
@@ -205,11 +201,11 @@ std::pair<float, float> MetalCocoaWindow::GetContentScale() const {
 	return {scale, scale};
 }
 
-void MetalCocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
+void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.EventCallback = callback;
 }
 
-void MetalCocoaWindow::SetWindowCallbacks() {
+void CocoaWindow::SetWindowCallbacks() {
 	if (!_window)
 		return;
 
@@ -223,7 +219,7 @@ void MetalCocoaWindow::SetWindowCallbacks() {
 	}
 }
 
-void MetalCocoaWindow::SetWidth(const unsigned int width) {
+void CocoaWindow::SetWidth(const unsigned int width) {
 	if (not (_window and _layer))
 		return;
 
@@ -231,7 +227,7 @@ void MetalCocoaWindow::SetWidth(const unsigned int width) {
 	_UpdateLayerSize();
 }
 
-void MetalCocoaWindow::SetHeight(const unsigned int height) {
+void CocoaWindow::SetHeight(const unsigned int height) {
 	if (not (_window and _layer))
 		return;
 
@@ -239,7 +235,7 @@ void MetalCocoaWindow::SetHeight(const unsigned int height) {
 	_UpdateLayerSize();
 }
 
-void MetalCocoaWindow::SetVSync(const bool enabled) {
+void CocoaWindow::SetVSync(const bool enabled) {
 	if (_layer) {
 		_data.VSync = enabled;
 		_layer->setDisplaySyncEnabled(enabled);
@@ -249,7 +245,7 @@ void MetalCocoaWindow::SetVSync(const bool enabled) {
 	}
 }
 
-void MetalCocoaWindow::_Init() {
+void CocoaWindow::_Init() {
 	_InitDevice();
 	_InitWindow();
 
@@ -259,7 +255,7 @@ void MetalCocoaWindow::_Init() {
 	_st_CocoaWindowCount++;
 }
 
-void MetalCocoaWindow::_InitDevice() {
+void CocoaWindow::_InitDevice() {
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _device) {
 		CE_CORE_ERROR("Could not create MetalDevice!");
@@ -273,7 +269,7 @@ void MetalCocoaWindow::_InitDevice() {
 	}
 }
 
-void MetalCocoaWindow::_InitWindow() {
+void CocoaWindow::_InitWindow() {
 	if (not _st_CocoaInitialized) {
 		const auto app = NS::Application::sharedApplication();
 		app->setActivationPolicy(NS::ActivationPolicyRegular);
@@ -344,7 +340,7 @@ void MetalCocoaWindow::_InitWindow() {
 	app->activateIgnoringOtherApps(true);
 }
 
-void MetalCocoaWindow::_Shutdown() {
+void CocoaWindow::_Shutdown() {
 	// Cleanup delegate before closing window
 	if (_windowDelegate) {
 		Apple::Bridge::DestroyCocoaWindowDelegate(_windowDelegate);
@@ -363,7 +359,7 @@ void MetalCocoaWindow::_Shutdown() {
 	}
 }
 
-void MetalCocoaWindow::_UpdateLayerSize() const {
+void CocoaWindow::_UpdateLayerSize() const {
 	if (not (_window and _layer))
 		return;
 

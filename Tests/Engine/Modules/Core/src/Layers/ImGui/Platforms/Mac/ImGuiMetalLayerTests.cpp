@@ -1,17 +1,17 @@
 //
 // Module: CelestialEngine/Tests/Engine/Modules/Core/Layers/ImGui/Platforms/Mac
-// File: ImGuiMetalCocoaLayerTests.cpp
+// File: ImGuiMetalLayerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -32,12 +32,12 @@ constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::Metal, W
 
 
 /**
- * @brief Test fixture for ImGuiMetalCocoaLayer tests
- * @details These tests require an Application instance because ImGuiMetalCocoaLayer
+ * @brief Test fixture for ImGuiMetalLayer tests
+ * @details These tests require an Application instance because ImGuiMetalLayer
  *			needs a valid Metal context and window to initialize properly.
  *			Metal is only available on macOS.
  */
-class ImGuiMetalCocoaLayerTest: public ::testing::Test {
+class ImGuiMetalLayerTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
@@ -49,23 +49,23 @@ protected:
 };
 
 /**
- * @brief Test ImGuiMetalCocoaLayer construction
+ * @brief Test ImGuiMetalLayer construction
  */
-TEST_F(ImGuiMetalCocoaLayerTest, Construction) {
-	const auto layerConstruction = new ImGuiMetalCocoaLayer();
+TEST_F(ImGuiMetalLayerTest, Construction) {
+	const auto layerConstruction = new ImGuiMetalLayer();
 	EXPECT_NE(layerConstruction, nullptr);
 
 #ifdef CE_DEBUG
-	EXPECT_EQ(layerConstruction->GetDebugName(), "ImGuiMetalCocoaLayer");
+	EXPECT_EQ(layerConstruction->GetDebugName(), "ImGuiMetalLayer");
 #endif
 
 	delete layerConstruction;
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnAttach
+ * @brief Test ImGuiMetalLayer OnAttach
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnAttach) {
+TEST_F(ImGuiMetalLayerTest, OnAttach) {
 	std::unique_ptr<Application> _appOnAttach;
 	try {
 		_appOnAttach = std::make_unique<Application>();
@@ -75,7 +75,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnAttach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnAttach = new ImGuiMetalCocoaLayer();
+	const auto layerOnAttach = new ImGuiMetalLayer();
 	EXPECT_NO_THROW({
 		_appOnAttach->PushLayer(layerOnAttach);
 		_appOnAttach->SetRenderLayer(layerOnAttach);
@@ -87,9 +87,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnAttach) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnDetach after OnAttach
+ * @brief Test ImGuiMetalLayer OnDetach after OnAttach
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnDetach) {
+TEST_F(ImGuiMetalLayerTest, OnDetach) {
 	std::unique_ptr<Application> _appOnDetach;
 	try {
 		_appOnDetach = std::make_unique<Application>();
@@ -99,7 +99,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnDetach) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnDetach = new ImGuiMetalCocoaLayer();
+	const auto layerOnDetach = new ImGuiMetalLayer();
 	_appOnDetach->PushLayer(layerOnDetach);
 	_appOnDetach->SetRenderLayer(layerOnDetach);
 
@@ -111,9 +111,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnDetach) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnUpdate
+ * @brief Test ImGuiMetalLayer OnUpdate
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnUpdate) {
+TEST_F(ImGuiMetalLayerTest, OnUpdate) {
 	std::unique_ptr<Application> _appOnUpdate;
 	try {
 		_appOnUpdate = std::make_unique<Application>();
@@ -123,7 +123,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnUpdate = new ImGuiMetalCocoaLayer();
+	const auto layerOnUpdate = new ImGuiMetalLayer();
 	_appOnUpdate->PushLayer(layerOnUpdate);
 	_appOnUpdate->SetRenderLayer(layerOnUpdate);
 
@@ -136,9 +136,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnUpdate) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer multiple OnUpdate calls
+ * @brief Test ImGuiMetalLayer multiple OnUpdate calls
  */
-TEST_F(ImGuiMetalCocoaLayerTest, MultipleOnUpdate) {
+TEST_F(ImGuiMetalLayerTest, MultipleOnUpdate) {
 	std::unique_ptr<Application> _appMultipleOnUpdate;
 	try {
 		_appMultipleOnUpdate = std::make_unique<Application>();
@@ -148,7 +148,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleOnUpdate) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerMultipleOnUpdate = new ImGuiMetalCocoaLayer();
+	const auto layerMultipleOnUpdate = new ImGuiMetalLayer();
 	_appMultipleOnUpdate->PushLayer(layerMultipleOnUpdate);
 	_appMultipleOnUpdate->SetRenderLayer(layerMultipleOnUpdate);
 
@@ -163,9 +163,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleOnUpdate) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with KeyPressed
+ * @brief Test ImGuiMetalLayer OnEvent with KeyPressed
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyPressed) {
+TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 	std::unique_ptr<Application> _appOnEventKeyPressed;
 	try {
 		_appOnEventKeyPressed = std::make_unique<Application>();
@@ -175,7 +175,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyPressed) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventKeyPressed = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventKeyPressed = new ImGuiMetalLayer();
 	_appOnEventKeyPressed->PushLayer(layerOnEventKeyPressed);
 	_appOnEventKeyPressed->SetRenderLayer(layerOnEventKeyPressed);
 
@@ -190,9 +190,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyPressed) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with KeyReleased
+ * @brief Test ImGuiMetalLayer OnEvent with KeyReleased
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyReleased) {
+TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
 	std::unique_ptr<Application> _appOnEventKeyReleased;
 	try {
 		_appOnEventKeyReleased = std::make_unique<Application>();
@@ -202,7 +202,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyReleased) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventKeyReleased = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventKeyReleased = new ImGuiMetalLayer();
 	_appOnEventKeyReleased->PushLayer(layerOnEventKeyReleased);
 	_appOnEventKeyReleased->SetRenderLayer(layerOnEventKeyReleased);
 
@@ -216,9 +216,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyReleased) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with KeyTyped
+ * @brief Test ImGuiMetalLayer OnEvent with KeyTyped
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyTyped) {
+TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
 	std::unique_ptr<Application> _appOnEventKeyTyped;
 	try {
 		_appOnEventKeyTyped = std::make_unique<Application>();
@@ -228,7 +228,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyTyped) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventKeyTyped = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventKeyTyped = new ImGuiMetalLayer();
 	_appOnEventKeyTyped->PushLayer(layerOnEventKeyTyped);
 	_appOnEventKeyTyped->SetRenderLayer(layerOnEventKeyTyped);
 
@@ -242,9 +242,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventKeyTyped) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with MouseButtonPressed
+ * @brief Test ImGuiMetalLayer OnEvent with MouseButtonPressed
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonPressed) {
+TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
 	std::unique_ptr<Application> _appOnEventMouseButtonPressed;
 	try {
 		_appOnEventMouseButtonPressed = std::make_unique<Application>();
@@ -254,7 +254,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonPressed) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventMouseButtonPressed = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventMouseButtonPressed = new ImGuiMetalLayer();
 	_appOnEventMouseButtonPressed->PushLayer(layerOnEventMouseButtonPressed);
 	_appOnEventMouseButtonPressed->SetRenderLayer(layerOnEventMouseButtonPressed);
 
@@ -268,9 +268,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonPressed) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with MouseButtonReleased
+ * @brief Test ImGuiMetalLayer OnEvent with MouseButtonReleased
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonReleased) {
+TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
 	std::unique_ptr<Application> _appOnEventMouseButtonReleased;
 	try {
 		_appOnEventMouseButtonReleased = std::make_unique<Application>();
@@ -280,7 +280,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonReleased) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventMouseButtonReleased = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventMouseButtonReleased = new ImGuiMetalLayer();
 	_appOnEventMouseButtonReleased->PushLayer(layerOnEventMouseButtonReleased);
 	_appOnEventMouseButtonReleased->SetRenderLayer(layerOnEventMouseButtonReleased);
 
@@ -294,9 +294,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseButtonReleased) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with MouseMoved
+ * @brief Test ImGuiMetalLayer OnEvent with MouseMoved
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseMoved) {
+TEST_F(ImGuiMetalLayerTest, OnEventMouseMoved) {
 	std::unique_ptr<Application> _appOnEventMouseMoved;
 	try {
 		_appOnEventMouseMoved = std::make_unique<Application>();
@@ -306,7 +306,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseMoved) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventMouseMoved = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventMouseMoved = new ImGuiMetalLayer();
 	_appOnEventMouseMoved->PushLayer(layerOnEventMouseMoved);
 	_appOnEventMouseMoved->SetRenderLayer(layerOnEventMouseMoved);
 
@@ -320,9 +320,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseMoved) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with MouseScrolled
+ * @brief Test ImGuiMetalLayer OnEvent with MouseScrolled
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseScrolled) {
+TEST_F(ImGuiMetalLayerTest, OnEventMouseScrolled) {
 	std::unique_ptr<Application> _appOnEventMouseScrolled;
 	try {
 		_appOnEventMouseScrolled = std::make_unique<Application>();
@@ -332,7 +332,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseScrolled) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventMouseScrolled = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventMouseScrolled = new ImGuiMetalLayer();
 	_appOnEventMouseScrolled->PushLayer(layerOnEventMouseScrolled);
 	_appOnEventMouseScrolled->SetRenderLayer(layerOnEventMouseScrolled);
 
@@ -347,9 +347,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventMouseScrolled) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnEvent with WindowResize
+ * @brief Test ImGuiMetalLayer OnEvent with WindowResize
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnEventWindowResize) {
+TEST_F(ImGuiMetalLayerTest, OnEventWindowResize) {
 	std::unique_ptr<Application> _appOnEventWindowResize;
 	try {
 		_appOnEventWindowResize = std::make_unique<Application>();
@@ -359,7 +359,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventWindowResize) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnEventWindowResize = new ImGuiMetalCocoaLayer();
+	const auto layerOnEventWindowResize = new ImGuiMetalLayer();
 	_appOnEventWindowResize->PushLayer(layerOnEventWindowResize);
 	_appOnEventWindowResize->SetRenderLayer(layerOnEventWindowResize);
 
@@ -373,9 +373,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnEventWindowResize) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer handling multiple events
+ * @brief Test ImGuiMetalLayer handling multiple events
  */
-TEST_F(ImGuiMetalCocoaLayerTest, MultipleEvents) {
+TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 	std::unique_ptr<Application> _appMultipleEvents;
 	try {
 		_appMultipleEvents = std::make_unique<Application>();
@@ -385,7 +385,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleEvents) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerMultipleEvents = new ImGuiMetalCocoaLayer();
+	const auto layerMultipleEvents = new ImGuiMetalLayer();
 	_appMultipleEvents->PushLayer(layerMultipleEvents);
 	_appMultipleEvents->SetRenderLayer(layerMultipleEvents);
 
@@ -404,9 +404,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleEvents) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer full lifecycle
+ * @brief Test ImGuiMetalLayer full lifecycle
  */
-TEST_F(ImGuiMetalCocoaLayerTest, FullLifecycle) {
+TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 	std::unique_ptr<Application> _appFullLifecycle;
 	try {
 		_appFullLifecycle = std::make_unique<Application>();
@@ -416,7 +416,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, FullLifecycle) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerFullLifecycle = new ImGuiMetalCocoaLayer();
+	const auto layerFullLifecycle = new ImGuiMetalLayer();
 
 	// Attach
 	EXPECT_NO_THROW({
@@ -453,9 +453,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, FullLifecycle) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer Begin and End methods
+ * @brief Test ImGuiMetalLayer Begin and End methods
  */
-TEST_F(ImGuiMetalCocoaLayerTest, BeginEnd) {
+TEST_F(ImGuiMetalLayerTest, BeginEnd) {
 	std::unique_ptr<Application> _appBeginEnd;
 	try {
 		_appBeginEnd = std::make_unique<Application>();
@@ -465,7 +465,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, BeginEnd) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerBeginEnd = new ImGuiMetalCocoaLayer();
+	const auto layerBeginEnd = new ImGuiMetalLayer();
 	_appBeginEnd->PushLayer(layerBeginEnd);
 	_appBeginEnd->SetRenderLayer(layerBeginEnd);
 
@@ -479,9 +479,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, BeginEnd) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer multiple Begin/End cycles
+ * @brief Test ImGuiMetalLayer multiple Begin/End cycles
  */
-TEST_F(ImGuiMetalCocoaLayerTest, MultipleBeginEnd) {
+TEST_F(ImGuiMetalLayerTest, MultipleBeginEnd) {
 	std::unique_ptr<Application> _appMultipleBeginEnd;
 	try {
 		_appMultipleBeginEnd = std::make_unique<Application>();
@@ -491,7 +491,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleBeginEnd) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerMultipleBeginEnd = new ImGuiMetalCocoaLayer();
+	const auto layerMultipleBeginEnd = new ImGuiMetalLayer();
 	_appMultipleBeginEnd->PushLayer(layerMultipleBeginEnd);
 	_appMultipleBeginEnd->SetRenderLayer(layerMultipleBeginEnd);
 
@@ -509,9 +509,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, MultipleBeginEnd) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer OnRender
+ * @brief Test ImGuiMetalLayer OnRender
  */
-TEST_F(ImGuiMetalCocoaLayerTest, OnRender) {
+TEST_F(ImGuiMetalLayerTest, OnRender) {
 	std::unique_ptr<Application> _appOnRender;
 	try {
 		_appOnRender = std::make_unique<Application>();
@@ -521,7 +521,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnRender) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerOnRender = new ImGuiMetalCocoaLayer();
+	const auto layerOnRender = new ImGuiMetalLayer();
 	_appOnRender->PushLayer(layerOnRender);
 	_appOnRender->SetRenderLayer(layerOnRender);
 
@@ -536,9 +536,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, OnRender) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer complete render cycle
+ * @brief Test ImGuiMetalLayer complete render cycle
  */
-TEST_F(ImGuiMetalCocoaLayerTest, CompleteRenderCycle) {
+TEST_F(ImGuiMetalLayerTest, CompleteRenderCycle) {
 	std::unique_ptr<Application> _appCompleteRenderCycle;
 	try {
 		_appCompleteRenderCycle = std::make_unique<Application>();
@@ -548,7 +548,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, CompleteRenderCycle) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerCompleteRenderCycle = new ImGuiMetalCocoaLayer();
+	const auto layerCompleteRenderCycle = new ImGuiMetalLayer();
 	_appCompleteRenderCycle->PushLayer(layerCompleteRenderCycle);
 	_appCompleteRenderCycle->SetRenderLayer(layerCompleteRenderCycle);
 
@@ -574,9 +574,9 @@ TEST_F(ImGuiMetalCocoaLayerTest, CompleteRenderCycle) {
 }
 
 /**
- * @brief Test ImGuiMetalCocoaLayer with events during render
+ * @brief Test ImGuiMetalLayer with events during render
  */
-TEST_F(ImGuiMetalCocoaLayerTest, EventsDuringRender) {
+TEST_F(ImGuiMetalLayerTest, EventsDuringRender) {
 	std::unique_ptr<Application> _appEventsDuringRender;
 	try {
 		_appEventsDuringRender = std::make_unique<Application>();
@@ -586,7 +586,7 @@ TEST_F(ImGuiMetalCocoaLayerTest, EventsDuringRender) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layerEventsDuringRender = new ImGuiMetalCocoaLayer();
+	const auto layerEventsDuringRender = new ImGuiMetalLayer();
 	_appEventsDuringRender->PushLayer(layerEventsDuringRender);
 	_appEventsDuringRender->SetRenderLayer(layerEventsDuringRender);
 

@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac
-// File: MetalCocoaWindow.hpp
+// File: CocoaWindow.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_MAC_METALCOCOAWINDOW_HPP
-#define CE_WINDOW_MAC_METALCOCOAWINDOW_HPP
+#ifndef CE_WINDOW_MAC_COCOAWINDOW_HPP
+#define CE_WINDOW_MAC_COCOAWINDOW_HPP
 
 #include "Window/I_Window.hpp"
 
@@ -41,32 +41,32 @@ namespace TypeWindow = CE::Types::Window;
  * @details Contains the I_Window interface and related type definitions for window management.
  *			This namespace defines the common interface for all window implementations,
  *			allowing for platform-specific implementations while maintaining a consistent API.
- *			The MetalCocoaWindow class provides a macOS-specific implementation of the I_Window interface using Metal for rendering and Cocoa for window management,
+ *			The CocoaWindow class provides a macOS-specific implementation of the I_Window interface using Metal for rendering and Cocoa for window management,
  *			offering a native experience for applications targeting macOS with Metal.
  */
 namespace CE::Window {
 
 /**
- * @class MetalCocoaWindow
+ * @class CocoaWindow
  * @brief macOS-specific window implementation using Metal API and Cocoa
  * @details Provides a window implementation for macOS that uses Metal for rendering and Cocoa for window management.
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class MetalCocoaWindow final: public I_Window {
+class CocoaWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
 	 * @param windowProps Window configuration properties (title, dimensions, VSync)
 	 * @details Creates and initializes a Metal-based window with the specified properties using Cocoa APIs
 	 */
-	MetalCocoaWindow(const TypeWindow::WindowProps& windowProps);
+	CocoaWindow(const TypeWindow::WindowProps& windowProps);
 
 	/**
 	 * @brief Destructor
 	 * @details Cleans up Metal and Cocoa resources
 	 */
-	~MetalCocoaWindow() override;
+	~CocoaWindow() override;
 
 public:
 	/**
@@ -220,4 +220,4 @@ private:
 
 }
 
-#endif //CE_WINDOW_MAC_METALCOCOAWINDOW_HPP
+#endif //CE_WINDOW_MAC_COCOAWINDOW_HPP

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-19
+# Updated: 2026-03-20
 #
 
 enable_testing()
@@ -13,7 +13,7 @@ set(SOURCES
 	src/Platforms/Common/GlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Platforms/Mac/MetalCocoaWindowTests.cpp
+		src/Platforms/Mac/CocoaWindowTests.cpp
 	>
 )
 

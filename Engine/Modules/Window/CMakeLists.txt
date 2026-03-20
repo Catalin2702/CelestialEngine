@@ -13,7 +13,7 @@ set(HEADERS
 
 list(APPEND HEADERS
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Window/Platforms/Mac/MetalCocoaWindow.hpp
+	src/include/Window/Platforms/Mac/CocoaWindow.hpp
 #		src/include/Window/Platforms/Mac/MetalGlfwWindow.hpp
 	>
 )
@@ -29,7 +29,7 @@ set(SOURCES
 # Platform-specific
 list(APPEND SOURCES
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Window/Platforms/Mac/MetalCocoaWindow.cpp
+	src/source/Window/Platforms/Mac/CocoaWindow.cpp
 #		src/source/Window/Platforms/Mac/MetalGlfwWindow.cpp
 	>
 )

@@ -1,13 +1,13 @@
 //
 // Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac
-// File: ImGuiMetalCocoaLayer.cpp
+// File: ImGuiMetalLayer.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
 // Updated: 2026-03-20
 //
 
-#include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
+#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
@@ -19,7 +19,7 @@
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Time.hpp"
-#include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include <imgui.h>
 
@@ -29,14 +29,14 @@
 
 namespace CE::Layers {
 
-ImGuiMetalCocoaLayer::ImGuiMetalCocoaLayer(): I_ImGuiLayer("ImGuiMetalCocoaLayer") {}
+ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
 
-ImGuiMetalCocoaLayer::~ImGuiMetalCocoaLayer() {
+ImGuiMetalLayer::~ImGuiMetalLayer() {
 	// Ensure _Shutdown is called if OnDetach was not called
 	_Shutdown();
 }
 
-void ImGuiMetalCocoaLayer::OnRender() const {
+void ImGuiMetalLayer::OnRender() const {
 	if (not _currentFrameStarted)
 		return;
 
@@ -53,39 +53,39 @@ void ImGuiMetalCocoaLayer::OnRender() const {
 	ImGui::ShowDemoWindow(&show);
 }
 
-void ImGuiMetalCocoaLayer::OnEvent(Events::I_Event& event) {
+void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 	Events::EventDispatcher dispatcher(event);
 	switch (event.GetEventType()) {
 		case Events::EventType::MouseMoved:
-			dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseMoved));
+			dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseMoved));
 			break;
 		case Events::EventType::MouseScrolled:
-			dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseScrolled));
+			dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseScrolled));
 			break;
 		case Events::EventType::MouseButtonPressed:
-			dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseButtonPressed));
+			dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonPressed));
 			break;
 		case Events::EventType::MouseButtonReleased:
-			dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnMouseButtonReleased));
+			dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonReleased));
 			break;
 		case Events::EventType::KeyPressed:
-			dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnKeyPressed));
+			dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyPressed));
 			break;
 		case Events::EventType::KeyReleased:
-			dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnKeyReleased));
+			dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyReleased));
 			break;
 		case Events::EventType::KeyTyped:
-			dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnKeyTyped));
+			dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyTyped));
 			break;
 		case Events::EventType::WindowResize:
-			dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalCocoaLayer::_OnWindowResized));
+			dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnWindowResized));
 			break;
 		default:
 			break;
 	}
 }
 
-void ImGuiMetalCocoaLayer::Begin() {
+void ImGuiMetalLayer::Begin() {
 	_renderSemaphore.acquire();
 	_currentFrameStarted = false;
 
@@ -124,7 +124,7 @@ void ImGuiMetalCocoaLayer::Begin() {
 	_currentFrameStarted = true;
 }
 
-void ImGuiMetalCocoaLayer::End() {
+void ImGuiMetalLayer::End() {
 	if (not _currentFrameStarted)
 		return;
 
@@ -147,7 +147,7 @@ void ImGuiMetalCocoaLayer::End() {
 	_frameContext.commandBuffer->commit();
 }
 
-void ImGuiMetalCocoaLayer::_Init() {
+void ImGuiMetalLayer::_Init() {
 	IMGUI_CHECKVERSION();
 
 	try {
@@ -162,32 +162,32 @@ void ImGuiMetalCocoaLayer::_Init() {
 
 		const auto& app = Core::Application::Get();
 
-		_metalContext.window = dynamic_cast<Window::MetalCocoaWindow*>(app.GetWindow());
+		_metalContext.window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
 		if (not _metalContext.window) {
-			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
+			CE_CORE_ERROR("ImGuiMetalLayer requires a CocoaWindow window!");
 			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalCocoaLayer requires a MetalCocoaWindow window!");
+			throw std::runtime_error("ImGuiMetalLayer requires a CocoaWindow window!");
 		}
 
 		_metalContext.metalDevice = _metalContext.window->GetDevice();
 		if (not _metalContext.metalDevice) {
-			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
+			CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
 			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::Device!");
+			throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
 		}
 
 		_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
 		if (not _metalContext.commandQueue) {
-			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
+			CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid MTL::CommandQueue!");
+			throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
 		}
 
 		_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
 		if (not _metalContext.metalLayer) {
-			CE_CORE_ERROR("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
+			CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalCocoaLayer requires a valid CA::MetalLayer!");
+			throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
 		}
 
 		_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
@@ -221,7 +221,7 @@ void ImGuiMetalCocoaLayer::_Init() {
 	}
 }
 
-void ImGuiMetalCocoaLayer::_Shutdown() {
+void ImGuiMetalLayer::_Shutdown() {
 	if (not _initialized)
 		return;
 	_initialized = false;
@@ -236,21 +236,21 @@ void ImGuiMetalCocoaLayer::_Shutdown() {
 	ImGui::DestroyContext();
 }
 
-bool ImGuiMetalCocoaLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+bool ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
+bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+bool ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
@@ -260,7 +260,7 @@ bool ImGuiMetalCocoaLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+bool ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
@@ -270,7 +270,7 @@ bool ImGuiMetalCocoaLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEve
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
+bool ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
@@ -280,7 +280,7 @@ bool ImGuiMetalCocoaLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
+bool ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
@@ -290,7 +290,7 @@ bool ImGuiMetalCocoaLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
+bool ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const auto keycode = KeyCode::ToUInt(event.GetKeyCode());
 	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
 		return false;
@@ -300,7 +300,7 @@ bool ImGuiMetalCocoaLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	return false;
 }
 
-bool ImGuiMetalCocoaLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 

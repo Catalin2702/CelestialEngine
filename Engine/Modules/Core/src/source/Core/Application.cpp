@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include "Core/Application.hpp"
@@ -13,7 +13,7 @@
 #include "Events/I_Event.hpp"
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
-#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp"
+#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp"
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -22,11 +22,11 @@
 
 
 #ifdef CE_PLATFORM_MACOS
-#include "Layers/ImGui/Platforms/Mac/ImGuiMetalCocoaLayer.hpp"
+#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
 
-#include "Window/Platforms/Mac/MetalCocoaWindow.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 #endif
 
 #include <cassert>
@@ -133,7 +133,7 @@ void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 #ifdef CE_PLATFORM_MACOS
 		case TypeWindow::WindowApi::Cocoa: {
 			window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<Window::MetalCocoaWindow>(windowProps)
+				Window::I_Window::CreateWindow<Window::CocoaWindow>(windowProps)
 			);
 			break;
 		}
@@ -202,12 +202,12 @@ void Application::InitImGuiLayer(const TypeWindow::WindowProps& windowProps) {
 
 	switch (windowProps.graphicsApi) {
 		case Types::Render::GraphicsApi::OpenGL: {
-			overlay = std::make_unique<Layers::ImGuiOpenGlGlfwLayer>();
+			overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
 			break;
 		}
 #ifdef CE_PLATFORM_MACOS
 		case Types::Render::GraphicsApi::Metal: {
-			overlay = std::make_unique<Layers::ImGuiMetalCocoaLayer>();
+			overlay = std::make_unique<Layers::ImGuiMetalLayer>();
 			break;
 		}
 #endif

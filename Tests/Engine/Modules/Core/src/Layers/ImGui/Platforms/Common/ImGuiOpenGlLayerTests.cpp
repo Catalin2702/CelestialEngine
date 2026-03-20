@@ -1,17 +1,17 @@
 //
 // Module: CelestialEngine/Tests/Engine/Modules/Core/Layers/ImGui/Platforms/Common
-// File: ImGuiOpenGlGlfwLayerTests.cpp
+// File: ImGuiOpenGlLayerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Common/ImGuiOpenGlGlfwLayer.hpp>
+#include <Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -31,11 +31,11 @@ using namespace CE::Types::Window;
 constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 /**
- * @brief Test fixture for ImGuiOpenGlGlfwLayer tests
- * @details These tests require an Application instance because ImGuiOpenGlGlfwLayer
+ * @brief Test fixture for ImGuiOpenGlLayer tests
+ * @details These tests require an Application instance because ImGuiOpenGlLayer
  *			needs a valid OpenGL context and window to initialize properly
  */
-class ImGuiOpenGlGlfwLayerTest: public ::testing::Test {
+class ImGuiOpenGlLayerTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
@@ -62,32 +62,32 @@ protected:
 };
 //
 /**
- * @brief Test ImGuiOpenGlGlfwLayer construction
+ * @brief Test ImGuiOpenGlLayer construction
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, Construction) {
+TEST_F(ImGuiOpenGlLayerTest, Construction) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	EXPECT_NE(layer, nullptr);
 
 #ifdef CE_DEBUG
-	EXPECT_EQ(layer->GetDebugName(), "ImGuiOpenGlGlfwLayer");
+	EXPECT_EQ(layer->GetDebugName(), "ImGuiOpenGlLayer");
 #endif
 
 	delete layer;
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnAttach
+ * @brief Test ImGuiOpenGlLayer OnAttach
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnAttach) {
+TEST_F(ImGuiOpenGlLayerTest, OnAttach) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 
 	EXPECT_NO_THROW({
 		_app->PushLayer(layer);
@@ -100,14 +100,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnAttach) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnDetach after OnAttach
+ * @brief Test ImGuiOpenGlLayer OnDetach after OnAttach
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnDetach) {
+TEST_F(ImGuiOpenGlLayerTest, OnDetach) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 
 	// First attach the layer
 	_app->PushLayer(layer);
@@ -122,14 +122,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnDetach) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnUpdate
+ * @brief Test ImGuiOpenGlLayer OnUpdate
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnUpdate) {
+TEST_F(ImGuiOpenGlLayerTest, OnUpdate) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -142,14 +142,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnUpdate) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer multiple OnUpdate calls
+ * @brief Test ImGuiOpenGlLayer multiple OnUpdate calls
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleOnUpdate) {
+TEST_F(ImGuiOpenGlLayerTest, MultipleOnUpdate) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -164,14 +164,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleOnUpdate) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with KeyPressed
+ * @brief Test ImGuiOpenGlLayer OnEvent with KeyPressed
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyPressed) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -186,14 +186,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyPressed) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with KeyReleased
+ * @brief Test ImGuiOpenGlLayer OnEvent with KeyReleased
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyReleased) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventKeyReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -207,14 +207,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyReleased) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with KeyTyped
+ * @brief Test ImGuiOpenGlLayer OnEvent with KeyTyped
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyTyped) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventKeyTyped) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -228,14 +228,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventKeyTyped) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with MouseButtonPressed
+ * @brief Test ImGuiOpenGlLayer OnEvent with MouseButtonPressed
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonPressed) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonPressed) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -249,14 +249,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonPressed) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with MouseButtonReleased
+ * @brief Test ImGuiOpenGlLayer OnEvent with MouseButtonReleased
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonReleased) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonReleased) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -270,14 +270,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseButtonReleased) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with MouseMoved
+ * @brief Test ImGuiOpenGlLayer OnEvent with MouseMoved
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseMoved) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventMouseMoved) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -291,14 +291,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseMoved) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with MouseScrolled
+ * @brief Test ImGuiOpenGlLayer OnEvent with MouseScrolled
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseScrolled) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventMouseScrolled) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -312,14 +312,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventMouseScrolled) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer OnEvent with WindowResize
+ * @brief Test ImGuiOpenGlLayer OnEvent with WindowResize
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventWindowResize) {
+TEST_F(ImGuiOpenGlLayerTest, OnEventWindowResize) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -333,14 +333,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, OnEventWindowResize) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer handling multiple events
+ * @brief Test ImGuiOpenGlLayer handling multiple events
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleEvents) {
+TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 	_app->PushLayer(layer);
 	_app->SetRenderLayer(layer);
 
@@ -359,14 +359,14 @@ TEST_F(ImGuiOpenGlGlfwLayerTest, MultipleEvents) {
 }
 
 /**
- * @brief Test ImGuiOpenGlGlfwLayer full lifecycle
+ * @brief Test ImGuiOpenGlLayer full lifecycle
  */
-TEST_F(ImGuiOpenGlGlfwLayerTest, FullLifecycle) {
+TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
 	if (!_windowAvailable) {
 		GTEST_SKIP() << "Window not available (no display)";
 	}
 
-	const auto layer = new ImGuiOpenGlGlfwLayer();
+	const auto layer = new ImGuiOpenGlLayer();
 
 	// Attach
 	EXPECT_NO_THROW({

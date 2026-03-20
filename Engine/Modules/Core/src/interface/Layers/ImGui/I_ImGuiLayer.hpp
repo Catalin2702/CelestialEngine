@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-16
+// Updated: 2026-03-20
 //
 
 #pragma once
@@ -36,8 +36,7 @@ namespace CE::Layers {
  * @brief Abstract base class for ImGui overlay layers
  * @details Extends I_Layer to provide a specialized interface for ImGui-based UI layers.
  *			Defines pure virtual methods for handling various input events that are
- *			relevant for ImGui interactions. Concrete implementations (ImGuiOpenGlGlfwLayer,
- *			ImGuiMetalGlfwLayer) handle platform-specific rendering.
+ *			relevant for ImGui interactions. Concrete implementations handle platform-specific rendering.
  */
 class I_ImGuiLayer: public I_RenderLayer {
 public:
