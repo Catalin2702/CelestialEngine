@@ -10,7 +10,7 @@
 enable_testing()
 
 set(SOURCES
-	src/Platforms/Common/GlfwWindow.cpp
+	src/Platforms/Common/GlfwWindowTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/Platforms/Mac/CocoaWindowTests.cpp

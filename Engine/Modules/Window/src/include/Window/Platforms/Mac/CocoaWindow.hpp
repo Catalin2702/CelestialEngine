@@ -112,27 +112,6 @@ public:
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 	/**
-	 * @brief Gets the Metal command queue
-	 * @return MTL::CommandQueue* Pointer to the Metal command queue
-	 * @details Provides access to the Metal command queue for issuing rendering commands. This is essential for any rendering operations performed using Metal.
-	 */
-	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _commandQueue.get(); }
-
-	/**
-	 * @brief Gets the Metal device
-	 * @return MTL::Device* Pointer to the Metal device (GPU)
-	 * @details Provides access to the Metal device, which represents the GPU. This is required for creating resources and issuing rendering commands with Metal.
-	 */
-	[[nodiscard]] MTL::Device* GetDevice() const { return _device.get(); }
-
-	/**
-	 * @brief Gets the Metal layer
-	 * @return CA::MetalLayer* Pointer to the Core Animation Metal layer
-	 * @details Provides access to the Metal layer, which is the rendering surface for Metal content. This layer is used to present rendered frames to the screen.
-	 */
-	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const { return _layer.get(); }
-
-	/**
 	 * @brief Gets the native macOS window
 	 * @return NS::Window* Pointer to the AppKit window
 	 * @details Provides access to the underlying macOS window for platform-specific operations. This allows for direct interaction with the Cocoa window when necessary.
@@ -141,10 +120,10 @@ public:
 
 	/**
 	 * @brief Gets the content view of the macOS window
-	 * @return void* Pointer to the NSView (content view)
-	 * @details Provides access to the content view of the window, which is needed for ImGui OSX backend initialization.
+	 * @return NS::View* Pointer to the NSView (content view)
+	 * @details Provides access to the content view of the window, which is needed for ImGui OSX backend initialization. The content view is where the Metal layer is attached for rendering.
 	 */
-	[[nodiscard]] void* GetContentView() const { return _window ? _window->contentView() : nullptr; }
+	[[nodiscard]] NS::View* GetMetalView() const { return _view.get(); }
 
 public:
 	/**
@@ -155,10 +134,11 @@ public:
 	void SetEventCallback(const EventCallbackFn& callback) override;
 
 	/**
-	 * @brief Configures all window event callbacks
-	 * @details Sets up Cocoa callbacks for window events such as resize, close, focus, minimize, etc. This allows the application to handle these events appropriately.
+	 * @brief Sets the resize event callback function
+	 * @param callback Function to be called when the window is resized
+	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
 	 */
-	void SetWindowCallbacks() override;
+	void SetResizeEventCallback(const ResizeEventCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the window width
@@ -183,16 +163,18 @@ public:
 
 	WINDOW_API_TYPE(Cocoa)
 
+protected:
+	/**
+	 * @brief Configures all window event callbacks
+	 * @details Sets up Cocoa callbacks for window events such as resize, close, focus, minimize, etc. This allows the application to handle these events appropriately.
+	 */
+	void _SetWindowCallbacks() override;
+
 private:
 	/** @brief Initializes the window and Metal resources
 	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
 	 */
 	void _Init();
-
-	/** @brief Initializes the Metal device
-	 * @details Creates the Metal device (GPU) that will be used for rendering. This is a crucial step for any Metal application, as the device is required to create resources and issue rendering commands.
-	 */
-	void _InitDevice();
 
 	/** @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering. This includes configuring the layer's properties and attaching it to the window's content view.
@@ -212,9 +194,6 @@ private:
 private:
 	EventWindowData _data;							///< Window data including event callback
 
-	NS::SharedPtr<MTL::CommandQueue> _commandQueue;	///< Metal command queue
-	NS::SharedPtr<MTL::Device> _device;				///< Metal device (GPU)
-	NS::SharedPtr<CA::MetalLayer> _layer;			///< Core Animation Metal layer
 	NS::SharedPtr<NS::View> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
 	void* _windowDelegate;							///< Cocoa window delegate for handling events

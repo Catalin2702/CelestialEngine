@@ -30,10 +30,14 @@ namespace NS {
 class Window;
 }
 
+namespace CE::Window {
+class CocoaWindow;
+}
+
 namespace CE::Render::Context {
 
 struct MetalContextProps {
-	NS::Window* window = nullptr;
+	Window::CocoaWindow* window = nullptr;
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 };
 

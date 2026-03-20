@@ -46,6 +46,7 @@ target_link_libraries(CE_Render PUBLIC
 	CE_Native
 	CE_Tools
 	CE_Types
+	CE_Window
 )
 
 target_link_libraries(CE_Render PUBLIC

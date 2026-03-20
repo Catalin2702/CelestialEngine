@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-20
 //
 
 #include <Events/I_Event.hpp>
@@ -211,16 +211,6 @@ TEST_F(GlfwWindowTest, SetEventCallback_WithCallback_NoThrow) {
 	};
 
 	EXPECT_NO_THROW(window.SetEventCallback(callback));
-}
-
-/**
- * @brief Test that SetWindowCallbacks can be called
- */
-TEST_F(GlfwWindowTest, SetWindowCallbacks_Called_NoThrow) {
-	const WindowProps props{"Callbacks Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
-	GlfwWindow window(props);
-
-	EXPECT_NO_THROW(window.SetWindowCallbacks());
 }
 
 // ============================================================================

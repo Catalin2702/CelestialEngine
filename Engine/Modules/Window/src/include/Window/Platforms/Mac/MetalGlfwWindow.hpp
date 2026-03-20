@@ -137,7 +137,7 @@ public:
 	 * @brief Configures all window event callbacks
 	 * @details Sets up GLFW callbacks for window and input events
 	 */
-	void SetWindowCallbacks() override;
+	void _SetWindowCallbacks() override;
 
 	/**
 	 * @brief Sets the window width

@@ -93,7 +93,7 @@ void MetalGlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
  *			All callbacks retrieve the EventWindowData from GLFW user pointer and invoke
  *			the stored event callback. Returns early if _glfwWindow is null.
  */
-void MetalGlfwWindow::SetWindowCallbacks() {
+void MetalGlfwWindow::_SetWindowCallbacks() {
 	if (not _glfwWindow)
 		return;
 
@@ -236,7 +236,7 @@ void MetalGlfwWindow::_Init() {
 	_InitWindow();
 
 	SetVSync(_data.VSync);
-	SetWindowCallbacks();
+	_SetWindowCallbacks();
 
 	_st_GLFWWindowCount++;
 }

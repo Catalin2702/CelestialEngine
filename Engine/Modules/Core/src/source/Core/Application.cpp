@@ -175,7 +175,7 @@ void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
 				throw std::runtime_error("Metal graphics API on macOS is only supported with Cocoa window API");
 			}
 			const Render::Context::MetalContextProps props {
-				.window = static_cast<NS::Window*>(_window->GetNativeWindow()),
+				.window = dynamic_cast<Window::CocoaWindow*>(_window.get()),
 				.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm
 			};
 			context = std::make_unique<Render::Context::MetalContext>(props);

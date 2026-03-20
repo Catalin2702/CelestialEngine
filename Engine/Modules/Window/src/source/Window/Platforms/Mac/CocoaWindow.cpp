@@ -172,7 +172,7 @@ static void CocoaWindowEventCallback(void* userData, const int eventType, const 
 }
 
 CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
-	_data(windowProps), _commandQueue(nullptr), _device(nullptr), _layer(nullptr), _window(nullptr), _windowDelegate(nullptr) {
+	_data(windowProps), _window(nullptr), _windowDelegate(nullptr) {
 	_Init();
 }
 
@@ -205,7 +205,10 @@ void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.EventCallback = callback;
 }
 
-void CocoaWindow::SetWindowCallbacks() {
+void CocoaWindow::SetResizeEventCallback([[maybe_unused]] const ResizeEventCallbackFn& callback) {
+}
+
+void CocoaWindow::_SetWindowCallbacks() {
 	if (!_window)
 		return;
 
@@ -215,12 +218,12 @@ void CocoaWindow::SetWindowCallbacks() {
 		Apple::Bridge::SetCocoaWindowDelegate(_window.get(), _windowDelegate);
 	}
 	else {
-		CE_CORE_WARN("CocoaWindow::SetWindowCallbacks: Failed to create Cocoa window delegate");
+		CE_CORE_WARN("CocoaWindow::_SetWindowCallbacks: Failed to create Cocoa window delegate");
 	}
 }
 
 void CocoaWindow::SetWidth(const unsigned int width) {
-	if (not (_window and _layer))
+	if (not _window)
 		return;
 
 	_data.width = width;
@@ -228,45 +231,30 @@ void CocoaWindow::SetWidth(const unsigned int width) {
 }
 
 void CocoaWindow::SetHeight(const unsigned int height) {
-	if (not (_window and _layer))
+	if (not _window)
 		return;
 
 	_data.height = height;
 	_UpdateLayerSize();
 }
 
-void CocoaWindow::SetVSync(const bool enabled) {
-	if (_layer) {
-		_data.VSync = enabled;
-		_layer->setDisplaySyncEnabled(enabled);
-	}
-	else {
-		CE_CORE_WARN("CocoaWindow::SetVSync: Could not set VSync because Metal layer is not initialized.");
-	}
+void CocoaWindow::SetVSync([[maybe_unused]] const bool enabled) {
+	// if (_layer) {
+	// 	_data.VSync = enabled;
+	// 	_layer->setDisplaySyncEnabled(enabled);
+	// }
+	// else {
+	// 	CE_CORE_WARN("CocoaWindow::SetVSync: Could not set VSync because Metal layer is not initialized.");
+	// }
 }
 
 void CocoaWindow::_Init() {
-	_InitDevice();
 	_InitWindow();
 
 	SetVSync(_data.VSync);
-	SetWindowCallbacks();
+	_SetWindowCallbacks();
 
 	_st_CocoaWindowCount++;
-}
-
-void CocoaWindow::_InitDevice() {
-	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
-	if (not _device) {
-		CE_CORE_ERROR("CocoaWindow::_InitDevice: Could not create MetalDevice!");
-		throw std::runtime_error("CocoaWindow::_InitDevice: Could not create MetalDevice!");
-	}
-
-	_commandQueue = NS::TransferPtr(_device->newCommandQueue());
-	if (not _commandQueue) {
-		CE_CORE_ERROR("CocoaWindow::_InitDevice: Could not create Metal Command Queue!");
-		throw std::runtime_error("CocoaWindow::_InitDevice: Could not create Metal Command Queue!");
-	}
 }
 
 void CocoaWindow::_InitWindow() {
@@ -306,25 +294,6 @@ void CocoaWindow::_InitWindow() {
 	_window = NS::RetainPtr(rawWindow);
 	rawWindow = nullptr; // Avoid dangling pointer
 
-	CA::MetalLayer* rawLayer;
-	try {
-		rawLayer = CA::MetalLayer::layer();
-		if (not rawLayer) {
-			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create CAMetalLayer!");
-			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create CAMetalLayer!");
-		}
-	}
-	catch (const std::exception& e) {
-		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating CAMetalLayer: {0}", e.what());
-		throw;
-	}
-	catch (...) {
-		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating CAMetalLayer");
-		throw;
-	}
-	_layer = NS::RetainPtr(rawLayer);
-	rawLayer = nullptr; // Avoid dangling pointer
-
 	NS::View* rawView;
 	try {
 		rawView = NS::View::alloc()->init(frame);
@@ -351,16 +320,6 @@ void CocoaWindow::_InitWindow() {
 	// Set frame autosave name to remember window position between launches
 	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), _window->title()->utf8String());
 
-	_layer->setDevice(_device.get());
-	_layer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm);
-	_layer->setContentsScale(_window->backingScaleFactor());
-	_layer->setMaximumDrawableCount(3);
-	_layer->setAllowsNextDrawableTimeout(false);
-	_UpdateLayerSize();
-
-	_view->setLayer(_layer.get());
-	_view->setWantsLayer(true);
-
 	// Activate the application
 	app->activateIgnoringOtherApps(true);
 }
@@ -385,14 +344,14 @@ void CocoaWindow::_Shutdown() {
 }
 
 void CocoaWindow::_UpdateLayerSize() const {
-	if (not (_window and _layer))
+	if (not _window)
 		return;
 
-	const auto scale = _window->backingScaleFactor();
-	_layer->setDrawableSize({
-		static_cast<float>(_data.width) * scale,
-		static_cast<float>(_data.height) * scale
-	});
+	[[maybe_unused]] const auto scale = _window->backingScaleFactor();
+	// _layer->setDrawableSize({
+	// 	static_cast<float>(_data.width) * scale,
+	// 	static_cast<float>(_data.height) * scale
+	// });
 }
 
 }

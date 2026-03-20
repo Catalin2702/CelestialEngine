@@ -86,6 +86,9 @@ void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_data.EventCallback = callback;
 }
 
+void GlfwWindow::SetResizeEventCallback([[maybe_unused]] const ResizeEventCallbackFn& callback) {
+}
+
 /**
  * @brief Configures all GLFW callbacks for window event handling
  * @details Registers the following callbacks:
@@ -98,7 +101,7 @@ void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
  *			- Mouse movement: generates MouseMovedEvent
  *			Verifies that _glfwWindow is valid before registering callbacks
  */
-void GlfwWindow::SetWindowCallbacks() {
+void GlfwWindow::_SetWindowCallbacks() {
 	if (not _glfwWindow)
 		return;
 
@@ -270,7 +273,7 @@ void GlfwWindow::_Init() {
 	}
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
 	SetVSync(_data.VSync);
-	SetWindowCallbacks();
+	_SetWindowCallbacks();
 
 	_st_GLFWWindowCount++;
 }

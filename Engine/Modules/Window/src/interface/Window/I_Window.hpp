@@ -45,6 +45,8 @@ using EventWindowData = Types::Window::WindowData<Events::I_Event>;
  */
 using EventCallbackFn = Types::Window::CallbackFn<Events::I_Event>;
 
+using ResizeEventCallbackFn = Types::Window::CallbackFn<std::pair<float, float>>;
+
 /**
  * @class I_Window
  * @brief Abstract interface for platform-specific window implementations
@@ -53,6 +55,11 @@ using EventCallbackFn = Types::Window::CallbackFn<Events::I_Event>;
  *			MetalWindow for macOS Metal-based windows.
  */
 class CE_API I_Window {
+	struct WindowCallbackFunctions {
+		EventCallbackFn EventCallback;				///< Callback function for handling engine events
+		ResizeEventCallbackFn ResizeEventCallback;	///< Callback function for handling window resize events
+	};
+
 public:
 	/**
 	 * @brief Virtual destructor
@@ -108,10 +115,11 @@ public:
 	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
 	/**
-	 * @brief Configures all window event callbacks
-	 * @details Sets up GLFW callbacks for resize, close, keyboard, mouse, etc.
+	 * @brief Sets the resize event callback function
+	 * @param callback Function to be called when the window is resized
+	 * @details The callback will be invoked with the new content scale when the window is resized
 	 */
-	virtual void SetWindowCallbacks() = 0;
+	virtual void SetResizeEventCallback(const ResizeEventCallbackFn& callback) = 0;
 
 	/**
 	 * @brief Sets the window width
@@ -145,6 +153,15 @@ public:
 		auto window = std::make_unique<T>(windowProps);
 		return window.release();
 	}
+
+protected:
+	/**
+	 * @brief Configures all window event callbacks
+	 * @details Sets up GLFW callbacks for resize, close, keyboard, mouse, etc.
+	 */
+	virtual void _SetWindowCallbacks() = 0;
+
+	WindowCallbackFunctions _callbacks;
 };
 
 }

@@ -130,36 +130,6 @@ TEST_F(CocoaWindowTest, GetNativeWindow_AfterConstruction_ReturnsValidPointer) {
 // ============================================================================
 
 /**
- * @brief Test that GetCommandQueue returns a valid pointer
- */
-TEST_F(CocoaWindowTest, GetCommandQueue_AfterConstruction_ReturnsValidPointer) {
-	const WindowProps props{"Command Queue Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
-	const CocoaWindow window(props);
-
-	EXPECT_NE(window.GetCommandQueue(), nullptr);
-}
-
-/**
- * @brief Test that GetDevice returns a valid pointer
- */
-TEST_F(CocoaWindowTest, GetDevice_AfterConstruction_ReturnsValidPointer) {
-	const WindowProps props{"Device Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
-	const CocoaWindow window(props);
-
-	EXPECT_NE(window.GetDevice(), nullptr);
-}
-
-/**
- * @brief Test that GetMetalLayer returns a valid pointer
- */
-TEST_F(CocoaWindowTest, GetMetalLayer_AfterConstruction_ReturnsValidPointer) {
-	const WindowProps props{"Metal Layer Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
-	const CocoaWindow window(props);
-
-	EXPECT_NE(window.GetMetalLayer(), nullptr);
-}
-
-/**
  * @brief Test that GetMetalWindow returns a valid pointer
  */
 TEST_F(CocoaWindowTest, GetMetalWindow_AfterConstruction_ReturnsValidPointer) {
@@ -172,11 +142,11 @@ TEST_F(CocoaWindowTest, GetMetalWindow_AfterConstruction_ReturnsValidPointer) {
 /**
  * @brief Test that GetContentView returns a valid pointer
  */
-TEST_F(CocoaWindowTest, GetContentView_AfterConstruction_ReturnsValidPointer) {
-	const WindowProps props{"Content View Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
+TEST_F(CocoaWindowTest, GetMetalView_AfterConstruction_ReturnsValidPointer) {
+	const WindowProps props{"Metal View Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_NE(window.GetContentView(), nullptr);
+	EXPECT_NE(window.GetMetalView(), nullptr);
 }
 
 // ============================================================================
@@ -279,16 +249,6 @@ TEST_F(CocoaWindowTest, SetEventCallback_WithCallback_NoThrow) {
 	EXPECT_NO_THROW(window.SetEventCallback(callback));
 }
 
-/**
- * @brief Test that SetWindowCallbacks can be called
- */
-TEST_F(CocoaWindowTest, SetWindowCallbacks_Called_NoThrow) {
-	const WindowProps props{"Callbacks Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
-	CocoaWindow window(props);
-
-	EXPECT_NO_THROW(window.SetWindowCallbacks());
-}
-
 // ============================================================================
 // Different Window Sizes Tests
 // ============================================================================
@@ -330,12 +290,9 @@ TEST_F(CocoaWindowTest, MetalResources_AfterConstruction_AllValid) {
 	const WindowProps props{"Resources Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_NE(window.GetDevice(), nullptr);
-	EXPECT_NE(window.GetCommandQueue(), nullptr);
-	EXPECT_NE(window.GetMetalLayer(), nullptr);
 	EXPECT_NE(window.GetMetalWindow(), nullptr);
 	EXPECT_NE(window.GetNativeWindow(), nullptr);
-	EXPECT_NE(window.GetContentView(), nullptr);
+	EXPECT_NE(window.GetMetalView(), nullptr);
 }
 
 /**
@@ -382,9 +339,6 @@ TEST_F(CocoaWindowTest, FullLifecycle_WithEventsAndUpdates_Succeeds) {
 	window.SetEventCallback([&eventCallbackSet](I_Event&) {
 		eventCallbackSet = true;
 	});
-
-	// Setup window callbacks
-	EXPECT_NO_THROW(window.SetWindowCallbacks());
 
 	// Update window
 	EXPECT_NO_THROW(window.OnUpdate());

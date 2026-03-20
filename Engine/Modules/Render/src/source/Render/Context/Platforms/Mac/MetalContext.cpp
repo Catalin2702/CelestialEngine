@@ -16,6 +16,8 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
+#include "../../../../../../../Window/src/include/Window/Platforms/Mac/CocoaWindow.hpp"
+
 
 namespace CE::Render::Context {
 
@@ -25,6 +27,8 @@ MetalContext::~MetalContext() = default;
 
 void MetalContext::Init() {
 	assert(_props.window && "MetalContext requires a valid NS::Window pointer");
+	assert(_props.window->GetMetalWindow() && "MetalContext requires a valid NS::Window pointer from CocoaWindow");
+	assert(_props.window->GetMetalView() && "MetalContext requires a valid NS::View pointer from CocoaWindow");
 	const auto window = _props.window;
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _device) {
@@ -44,20 +48,17 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create CAMetalLayer!");
 	}
 
+	// ReSharper disable All
+	const auto metalView = window->GetMetalView();
+	metalView->setLayer(_layer.get());
+	metalView->setWantsLayer(true);
+	// ReSharper restore All
+
+	const auto metalWindow = window->GetMetalWindow();
+
 	_layer->setDevice(_device.get());
 	_layer->setPixelFormat(_props.pixelFormat);
-
-	// ReSharper disable All
-	if (const auto contentView = window->contentView()) {
-		contentView->setLayer(_layer.get());
-		contentView->setWantsLayer(true);
-	}
-	else {
-		CE_CORE_ERROR("MetalContext::Init: Failed to get content view from Metal window!");
-		throw std::runtime_error("MetalContext::Init: Failed to get content view from Metal window!");
-	}
-
-	_layer->setContentsScale(window->backingScaleFactor());
+	_layer->setContentsScale(metalWindow->backingScaleFactor());
 	_layer->setMaximumDrawableCount(3);
 	_layer->setAllowsNextDrawableTimeout(false);
 }
@@ -78,4 +79,5 @@ void MetalContext::SwapBuffers() {
 	commandBuffer->presentDrawable(drawable);
 	commandBuffer->commit();
 }
+
 }

@@ -111,18 +111,7 @@ public:
 	 */
 	void SetEventCallback(const EventCallbackFn& callback) override;
 
-	/**
-	 * @brief Configures all GLFW window event callbacks
-	 * @details Sets up GLFW callbacks for:
-	 *			- Window resize events
-	 *			- Window close events
-	 *			- Keyboard input (press, release, repeat, typed characters)
-	 *			- Mouse button events (press, release)
-	 *			- Mouse movement events
-	 *			- Mouse scroll events
-	 *			All callbacks generate appropriate engine events and invoke the event callback
-	 */
-	void SetWindowCallbacks() override;
+	void SetResizeEventCallback(const ResizeEventCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the window width
@@ -151,6 +140,20 @@ public:
 	void SetVSync(bool enabled) override;
 
 	WINDOW_API_TYPE(GLFW)
+
+protected:
+	/**
+ * @brief Configures all GLFW window event callbacks
+ * @details Sets up GLFW callbacks for:
+ *			- Window resize events
+ *			- Window close events
+ *			- Keyboard input (press, release, repeat, typed characters)
+ *			- Mouse button events (press, release)
+ *			- Mouse movement events
+ *			- Mouse scroll events
+ *			All callbacks generate appropriate engine events and invoke the event callback
+ */
+	void _SetWindowCallbacks() override;
 
 private:
 	/**

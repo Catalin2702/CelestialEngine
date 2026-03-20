@@ -118,7 +118,7 @@ void ImGuiMetalLayer::Begin() {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(_metalContext.renderPassDescriptor);
 
 	Apple::Bridge::ImGuiMetalNewFrame(_metalContext.renderPassDescriptor);
-	Apple::Bridge::ImGuiOSXNewFrame(_metalContext.window->GetContentView());
+	// Apple::Bridge::ImGuiOSXNewFrame(_metalContext.window->GetContentView());
 
 	ImGui::NewFrame();
 	_currentFrameStarted = true;
@@ -148,77 +148,77 @@ void ImGuiMetalLayer::End() {
 }
 
 void ImGuiMetalLayer::_Init() {
-	IMGUI_CHECKVERSION();
-
-	try {
-		const auto context = ImGui::CreateContext();
-		ImGui::SetCurrentContext(context);
-		ImGui::StyleColorsDark();
-
-		auto& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
-
-		const auto& app = Core::Application::Get();
-
-		_metalContext.window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
-		if (not _metalContext.window) {
-			CE_CORE_ERROR("ImGuiMetalLayer requires a CocoaWindow window!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer requires a CocoaWindow window!");
-		}
-
-		_metalContext.metalDevice = _metalContext.window->GetDevice();
-		if (not _metalContext.metalDevice) {
-			CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
-		}
-
-		_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
-		if (not _metalContext.commandQueue) {
-			CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-		}
-
-		_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
-		if (not _metalContext.metalLayer) {
-			CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-		}
-
-		_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
-		if (not _metalContext.renderPassDescriptor) {
-			CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
-		}
-
-		Apple::Bridge::ImGuiMetalInit(_metalContext.metalDevice);
-
-		// Initialize OSX backend for platform handling
-		if (const auto contentView = _metalContext.window->GetContentView()) {
-			if (not Apple::Bridge::ImGuiOSXInit(contentView)) {
-				CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
-				ImGui::DestroyContext(context);
-				throw std::runtime_error("Failed to initialize ImGui OSX backend!");
-			}
-		}
-		else {
-			CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("Failed to get content view for ImGui OSX backend!");
-		}
-
-		_initialized = true;
-	}
-	catch (...) {
-		_initialized = false;
-		throw;
-	}
+	// IMGUI_CHECKVERSION();
+	//
+	// try {
+	// 	const auto context = ImGui::CreateContext();
+	// 	ImGui::SetCurrentContext(context);
+	// 	ImGui::StyleColorsDark();
+	//
+	// 	auto& io = ImGui::GetIO();
+	// 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	// 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	// 	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
+	//
+	// 	const auto& app = Core::Application::Get();
+	//
+	// 	_metalContext.window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
+	// 	if (not _metalContext.window) {
+	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a CocoaWindow window!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("ImGuiMetalLayer requires a CocoaWindow window!");
+	// 	}
+	//
+	// 	_metalContext.metalDevice = _metalContext.window->GetDevice();
+	// 	if (not _metalContext.metalDevice) {
+	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
+	// 	}
+	//
+	// 	_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
+	// 	if (not _metalContext.commandQueue) {
+	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
+	// 	}
+	//
+	// 	_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
+	// 	if (not _metalContext.metalLayer) {
+	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
+	// 	}
+	//
+	// 	_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
+	// 	if (not _metalContext.renderPassDescriptor) {
+	// 		CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
+	// 	}
+	//
+	// 	Apple::Bridge::ImGuiMetalInit(_metalContext.metalDevice);
+	//
+	// 	// Initialize OSX backend for platform handling
+	// 	if (const auto contentView = _metalContext.window->GetContentView()) {
+	// 		if (not Apple::Bridge::ImGuiOSXInit(contentView)) {
+	// 			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
+	// 			ImGui::DestroyContext(context);
+	// 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+	// 		}
+	// 	}
+	// 	else {
+	// 		CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");
+	// 		ImGui::DestroyContext(context);
+	// 		throw std::runtime_error("Failed to get content view for ImGui OSX backend!");
+	// 	}
+	//
+	// 	_initialized = true;
+	// }
+	// catch (...) {
+	// 	_initialized = false;
+	// 	throw;
+	// }
 }
 
 void ImGuiMetalLayer::_Shutdown() {
