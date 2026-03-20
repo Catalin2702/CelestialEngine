@@ -92,57 +92,48 @@ struct WindowProps {
 		title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 };
 
-/**
- * @typedef CallbackFn
- * @brief Type alias for event callback functions
- * @tparam T Event type
- * @details Function that takes an event reference and returns void
- */
-template<class T>
-using CallbackFn = std::function<void(T&)>;
-
-/**
- * @struct WindowData
- * @brief Extended window properties including event callback
- * @tparam T Event type
- * @details Extends WindowProps with an event callback function. Used internally
- *			by window implementations to store window state and event handling.
- */
-template<class T>
-struct WindowData: WindowProps {
-	CallbackFn<T> EventCallback;					///< Callback function for event handling
-
-	/**
-	 * @brief Default constructor
-	 * @details Initializes the WindowData structure with default values by calling
-	 *			the base WindowProps default constructor. The EventCallback is
-	 *			default-initialized to an empty function.
-	 */
-	WindowData() = default;
-
-	/**
-	 * @brief Constructor
-	 * @param title Window title string
-	 * @param width Window width in pixels
-	 * @param height Window height in pixels
-	 * @param VSync Enable or disable vertical synchronization
-	 * @param graphicsApi Graphics API to use for rendering
-	 * @param windowApi Windowing API to use for window management
-	 * @details Initializes the WindowData structure with the provided values by
-	 *			calling the base WindowProps constructor.
-	 *			This structure is used internally by window implementations to store both configuration and event callback information.
-	 */
-	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi)
-		: WindowProps(title, width, height, VSync, graphicsApi, windowApi) {}
-	/**
-	 * @brief Constructor from WindowProps
-	 * @param props WindowProps structure to initialize from
-	 * @details Initializes the WindowData structure with the provided values by
-	 *			calling the base WindowProps constructor.
-	 *			This structure is used internally by window implementations to store both configuration and event callback information.
-	 */
-	WindowData(const WindowProps& props): WindowProps(props) {}
-};
+// /**
+//  * @struct WindowData
+//  * @brief Extended window properties including event callback
+//  * @tparam T Event type
+//  * @details Extends WindowProps with an event callback function. Used internally
+//  *			by window implementations to store window state and event handling.
+//  */
+// template<class T>
+// struct WindowData: WindowProps {
+// 	CallbackFn<T> EventCallback;					///< Callback function for event handling
+//
+// 	/**
+// 	 * @brief Default constructor
+// 	 * @details Initializes the WindowData structure with default values by calling
+// 	 *			the base WindowProps default constructor. The EventCallback is
+// 	 *			default-initialized to an empty function.
+// 	 */
+// 	WindowData() = default;
+//
+// 	/**
+// 	 * @brief Constructor
+// 	 * @param title Window title string
+// 	 * @param width Window width in pixels
+// 	 * @param height Window height in pixels
+// 	 * @param VSync Enable or disable vertical synchronization
+// 	 * @param graphicsApi Graphics API to use for rendering
+// 	 * @param windowApi Windowing API to use for window management
+// 	 * @details Initializes the WindowData structure with the provided values by
+// 	 *			calling the base WindowProps constructor.
+// 	 *			This structure is used internally by window implementations to store both configuration and event callback information.
+// 	 */
+// 	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi)
+// 		: WindowProps(title, width, height, VSync, graphicsApi, windowApi) {}
+// 	/**
+// 	 * @brief Constructor from WindowProps
+// 	 * @param props WindowProps structure to initialize from
+// 	 * @details Initializes the WindowData structure with the provided values by
+// 	 *			calling the base WindowProps constructor.
+// 	 *			This structure is used internally by window implementations to store both configuration and event callback information.
+// 	 */
+// 	WindowData(const WindowProps& props): WindowProps(props) {}
+// };
 
 inline std::string format_as(const WindowApi& event) {
 	switch (event) {

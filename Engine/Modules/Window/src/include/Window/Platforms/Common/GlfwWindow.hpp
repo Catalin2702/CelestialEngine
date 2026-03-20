@@ -111,7 +111,7 @@ public:
 	 */
 	void SetEventCallback(const EventCallbackFn& callback) override;
 
-	void SetResizeEventCallback(const ResizeEventCallbackFn& callback) override;
+	void SetResizeEventCallback(const ContentScaleCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the window width
@@ -155,6 +155,14 @@ protected:
  */
 	void _SetWindowCallbacks() override;
 
+	/**
+	 * @brief Sets internal callbacks for window events
+	 * @param callbacks Struct containing callback functions for event handling
+	 * @details Stores the provided callbacks in the _data structure, which will be
+	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
+	 */
+	void _SetInternalCallbacks() override;
+
 private:
 	/**
 	 * @brief Initializes the OpenGL window
@@ -179,9 +187,11 @@ private:
 	 */
 	void _Shutdown();
 
+	void _SetWindowSize(const Events::WindowResizeEvent& event);
+
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
-	EventWindowData _data;								///< Window data including dimensions, VSync state, and event callback
+	Types::Window::WindowProps _data;								///< Window data including dimensions, VSync state, and event callback
 };
 
 }

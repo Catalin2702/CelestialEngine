@@ -24,6 +24,7 @@ set(SOURCES
 	src/include/Types/Build/Build.hpp
 	src/source/Types/Build/Build.cpp
 	src/source/Types/Render/Render.cpp
+	src/include/Types/Callback/Callback.hpp
 )
 
 add_library(CE_Types SHARED

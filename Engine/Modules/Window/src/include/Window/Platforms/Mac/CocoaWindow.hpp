@@ -138,7 +138,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
 	 */
-	void SetResizeEventCallback(const ResizeEventCallbackFn& callback) override;
+	void SetResizeEventCallback(const ContentScaleCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the window width
@@ -170,6 +170,14 @@ protected:
 	 */
 	void _SetWindowCallbacks() override;
 
+	/**
+	 * @brief Sets internal callbacks for window events
+	 * @param callbacks Struct containing callback functions for event handling
+	 * @details Stores the provided callbacks in the _data structure, which will be
+	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
+	 */
+	void _SetInternalCallbacks() override;
+
 private:
 	/** @brief Initializes the window and Metal resources
 	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
@@ -192,7 +200,7 @@ private:
 	void _UpdateLayerSize() const;
 
 private:
-	EventWindowData _data;							///< Window data including event callback
+	Types::Window::WindowProps _data;							///< Window data including event callback
 
 	NS::SharedPtr<NS::View> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window

@@ -13,6 +13,7 @@
 #define CE_WINDOW_I_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Callback/Callback.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #include <memory>
@@ -20,6 +21,7 @@
 
 namespace CE::Events {
 class I_Event;
+class WindowResizeEvent;
 }
 
 /**
@@ -31,21 +33,27 @@ class I_Event;
  */
 namespace CE::Window {
 
-/**
- * @typedef EventWindowData
- * @brief Type alias for window data with event handling
- * @details Specialization of WindowData for engine events
- */
-using EventWindowData = Types::Window::WindowData<Events::I_Event>;
+using WindowResizeEventCallbackFn = Types::CallbackFn<Events::WindowResizeEvent>;
+
+struct WindowInternalCallbacks {
+	WindowResizeEventCallbackFn ResizeEventCallback;	///< Callback function for handling window resize events
+};
 
 /**
  * @typedef EventCallbackFn
  * @brief Type alias for event callback functions
  * @details Function type for handling engine events
  */
-using EventCallbackFn = Types::Window::CallbackFn<Events::I_Event>;
+using EventCallbackFn = Types::CallbackFn<Events::I_Event>;
 
-using ResizeEventCallbackFn = Types::Window::CallbackFn<std::pair<float, float>>;
+using ContentScaleCallbackFn = Types::CallbackFn<std::pair<float, float>>;
+
+struct WindowCallbacks {
+	EventCallbackFn EventCallback;				///< Callback function for handling engine events
+	ContentScaleCallbackFn ContentScaleCallback;	///< Callback function for handling window resize events
+
+	WindowInternalCallbacks _internalCallbacks;
+};
 
 /**
  * @class I_Window
@@ -55,11 +63,6 @@ using ResizeEventCallbackFn = Types::Window::CallbackFn<std::pair<float, float>>
  *			MetalWindow for macOS Metal-based windows.
  */
 class CE_API I_Window {
-	struct WindowCallbackFunctions {
-		EventCallbackFn EventCallback;				///< Callback function for handling engine events
-		ResizeEventCallbackFn ResizeEventCallback;	///< Callback function for handling window resize events
-	};
-
 public:
 	/**
 	 * @brief Virtual destructor
@@ -119,7 +122,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized
 	 */
-	virtual void SetResizeEventCallback(const ResizeEventCallbackFn& callback) = 0;
+	virtual void SetResizeEventCallback(const ContentScaleCallbackFn& callback) = 0;
 
 	/**
 	 * @brief Sets the window width
@@ -161,7 +164,16 @@ protected:
 	 */
 	virtual void _SetWindowCallbacks() = 0;
 
-	WindowCallbackFunctions _callbacks;
+	/**
+	 * @brief Sets internal callback functions for window events
+	 * @param callbacks Structure containing internal callback functions (e.g., resize event callback)
+	 * @details This method allows setting internal callbacks that are used by the window implementation
+	 *			to handle specific events such as window resizing. The provided callbacks will be stored
+	 *			internally and invoked when the corresponding events occur.
+	 */
+	virtual void _SetInternalCallbacks() = 0;
+
+	WindowCallbacks _callbacks;
 };
 
 }

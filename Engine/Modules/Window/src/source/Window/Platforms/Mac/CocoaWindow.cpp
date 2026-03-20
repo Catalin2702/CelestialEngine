@@ -33,143 +33,144 @@ static int _st_CocoaWindowCount = 0;
  * @brief Processes NSEvent and converts it to CE events
  * @details Intercepts and processes mouse and keyboard events from Cocoa
  */
-static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* data) {
-	// ReSharper disable All
-	if (!event or !data or !data->EventCallback)
-		return;
-
-	switch (event->type()) {
-		// Keyboard events
-		case NS::EventTypeKeyDown: {
-			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
-			const bool isRepeat = event->isARepeat();
-			Events::KeyPressedEvent keyEvent{keyCode, isRepeat ? 1 : 0};
-			data->EventCallback(keyEvent);
-
-			// Also generate KeyTypedEvent for character input
-			if (const auto* chars = event->characters()) {
-				if (const char* str = chars->utf8String(); str and str[0]) {
-					Events::KeyTypedEvent typedEvent{static_cast<KeyCode::KeyboardCharsCode>(static_cast<unsigned int>(str[0]))};
-					data->EventCallback(typedEvent);
-				}
-			}
-			break;
-		}
-
-		case NS::EventTypeKeyUp: {
-			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
-			Events::KeyReleasedEvent keyEvent{keyCode};
-			data->EventCallback(keyEvent);
-			break;
-		}
-
-		// Mouse button events
-		case NS::EventTypeLeftMouseDown:
-		case NS::EventTypeRightMouseDown:
-		case NS::EventTypeOtherMouseDown: {
-			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
-			Events::MouseButtonPressedEvent mouseEvent{button};
-			data->EventCallback(mouseEvent);
-			break;
-		}
-
-		case NS::EventTypeLeftMouseUp:
-		case NS::EventTypeRightMouseUp:
-		case NS::EventTypeOtherMouseUp: {
-			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
-			Events::MouseButtonReleasedEvent mouseEvent{button};
-			data->EventCallback(mouseEvent);
-			break;
-		}
-
-		// Mouse movement events
-		case NS::EventTypeMouseMoved:
-		case NS::EventTypeLeftMouseDragged:
-		case NS::EventTypeRightMouseDragged:
-		case NS::EventTypeOtherMouseDragged: {
-			const auto [x, y] = event->locationInWindow();
-			// Flip Y coordinate (Cocoa uses bottom-left origin, we use top-left)
-			const auto flippedY = static_cast<float>(data->height - y);
-			Events::MouseMovedEvent mouseEvent{static_cast<float>(x), flippedY};
-			data->EventCallback(mouseEvent);
-			break;
-		}
-
-		// Scroll wheel events
-		case NS::EventTypeScrollWheel: {
-			// Use precise scrolling deltas if available, otherwise use regular deltas
-			float deltaX, deltaY;
-			if (event->hasPreciseScrollingDeltas()) {
-				deltaX = static_cast<float>(event->scrollingDeltaX());
-				deltaY = static_cast<float>(event->scrollingDeltaY());
-			} else {
-				deltaX = static_cast<float>(event->deltaX());
-				deltaY = static_cast<float>(event->deltaY());
-			}
-			Events::MouseScrolledEvent scrollEvent{deltaX, deltaY};
-			data->EventCallback(scrollEvent);
-			break;
-		}
-
-		default:
-			// Other event types are not handled
-			break;
-	}
-}
-
-/**
- * @brief Callback function for Cocoa window events
- * @details This function is called by the Cocoa bridge when window events occur
- */
-static void CocoaWindowEventCallback(void* userData, const int eventType, const unsigned int width, const unsigned int height) {
-	auto* data = static_cast<EventWindowData*>(userData);
-	if (!data or !data->EventCallback)
-		return;
-
-	switch (eventType) {
-		case 0: // Resize
-			data->width = width;
-			data->height = height;
-			{
-				Events::WindowResizeEvent event{width, height};
-				data->EventCallback(event);
-			}
-			break;
-
-		case 1: // Close
-			{
-				Events::WindowCloseEvent event;
-				data->EventCallback(event);
-			}
-			break;
-
-		case 2: // Focus gained
-		case 3: // Focus lost
-			// Could emit WindowLostFocusEvent if implemented
-			break;
-
-		case 4: // Minimize
-			data->width = 0;
-			data->height = 0;
-			{
-				Events::WindowResizeEvent event{0, 0};
-				data->EventCallback(event);
-			}
-			break;
-
-		case 5: // Restore
-			data->width = width;
-			data->height = height;
-			{
-				Events::WindowResizeEvent event{width, height};
-				data->EventCallback(event);
-			}
-			break;
-
-		default:
-			break;
-	}
-}
+// static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* data) {
+// 	// ReSharper disable All
+// 	if (!event or !data or !data->EventCallback)
+// 		return;
+// 	// ReSharper restore All
+//
+// 	switch (event->type()) {
+// 		// Keyboard events
+// 		case NS::EventTypeKeyDown: {
+// 			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
+// 			const bool isRepeat = event->isARepeat();
+// 			Events::KeyPressedEvent keyEvent{keyCode, isRepeat ? 1 : 0};
+// 			data->EventCallback(keyEvent);
+//
+// 			// Also generate KeyTypedEvent for character input
+// 			if (const auto* chars = event->characters()) {
+// 				if (const char* str = chars->utf8String(); str and str[0]) {
+// 					Events::KeyTypedEvent typedEvent{static_cast<KeyCode::KeyboardCharsCode>(static_cast<unsigned int>(str[0]))};
+// 					data->EventCallback(typedEvent);
+// 				}
+// 			}
+// 			break;
+// 		}
+//
+// 		case NS::EventTypeKeyUp: {
+// 			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
+// 			Events::KeyReleasedEvent keyEvent{keyCode};
+// 			data->EventCallback(keyEvent);
+// 			break;
+// 		}
+//
+// 		// Mouse button events
+// 		case NS::EventTypeLeftMouseDown:
+// 		case NS::EventTypeRightMouseDown:
+// 		case NS::EventTypeOtherMouseDown: {
+// 			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
+// 			Events::MouseButtonPressedEvent mouseEvent{button};
+// 			data->EventCallback(mouseEvent);
+// 			break;
+// 		}
+//
+// 		case NS::EventTypeLeftMouseUp:
+// 		case NS::EventTypeRightMouseUp:
+// 		case NS::EventTypeOtherMouseUp: {
+// 			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
+// 			Events::MouseButtonReleasedEvent mouseEvent{button};
+// 			data->EventCallback(mouseEvent);
+// 			break;
+// 		}
+//
+// 		// Mouse movement events
+// 		case NS::EventTypeMouseMoved:
+// 		case NS::EventTypeLeftMouseDragged:
+// 		case NS::EventTypeRightMouseDragged:
+// 		case NS::EventTypeOtherMouseDragged: {
+// 			const auto [x, y] = event->locationInWindow();
+// 			// Flip Y coordinate (Cocoa uses bottom-left origin, we use top-left)
+// 			const auto flippedY = static_cast<float>(data->height - y);
+// 			Events::MouseMovedEvent mouseEvent{static_cast<float>(x), flippedY};
+// 			data->EventCallback(mouseEvent);
+// 			break;
+// 		}
+//
+// 		// Scroll wheel events
+// 		case NS::EventTypeScrollWheel: {
+// 			// Use precise scrolling deltas if available, otherwise use regular deltas
+// 			float deltaX, deltaY;
+// 			if (event->hasPreciseScrollingDeltas()) {
+// 				deltaX = static_cast<float>(event->scrollingDeltaX());
+// 				deltaY = static_cast<float>(event->scrollingDeltaY());
+// 			} else {
+// 				deltaX = static_cast<float>(event->deltaX());
+// 				deltaY = static_cast<float>(event->deltaY());
+// 			}
+// 			Events::MouseScrolledEvent scrollEvent{deltaX, deltaY};
+// 			data->EventCallback(scrollEvent);
+// 			break;
+// 		}
+//
+// 		default:
+// 			// Other event types are not handled
+// 			break;
+// 	}
+// }
+//
+// /**
+//  * @brief Callback function for Cocoa window events
+//  * @details This function is called by the Cocoa bridge when window events occur
+//  */
+// static void CocoaWindowEventCallback(void* userData, const int eventType, const unsigned int width, const unsigned int height) {
+// 	auto* data = static_cast<EventWindowData*>(userData);
+// 	if (!data or !data->EventCallback)
+// 		return;
+//
+// 	switch (eventType) {
+// 		case 0: // Resize
+// 			data->width = width;
+// 			data->height = height;
+// 			{
+// 				Events::WindowResizeEvent event{width, height};
+// 				data->EventCallback(event);
+// 			}
+// 			break;
+//
+// 		case 1: // Close
+// 			{
+// 				Events::WindowCloseEvent event;
+// 				data->EventCallback(event);
+// 			}
+// 			break;
+//
+// 		case 2: // Focus gained
+// 		case 3: // Focus lost
+// 			// Could emit WindowLostFocusEvent if implemented
+// 			break;
+//
+// 		case 4: // Minimize
+// 			data->width = 0;
+// 			data->height = 0;
+// 			{
+// 				Events::WindowResizeEvent event{0, 0};
+// 				data->EventCallback(event);
+// 			}
+// 			break;
+//
+// 		case 5: // Restore
+// 			data->width = width;
+// 			data->height = height;
+// 			{
+// 				Events::WindowResizeEvent event{width, height};
+// 				data->EventCallback(event);
+// 			}
+// 			break;
+//
+// 		default:
+// 			break;
+// 	}
+// }
 
 CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
 	_data(windowProps), _window(nullptr), _windowDelegate(nullptr) {
@@ -182,14 +183,14 @@ CocoaWindow::~CocoaWindow() {
 
 void CocoaWindow::OnUpdate() const {
 	// Process all pending Cocoa events using the bridge
-	Apple::Bridge::ProcessCocoaEvents([](void* userData, void* eventPtr) {
-		if (!userData || !eventPtr)
-			return;
-
-		const auto* data = static_cast<EventWindowData*>(userData);
-		const auto* event = static_cast<NS::Event*>(eventPtr);
-		ProcessCocoaEvent(event, data);
-	}, const_cast<EventWindowData*>(&_data));
+	// Apple::Bridge::ProcessCocoaEvents([](void* userData, void* eventPtr) {
+	// 	if (!userData || !eventPtr)
+	// 		return;
+	//
+	// 	const auto* data = static_cast<EventWindowData*>(userData);
+	// 	const auto* event = static_cast<NS::Event*>(eventPtr);
+	// 	ProcessCocoaEvent(event, data);
+	// }, const_cast<EventWindowData*>(&_data));
 }
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {
@@ -202,10 +203,10 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 }
 
 void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
-	_data.EventCallback = callback;
+	_callbacks.EventCallback = callback;
 }
 
-void CocoaWindow::SetResizeEventCallback([[maybe_unused]] const ResizeEventCallbackFn& callback) {
+void CocoaWindow::SetResizeEventCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
 }
 
 void CocoaWindow::_SetWindowCallbacks() {
@@ -213,13 +214,16 @@ void CocoaWindow::_SetWindowCallbacks() {
 		return;
 
 	// Create delegate and set it for the window
-	_windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
+	// _windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
 	if (_windowDelegate) {
 		Apple::Bridge::SetCocoaWindowDelegate(_window.get(), _windowDelegate);
 	}
 	else {
 		CE_CORE_WARN("CocoaWindow::_SetWindowCallbacks: Failed to create Cocoa window delegate");
 	}
+}
+
+void CocoaWindow::_SetInternalCallbacks() {
 }
 
 void CocoaWindow::SetWidth(const unsigned int width) {
@@ -292,7 +296,6 @@ void CocoaWindow::_InitWindow() {
 		throw;
 	}
 	_window = NS::RetainPtr(rawWindow);
-	rawWindow = nullptr; // Avoid dangling pointer
 
 	NS::View* rawView;
 	try {
@@ -311,7 +314,6 @@ void CocoaWindow::_InitWindow() {
 		throw;
 	}
 	_view = NS::RetainPtr(rawView);
-	rawView = nullptr; // Avoid dangling pointer
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 	// Make the window visible

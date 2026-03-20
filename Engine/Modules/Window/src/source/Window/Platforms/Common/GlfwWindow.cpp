@@ -83,10 +83,10 @@ std::pair<float, float> GlfwWindow::GetContentScale() const {
  *			keyboard input, mouse, etc.)
  */
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
-	_data.EventCallback = callback;
+	_callbacks.EventCallback = callback;
 }
 
-void GlfwWindow::SetResizeEventCallback([[maybe_unused]] const ResizeEventCallbackFn& callback) {
+void GlfwWindow::SetResizeEventCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
 }
 
 /**
@@ -106,23 +106,22 @@ void GlfwWindow::_SetWindowCallbacks() {
 		return;
 
 	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
-			data->width = static_cast<unsigned int>(width);
-			data->height = static_cast<unsigned int>(height);
-			Events::WindowResizeEvent event{data->width, data->height};
-			data->EventCallback(event);
+		if (const auto callbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
+			Events::WindowResizeEvent event{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+			callbacks->EventCallback(event);
+			callbacks->_internalCallbacks.ResizeEventCallback(event);
 		}
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			Events::WindowCloseEvent event;
 			data->EventCallback(event);
 		}
 	});
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key), 0};
@@ -147,14 +146,14 @@ void GlfwWindow::_SetWindowCallbacks() {
 	});
 
 	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int keycode) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			Events::KeyTypedEvent keyTypedEvent{KeyCode::KeyboardCharsCodeFromGlfw(keycode)};
 			data->EventCallback(keyTypedEvent);
 		}
 	});
 
 	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			switch (action) {
 				case GLFW_PRESS: {
 					Events::MouseButtonPressedEvent mouseButtonPressedEvent{KeyCode::MouseButtonKeyCodeFromGlfw(button)};
@@ -172,18 +171,26 @@ void GlfwWindow::_SetWindowCallbacks() {
 	});
 
 	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 			data->EventCallback(mouseScrolledEvent);
 		}
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
-		if (const auto data = static_cast<EventWindowData*>(glfwGetWindowUserPointer(window))) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
 			Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
 			data->EventCallback(mouseMovedEvent);
 		}
 	});
+}
+
+void GlfwWindow::_SetInternalCallbacks() {
+	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
+
+	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
+		_SetWindowSize(event);
+	};
 }
 
 /**
@@ -271,9 +278,10 @@ void GlfwWindow::_Init() {
 		CE_CORE_ERROR("Error to initialize GLAD");
 		throw std::runtime_error("Error to initialize GLAD");
 	}
-	glfwSetWindowUserPointer(_glfwWindow.get(), &_data);
+	glfwSetWindowUserPointer(_glfwWindow.get(), &_callbacks);
 	SetVSync(_data.VSync);
 	_SetWindowCallbacks();
+	_SetInternalCallbacks();
 
 	_st_GLFWWindowCount++;
 }
@@ -294,6 +302,11 @@ void GlfwWindow::_Shutdown() {
 		glfwTerminate();
 		_st_GLFWInitialized = false;
 	}
+}
+
+void GlfwWindow::_SetWindowSize(const Events::WindowResizeEvent& event) {
+	SetWidth(event.GetWidth());
+	SetHeight(event.GetHeight());
 }
 
 }
