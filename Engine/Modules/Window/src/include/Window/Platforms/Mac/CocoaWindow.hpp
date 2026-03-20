@@ -29,6 +29,7 @@ class CommandQueue;
 class Device;
 }
 namespace NS {
+class View;
 class Window;
 }
 
@@ -214,6 +215,7 @@ private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue;	///< Metal command queue
 	NS::SharedPtr<MTL::Device> _device;				///< Metal device (GPU)
 	NS::SharedPtr<CA::MetalLayer> _layer;			///< Core Animation Metal layer
+	NS::SharedPtr<NS::View> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
 	void* _windowDelegate;							///< Cocoa window delegate for handling events
 };

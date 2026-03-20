@@ -194,7 +194,7 @@ void CocoaWindow::OnUpdate() const {
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {
 	if (not _window) {
-		CE_CORE_WARN("Could not get content scale because window is not initialized.");
+		CE_CORE_WARN("CocoaWindow::GetContentScale: Could not get content scale because window is not initialized.");
 		return {1.0f, 1.0f};
 	}
 	const auto scale = _window->backingScaleFactor();
@@ -215,7 +215,7 @@ void CocoaWindow::SetWindowCallbacks() {
 		Apple::Bridge::SetCocoaWindowDelegate(_window.get(), _windowDelegate);
 	}
 	else {
-		CE_CORE_WARN("Failed to create Cocoa window delegate");
+		CE_CORE_WARN("CocoaWindow::SetWindowCallbacks: Failed to create Cocoa window delegate");
 	}
 }
 
@@ -241,7 +241,7 @@ void CocoaWindow::SetVSync(const bool enabled) {
 		_layer->setDisplaySyncEnabled(enabled);
 	}
 	else {
-		CE_CORE_WARN("Could not set VSync because Metal layer is not initialized.");
+		CE_CORE_WARN("CocoaWindow::SetVSync: Could not set VSync because Metal layer is not initialized.");
 	}
 }
 
@@ -258,20 +258,20 @@ void CocoaWindow::_Init() {
 void CocoaWindow::_InitDevice() {
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _device) {
-		CE_CORE_ERROR("Could not create MetalDevice!");
-		throw std::runtime_error("Could not create MetalDevice!");
+		CE_CORE_ERROR("CocoaWindow::_InitDevice: Could not create MetalDevice!");
+		throw std::runtime_error("CocoaWindow::_InitDevice: Could not create MetalDevice!");
 	}
 
 	_commandQueue = NS::TransferPtr(_device->newCommandQueue());
 	if (not _commandQueue) {
-		CE_CORE_ERROR("Could not create Metal Command Queue!");
-		throw std::runtime_error("Could not create Metal Command Queue!");
+		CE_CORE_ERROR("CocoaWindow::_InitDevice: Could not create Metal Command Queue!");
+		throw std::runtime_error("CocoaWindow::_InitDevice: Could not create Metal Command Queue!");
 	}
 }
 
 void CocoaWindow::_InitWindow() {
+	const auto app = NS::Application::sharedApplication();
 	if (not _st_CocoaInitialized) {
-		const auto app = NS::Application::sharedApplication();
 		app->setActivationPolicy(NS::ActivationPolicyRegular);
 		_st_CocoaInitialized = true;
 	}
@@ -282,7 +282,6 @@ void CocoaWindow::_InitWindow() {
 	};
 
 	NS::Window* rawWindow;
-
 	try {
 		rawWindow = NS::Window::alloc()->init(
 			frame,
@@ -292,51 +291,77 @@ void CocoaWindow::_InitWindow() {
 			false
 		);
 		if (not rawWindow) {
-			CE_CORE_ERROR("Could not create Cocoa window!");
-			throw std::runtime_error("Could not create Cocoa window!");
+			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa window!");
+			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa window!");
 		}
 	}
 	catch (const std::exception& e) {
-		CE_CORE_ERROR("Exception while creating Cocoa window: {0}", e.what());
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa window: {0}", e.what());
 		throw;
 	}
-
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window");
+		throw;
+	}
 	_window = NS::RetainPtr(rawWindow);
+	rawWindow = nullptr; // Avoid dangling pointer
+
+	CA::MetalLayer* rawLayer;
+	try {
+		rawLayer = CA::MetalLayer::layer();
+		if (not rawLayer) {
+			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create CAMetalLayer!");
+			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create CAMetalLayer!");
+		}
+	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating CAMetalLayer: {0}", e.what());
+		throw;
+	}
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating CAMetalLayer");
+		throw;
+	}
+	_layer = NS::RetainPtr(rawLayer);
+	rawLayer = nullptr; // Avoid dangling pointer
+
+	NS::View* rawView;
+	try {
+		rawView = NS::View::alloc()->init(frame);
+		if (not rawView) {
+			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa view!");
+			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa view!");
+		}
+	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa view: {0}", e.what());
+		throw;
+	}
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
+		throw;
+	}
+	_view = NS::RetainPtr(rawView);
+	rawView = nullptr; // Avoid dangling pointer
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
-
+	// Make the window visible
+	_window->makeKeyAndOrderFront(nullptr);
+	_window->setContentView(_view.get());
 	// Set frame autosave name to remember window position between launches
-	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), "CelestialEngineMainWindow");
-
-	_layer = NS::RetainPtr(CA::MetalLayer::layer());
-	if (not _layer) {
-		CE_CORE_ERROR("Could not create CAMetalLayer!");
-		throw std::runtime_error("Could not create CAMetalLayer!");
-	}
+	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), _window->title()->utf8String());
 
 	_layer->setDevice(_device.get());
 	_layer->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm);
-
-	if (const auto contentView = _window->contentView()) {
-		contentView->setLayer(_layer.get());
-		contentView->setWantsLayer(true);
-	}
-	else {
-		CE_CORE_ERROR("Failed to get content view from Metal window!");
-		throw std::runtime_error("Failed to get content view from Metal window!");
-	}
-
 	_layer->setContentsScale(_window->backingScaleFactor());
 	_layer->setMaximumDrawableCount(3);
 	_layer->setAllowsNextDrawableTimeout(false);
-
 	_UpdateLayerSize();
 
-	// Make the window visible
-	_window->makeKeyAndOrderFront(nullptr);
+	_view->setLayer(_layer.get());
+	_view->setWantsLayer(true);
 
 	// Activate the application
-	const auto app = NS::Application::sharedApplication();
 	app->activateIgnoringOtherApps(true);
 }
 

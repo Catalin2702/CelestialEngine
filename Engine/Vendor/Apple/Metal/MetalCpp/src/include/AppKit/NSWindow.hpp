@@ -50,6 +50,9 @@ namespace NS
 			void				close();
 
 			CGFloat				backingScaleFactor() const;
+
+		public:
+			[[nodiscard]] String* title() const;
 	};
 
 }
@@ -93,4 +96,9 @@ _NS_INLINE void NS::Window::close()
 _NS_INLINE CGFloat NS::Window::backingScaleFactor() const
 {
 	return Object::sendMessage< CGFloat >( this, _APPKIT_PRIVATE_SEL( backingScaleFactor ) );
+}
+
+_NS_INLINE NS::String* NS::Window::title() const
+{
+	return Object::sendMessage< String* >( this, _APPKIT_PRIVATE_SEL( title_ ) );
 }

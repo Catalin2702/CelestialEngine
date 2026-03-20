@@ -25,9 +25,10 @@
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#include "AppKitPrivate.hpp"
-#include <Foundation/NSObject.hpp>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <CoreGraphics/CGGeometry.h>
+#include <Foundation/NSObject.hpp>
+#include "AppKitPrivate.hpp"
 
 namespace CA {
 	class MetalLayer;
@@ -38,30 +39,30 @@ namespace NS
 	class View : public NS::Referencing< View >
 	{
 		public:
-			View*		init( CGRect frame );
-			void		setLayer ( CA::MetalLayer* layer );
-			void		setOpaque ( bool opaque );
-			void		setWantsLayer ( bool wantsLayer );
+			static View* alloc();
+			[[nodiscard]] View*	init(const CGRect& frame) const;
+			void setLayer(CA::MetalLayer* layer) const;
+			void setOpaque(bool opaque) const;
+			void setWantsLayer(bool wantsLayer) const;
 	};
 }
 
-
-_NS_INLINE NS::View* NS::View::init( CGRect frame )
-{
-	return Object::sendMessage< View* >( _APPKIT_PRIVATE_CLS( NSView ), _APPKIT_PRIVATE_SEL( initWithFrame_ ), frame );
+_NS_INLINE NS::View* NS::View::alloc() {
+	return Object::sendMessage< View* >( _APPKIT_PRIVATE_CLS( NSView ), _APPKIT_PRIVATE_SEL( alloc ) );
 }
 
-_NS_INLINE void NS::View::setLayer( CA::MetalLayer* layer )
-{
+_NS_INLINE NS::View* NS::View::init(const CGRect& frame) const {
+	return Object::sendMessage< View* >( this, _APPKIT_PRIVATE_SEL( initWithFrame_ ), frame );
+}
+
+_NS_INLINE void NS::View::setLayer(CA::MetalLayer* layer) const {
 	return Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setLayer_ ), layer );
 }
 
-_NS_INLINE void NS::View::setOpaque( bool opaque )
-{
+_NS_INLINE void NS::View::setOpaque(const bool opaque) const {
 	return Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setOpaque_ ), opaque );
 }
 
-_NS_INLINE void NS::View::setWantsLayer( bool wantsLayer )
-{
+_NS_INLINE void NS::View::setWantsLayer(const bool wantsLayer) const {
 	return Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setWantsLayer_ ), wantsLayer );
 }
