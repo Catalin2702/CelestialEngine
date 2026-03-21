@@ -153,6 +153,12 @@ _APPKIT_PRIVATE_DEF_SEL( setOpaque_,
 _APPKIT_PRIVATE_DEF_SEL( setWantsLayer_,
 						"setWantsLayer:" );
 
+_APPKIT_PRIVATE_DEF_SEL( setCallbacks_userData_,
+						"setCallbacks:userData:" );
+
+_APPKIT_PRIVATE_DEF_SEL( getUserData_,
+						"getUserData" );
+
 _APPKIT_PRIVATE_DEF_SEL( contentView,
 						"contentView" );
 

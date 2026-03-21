@@ -1,23 +1,23 @@
 //
 // Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/AppKit/View
-// File: CocoaView.mm
+// File: CocoaNSView.mm
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
 // Updated: 2026-03-21
 //
 
-#include "Render/View/Platforms/Mac/AppKit/CocoaView.h"
+#include "Render/View/Platforms/Mac/AppKit/CocoaNSView.h"
 #include "Render/View/Platforms/Mac/Bridge/ViewBridge.h"
 
 
-@interface CocoaView ()
+@interface CocoaNSView ()
 {
 	CocoaViewImpl* _impl;
 }
 @end
 
-@implementation CocoaView
+@implementation CocoaNSView
 
 - (void)setImpl:(void*)impl {
 	_impl = (CocoaViewImpl*)impl;

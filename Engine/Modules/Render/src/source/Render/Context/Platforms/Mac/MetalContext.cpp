@@ -8,6 +8,7 @@
 //
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
+#include "AppKit/View/RenderView.hpp"
 
 #include "Tools/Log/Log.hpp"
 
@@ -27,8 +28,8 @@ MetalContext::~MetalContext() = default;
 
 void MetalContext::Init() {
 	assert(_props.window && "MetalContext requires a valid NS::Window pointer");
-	assert(_props.window->GetMetalWindow() && "MetalContext requires a valid NS::Window pointer from CocoaWindow");
-	assert(_props.window->GetMetalView() && "MetalContext requires a valid NS::View pointer from CocoaWindow");
+	assert(_props.window->GetCocoaWindow() && "MetalContext requires a valid NS::Window pointer from CocoaWindow");
+	assert(_props.window->GetCocoaView() && "MetalContext requires a valid NS::View pointer from CocoaWindow");
 	const auto window = _props.window;
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _device) {
@@ -49,18 +50,18 @@ void MetalContext::Init() {
 	}
 
 	// ReSharper disable All
-	const auto metalView = window->GetMetalView();
+	const auto metalView = window->GetCocoaView();
 	metalView->setLayer(_layer.get());
 	metalView->setWantsLayer(true);
-	// ReSharper restore All
 
-	const auto metalWindow = window->GetMetalWindow();
+	const auto metalWindow = window->GetCocoaWindow();
 
 	_layer->setDevice(_device.get());
 	_layer->setPixelFormat(_props.pixelFormat);
 	_layer->setContentsScale(metalWindow->backingScaleFactor());
 	_layer->setMaximumDrawableCount(3);
 	_layer->setAllowsNextDrawableTimeout(false);
+	// ReSharper restore All
 }
 
 void MetalContext::SwapBuffers() {

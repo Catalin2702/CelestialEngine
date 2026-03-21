@@ -218,7 +218,7 @@ public:
  *			This event is generated when the user moves the mouse while holding down a mouse button,
  *			allowing for drag-and-drop interactions or similar functionality.
  */
-class CE_API MouseDraggedEvent final: public I_MouseButtonEvent, public I_MouseMovedEvent {
+class CE_API MouseDraggedEvent final: public I_MouseMovedEvent {
 public:
 	/**
 	 * @brief Constructor
@@ -230,6 +230,12 @@ public:
 	MouseDraggedEvent(KeyCode::MouseButtonCode button, float x, float y);
 
 	/**
+	 * @brief Gets the mouse button code for the button being dragged
+	 * @return KeyCode::MouseButtonCode Platform-specific mouse button code
+	 */
+	[[nodiscard]] KeyCode::MouseButtonCode GetMouseButton() const { return _button; }
+
+	/**
 	 * @brief Converts the event to a string representation
 	 * @return std::string String containing the button code and mouse coordinates
 	 */
@@ -237,6 +243,9 @@ public:
 
 	EVENT_CLASS_TYPE(MouseDragged)
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
+
+private:
+	KeyCode::MouseButtonCode _button;									///< Platform-specific mouse button code for the button being dragged
 };
 
 }

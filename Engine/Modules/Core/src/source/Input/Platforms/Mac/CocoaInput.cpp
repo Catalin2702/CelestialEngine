@@ -63,7 +63,7 @@ std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
 void CocoaInput::_InitCocoaWindow() {
 	if (const auto window = Core::Application::Get().GetWindow()) {
 		if (const auto cocoaWindow = dynamic_cast<Window::CocoaWindow*>(window)) {
-			_cocoaWindow = cocoaWindow->GetMetalWindow();
+			_cocoaWindow = cocoaWindow->GetCocoaWindow();
 		}
 	}
 }

@@ -14,13 +14,6 @@ set(HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Render/Context/Platforms/Mac/MetalContext.hpp
 	>
-
-	# View
-	$<$<PLATFORM_ID:Darwin>:
-		src/include/Render/View/Platforms/Mac/CocoaView.hpp
-		src/include/Render/View/Platforms/Mac/AppKit/CocoaView.h
-		src/include/Render/View/Platforms/Mac/Bridge/ViewBridge.h
-	>
 )
 
 set(INTERFACES
@@ -37,13 +30,6 @@ set(SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Render/Context/Platforms/Mac/MetalContext.cpp
-	>
-
-	# View
-	$<$<PLATFORM_ID:Darwin>:
-		src/source/Render/View/Platforms/Mac/CocoaView.cpp
-		src/source/Render/View/Platforms/Mac/AppKit/CocoaView.mm
-		src/source/Render/View/Platforms/Mac/Bridge/ViewBridge.mm
 	>
 )
 

@@ -8,9 +8,12 @@
 #
 
 set(HEADERS
+	src/include/AppKit/View/RenderView.h
+	src/include/AppKit/View/RenderViewCallback.h
 )
 
 set(SOURCES
+	src/source/AppKit/View/RenderView.mm
 )
 
 add_library(CE_AppKit SHARED

@@ -90,7 +90,7 @@ std::string MouseButtonReleasedEvent::ToString() const {
 }
 
 MouseDraggedEvent::MouseDraggedEvent(const KeyCode::MouseButtonCode button, const float x, const float y):
-	I_MouseButtonEvent(button), I_MouseMovedEvent(x, y) {}
+	I_MouseMovedEvent(x, y), _button(button)  {}
 
 std::string MouseDraggedEvent::ToString() const {
 	std::stringstream ss;

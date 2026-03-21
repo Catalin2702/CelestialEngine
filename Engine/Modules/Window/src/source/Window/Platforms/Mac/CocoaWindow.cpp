@@ -9,6 +9,8 @@
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
+#include "AppKit/View/RenderView.hpp"
+
 #include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -211,10 +213,61 @@ void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentScaleCal
 }
 
 void CocoaWindow::_SetWindowCallbacks() {
-	if (!_window)
+	if (!_view)
 		return;
 
+	RenderViewCallbacks callbacks{};
 
+	callbacks.KeyPressedEventCallback = [](void* userData, const int keyCode, const bool isRepeat) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::KeyPressedEvent event{static_cast<KeyCode::KeyboardKeyCode>(keyCode), isRepeat ? 1 : 0};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.KeyReleasedEventCallback = [](void* userData, const int keyCode) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::KeyReleasedEvent event{static_cast<KeyCode::KeyboardKeyCode>(keyCode)};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.MouseMovedEventCallback = [](void* userData, const float x, const float y) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::MouseMovedEvent event{x, y};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.MouseScrolledEventCallback = [](void* userData, const float xOffset, const float yOffset) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::MouseScrolledEvent event{xOffset, yOffset};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.MouseButtonPressedEventCallback = [](void* userData, const int buttonCode) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::MouseButtonPressedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.MouseButtonReleasedEventCallback = [](void* userData, const int buttonCode) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::MouseButtonReleasedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	callbacks.MouseDraggedEventCallback = [](void* userData, const int buttonCode, const float x, const float y) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::MouseDraggedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode), x, y};
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	_view->setCallbacks(callbacks, &_callbacks);
 }
 
 void CocoaWindow::_SetInternalCallbacks() {
@@ -292,10 +345,28 @@ void CocoaWindow::_InitWindow() {
 	}
 	_window = NS::RetainPtr(rawWindow);
 
-	NS::View* rawView;
+	// NS::View* rawView;
+	// try {
+	// 	rawView = NS::View::alloc()->init(frame);
+	// 	if (not rawView) {
+	// 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa view!");
+	// 		throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa view!");
+	// 	}
+	// }
+	// catch (const std::exception& e) {
+	// 	CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa view: {0}", e.what());
+	// 	throw;
+	// }
+	// catch (...) {
+	// 	CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
+	// 	throw;
+	// }
+	// _view = NS::RetainPtr(rawView);
+
+	NS::RenderView* rawCocoaView;
 	try {
-		rawView = NS::View::alloc()->init(frame);
-		if (not rawView) {
+		rawCocoaView = NS::RenderView::alloc()->init(frame);
+		if (not rawCocoaView) {
 			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa view!");
 			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa view!");
 		}
@@ -308,12 +379,12 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
 		throw;
 	}
-	_view = NS::RetainPtr(rawView);
+	_view = NS::RetainPtr(rawCocoaView);
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 	// Make the window visible
 	_window->makeKeyAndOrderFront(nullptr);
-	_window->setContentView(_view.get());
+	_window->setContentView(reinterpret_cast<NS::View*>(_view.get()));
 	// Set frame autosave name to remember window position between launches
 	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), _window->title()->utf8String());
 

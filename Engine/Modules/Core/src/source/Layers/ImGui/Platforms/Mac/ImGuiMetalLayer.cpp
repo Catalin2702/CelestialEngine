@@ -94,7 +94,7 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0 ? static_cast<float>(time - _time) : 1.0f / 60.0f;
 	_time = time;
 
-	const auto scale = _metalContext.window->GetMetalWindow()->backingScaleFactor();
+	const auto scale = _metalContext.window->GetCocoaWindow()->backingScaleFactor();
 	const auto [width, height] = _metalContext.window->GetSize();
 	_metalContext.metalLayer->setDrawableSize({
 		static_cast<float>(width) * scale,

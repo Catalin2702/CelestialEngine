@@ -29,6 +29,7 @@ class CommandQueue;
 class Device;
 }
 namespace NS {
+class RenderView;
 class View;
 class Window;
 }
@@ -107,7 +108,7 @@ public:
 	 * @return void* Pointer to the native macOS window (NS::Window*)
 	 * @details Provides access to the underlying macOS window for platform-specific operations. The returned pointer can be cast to NS::Window* for use with Cocoa APIs.
 	 */
-	[[nodiscard]] void* GetNativeWindow() const override { return GetMetalWindow(); }
+	[[nodiscard]] void* GetNativeWindow() const override { return GetCocoaWindow(); }
 
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
@@ -116,14 +117,14 @@ public:
 	 * @return NS::Window* Pointer to the AppKit window
 	 * @details Provides access to the underlying macOS window for platform-specific operations. This allows for direct interaction with the Cocoa window when necessary.
 	 */
-	[[nodiscard]] NS::Window* GetMetalWindow() const { return _window.get(); }
+	[[nodiscard]] NS::Window* GetCocoaWindow() const { return _window.get(); }
 
 	/**
 	 * @brief Gets the content view of the macOS window
 	 * @return NS::View* Pointer to the NSView (content view)
 	 * @details Provides access to the content view of the window, which is needed for ImGui OSX backend initialization. The content view is where the Metal layer is attached for rendering.
 	 */
-	[[nodiscard]] NS::View* GetMetalView() const { return _view.get(); }
+	[[nodiscard]] NS::RenderView* GetCocoaView() const { return _view.get(); }
 
 public:
 	/**
@@ -201,7 +202,7 @@ private:
 private:
 	Types::Window::WindowProps _data;							///< Window data including event callback
 
-	NS::SharedPtr<NS::View> _view;					///< Content view of the window
+	NS::SharedPtr<NS::RenderView> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
 };
 

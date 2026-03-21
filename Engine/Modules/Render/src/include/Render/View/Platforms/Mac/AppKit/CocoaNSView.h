@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Render/View/Platforms/Mac/AppKit
-// File: CocoaView.h
+// File: CocoaNSView.h
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
@@ -14,15 +14,12 @@
 
 #import <AppKit/AppKit.h>
 
-#include "CocoaView.h"
-
 #ifdef __cplusplus
 struct CocoaViewImpl;
 #endif
 
-@interface CocoaView: NSView
+@interface CocoaNSView: NSView
 	- (void)setImpl:(void*)impl;
 @end
 
 #endif //CE_RENDER_VIEW_MAC_APPKIT_COCOAVIEW_H
-

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include <Events/I_Event.hpp>
@@ -136,7 +136,7 @@ TEST_F(CocoaWindowTest, GetMetalWindow_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Metal Window Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_NE(window.GetMetalWindow(), nullptr);
+	EXPECT_NE(window.GetCocoaWindow(), nullptr);
 }
 
 /**
@@ -146,7 +146,7 @@ TEST_F(CocoaWindowTest, GetMetalView_AfterConstruction_ReturnsValidPointer) {
 	const WindowProps props{"Metal View Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_NE(window.GetMetalView(), nullptr);
+	EXPECT_NE(window.GetCocoaView(), nullptr);
 }
 
 // ============================================================================
@@ -290,9 +290,9 @@ TEST_F(CocoaWindowTest, MetalResources_AfterConstruction_AllValid) {
 	const WindowProps props{"Resources Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_NE(window.GetMetalWindow(), nullptr);
+	EXPECT_NE(window.GetCocoaWindow(), nullptr);
 	EXPECT_NE(window.GetNativeWindow(), nullptr);
-	EXPECT_NE(window.GetMetalView(), nullptr);
+	EXPECT_NE(window.GetCocoaView(), nullptr);
 }
 
 /**
@@ -302,7 +302,7 @@ TEST_F(CocoaWindowTest, NativeWindowPointers_Consistent) {
 	const WindowProps props{"Pointer Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_EQ(window.GetMetalWindow(), window.GetNativeWindow());
+	EXPECT_EQ(window.GetCocoaWindow(), window.GetNativeWindow());
 }
 
 // ============================================================================
