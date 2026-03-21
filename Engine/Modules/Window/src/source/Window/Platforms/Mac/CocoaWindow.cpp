@@ -9,10 +9,10 @@
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
+#include "Bridge/Cocoa/CocoaBridge.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/Cocoa/CocoaBridge.h"
 #include "Tools/Log/Log.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"

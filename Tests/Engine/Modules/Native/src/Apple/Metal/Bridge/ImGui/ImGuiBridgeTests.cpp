@@ -1,13 +1,13 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Native/Apple/Metal/MetalBridge/ImGui
+// Module: CelestialEngine/Tests/Engine/Modules/Native/Apple/Metal/Bridge/ImGui
 // File: ImGuiBridgeTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-21
 //
 
-#include <MetalBridge/ImGui/ImGuiBridge.h>
+#include <Bridge/ImGui/ImGuiBridge.h>
 
 #include <gtest/gtest.h>
 

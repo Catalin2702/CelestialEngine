@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-21
 //
 
 #include "Window/Platforms/Mac/MetalGlfwWindow.hpp"
@@ -17,7 +17,7 @@
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/ImGui/ImGuiBridge.h"
+#include "Bridge/ImGui/ImGuiBridge.h"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 

@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include "Input/Platforms/Mac/CocoaInput.hpp"
 
+#include "Bridge/Cocoa/CocoaBridge.h"
 #include "Core/Application.hpp"
-#include "MetalBridge/Cocoa/CocoaBridge.h"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Window/Platforms/Mac/CocoaWindow.hpp"

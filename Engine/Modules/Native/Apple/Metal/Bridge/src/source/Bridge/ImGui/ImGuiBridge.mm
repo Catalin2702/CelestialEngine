@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/MetalBridge/ImGui
+// Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/Bridge/ImGui
 // File: ImGuiBridge.mm
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-21
 //
 
 #import <AppKit/AppKit.h>

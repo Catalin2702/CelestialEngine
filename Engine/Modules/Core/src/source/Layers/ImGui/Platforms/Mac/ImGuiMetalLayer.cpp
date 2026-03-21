@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
@@ -15,7 +15,7 @@
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalBridge/ImGui/ImGuiBridge.h"
+#include "Bridge/ImGui/ImGuiBridge.h"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Time.hpp"

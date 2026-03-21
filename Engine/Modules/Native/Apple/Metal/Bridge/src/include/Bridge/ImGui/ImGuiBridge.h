@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/MetalBridge/ImGui
+// Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/Bridge/ImGui
 // File: ImGuiBridge.h
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-21
 //
 
 #pragma once
 
-#ifndef CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H
-#define CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H
+#ifndef CE_NATIVE_APPLE_METAL_BRIDGE_IMGUIBRIDGE_H
+#define CE_NATIVE_APPLE_METAL_BRIDGE_IMGUIBRIDGE_H
 
 /**
  * @namespace CE::Apple::Bridge
@@ -82,4 +82,4 @@ void ImGuiOSXNewFrame(void* view);
 
 }
 
-#endif //CE_APPLE_METAL_METALBRIDGE_IMGUIBRIDGE_H
+#endif //CE_NATIVE_APPLE_METAL_BRIDGE_IMGUIBRIDGE_H

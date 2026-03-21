@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/MetalBridge/Cocoa
+// Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/Bridge/Cocoa
 // File: CocoaBridge.mm
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-21
 //
 
 #import <Cocoa/Cocoa.h>
