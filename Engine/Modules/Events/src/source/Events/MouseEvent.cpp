@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-21
 //
 
 #include "Events/MouseEvent.hpp"
@@ -14,12 +14,14 @@
 
 namespace CE::Events {
 
+I_MouseMovedEvent::I_MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
+
 /**
  * @brief MouseMovedEvent constructor implementation
  * @param x X coordinate of the mouse cursor
  * @param y Y coordinate of the mouse cursor
  */
-MouseMovedEvent::MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
+MouseMovedEvent::MouseMovedEvent(const float x, const float y): I_MouseMovedEvent(x, y) {}
 
 /**
  * @brief Converts MouseMovedEvent to string representation
@@ -27,7 +29,7 @@ MouseMovedEvent::MouseMovedEvent(const float x, const float y): _x(x), _y(y) {}
  */
 std::string MouseMovedEvent::ToString() const {
 	std::stringstream ss;
-	ss << "MouseMovedEvent: " << _x << ", " << _y;
+	ss << "MouseMovedEvent: " << GetX() << ", " << GetY();
 	return ss.str();
 }
 
@@ -84,6 +86,15 @@ MouseButtonReleasedEvent::MouseButtonReleasedEvent(const KeyCode::MouseButtonCod
 std::string MouseButtonReleasedEvent::ToString() const {
 	std::stringstream ss;
 	ss << "MouseButtonReleasedEvent: " << _button;
+	return ss.str();
+}
+
+MouseDraggedEvent::MouseDraggedEvent(const KeyCode::MouseButtonCode button, const float x, const float y):
+	I_MouseButtonEvent(button), I_MouseMovedEvent(x, y) {}
+
+std::string MouseDraggedEvent::ToString() const {
+	std::stringstream ss;
+	ss << "MouseDraggedEvent: " << GetX() << ", " << GetY() << " with button " << GetMouseButton();
 	return ss.str();
 }
 

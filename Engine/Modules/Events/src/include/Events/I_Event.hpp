@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-12
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -59,6 +59,7 @@ enum class EventType: uint8_t {
 	MouseButtonReleased,							///< Mouse button released event
 	MouseMoved,										///< Mouse moved event
 	MouseScrolled,									///< Mouse scroll wheel event
+	MouseDragged,									///< Mouse dragged event (movement while a button is pressed)
 };
 
 /**

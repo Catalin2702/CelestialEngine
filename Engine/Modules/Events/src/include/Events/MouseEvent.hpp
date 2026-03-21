@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -31,21 +31,22 @@
 namespace CE::Events {
 
 /**
- * @class MouseMovedEvent
- * @brief Event triggered when the mouse cursor moves
- * @details Contains the new position of the mouse cursor in window coordinates.
- *			The origin (0, 0) is typically at the top-left corner of the window.
+ * @class I_MouseMovedEvent
+ * @brief Base class for mouse moved events
+ * @details Abstract base class that provides common functionality for mouse movement events.
+ *			Stores the new cursor position and belongs to multiple mouse-related categories.
  */
-class CE_API MouseMovedEvent final: public I_Event {
-public:
+class CE_API I_MouseMovedEvent: public I_Event {
+protected:
 	/**
 	 * @brief Constructor
 	 * @param x New X coordinate of the mouse cursor in window space
 	 * @param y New Y coordinate of the mouse cursor in window space
 	 * @details Creates a mouse moved event with the specified cursor position
 	 */
-	MouseMovedEvent(float x, float y);
+	I_MouseMovedEvent(float x, float y);
 
+public:
 	/**
 	 * @brief Gets the X coordinate of the mouse cursor
 	 * @return float X position in window coordinates
@@ -58,6 +59,29 @@ public:
 	 */
 	[[nodiscard]] float GetY() const {return _y; }
 
+	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+private:
+	float _x, _y;									///< Mouse cursor position in window coordinates
+};
+
+/**
+ * @class MouseMovedEvent
+ * @brief Event triggered when the mouse cursor is moved
+ * @details Contains the new cursor position in window coordinates. This event is generated
+ *			whenever the user moves the mouse within the window, allowing the application to
+ *			respond to cursor movement for tasks like camera control, UI interaction, etc.
+ */
+class CE_API MouseMovedEvent final: public I_MouseMovedEvent {
+public:
+	/**
+	 * @brief Constructor
+	 * @param x New X coordinate of the mouse cursor in window space
+	 * @param y New Y coordinate of the mouse cursor in window space
+	 * @details Creates a mouse moved event with the specified cursor position
+	 */
+	MouseMovedEvent(float x, float y);
+
 	/**
 	 * @brief Converts the event to a string representation
 	 * @return std::string String containing mouse coordinates
@@ -65,10 +89,6 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseMoved)
-	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
-
-private:
-	float _x, _y;									///< Mouse cursor position in window coordinates
 };
 
 /**
@@ -121,6 +141,14 @@ private:
  *			mouse-related categories.
  */
 class CE_API I_MouseButtonEvent: public I_Event {
+protected:
+	/**
+	 * @brief Protected constructor
+	 * @param button Platform-specific mouse button code
+	 * @details Only derived classes can construct a mouse button event
+	 */
+	I_MouseButtonEvent(KeyCode::MouseButtonCode button);
+
 public:
 	/**
 	 * @brief Gets the mouse button code
@@ -129,14 +157,6 @@ public:
 	[[nodiscard]] KeyCode::MouseButtonCode GetMouseButton() const { return _button; }
 
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
-
-protected:
-	/**
-	 * @brief Protected constructor
-	 * @param button Platform-specific mouse button code
-	 * @details Only derived classes can construct a mouse button event
-	 */
-	I_MouseButtonEvent(KeyCode::MouseButtonCode button);
 
 protected:
 	KeyCode::MouseButtonCode _button;									///< Platform-specific mouse button code
@@ -189,6 +209,34 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseButtonReleased)
+};
+
+/**
+ * @class MouseDraggedEvent
+ * @brief Event triggered when the mouse is moved while a button is pressed
+ * @details Contains the new cursor position and the button code of the button being dragged.
+ *			This event is generated when the user moves the mouse while holding down a mouse button,
+ *			allowing for drag-and-drop interactions or similar functionality.
+ */
+class CE_API MouseDraggedEvent final: public I_MouseButtonEvent, public I_MouseMovedEvent {
+public:
+	/**
+	 * @brief Constructor
+	 * @param button Platform-specific mouse button code
+	 * @param x New X coordinate of the mouse cursor in window space
+	 * @param y New Y coordinate of the mouse cursor in window space
+	 * @details Creates a mouse dragged event with the specified button and cursor position
+	 */
+	MouseDraggedEvent(KeyCode::MouseButtonCode button, float x, float y);
+
+	/**
+	 * @brief Converts the event to a string representation
+	 * @return std::string String containing the button code and mouse coordinates
+	 */
+	[[nodiscard]] std::string ToString() const override;
+
+	EVENT_CLASS_TYPE(MouseDragged)
+	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
 };
 
 }
