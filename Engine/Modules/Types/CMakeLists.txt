@@ -4,27 +4,26 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-19
+# Updated: 2026-03-21
 #
 
 set(HEADERS
-	src/include/Types/Window/WindowProps.hpp
-	src/include/Types/Window/WindowDestructor.hpp
-	src/include/Types/Container/Vec.hpp
+	src/include/Types/Build/Build.hpp
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 	src/include/Types/Render/Render.hpp
+	src/include/Types/Container/Vec.hpp
+	src/include/Types/Window/WindowProps.hpp
+	src/include/Types/Window/WindowDestructor.hpp
 )
 
 set(SOURCES
-	src/source/Types/Window/WindowProps.cpp
-	src/source/Types/Window/WindowDestructor.cpp
+	src/source/Types/Build/Build.cpp
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
-	src/include/Types/Build/Build.hpp
-	src/source/Types/Build/Build.cpp
 	src/source/Types/Render/Render.cpp
-	src/include/Types/Callback/Callback.hpp
+	src/source/Types/Window/WindowProps.cpp
+	src/source/Types/Window/WindowDestructor.cpp
 )
 
 add_library(CE_Types SHARED
@@ -50,4 +49,3 @@ target_include_directories(CE_Types PUBLIC
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_Types)
-

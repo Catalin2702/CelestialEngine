@@ -13,12 +13,19 @@ cmake_minimum_required(VERSION 3.21)
 add_library(CE_Metal INTERFACE)
 
 # Add the Bridge subdirectory
+add_subdirectory(AppKit)
 add_subdirectory(Bridge)
 
 # Link Bridge to CE_Metal
 target_link_libraries(CE_Metal INTERFACE
-	$<BUILD_INTERFACE:CE_Bridge>
-	$<INSTALL_INTERFACE:CE_Bridge>
+	$<BUILD_INTERFACE:
+		CE_AppKit
+		CE_Bridge
+	>
+	$<INSTALL_INTERFACE:
+		CE_AppKit
+		CE_Bridge
+	>
 )
 
 # Propagate include directories from CE_Bridge

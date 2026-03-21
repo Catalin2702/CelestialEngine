@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-19
+# Updated: 2026-03-21
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -42,6 +42,7 @@ add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Render)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
+add_subdirectory(Modules/Utility)
 add_subdirectory(Modules/Window)
 
 add_library(CE_Engine SHARED

@@ -13,8 +13,8 @@
 #define CE_WINDOW_I_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Types/Callback/Callback.hpp"
 #include "Types/Window/WindowProps.hpp"
+#include "Utility/Callback/Callback.hpp"
 
 #include <memory>
 #include <utility>
@@ -33,7 +33,7 @@ class WindowResizeEvent;
  */
 namespace CE::Window {
 
-using WindowResizeEventCallbackFn = Types::CallbackFn<Events::WindowResizeEvent>;
+using WindowResizeEventCallbackFn = Utility::CallbackFn<Events::WindowResizeEvent>;
 
 struct WindowInternalCallbacks {
 	WindowResizeEventCallbackFn ResizeEventCallback;	///< Callback function for handling window resize events
@@ -44,9 +44,9 @@ struct WindowInternalCallbacks {
  * @brief Type alias for event callback functions
  * @details Function type for handling engine events
  */
-using EventCallbackFn = Types::CallbackFn<Events::I_Event>;
+using EventCallbackFn = Utility::CallbackFn<Events::I_Event>;
 
-using ContentScaleCallbackFn = Types::CallbackFn<const std::pair<float, float>>;
+using ContentScaleCallbackFn = Utility::CallbackFn<const std::pair<float, float>>;
 
 struct WindowCallbacks {
 	EventCallbackFn EventCallback;				///< Callback function for handling engine events

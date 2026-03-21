@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-20
+# Updated: 2026-03-21
 #
 
 set(HEADERS
@@ -55,6 +55,7 @@ target_link_libraries(CE_Window PUBLIC
 	CE_SpdLog
 	CE_Tools
 	CE_Types
+	CE_Utility
 )
 
 # Platform-specific
