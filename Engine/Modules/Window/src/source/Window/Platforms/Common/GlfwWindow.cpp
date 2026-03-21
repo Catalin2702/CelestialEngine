@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -59,8 +59,7 @@ GlfwWindow::~GlfwWindow() {
 
 /**
  * @brief Updates the window state every frame
- * @details Processes all queued events via glfwPollEvents() and swaps front/back buffers
- *			with glfwSwapBuffers() to display the rendered content
+ * @details Processes all queued events via glfwPollEvents()
  */
 void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
@@ -84,9 +83,6 @@ std::pair<float, float> GlfwWindow::GetContentScale() const {
  */
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_callbacks.EventCallback = callback;
-}
-
-void GlfwWindow::SetResizeEventCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
 }
 
 /**
@@ -189,7 +185,7 @@ void GlfwWindow::_SetInternalCallbacks() {
 	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
 
 	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
-		_SetWindowSize(event);
+		_HandleWindowSize(event);
 	};
 }
 
@@ -304,7 +300,7 @@ void GlfwWindow::_Shutdown() {
 	}
 }
 
-void GlfwWindow::_SetWindowSize(const Events::WindowResizeEvent& event) {
+void GlfwWindow::_HandleWindowSize(const Events::WindowResizeEvent& event) {
 	SetWidth(event.GetWidth());
 	SetHeight(event.GetHeight());
 }

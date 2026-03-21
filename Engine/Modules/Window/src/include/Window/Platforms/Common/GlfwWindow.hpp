@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -111,7 +111,12 @@ public:
 	 */
 	void SetEventCallback(const EventCallbackFn& callback) override;
 
-	void SetResizeEventCallback(const ContentScaleCallbackFn& callback) override;
+	/**
+	 * @brief Sets the resize event callback function
+	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
+	 *			Note: GLFW handles window resizing through its own callbacks, so this function may not be used in this implementation.
+	 */
+	void SetContentScaleCallback(const ContentScaleCallbackFn&) override {};
 
 	/**
 	 * @brief Sets the window width
@@ -157,7 +162,6 @@ protected:
 
 	/**
 	 * @brief Sets internal callbacks for window events
-	 * @param callbacks Struct containing callback functions for event handling
 	 * @details Stores the provided callbacks in the _data structure, which will be
 	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
 	 */
@@ -187,7 +191,14 @@ private:
 	 */
 	void _Shutdown();
 
-	void _SetWindowSize(const Events::WindowResizeEvent& event);
+	/**
+	 * @brief Handles window resize events
+	 * @param event  Window resize event containing new dimensions
+	 * @details Updates the cached width and height values in _data based on the new dimensions
+	 *			provided by the event. This method is called by the GLFW window resize callback
+	 *			to keep the internal state consistent with the actual window size.
+	 */
+	void _HandleWindowSize(const Events::WindowResizeEvent& event);
 
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime

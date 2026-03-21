@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-21
 //
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
@@ -16,7 +16,7 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
-#include "../../../../../../../Window/src/include/Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 
 namespace CE::Render::Context {
@@ -78,6 +78,15 @@ void MetalContext::SwapBuffers() {
 
 	commandBuffer->presentDrawable(drawable);
 	commandBuffer->commit();
+}
+
+void MetalContext::HandleContentScaleChange(const std::pair<float, float>& scale) {
+	if (not _layer) {
+		CE_CORE_WARN("MetalContext::HandleContentScaleChange: Cannot handle content scale change because Metal layer is not initialized.");
+		return;
+	}
+	const auto [xScale, yScale] = scale;
+	_layer->setDrawableSize(CGSizeMake(xScale, yScale));
 }
 
 }

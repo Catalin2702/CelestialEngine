@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -16,8 +16,10 @@
 
 #include "Define/Render.hpp"
 
-#include <Metal/Metal.hpp>
 #include <Foundation/Foundation.hpp>
+#include <Metal/Metal.hpp>
+
+#include <utility>
 
 namespace CA {
 class MetalLayer;
@@ -49,6 +51,9 @@ public:
 public:
 	void Init() override;
 	void SwapBuffers() override;
+
+public:
+	void HandleContentScaleChange(const std::pair<float, float>& scale) override;
 
 RENDER_API_TYPE(Metal)
 

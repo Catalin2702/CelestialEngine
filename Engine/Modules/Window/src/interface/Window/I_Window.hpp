@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -46,7 +46,7 @@ struct WindowInternalCallbacks {
  */
 using EventCallbackFn = Types::CallbackFn<Events::I_Event>;
 
-using ContentScaleCallbackFn = Types::CallbackFn<std::pair<float, float>>;
+using ContentScaleCallbackFn = Types::CallbackFn<const std::pair<float, float>>;
 
 struct WindowCallbacks {
 	EventCallbackFn EventCallback;				///< Callback function for handling engine events
@@ -122,7 +122,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized
 	 */
-	virtual void SetResizeEventCallback(const ContentScaleCallbackFn& callback) = 0;
+	virtual void SetContentScaleCallback(const ContentScaleCallbackFn& callback) = 0;
 
 	/**
 	 * @brief Sets the window width
@@ -166,7 +166,6 @@ protected:
 
 	/**
 	 * @brief Sets internal callback functions for window events
-	 * @param callbacks Structure containing internal callback functions (e.g., resize event callback)
 	 * @details This method allows setting internal callbacks that are used by the window implementation
 	 *			to handle specific events such as window resizing. The provided callbacks will be stored
 	 *			internally and invoked when the corresponding events occur.

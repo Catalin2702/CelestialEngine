@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
@@ -173,7 +173,7 @@ static int _st_CocoaWindowCount = 0;
 // }
 
 CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
-	_data(windowProps), _window(nullptr), _windowDelegate(nullptr) {
+	_data(windowProps), _window(nullptr) {
 	_Init();
 }
 
@@ -206,21 +206,15 @@ void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_callbacks.EventCallback = callback;
 }
 
-void CocoaWindow::SetResizeEventCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
+void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
+	_callbacks.ContentScaleCallback = callback;
 }
 
 void CocoaWindow::_SetWindowCallbacks() {
 	if (!_window)
 		return;
 
-	// Create delegate and set it for the window
-	// _windowDelegate = Apple::Bridge::CreateCocoaWindowDelegate(CocoaWindowEventCallback, &_data);
-	if (_windowDelegate) {
-		Apple::Bridge::SetCocoaWindowDelegate(_window.get(), _windowDelegate);
-	}
-	else {
-		CE_CORE_WARN("CocoaWindow::_SetWindowCallbacks: Failed to create Cocoa window delegate");
-	}
+
 }
 
 void CocoaWindow::_SetInternalCallbacks() {
@@ -257,6 +251,7 @@ void CocoaWindow::_Init() {
 
 	SetVSync(_data.VSync);
 	_SetWindowCallbacks();
+	_SetInternalCallbacks();
 
 	_st_CocoaWindowCount++;
 }
@@ -327,11 +322,6 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
-	// Cleanup delegate before closing window
-	if (_windowDelegate) {
-		Apple::Bridge::DestroyCocoaWindowDelegate(_windowDelegate);
-		_windowDelegate = nullptr;
-	}
 
 	if (_window) {
 		_window->close();
@@ -349,7 +339,8 @@ void CocoaWindow::_UpdateLayerSize() const {
 	if (not _window)
 		return;
 
-	[[maybe_unused]] const auto scale = _window->backingScaleFactor();
+	const auto scale = GetContentScale();
+	_callbacks.ContentScaleCallback(scale);
 	// _layer->setDrawableSize({
 	// 	static_cast<float>(_data.width) * scale,
 	// 	static_cast<float>(_data.height) * scale

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #include "Core/Application.hpp"
@@ -191,6 +191,7 @@ void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
 	assert(context && "Application::InitRenderer: Failed to create graphics context instance");
 
 	_context = std::move(context);
+	_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleContentScaleChange));
 
 	_context->Init();
 }

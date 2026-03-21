@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -138,7 +138,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
 	 */
-	void SetResizeEventCallback(const ContentScaleCallbackFn& callback) override;
+	void SetContentScaleCallback(const ContentScaleCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the window width
@@ -172,7 +172,6 @@ protected:
 
 	/**
 	 * @brief Sets internal callbacks for window events
-	 * @param callbacks Struct containing callback functions for event handling
 	 * @details Stores the provided callbacks in the _data structure, which will be
 	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
 	 */
@@ -204,7 +203,6 @@ private:
 
 	NS::SharedPtr<NS::View> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
-	void* _windowDelegate;							///< Cocoa window delegate for handling events
 };
 
 }
