@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/Bridge/Cocoa
-// File: CocoaBridge.h
+// File: WindowBridge.h
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_NATIVE_APPLE_METAL_BRIDGE_COCOABRIDGE_H
-#define CE_NATIVE_APPLE_METAL_BRIDGE_COCOABRIDGE_H
+#ifndef CE_NATIVE_APPLE_METAL_BRIDGE_APPKIT_WINDOW_WINDOWBRIDGE_H
+#define CE_NATIVE_APPLE_METAL_BRIDGE_APPKIT_WINDOW_WINDOWBRIDGE_H
 
 /**
  * @namespace CE::Apple::Bridge
@@ -148,4 +148,4 @@ void GetMousePosition(void* cocoaWindow, float* outX, float* outY);
 
 }
 
-#endif //CE_NATIVE_APPLE_METAL_BRIDGE_COCOABRIDGE_H
+#endif //CE_NATIVE_APPLE_METAL_BRIDGE_APPKIT_WINDOW_WINDOWBRIDGE_H

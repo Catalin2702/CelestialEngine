@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-21
 //
 
 #pragma once
@@ -250,6 +250,12 @@ unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
  *			If the provided charCode does not match any known KeyboardCharsCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that character code.
  */
 unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
+
+/**
+ * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
+ * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
+ */
+KeyboardCharsCode KeyboardCharsCodeFromCocoa(unsigned short keyCode);
 
 inline std::string format_as(const KeyboardCharsCode charCode) {
 	return ToString(charCode);

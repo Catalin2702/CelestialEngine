@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-19
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-19
+# Updated: 2026-03-21
 #
 
 set(HEADERS
@@ -14,11 +14,21 @@ set(HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Render/Context/Platforms/Mac/MetalContext.hpp
 	>
+
+	# View
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Render/View/Platforms/Mac/CocoaView.hpp
+		src/include/Render/View/Platforms/Mac/AppKit/CocoaView.h
+		src/include/Render/View/Platforms/Mac/Bridge/ViewBridge.h
+	>
 )
 
 set(INTERFACES
 	# Context
 	src/interface/Render/Context/I_Context.hpp
+
+	# View
+	src/interface/Render/View/I_InputView.hpp
 )
 
 set(SOURCES
@@ -27,6 +37,13 @@ set(SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Render/Context/Platforms/Mac/MetalContext.cpp
+	>
+
+	# View
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Render/View/Platforms/Mac/CocoaView.cpp
+		src/source/Render/View/Platforms/Mac/AppKit/CocoaView.mm
+		src/source/Render/View/Platforms/Mac/Bridge/ViewBridge.mm
 	>
 )
 
@@ -46,7 +63,14 @@ target_link_libraries(CE_Render PUBLIC
 	CE_Native
 	CE_Tools
 	CE_Types
+	CE_Utility
 	CE_Window
+)
+
+target_link_libraries(CE_Render PUBLIC
+	$<$<PLATFORM_ID:Darwin>:
+		CE_MetalCpp
+	>
 )
 
 target_link_libraries(CE_Render PUBLIC

@@ -8,12 +8,12 @@
 #
 
 set(HEADERS
-	src/include/Bridge/Cocoa/CocoaBridge.h
+	src/include/Bridge/AppKit/Window/WindowBridge.h
 	src/include/Bridge/ImGui/ImGuiBridge.h
 )
 
 set(SOURCES
-	src/source/Bridge/Cocoa/CocoaBridge.mm
+	src/source/Bridge/AppKit/Window/WindowBridge.mm
 	src/source/Bridge/ImGui/ImGuiBridge.mm
 )
 

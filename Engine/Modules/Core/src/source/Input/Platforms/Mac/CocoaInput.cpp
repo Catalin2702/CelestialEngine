@@ -9,7 +9,7 @@
 
 #include "Input/Platforms/Mac/CocoaInput.hpp"
 
-#include "Bridge/Cocoa/CocoaBridge.h"
+#include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Core/Application.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"

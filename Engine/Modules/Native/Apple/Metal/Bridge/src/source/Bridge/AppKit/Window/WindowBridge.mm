@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/Bridge/Cocoa
-// File: CocoaBridge.mm
+// File: WindowBridge.mm
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca

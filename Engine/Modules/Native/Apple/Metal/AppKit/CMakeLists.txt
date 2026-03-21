@@ -8,7 +8,6 @@
 #
 
 set(HEADERS
-	src/include/AppKit/View/EngineView.hpp
 )
 
 set(SOURCES
@@ -26,7 +25,11 @@ set_target_properties(CE_AppKit PROPERTIES
 # Modules
 target_link_libraries(CE_AppKit PUBLIC
 	CE_Config
-	CE_Utility
+	CE_Bridge
+)
+
+target_link_libraries(CE_AppKit PUBLIC
+	CE_MetalCpp
 )
 
 target_compile_options(CE_AppKit PUBLIC

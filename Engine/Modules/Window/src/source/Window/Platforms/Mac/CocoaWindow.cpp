@@ -9,7 +9,7 @@
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
-#include "Bridge/Cocoa/CocoaBridge.h"
+#include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
