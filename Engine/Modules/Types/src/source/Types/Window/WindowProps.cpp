@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-22
 //
 
 #include "Types/Window/WindowProps.hpp"
@@ -28,7 +28,7 @@ bool IsWindowApiSupported(const WindowApi& api) {
 #elifdef CE_PLATFORM_WINDOWS
 	if (api == WindowApi::Win32)
 		return true;
-#elifdefCE_PLATFORM_LINUX
+#elifdef CE_PLATFORM_LINUX
 	if (api == WindowApi::X11)
 		return true;
 #else

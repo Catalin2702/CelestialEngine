@@ -12,10 +12,25 @@
 			"name": "imgui",
 			"features": [
 				"glfw-binding",
-				"metal-binding",
-				"osx-binding",
 				"opengl3-binding",
 				"docking-experimental"
+			]
+		},
+		{
+			"name": "imgui",
+			"platform": "osx",
+			"features": [
+				"metal-binding",
+				"osx-binding"
+			]
+		},
+		{
+			"name": "imgui",
+			"platform": "windows",
+			"features": [
+				"dx11-binding",
+				"dx12-binding",
+				"win32-binding"
 			]
 		},
 		"spdlog"

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -15,14 +15,14 @@
 /**
  * @def CE_API
  * @brief Platform-specific macro for exporting/importing symbols from shared libraries
- * @details On Windows: Uses __declspec(dllexport) when building the engine (CE_CORE_EXPORTS defined),
+ * @details On Windows: Uses __declspec(dllexport) when building the engine (CE_DEFINE_EXPORTS defined),
  *			and __declspec(dllimport) when using the engine.
  *			On macOS/Linux: Uses __attribute__((visibility("default"))) to make symbols visible.
  *			This macro must be used on classes and functions that need to be accessible
  *			from outside the shared library.
  */
 #if defined(CE_PLATFORM_WINDOWS)
-	#ifdef CE_CORE_EXPORTS
+	#ifdef CE_DEFINE_EXPORTS
 		#define CE_API __declspec(dllexport)
 	#else
 		#define CE_API __declspec(dllimport)

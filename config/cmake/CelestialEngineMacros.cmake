@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-13
+# Updated: 2026-03-22
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -24,26 +24,26 @@ if (NOT TARGET CE_Config)
 
 	target_compile_definitions(CE_Config INTERFACE
 		$<$<CONFIG:Debug>:
-		CE_DEBUG
-		DEBUG
+			CE_DEBUG
+			DEBUG
 		>
 		$<$<CONFIG:Release>:
-		CE_RELEASE
-		NDEBUG
+			CE_RELEASE
+			NDEBUG
 		>
 		$<$<CONFIG:Dist>:
-		CE_DIST
-		NDEBUG
+			CE_DIST
+			NDEBUG
 		>
 
 		$<$<PLATFORM_ID:Windows>:
-		CE_PLATFORM_WINDOWS
+			CE_PLATFORM_WINDOWS
 		>
 		$<$<PLATFORM_ID:Darwin>:
-		CE_PLATFORM_MACOS
+			CE_PLATFORM_MACOS
 		>
 		$<$<PLATFORM_ID:Linux>:
-		CE_PLATFORM_LINUX
+			CE_PLATFORM_LINUX
 		>
 	)
 
@@ -52,19 +52,37 @@ if (NOT TARGET CE_Config)
 	)
 
 	target_compile_options(CE_Config INTERFACE
-		$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
-		$<$<CONFIG:Debug>:-O0 -g -Wall -Wextra -Werror>
-		$<$<CONFIG:Release>:-O2>
-		$<$<CONFIG:Dist>:-O3 -ffast-math>
-		-march=native
+		$<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
+			$<$<CONFIG:Debug>:
+				-O0
+				-g
+				-Wall
+				-Wextra
+				-Werror
+			>
+			$<$<CONFIG:Release>:
+				-O2
+			>
+			$<$<CONFIG:Dist>:
+				-O3
+				-ffast-math
+			>
+			-march=native
 		>
 
-		$<$<CXX_COMPILER_ID:MSVC>:
-		$<$<CONFIG:Debug>:/MDd /Od /Zi>
-		$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:/MD /O2>
-		/W4
-		/WX
-		/permissive-
+		$<$<OR:$<CXX_COMPILER_ID:MSVC>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:
+			$<$<CONFIG:Debug>:
+				/MDd
+				/Od
+				/Zi
+			>
+			$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:
+				/MD
+				/O2
+			>
+			/W4
+			/WX
+			/permissive-
 		>
 	)
 endif ()

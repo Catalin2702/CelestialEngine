@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_TYPES_RENDER_RENDER_HPP
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 
 namespace CE::Types::Render {

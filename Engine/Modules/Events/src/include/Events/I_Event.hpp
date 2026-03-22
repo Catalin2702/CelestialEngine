@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 #include "Define/Type.hpp"
 
 #include <functional>
+#include <ostream>
 #include <string>
 
 

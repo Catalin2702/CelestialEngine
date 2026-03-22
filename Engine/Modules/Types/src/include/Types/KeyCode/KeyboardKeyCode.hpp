@@ -12,8 +12,6 @@
 #ifndef CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 #define CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 
-#include "Define/DynamicLinker.hpp"
-
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
 #include <ostream>
@@ -38,7 +36,7 @@ namespace CE::KeyCode {
  *			The enum includes standard keys (A-Z, 0-9), function keys (F1-F12), arrow keys, and special keys (Space, Enter, Escape, etc.).
  *			An Unknown value is also provided to represent unrecognized or unsupported key codes.
  */
-enum class CE_API KeyboardKeyCode : uint16_t {
+enum class KeyboardKeyCode : uint16_t {
 	// Alphabet
 	A = 65, B = 66, C = 67, D = 68, E = 69, F = 70,
 	G = 71, H = 72, I = 73, J = 74, K = 75, L = 76,
@@ -76,7 +74,7 @@ enum class CE_API KeyboardKeyCode : uint16_t {
 	Unknown = 0
 };
 
-enum class CE_API KeyboardCharsCode: uint32_t {
+enum class KeyboardCharsCode: uint32_t {
 	A = 65, B = 66, C = 67, D = 68, E = 69, F = 70,
 	G = 71, H = 72, I = 73, J = 74, K = 75, L = 76,
 	M = 77, N = 78, O = 79, P = 80, Q = 81, R = 82,

@@ -4,12 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 enable_testing()
 
 set(SOURCES
+	src/native.cpp
+
 	$<$<PLATFORM_ID:Darwin>:
 		src/Apple/Metal/Bridge/ImGui/ImGuiBridgeTests.cpp
 	>

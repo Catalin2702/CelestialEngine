@@ -4,15 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-22
 //
 
 #pragma once
 
 #ifndef CE_TYPES_KEYCODE_MOUSEKEYS_HPP
 #define CE_TYPES_KEYCODE_MOUSEKEYS_HPP
-
-#include "Define/DynamicLinker.hpp"
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
@@ -35,7 +33,7 @@ namespace CE::KeyCode {
  *			The enum includes standard buttons (Left, Right, Middle) as well as additional buttons (Button4-Button8) and wheel actions (WheelX, WheelY).
  *			An Unknown value is also provided to represent unrecognized or unsupported mouse button codes.
  */
-enum class CE_API MouseButtonCode : uint8_t {
+enum class MouseButtonCode : uint8_t {
 	Left = 1,
 	Right = 2,
 	Middle = 3,
