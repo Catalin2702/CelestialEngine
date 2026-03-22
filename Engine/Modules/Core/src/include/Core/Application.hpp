@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -192,6 +192,8 @@ public:
 
 private:
 	void _Init();
+
+	void _SetWindowCallbacks() const;
 
 private:
 	std::unique_ptr<Window::I_Window> _window;		///< Application window

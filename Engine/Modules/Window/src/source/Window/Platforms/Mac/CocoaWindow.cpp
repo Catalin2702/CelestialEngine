@@ -58,6 +58,10 @@ void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentScaleCal
 	_callbacks.ContentScaleCallback = callback;
 }
 
+void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
+	_callbacks.VSyncCallback = callback;
+}
+
 void CocoaWindow::_SetIOEventCallbacks() {
 	if (not _view)
 		return;

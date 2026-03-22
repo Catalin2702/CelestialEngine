@@ -119,6 +119,13 @@ public:
 	void SetContentScaleCallback(const ContentScaleCallbackFn&) override {};
 
 	/**
+	 * @brief Sets the VSync state change callback function
+	 * @details The callback will be invoked with the new VSync state when it is changed, allowing the application to respond to VSync changes.
+	 *			Note: VSync changes are typically handled directly in the SetVSync method, so this function may not be used in this implementation.
+	 */
+	void SetVSyncCallback(const VSyncCallbackFn&) override {};
+
+	/**
 	 * @brief Sets the window width
 	 * @param width New width in pixels
 	 * @details Updates the cached width value in _data. Note: this only updates

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
@@ -86,8 +86,18 @@ void MetalContext::HandleContentScaleChange(const std::pair<float, float>& scale
 		CE_CORE_WARN("MetalContext::HandleContentScaleChange: Cannot handle content scale change because Metal layer is not initialized.");
 		return;
 	}
+
 	const auto [xScale, yScale] = scale;
 	_layer->setDrawableSize(CGSizeMake(xScale, yScale));
+}
+
+void MetalContext::HandleVSyncChange(bool enabled) {
+	if (not _layer) {
+		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because Metal layer is not initialized.");
+		return;
+	}
+
+	_layer->setDisplaySyncEnabled(enabled);
 }
 
 }

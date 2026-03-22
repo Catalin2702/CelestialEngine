@@ -113,20 +113,6 @@ public:
 	[[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
 	/**
-	 * @brief Sets the event callback function
-	 * @param callback Function to be called when events occur
-	 * @details The callback will be invoked for all window and input events
-	 */
-	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-
-	/**
-	 * @brief Sets the resize event callback function
-	 * @param callback Function to be called when the window is resized
-	 * @details The callback will be invoked with the new content scale when the window is resized
-	 */
-	virtual void SetContentScaleCallback(const ContentScaleCallbackFn& callback) = 0;
-
-	/**
 	 * @brief Sets the window width
 	 * @param width New width in pixels
 	 */
@@ -167,6 +153,28 @@ public:
 		auto window = std::make_unique<T>(windowProps);
 		return window.release();
 	}
+
+public:
+	/**
+	 * @brief Sets the event callback function
+	 * @param callback Function to be called when events occur
+	 * @details The callback will be invoked for all window and input events
+	 */
+	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+
+	/**
+	 * @brief Sets the resize event callback function
+	 * @param callback Function to be called when the window is resized
+	 * @details The callback will be invoked with the new content scale when the window is resized
+	 */
+	virtual void SetContentScaleCallback(const ContentScaleCallbackFn& callback) = 0;
+
+	/**
+	 * @brief Sets the VSync state change callback function
+	 * @param callback Function to be called when the VSync state changes
+	 * @details The callback will be invoked with the new VSync state when it is changed
+	 */
+	virtual void SetVSyncCallback(const VSyncCallbackFn& callback) = 0;
 
 protected:
 	/**

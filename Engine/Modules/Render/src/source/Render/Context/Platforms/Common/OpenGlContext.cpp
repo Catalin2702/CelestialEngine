@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-22
 //
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
@@ -19,6 +19,10 @@
 namespace CE::Render::Context {
 
 OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {}
+
+OpenGlContext::~OpenGlContext() {
+	_window = nullptr;
+}
 
 void OpenGlContext::Init() {
 	assert(_window && "OpenGlContext requires a valid GLFW window pointer");

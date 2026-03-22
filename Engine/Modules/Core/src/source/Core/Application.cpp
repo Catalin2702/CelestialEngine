@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "Core/Application.hpp"
@@ -228,11 +228,22 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 	InitWindow(windowProps);
 	InitRenderer(windowProps);
 	InitImGuiLayer(windowProps);
+
+	_SetWindowCallbacks();
 }
 
 void Application::_Init() {
 	_instance = this;
 	_running = true;
+}
+
+void Application::_SetWindowCallbacks() const {
+	assert(_window && "Application::_SetWindowCallbacks: Window must be initialized before setting window callbacks");
+
+	if (_context) {
+		_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleContentScaleChange));
+		_window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleVSyncChange));
+	}
 }
 
 }
