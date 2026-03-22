@@ -21,6 +21,7 @@
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
+#include <utility>
 
 
 namespace CE::Window {
@@ -44,7 +45,7 @@ static int _st_GLFWWindowCount = 0;
  *			and configure the GLFW window with OpenGL 4.1 Core Profile context.
  *			Increments the window count.
  */
-GlfwWindow::GlfwWindow(const TypeWindow::WindowProps& windowProps): _data(windowProps){
+GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps): _data(std::move(windowProps)){
 	_Init();
 }
 

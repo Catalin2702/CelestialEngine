@@ -25,6 +25,7 @@
 #include <QuartzCore/CAMetalLayer.hpp>
 
 #include <stdexcept>
+#include <utility>
 
 
 namespace CE::Window {
@@ -32,8 +33,8 @@ namespace CE::Window {
 static bool _st_CocoaInitialized = false;
 static int _st_CocoaWindowCount = 0;
 
-CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
-	_data(windowProps), _window(nullptr) {
+CocoaWindow::CocoaWindow(TypeWindow::WindowProps windowProps):
+	_data(std::move(windowProps)), _window(nullptr) {
 	_Init();
 }
 

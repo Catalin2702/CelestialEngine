@@ -63,7 +63,7 @@ public:
 	 * @param windowProps Window configuration properties (title, dimensions, VSync)
 	 * @details Creates and initializes a Metal-based window with the specified properties using Cocoa APIs
 	 */
-	CocoaWindow(const TypeWindow::WindowProps& windowProps);
+	CocoaWindow(TypeWindow::WindowProps windowProps);
 
 	/**
 	 * @brief Destructor
@@ -76,20 +76,20 @@ public:
 
 public:
 	/**
-	 * @brief Gets the current width of the window
+	 * @brief Gets the current width of the view (content area) of the window
 	 * @return unsigned int Current width in pixels
 	 */
 	[[nodiscard]] float GetWidth() const override;
 
 	/**
-	 * @brief Gets the current height of the window
+	 * @brief Gets the current height of the view (content area) of the window
 	 * @return unsigned int Current height in pixels
 	 */
 	[[nodiscard]] float GetHeight() const override;
 
 	/**
-	 * @brief Gets the current size of the window
-	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
+	 * @brief Gets the current size of the view (content area) of the window
+	 * @return std::pair<float, float> Pair of width and height in pixels
 	 */
 	[[nodiscard]] std::pair<float, float> GetSize() const override;
 

@@ -49,7 +49,7 @@ public:
 	 * @details Creates and initializes an OpenGL-based window with the specified properties.
 	 *			Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
 	 */
-	GlfwWindow(const TypeWindow::WindowProps& windowProps);
+	GlfwWindow(TypeWindow::WindowProps windowProps);
 
 	/**
 	 * @brief Destructor
