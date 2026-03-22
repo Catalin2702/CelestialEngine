@@ -10,6 +10,7 @@
 #include "AppKit/Window/WindowDelegate.h"
 
 @implementation WindowDelegate
+
 - (void *)getUserData {
 	return self.userData;
 }

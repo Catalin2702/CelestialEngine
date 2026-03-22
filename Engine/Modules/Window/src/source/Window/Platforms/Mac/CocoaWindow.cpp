@@ -57,6 +57,7 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 		CE_CORE_WARN("CocoaWindow::GetContentScale: Could not get content scale because window is not initialized.");
 		return {1.0f, 1.0f};
 	}
+
 	const auto scale = _window->backingScaleFactor();
 	return {scale, scale};
 }
@@ -297,8 +298,11 @@ void CocoaWindow::_InitWindow() {
 	// Make the window visible
 	_window->makeKeyAndOrderFront(nullptr);
 	_window->setContentView(reinterpret_cast<NS::View*>(_view.get()));
+
+	_window->setDelegate(_windowDelegate.get());
+
 	// Set frame autosave name to remember window position between launches
-	Apple::Bridge::SetWindowFrameAutosaveName(_window.get(), _window->title()->utf8String());
+	_window->setFrameAutosaveName(_window->title());
 
 	// Activate the application
 	app->activateIgnoringOtherApps(true);

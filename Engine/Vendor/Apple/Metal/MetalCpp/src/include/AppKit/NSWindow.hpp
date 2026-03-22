@@ -27,78 +27,82 @@
 
 #include "AppKitPrivate.hpp"
 #include "NSView.hpp"
-#include <Foundation/NSObject.hpp>
 
-#include <CoreGraphics/CGGeometry.h>
+#include <Foundation/NSObject.hpp>
 
 #include "Metal/MTLEvent.hpp"
 
 
-namespace NS
-{
-	class Window : public Referencing< Window >
-	{
-		public:
-			static Window*		alloc();
-			Window*				init( CGRect contentRect, WindowStyleMask styleMask, BackingStoreType backing, bool defer );
+namespace NS {
 
-			View*				contentView() const;
-			void				setContentView( const View* pContentView );
-			void				makeKeyAndOrderFront( const Object* pSender );
-			void				setTitle( const String* pTitle );
+class Window : public Referencing<Window> {
+public:
+	static Window* alloc();
+	void close() const;
+	[[nodiscard]] Window* init(const CGRect& contentRect, WindowStyleMask styleMask, BackingStoreType backing, bool defer) const;
 
-			void				close();
+	void makeKeyAndOrderFront(const Object* pSender) const;
 
-			CGFloat				backingScaleFactor() const;
+public:
+	void setContentView(const View* pContentView) const;
+	void setDelegate(const Object* pDelegate) const;
+	void setFrameAutosaveName(const String* pName) const;
+	void setTitle(const String* pTitle) const;
 
-		public:
-			[[nodiscard]] String* title() const;
-	};
+public:
+	[[nodiscard]] CGFloat backingScaleFactor() const;
+	[[nodiscard]] View* contentView() const;
+	[[nodiscard]] Object* delegate() const;
+	[[nodiscard]] String* title() const;
+};
 
 }
 
 
-_NS_INLINE NS::Window* NS::Window::alloc()
-{
-	return Object::sendMessage< Window* >( _APPKIT_PRIVATE_CLS( NSWindow ), _NS_PRIVATE_SEL( alloc ) );
+_NS_INLINE NS::Window* NS::Window::alloc() {
+	return sendMessage<Window*>(_APPKIT_PRIVATE_CLS(NSWindow), _NS_PRIVATE_SEL(alloc));
 }
 
-_NS_INLINE NS::Window* NS::Window::init( CGRect contentRect, WindowStyleMask styleMask, BackingStoreType backing, bool defer )
-{
-	return Object::sendMessage< Window* >( this, _APPKIT_PRIVATE_SEL( initWithContentRect_styleMask_backing_defer_ ), contentRect, styleMask, backing, defer );
+_NS_INLINE void NS::Window::close() const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(close));
 }
 
-_NS_INLINE NS::View* NS::Window::contentView() const
-{
-	return Object::sendMessage< View* >( this, _APPKIT_PRIVATE_SEL( contentView ));
+_NS_INLINE NS::Window* NS::Window::init(const CGRect& contentRect, const WindowStyleMask styleMask, const BackingStoreType backing, const bool defer) const {
+	return sendMessage<Window*>(this, _APPKIT_PRIVATE_SEL(initWithContentRect_styleMask_backing_defer_), contentRect, styleMask, backing, defer);
 }
 
-_NS_INLINE void NS::Window::setContentView( const NS::View* pContentView )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setContentView_ ), pContentView );
+_NS_INLINE void NS::Window::makeKeyAndOrderFront(const Object* pSender) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(makeKeyAndOrderFront_), pSender);
 }
 
-_NS_INLINE void NS::Window::makeKeyAndOrderFront( const Object* pSender )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( makeKeyAndOrderFront_ ), pSender );
+_NS_INLINE void NS::Window::setContentView(const View* pContentView) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setContentView_), pContentView);
 }
 
-_NS_INLINE void NS::Window::setTitle( const String* pTitle )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setTitle_), pTitle );
+_NS_INLINE void NS::Window::setDelegate(const Object* pDelegate) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setDelegate_), pDelegate);
 }
 
-_NS_INLINE void NS::Window::close()
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( close ) );
+_NS_INLINE void NS::Window::setFrameAutosaveName(const String* pName) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrameAutosaveName_), pName);
 }
 
-_NS_INLINE CGFloat NS::Window::backingScaleFactor() const
-{
-	return Object::sendMessage< CGFloat >( this, _APPKIT_PRIVATE_SEL( backingScaleFactor ) );
+_NS_INLINE void NS::Window::setTitle(const String* pTitle) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setTitle_), pTitle);
 }
 
-_NS_INLINE NS::String* NS::Window::title() const
-{
-	return Object::sendMessage< String* >( this, _APPKIT_PRIVATE_SEL( title_ ) );
+_NS_INLINE CGFloat NS::Window::backingScaleFactor() const {
+	return sendMessage<CGFloat>(this, _APPKIT_PRIVATE_SEL(backingScaleFactor));
+}
+
+_NS_INLINE NS::View* NS::Window::contentView() const {
+	return sendMessage<View*>(this, _APPKIT_PRIVATE_SEL(contentView));
+}
+
+_NS_INLINE NS::Object* NS::Window::delegate() const {
+	return sendMessage<Object*>(this, _APPKIT_PRIVATE_SEL(delegate));
+}
+
+_NS_INLINE NS::String* NS::Window::title() const {
+	return sendMessage<String*>(this, _APPKIT_PRIVATE_SEL(title_));
 }

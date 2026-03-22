@@ -114,6 +114,9 @@ _APPKIT_PRIVATE_DEF_SEL( localizedName,
 _APPKIT_PRIVATE_DEF_SEL( sharedApplication,
 						"sharedApplication" );
 
+_APPKIT_PRIVATE_DEF_SEL( delegate,
+						"delegate" );
+
 _APPKIT_PRIVATE_DEF_SEL( setDelegate_,
 						"setDelegate:" );
 
@@ -188,6 +191,9 @@ _APPKIT_PRIVATE_DEF_SEL( setTitle_,
 
 _APPKIT_PRIVATE_DEF_SEL( title_,
 						"title" );
+
+_APPKIT_PRIVATE_DEF_SEL( setFrameAutosaveName_,
+						"setFrameAutosaveName:" );
 
 _APPKIT_PRIVATE_DEF_SEL( windows,
 						"windows" );
