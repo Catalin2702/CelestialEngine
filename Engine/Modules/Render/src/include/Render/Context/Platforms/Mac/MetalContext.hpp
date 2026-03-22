@@ -115,13 +115,6 @@ public:
 	 */
 	[[nodiscard]] void* GetNativeCommandQueue() const override { return _commandQueue.get(); }
 
-	/**
-	 * @brief Gets the native Metal render pass descriptor
-	 * @return void* Pointer to the MTL::RenderPassDescriptor used for configuring render passes
-	 * @details Returns a pointer to the underlying MTL::RenderPassDescriptor used for configuring render passes. This allows the application to access platform-specific features or perform operations that require direct access to the Metal render pass descriptor.
-	 */
-	[[nodiscard]] void* GetNativeRenderPassDescriptor() const override { return _renderPassDescriptor.get(); }
-
 	/** @brief Gets the Metal device
 	 * @return MTL::Device* Pointer to the MTL::Device representing the Metal device (GPU)
 	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
@@ -140,19 +133,12 @@ public:
 	 */
 	[[nodiscard]] MTL::CommandQueue* GetMetalCommandQueue() const { return _commandQueue.get(); }
 
-	/** @brief Gets the Metal render pass descriptor
-	 * @return MTL::RenderPassDescriptor* Pointer to the MTL::RenderPassDescriptor used for configuring render passes
-	 * @details Returns a pointer to the underlying MTL::RenderPassDescriptor used for configuring render passes. This allows the application to access platform-specific features or perform operations that require direct access to the Metal render pass descriptor.
-	 */
-	[[nodiscard]] MTL::RenderPassDescriptor* GetMetalRenderPassDescriptor() const { return _renderPassDescriptor.get(); }
-
 RENDER_API_TYPE(Metal)
 
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<CA::MetalLayer> _layer = nullptr;				///< Core Animation Metal layer for rendering
-	NS::SharedPtr<MTL::RenderPassDescriptor> _renderPassDescriptor = nullptr;	///< Metal render pass descriptor for configuring render passes
 
 	MetalContextProps _props;							///< Properties for initializing the Metal context, including window and pixel format
 };

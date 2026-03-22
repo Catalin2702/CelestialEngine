@@ -96,14 +96,6 @@ public:
 	 */
 	[[nodiscard]] virtual void* GetNativeCommandQueue() const = 0;
 
-	/**
-	 * @brief Gets the native render pass descriptor or equivalent
-	 * @return void* Pointer to the native render pass descriptor or equivalent (e.g., Metal render pass descriptor)
-	 * @details Pure virtual method that returns a pointer to the underlying native render pass descriptor or equivalent structure used for configuring render passes.
-	 *			This allows the application to access platform-specific features or perform operations that require direct access to the render pass configuration.
-	 */
-	[[nodiscard]] virtual void* GetNativeRenderPassDescriptor() const = 0;
-
 public:
 	/**
 	 * @brief Gets the graphics API used by this context

@@ -49,12 +49,6 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create CAMetalLayer!");
 	}
 
-	_renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
-	if (not _renderPassDescriptor) {
-		CE_CORE_ERROR("MetalContext::Init: Could not create Metal Render Pass Descriptor!");
-		throw std::runtime_error("MetalContext::Init: Could not create Metal Render Pass Descriptor!");
-	}
-
 	// ReSharper disable All
 	const auto metalView = window->GetCocoaView();
 	metalView->setLayer(_layer.get());

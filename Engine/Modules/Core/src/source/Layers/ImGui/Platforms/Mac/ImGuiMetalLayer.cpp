@@ -102,7 +102,7 @@ void ImGuiMetalLayer::Begin() {
 
 	_frameContext.commandBuffer = NS::TransferPtr(_metalContext->GetMetalCommandQueue()->commandBuffer());
 
-	const auto renderPassDescriptor = _metalContext->GetMetalRenderPassDescriptor();
+	const auto renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
@@ -110,9 +110,9 @@ void ImGuiMetalLayer::Begin() {
 	colorAttachment->setLoadAction(MTL::LoadActionClear);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
-	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor);
+	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
-	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor);
+	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
 	Apple::Bridge::ImGuiOSXNewFrame(_cocoaWindow->GetCocoaView());
 
 	ImGui::NewFrame();
