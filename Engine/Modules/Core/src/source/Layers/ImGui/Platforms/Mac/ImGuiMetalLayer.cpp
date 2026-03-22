@@ -133,12 +133,11 @@ void ImGuiMetalLayer::End() {
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
-
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
 		_renderSemaphore.release();
 	});
 
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
 	_frameContext.commandBuffer->commit();
 }
 
