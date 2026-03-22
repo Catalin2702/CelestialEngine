@@ -72,7 +72,7 @@ public:
 	~CocoaWindow() override;
 
 public:
-	void OnUpdate() const override {}
+	void OnUpdate() const override;
 
 public:
 	/**

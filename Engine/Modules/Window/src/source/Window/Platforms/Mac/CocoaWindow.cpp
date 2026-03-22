@@ -21,6 +21,7 @@
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
 #include <AppKit/AppKit.hpp>
+#include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
@@ -39,6 +40,16 @@ CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
 
 CocoaWindow::~CocoaWindow() {
 	_Shutdown();
+}
+
+void CocoaWindow::OnUpdate() const {
+	const auto app = NS::Application::sharedApplication();
+	const auto mode = NS::String::string("kCFRunLoopDefaultMode", NS::UTF8StringEncoding);
+
+	NS::Event* event;
+	while ((event = app->nextEventMatchingMask(NS::EventMaskAny,NS::Date::distantPast(), mode, true))) {
+		app->sendEvent(event);
+	}
 }
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {
@@ -145,6 +156,15 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 			_callbacks->_internalCallbacks.ResizeEventCallback(event);
 		}
 	};
+
+	callbacks.WindowWillCloseEventCallback = [](void* userData) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::WindowCloseEvent event;
+			_callbacks->EventCallback(event);
+		}
+	};
+
+	_windowDelegate->setCallbacks(callbacks, &_callbacks);
 }
 
 void CocoaWindow::_SetInternalCallbacks() {
