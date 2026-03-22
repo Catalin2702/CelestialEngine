@@ -4,16 +4,26 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 set(HEADERS
+	# View
 	src/include/AppKit/View/RenderView.h
 	src/include/AppKit/View/RenderViewCallback.h
+
+	# Window
+	src/include/AppKit/Window/WindowDelegate.h
+	src/include/AppKit/Window/WindowDelegateCallback.h
+	src/include/AppKit/Window/WindowDelegate.hpp
 )
 
 set(SOURCES
+	# View
 	src/source/AppKit/View/RenderView.mm
+
+	# Window
+	src/source/AppKit/Window/WindowDelegate.mm
 )
 
 add_library(CE_AppKit SHARED

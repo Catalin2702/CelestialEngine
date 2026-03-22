@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -135,6 +135,15 @@ public:
 	void SetHeight(unsigned int height) override;
 
 	/**
+	 * @brief Sets the window size
+	 * @param width New width in pixels
+	 * @param height New height in pixels
+	 * @details Convenience method to set both width and height at once. Updates the cached width and height values in _data. Note: this only updates
+	 *			the stored values, the actual window resize is handled by GLFW events
+	 */
+	void SetSize(unsigned int width, unsigned int height) override;
+
+	/**
 	 * @brief Enables or disables vertical synchronization (VSync)
 	 * @param enabled True to enable VSync, false to disable
 	 * @details When enabled, limits the frame rate to the monitor's refresh rate to
@@ -148,17 +157,17 @@ public:
 
 protected:
 	/**
- * @brief Configures all GLFW window event callbacks
- * @details Sets up GLFW callbacks for:
- *			- Window resize events
- *			- Window close events
- *			- Keyboard input (press, release, repeat, typed characters)
- *			- Mouse button events (press, release)
- *			- Mouse movement events
- *			- Mouse scroll events
- *			All callbacks generate appropriate engine events and invoke the event callback
- */
-	void _SetWindowCallbacks() override;
+	 * @brief Sets internal callbacks for I/O events
+	 * @details Registers GLFW callbacks for keyboard input, mouse movement, mouse button presses/releases, and scroll events.
+	 *			Each callback retrieves the user data pointer (which points to the _callbacks structure) and invokes the appropriate event callback function with the corresponding event data.
+	 */
+	void _SetIOEventCallbacks() override;
+
+	/**
+	 * @brief Sets internal callbacks for window events
+	 * @details Registers GLFW callbacks for window resizing and closing events. Each callback retrieves the user data pointer (which points to the _callbacks structure) and invokes the appropriate event callback function with the corresponding event data.
+	 */
+	void _SetWindowEventCallbacks() override;
 
 	/**
 	 * @brief Sets internal callbacks for window events
@@ -190,15 +199,6 @@ private:
 	 *			the GLFW window when there are no more references to it
 	 */
 	void _Shutdown();
-
-	/**
-	 * @brief Handles window resize events
-	 * @param event  Window resize event containing new dimensions
-	 * @details Updates the cached width and height values in _data based on the new dimensions
-	 *			provided by the event. This method is called by the GLFW window resize callback
-	 *			to keep the internal state consistent with the actual window size.
-	 */
-	void _HandleWindowSize(const Events::WindowResizeEvent& event);
 
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime

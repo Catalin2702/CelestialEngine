@@ -32,6 +32,7 @@ namespace NS {
 class RenderView;
 class View;
 class Window;
+class WindowDelegate;
 }
 
 
@@ -151,6 +152,14 @@ public:
 	void SetHeight(unsigned int height) override;
 
 	/**
+	 * @brief Sets the window size
+	 * @param width New width in pixels
+	 * @param height New height in pixels
+	 * @details Convenience method to set both width and height at once. Updates the window's dimensions and resizes the Metal layer accordingly to ensure proper rendering.
+	 */
+	void SetSize(unsigned int width, unsigned int height) override;
+
+	/**
 	 * @brief Enables or disables VSync
 	 * @param enabled True to enable VSync, false to disable
 	 * @details VSync synchronizes rendering with the monitor's refresh rate to prevent screen tearing. This method updates the Metal layer's display sync setting accordingly.
@@ -161,10 +170,16 @@ public:
 
 protected:
 	/**
-	 * @brief Configures all window event callbacks
-	 * @details Sets up Cocoa callbacks for window events such as resize, close, focus, minimize, etc. This allows the application to handle these events appropriately.
+	 * @brief Sets internal callbacks for I/O events
+	 * @details Registers the necessary callbacks for handling keyboard input, mouse input, and other I/O events using the Cocoa event system. These callbacks will translate Cocoa events into the engine's event system and invoke the appropriate event callbacks stored in the _data structure.
 	 */
-	void _SetWindowCallbacks() override;
+	void _SetIOEventCallbacks() override;
+
+	/**
+	 * @brief Sets internal callbacks for window events
+	 * @details Registers the necessary callbacks for handling window events such as resizing, closing, minimizing, etc. These callbacks will translate Cocoa window events into the engine's event system and invoke the appropriate event callbacks stored in the _data structure.
+	 */
+	void _SetWindowEventCallbacks() override;
 
 	/**
 	 * @brief Sets internal callbacks for window events
@@ -199,6 +214,7 @@ private:
 
 	NS::SharedPtr<NS::RenderView> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
+	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;	///< Delegate for handling window events
 };
 
 }

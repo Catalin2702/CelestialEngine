@@ -10,6 +10,7 @@
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include "AppKit/View/RenderView.hpp"
+#include "AppKit/Window/WindowDelegate.hpp"
 
 #include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Events/ApplicationEvent.hpp"
@@ -57,8 +58,8 @@ void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentScaleCal
 	_callbacks.ContentScaleCallback = callback;
 }
 
-void CocoaWindow::_SetWindowCallbacks() {
-	if (!_view)
+void CocoaWindow::_SetIOEventCallbacks() {
+	if (not _view)
 		return;
 
 	RenderViewCallbacks callbacks{};
@@ -115,7 +116,27 @@ void CocoaWindow::_SetWindowCallbacks() {
 	_view->setCallbacks(callbacks, &_callbacks);
 }
 
+void CocoaWindow::_SetWindowEventCallbacks() {
+	if (not _windowDelegate)
+		return;
+
+	WindowDelegateCallbacks callbacks{};
+
+	callbacks.WindowDidResizeEventCallback = [](void* userData, const unsigned int width, const unsigned int height) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::WindowResizeEvent event{width, height};
+			_callbacks->EventCallback(event);
+			_callbacks->_internalCallbacks.ResizeEventCallback(event);
+		}
+	};
+}
+
 void CocoaWindow::_SetInternalCallbacks() {
+	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
+
+	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
+		SetSize(event.GetWidth(), event.GetHeight());
+	};
 }
 
 void CocoaWindow::SetWidth(const unsigned int width) {
@@ -134,21 +155,25 @@ void CocoaWindow::SetHeight(const unsigned int height) {
 	_UpdateLayerSize();
 }
 
-void CocoaWindow::SetVSync([[maybe_unused]] const bool enabled) {
-	// if (_layer) {
-	// 	_data.VSync = enabled;
-	// 	_layer->setDisplaySyncEnabled(enabled);
-	// }
-	// else {
-	// 	CE_CORE_WARN("CocoaWindow::SetVSync: Could not set VSync because Metal layer is not initialized.");
-	// }
+void CocoaWindow::SetSize(unsigned int width, unsigned int height) {
+	if (not _window)
+		return;
+
+	_data.width = width;
+	_data.height = height;
+	_UpdateLayerSize();
+}
+
+void CocoaWindow::SetVSync(const bool enabled) {
+	_callbacks.VSyncCallback(enabled);
 }
 
 void CocoaWindow::_Init() {
 	_InitWindow();
 
 	SetVSync(_data.VSync);
-	_SetWindowCallbacks();
+	_SetIOEventCallbacks();
+	_SetWindowEventCallbacks();
 	_SetInternalCallbacks();
 
 	_st_CocoaWindowCount++;
@@ -208,6 +233,24 @@ void CocoaWindow::_InitWindow() {
 	}
 	_view = NS::RetainPtr(rawCocoaView);
 
+	NS::WindowDelegate* rawDelegate;
+	try {
+		rawDelegate = NS::WindowDelegate::alloc()->init();
+		if (not rawDelegate) {
+			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa window delegate!");
+			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa window delegate!");
+		}
+	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa window delegate: {0}", e.what());
+		throw;
+	}
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window delegate");
+		throw;
+	}
+	_windowDelegate = NS::RetainPtr(rawDelegate);
+
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 	// Make the window visible
 	_window->makeKeyAndOrderFront(nullptr);
@@ -220,7 +263,6 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
-
 	if (_window) {
 		_window->close();
 		_window = nullptr;

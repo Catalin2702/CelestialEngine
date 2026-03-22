@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
 
 #ifndef CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCALLBACK_H
 #define CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCALLBACK_H
+
 
 struct RenderViewCallbacks {
 	void (*KeyPressedEventCallback)(void* userData, int keyCode, bool isRepeat);
@@ -22,5 +23,6 @@ struct RenderViewCallbacks {
 	void (*MouseButtonReleasedEventCallback)(void* userData, int buttonCode);
 	void (*MouseDraggedEventCallback)(void* userData, int buttonCode, float x, float y);
 };
+
 
 #endif //CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCALLBACK_H

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -18,12 +18,12 @@
 
 @interface RenderView: NSView
 
-@property (nonatomic, assign) RenderViewCallbacks callbacks;
-@property (nonatomic, assign) void* userData;
+	@property (nonatomic, assign) RenderViewCallbacks callbacks;
+	@property (nonatomic, assign) void* userData;
 
-- (void)setCallbacks:(RenderViewCallbacks)callbacks userData:(void*)userData;
+	- (void)setCallbacks:(RenderViewCallbacks)callbacks userData:(void*)userData;
 
-- (void*)getUserData;
+	- (void*)getUserData;
 
 @end
 

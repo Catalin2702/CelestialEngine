@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/View/Platforms/Mac
+// Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/AppKit/View
 // File: RenderView.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
 
-#ifndef CE_RENDER_VIEW_MAC_COCOAVIEW_HPP
-#define CE_RENDER_VIEW_MAC_COCOAVIEW_HPP
+#ifndef CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEW_HPP
+#define CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEW_HPP
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <CoreGraphics/CGGeometry.h>
@@ -19,58 +19,10 @@
 
 #include "AppKit/View/RenderViewCallback.h"
 
-#include "Utility/Callback/Callback.hpp"
-
-// namespace CE::Events {
-// class I_Event;
-//
-// class KeyPressedEvent;
-// class KeyReleasedEvent;
-// class KeyTypedEvent;
-//
-// class MouseMovedEvent;
-// class MouseScrolledEvent;
-// class MouseButtonPressedEvent;
-// class MouseButtonReleasedEvent;
-// class MouseDraggedEvent;
-// }
-//
-// using KeyPressedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::KeyPressedEvent>;
-// using KeyReleasedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::KeyReleasedEvent>;
-// using KeyTypedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::KeyTypedEvent>;
-//
-// using MouseMovedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::MouseMovedEvent>;
-// using MouseScrolledEventCallbackFn = CE::Utility::CallbackFn<CE::Events::MouseScrolledEvent>;
-// using MouseButtonPressedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::MouseButtonPressedEvent>;
-// using MouseButtonReleasedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::MouseButtonReleasedEvent>;
-// using MouseDraggedEventCallbackFn = CE::Utility::CallbackFn<CE::Events::MouseDraggedEvent>;
-//
-// namespace CE::Render::View {
-//
-// struct CocoaCallbacks {
-// #pragma region KeyCallbacks
-// 	KeyPressedEventCallbackFn KeyPressedEventCallback;						///< Callback for key pressed events
-// 	KeyReleasedEventCallbackFn KeyReleasedEventCallback;					///< Callback for key released events
-// 	KeyTypedEventCallbackFn KeyTypedEventCallback;							///< Callback for key typed events
-// #pragma endregion
-//
-// #pragma region MouseCallbacks
-// 	MouseMovedEventCallbackFn MouseMovedEventCallback;						///< Callback for mouse moved events
-// 	MouseScrolledEventCallbackFn MouseScrolledEventCallback;				///< Callback for mouse scrolled events
-// 	MouseButtonPressedEventCallbackFn MouseButtonPressedEventCallback;		///< Callback for mouse button pressed events
-// 	MouseButtonReleasedEventCallbackFn MouseButtonReleasedEventCallback;	///< Callback for mouse button released events
-// 	MouseDraggedEventCallbackFn MouseDraggedEventCallback;					///< Callback for mouse dragged events
-// #pragma endregion
-// };
-
-
-
-// }
 
 namespace CA {
 class MetalLayer;
 }
-
 
 namespace NS {
 
@@ -82,7 +34,7 @@ public:
 	void setOpaque(bool opaque) const;
 	void setWantsLayer(bool wantsLayer) const;
 	void setCallbacks(const RenderViewCallbacks& callbacks, void* userData) const;
-	void* getUserData() const;
+	[[nodiscard]] void* getUserData() const;
 };
 
 _NS_INLINE NS::RenderView* NS::RenderView::alloc() {
@@ -115,4 +67,4 @@ _NS_INLINE void* NS::RenderView::getUserData() const {
 
 }
 
-#endif //CE_RENDER_VIEW_MAC_COCOAVIEW_HPP
+#endif //CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEW_HPP

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -97,24 +97,9 @@ void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
  *			- Mouse movement: generates MouseMovedEvent
  *			Verifies that _glfwWindow is valid before registering callbacks
  */
-void GlfwWindow::_SetWindowCallbacks() {
+void GlfwWindow::_SetIOEventCallbacks() {
 	if (not _glfwWindow)
 		return;
-
-	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto callbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
-			Events::WindowResizeEvent event{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
-			callbacks->EventCallback(event);
-			callbacks->_internalCallbacks.ResizeEventCallback(event);
-		}
-	});
-
-	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
-			Events::WindowCloseEvent event;
-			data->EventCallback(event);
-		}
-	});
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
 		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
@@ -181,11 +166,31 @@ void GlfwWindow::_SetWindowCallbacks() {
 	});
 }
 
+void GlfwWindow::_SetWindowEventCallbacks() {
+	if (not _glfwWindow)
+		return;
+
+	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
+		if (const auto callbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
+			Events::WindowResizeEvent event{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+			callbacks->EventCallback(event);
+			callbacks->_internalCallbacks.ResizeEventCallback(event);
+		}
+	});
+
+	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
+		if (const auto data = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window))) {
+			Events::WindowCloseEvent event;
+			data->EventCallback(event);
+		}
+	});
+}
+
 void GlfwWindow::_SetInternalCallbacks() {
 	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
 
 	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
-		_HandleWindowSize(event);
+		SetSize(event.GetWidth(), event.GetHeight());
 	};
 }
 
@@ -209,13 +214,11 @@ void GlfwWindow::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
 
-/**
- * @brief Enables or disables vertical synchronization (VSync)
- * @param enabled true to enable VSync, false to disable it
- * @details When enabled, limits the frame rate to the monitor's refresh rate to prevent tearing.
- *			If GLFW has not been initialized, prints a warning and returns without making changes.
- *			Internally uses glfwSwapInterval(1) to enable and glfwSwapInterval(0) to disable
- */
+void GlfwWindow::SetSize(unsigned int width, unsigned int height) {
+	_data.width = width;
+	_data.height = height;
+}
+
 void GlfwWindow::SetVSync(const bool enabled) {
 	if (not _st_GLFWInitialized) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
@@ -225,20 +228,6 @@ void GlfwWindow::SetVSync(const bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
 }
 
-/**
- * @brief Private method for OpenGL window initialization
- * @details Performs the following operations:
- *			1. Logs window information
- *			2. Initializes GLFW if not already done (also sets up error callback)
- *			3. Configures OpenGL context parameters (version 4.1 Core Profile with forward compatibility)
- *			4. Creates the GLFW window with the specified dimensions
- *			5. Makes the window's OpenGL context current
- *			6. Initializes GLAD to load OpenGL functions
- *			7. Associates window data with GLFW's user pointer
- *			8. Sets VSync according to configuration
- *			9. Registers all event callbacks
- *			Throws std::runtime_error if window creation or GLAD initialization fails.
- */
 void GlfwWindow::_Init() {
 	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
@@ -264,6 +253,8 @@ void GlfwWindow::_Init() {
 		nullptr
 	));
 
+	SetVSync(_data.VSync);
+
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("Failed to create GLFW window!");
 		throw std::runtime_error("Failed to create GLFW window!");
@@ -275,21 +266,13 @@ void GlfwWindow::_Init() {
 		throw std::runtime_error("Error to initialize GLAD");
 	}
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_callbacks);
-	SetVSync(_data.VSync);
-	_SetWindowCallbacks();
+	_SetIOEventCallbacks();
+	_SetWindowEventCallbacks();
 	_SetInternalCallbacks();
 
 	_st_GLFWWindowCount++;
 }
 
-/**
- * @brief Private method for cleanup and resource release
- * @details Releases GLFW window resources by resetting the _glfwWindow smart pointer,
- *			which automatically destroys the GLFW window by calling glfwDestroyWindow
- *			through the custom deleter.
- *			Decrements the window count and calls glfwTerminate() when the last
- *			window is destroyed to properly clean up GLFW resources.
- */
 void GlfwWindow::_Shutdown() {
 	_glfwWindow.reset();
 
@@ -298,11 +281,6 @@ void GlfwWindow::_Shutdown() {
 		glfwTerminate();
 		_st_GLFWInitialized = false;
 	}
-}
-
-void GlfwWindow::_HandleWindowSize(const Events::WindowResizeEvent& event) {
-	SetWidth(event.GetWidth());
-	SetHeight(event.GetHeight());
 }
 
 }

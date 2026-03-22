@@ -139,6 +139,15 @@ public:
 	virtual void SetHeight(unsigned int height) = 0;
 
 	/**
+	 * @brief Sets the window size
+	 * @param width New width in pixels
+	 * @param height New height in pixels
+	 * @details Convenience method to set both width and height at once. Updates the internal values in the _data structure. Note: this only updates
+	 *			the stored values, it does not actually resize the window
+	 */
+	virtual void SetSize(unsigned int width, unsigned int height) = 0;
+
+	/**
 	 * @brief Enables or disables VSync
 	 * @param enabled True to enable VSync, false to disable
 	 * @details VSync synchronizes rendering with the monitor's refresh rate
@@ -161,10 +170,20 @@ public:
 
 protected:
 	/**
-	 * @brief Configures all window event callbacks
-	 * @details Sets up GLFW callbacks for resize, close, keyboard, mouse, etc.
+	 * @brief Sets internal callback functions for input/output events
+	 * @details This method allows setting internal callbacks that are used by the window implementation
+	 *			to handle specific events such as keyboard input, mouse movement, etc. The provided
+	 *			callbacks will be stored internally and invoked when the corresponding events occur.
 	 */
-	virtual void _SetWindowCallbacks() = 0;
+	virtual void _SetIOEventCallbacks() = 0;
+
+	/**
+	 * @brief Sets internal callback functions for window events
+	 * @details This method allows setting internal callbacks that are used by the window implementation
+	 *			to handle specific events such as window resizing. The provided callbacks will be stored
+	 *			internally and invoked when the corresponding events occur.
+	 */
+	virtual void _SetWindowEventCallbacks() = 0;
 
 	/**
 	 * @brief Sets internal callback functions for window events
