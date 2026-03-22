@@ -78,6 +78,13 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		}
 	};
 
+	callbacks.KeyTypedEventCallback = [](void* userData, const char character) {
+		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+			Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(character)};
+			_callbacks->EventCallback(event);
+		}
+	};
+
 	callbacks.MouseMovedEventCallback = [](void* userData, const float x, const float y) {
 		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
 			Events::MouseMovedEvent event{x, y};
@@ -155,7 +162,7 @@ void CocoaWindow::SetHeight(const unsigned int height) {
 	_UpdateLayerSize();
 }
 
-void CocoaWindow::SetSize(unsigned int width, unsigned int height) {
+void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 	if (not _window)
 		return;
 

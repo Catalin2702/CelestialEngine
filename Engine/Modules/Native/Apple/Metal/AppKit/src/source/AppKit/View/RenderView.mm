@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "AppKit/View/RenderView.h"
@@ -18,8 +18,8 @@
 @implementation RenderView
 
 - (void)setCallbacks:(RenderViewCallbacks)callbacks userData:(void*)userData {
-    _callbacks = callbacks;
-    _userData = userData;
+	_callbacks = callbacks;
+	_userData = userData;
 }
 
 - (void*)getUserData {
@@ -35,21 +35,21 @@
 }
 
 - (void)updateTrackingAreas {
-    [super updateTrackingAreas];
+	[super updateTrackingAreas];
 
-    if (_trackingArea) {
-        [self removeTrackingArea:_trackingArea];
-    }
+	if (_trackingArea) {
+		[self removeTrackingArea:_trackingArea];
+	}
 
-    _trackingArea = [[NSTrackingArea alloc]
-        initWithRect:self.bounds
-             options:NSTrackingMouseMoved |
-                     NSTrackingActiveInKeyWindow |
-                     NSTrackingInVisibleRect
-               owner:self
-            userInfo:nil];
+	_trackingArea = [[NSTrackingArea alloc]
+		initWithRect:self.bounds
+			 options:NSTrackingMouseMoved |
+					 NSTrackingActiveInKeyWindow |
+					 NSTrackingInVisibleRect
+			   owner:self
+			userInfo:nil];
 
-    [self addTrackingArea:_trackingArea];
+	[self addTrackingArea:_trackingArea];
 }
 
 - (void)mouseDown:(NSEvent*)event {
@@ -125,6 +125,13 @@
 - (void)keyDown:(NSEvent*)event {
 	if (self.callbacks.KeyPressedEventCallback) {
 		self.callbacks.KeyPressedEventCallback(self.userData, [event keyCode], 0);
+	}
+	if (const auto* chars = [event characters]) {
+		if (const char* utf8Chars = [chars UTF8String]; utf8Chars && utf8Chars[0] != '\0') {
+			if (self.callbacks.KeyPressedEventCallback) {
+				self.callbacks.KeyPressedEventCallback(self.userData, [event keyCode], utf8Chars[0]);
+			}
+		}
 	}
 }
 

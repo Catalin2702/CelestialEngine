@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -256,6 +256,10 @@ unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
  * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
  */
 KeyboardCharsCode KeyboardCharsCodeFromCocoa(unsigned short keyCode);
+
+inline KeyboardCharsCode KeyboardCharsCodeFromChar(const char character) {
+	return static_cast<KeyboardCharsCode>(static_cast<unsigned char>(character));
+}
 
 inline std::string format_as(const KeyboardCharsCode charCode) {
 	return ToString(charCode);

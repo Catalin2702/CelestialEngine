@@ -16,6 +16,7 @@
 struct RenderViewCallbacks {
 	void (*KeyPressedEventCallback)(void* userData, int keyCode, bool isRepeat);
 	void (*KeyReleasedEventCallback)(void* userData, int keyCode);
+	void (*KeyTypedEventCallback)(void* userData, char character);
 
 	void (*MouseMovedEventCallback)(void* userData, float x, float y);
 	void (*MouseScrolledEventCallback)(void* userData, float xOffset, float yOffset);
