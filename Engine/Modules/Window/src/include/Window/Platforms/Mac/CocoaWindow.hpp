@@ -79,19 +79,19 @@ public:
 	 * @brief Gets the current width of the window
 	 * @return unsigned int Current width in pixels
 	 */
-	[[nodiscard]] unsigned int GetWidth() const override { return _data.width; }
+	[[nodiscard]] float GetWidth() const override;
 
 	/**
 	 * @brief Gets the current height of the window
 	 * @return unsigned int Current height in pixels
 	 */
-	[[nodiscard]] unsigned int GetHeight() const override { return _data.height; }
+	[[nodiscard]] float GetHeight() const override;
 
 	/**
 	 * @brief Gets the current size of the window
 	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
 	 */
-	[[nodiscard]] std::pair<unsigned int, unsigned int> GetSize() const override { return {_data.width, _data.height}; }
+	[[nodiscard]] std::pair<float, float> GetSize() const override;
 
 	/**
 	 * @brief Checks if VSync is enabled

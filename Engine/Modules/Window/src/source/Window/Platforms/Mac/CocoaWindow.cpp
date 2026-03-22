@@ -12,7 +12,6 @@
 #include "AppKit/View/RenderView.hpp"
 #include "AppKit/Window/WindowDelegate.hpp"
 
-#include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -52,6 +51,36 @@ void CocoaWindow::OnUpdate() const {
 	}
 }
 
+float CocoaWindow::GetWidth() const {
+	if (not _view) {
+		CE_CORE_WARN("CocoaWindow::GetWidth: Could not get width because window is not initialized.");
+		return 0;
+	}
+
+	const auto [origin, size] = _view->frame();
+	return static_cast<float>(size.width);
+}
+
+float CocoaWindow::GetHeight() const {
+	if (not _view) {
+		CE_CORE_WARN("CocoaWindow::GetHeight: Could not get height because window is not initialized.");
+		return 0;
+	}
+
+	const auto [origin, size] = _view->frame();
+	return static_cast<float>(size.height);
+}
+
+std::pair<float, float> CocoaWindow::GetSize() const {
+	if (not _view) {
+		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
+		return {0, 0};
+	}
+
+	const auto [origin, size] = _view->frame();
+	return {static_cast<float>(size.width), static_cast<float>(size.height)};
+}
+
 std::pair<float, float> CocoaWindow::GetContentScale() const {
 	if (not _window) {
 		CE_CORE_WARN("CocoaWindow::GetContentScale: Could not get content scale because window is not initialized.");
@@ -64,7 +93,8 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 
 std::pair<float, float> CocoaWindow::GetContentSize() const {
 	const auto [fst, snd] = GetContentScale();
-	return {static_cast<float>(_data.width) * fst, static_cast<float>(_data.height) * snd};
+	const auto [width, height] = GetSize();
+	return {width * fst, height * snd};
 }
 
 void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
@@ -326,7 +356,7 @@ void CocoaWindow::_UpdateLayerSize() const {
 		return;
 
 	if (_callbacks.ContentSizeCallback) {
-		_callbacks.ContentSizeCallback(GetSize());
+		_callbacks.ContentSizeCallback(GetContentSize());
 	}
 }
 

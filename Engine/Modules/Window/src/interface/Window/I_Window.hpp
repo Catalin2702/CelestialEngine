@@ -85,15 +85,15 @@ public:
 	 * @brief Gets the current width of the window
 	 * @return unsigned int Width in pixels
 	 */
-	[[nodiscard]] virtual unsigned int GetWidth() const = 0;
+	[[nodiscard]] virtual float GetWidth() const = 0;
 
 	/**
 	 * @brief Gets the current height of the window
 	 * @return unsigned int Height in pixels
 	 */
-	[[nodiscard]] virtual unsigned int GetHeight() const = 0;
+	[[nodiscard]] virtual float GetHeight() const = 0;
 
-	[[nodiscard]] virtual std::pair<unsigned int, unsigned int> GetSize() const = 0;
+	[[nodiscard]] virtual std::pair<float, float> GetSize() const = 0;
 
 	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
 

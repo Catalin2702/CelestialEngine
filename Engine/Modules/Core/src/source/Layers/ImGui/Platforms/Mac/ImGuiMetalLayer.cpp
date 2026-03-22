@@ -105,7 +105,7 @@ void ImGuiMetalLayer::Begin() {
 	const auto renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
-	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
+	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 0));
 	colorAttachment->setTexture(_frameContext.drawable->texture());
 	colorAttachment->setLoadAction(MTL::LoadActionClear);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
@@ -177,6 +177,10 @@ void ImGuiMetalLayer::_Init() {
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
 		}
+
+		const auto [width, height] = _cocoaWindow->GetSize();
+
+		io.DisplaySize = ImVec2(width, height);
 
 		_initialized = true;
 	}

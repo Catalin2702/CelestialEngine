@@ -65,6 +65,24 @@ void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 }
 
+float GlfwWindow::GetWidth() const {
+	int width = 0, height = 0;
+	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
+	return static_cast<float>(width);
+}
+
+float GlfwWindow::GetHeight() const {
+	int width = 0, height = 0;
+	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
+	return static_cast<float>(height);
+}
+
+std::pair<float, float> GlfwWindow::GetSize() const {
+	int width = 0, height = 0;
+	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
+	return {static_cast<float>(width), static_cast<float>(height)};
+}
+
 std::pair<float, float> GlfwWindow::GetContentScale() const {
 	if (not _glfwWindow) {
 		CE_CORE_WARN("Could not get content scale because window is not initialized.");

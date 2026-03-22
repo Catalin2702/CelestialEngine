@@ -47,12 +47,14 @@ public:
 	void setContentView(const View* pContentView) const;
 	void setDelegate(const Object* pDelegate) const;
 	void setFrameAutosaveName(const String* pName) const;
+	void setOpaque(bool flag) const;
 	void setTitle(const String* pTitle) const;
 
 public:
 	[[nodiscard]] CGFloat backingScaleFactor() const;
 	[[nodiscard]] View* contentView() const;
 	[[nodiscard]] Object* delegate() const;
+	[[nodiscard]] CGRect frame() const;
 	[[nodiscard]] String* title() const;
 };
 
@@ -87,6 +89,10 @@ _NS_INLINE void NS::Window::setFrameAutosaveName(const String* pName) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrameAutosaveName_), pName);
 }
 
+_NS_INLINE void NS::Window::setOpaque(const bool flag) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setOpaque_), flag);
+}
+
 _NS_INLINE void NS::Window::setTitle(const String* pTitle) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setTitle_), pTitle);
 }
@@ -101,6 +107,10 @@ _NS_INLINE NS::View* NS::Window::contentView() const {
 
 _NS_INLINE NS::Object* NS::Window::delegate() const {
 	return sendMessage<Object*>(this, _APPKIT_PRIVATE_SEL(delegate));
+}
+
+_NS_INLINE CGRect NS::Window::frame() const {
+	return sendMessage<CGRect>(this, _APPKIT_PRIVATE_SEL(frame));
 }
 
 _NS_INLINE NS::String* NS::Window::title() const {

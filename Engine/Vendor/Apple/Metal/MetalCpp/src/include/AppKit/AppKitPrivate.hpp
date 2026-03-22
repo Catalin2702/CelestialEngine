@@ -180,6 +180,9 @@ _APPKIT_PRIVATE_DEF_SEL( makeKeyAndOrderFront_,
 _APPKIT_PRIVATE_DEF_SEL( setKeyEquivalentModifierMask_,
 						"setKeyEquivalentModifierMask:" );
 
+_APPKIT_PRIVATE_DEF_SEL(setBackgroundColor_,
+						"setBackgroundColor:" );
+
 _APPKIT_PRIVATE_DEF_SEL( setMainMenu_,
 						"setMainMenu:" );
 
