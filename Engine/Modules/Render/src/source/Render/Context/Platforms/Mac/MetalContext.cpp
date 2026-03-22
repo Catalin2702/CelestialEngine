@@ -70,22 +70,7 @@ void MetalContext::Init() {
 	// ReSharper restore All
 }
 
-void MetalContext::SwapBuffers() {
-	const auto drawable = _layer->nextDrawable();
-	if (not drawable) {
-		CE_CORE_WARN("MetalContext::SwapBuffers: Failed to get next drawable from Metal layer!");
-		return;
-	}
-
-	const auto commandBuffer = _commandQueue->commandBuffer();
-	if (not commandBuffer) {
-		CE_CORE_WARN("MetalContext::SwapBuffers: Failed to create command buffer!");
-		return;
-	}
-
-	commandBuffer->presentDrawable(drawable);
-	commandBuffer->commit();
-}
+void MetalContext::SwapBuffers() {}
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) {
 	if (not _layer) {

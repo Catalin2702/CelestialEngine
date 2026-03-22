@@ -67,7 +67,7 @@ public:
 	void* GetNativeDevice() const override { return nullptr; }
 	void* GetNativeLayer() const override { return nullptr; }
 	void* GetNativeCommandQueue() const override { return nullptr; }
-	void* GetRenderPassDescriptor() const override { return nullptr; }
+	void* GetNativeRenderPassDescriptor() const override { return nullptr; }
 
 RENDER_API_TYPE(OpenGL)
 

@@ -120,7 +120,31 @@ public:
 	 * @return void* Pointer to the MTL::RenderPassDescriptor used for configuring render passes
 	 * @details Returns a pointer to the underlying MTL::RenderPassDescriptor used for configuring render passes. This allows the application to access platform-specific features or perform operations that require direct access to the Metal render pass descriptor.
 	 */
-	[[nodiscard]] void* GetRenderPassDescriptor() const override { return _renderPassDescriptor.get(); }
+	[[nodiscard]] void* GetNativeRenderPassDescriptor() const override { return _renderPassDescriptor.get(); }
+
+	/** @brief Gets the Metal device
+	 * @return MTL::Device* Pointer to the MTL::Device representing the Metal device (GPU)
+	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
+	 */
+	[[nodiscard]] MTL::Device* GetMetalDevice() const { return _device.get(); }
+
+	/** @brief Gets the Core Animation Metal layer
+	 * @return CA::MetalLayer* Pointer to the CA::MetalLayer used for rendering
+	 * @details Returns a pointer to the underlying CA::MetalLayer that serves as the rendering target. This allows the application to access platform-specific features or perform operations that require direct access to the Metal layer.
+	 */
+	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const { return _layer.get(); }
+
+	/** @brief Gets the Metal command queue
+	 * @return MTL::CommandQueue* Pointer to the MTL::CommandQueue used for issuing rendering commands
+	 * @details Returns a pointer to the underlying MTL::CommandQueue used for issuing rendering commands. This allows the application to access platform-specific features or perform operations that require direct access to the Metal command queue.
+	 */
+	[[nodiscard]] MTL::CommandQueue* GetMetalCommandQueue() const { return _commandQueue.get(); }
+
+	/** @brief Gets the Metal render pass descriptor
+	 * @return MTL::RenderPassDescriptor* Pointer to the MTL::RenderPassDescriptor used for configuring render passes
+	 * @details Returns a pointer to the underlying MTL::RenderPassDescriptor used for configuring render passes. This allows the application to access platform-specific features or perform operations that require direct access to the Metal render pass descriptor.
+	 */
+	[[nodiscard]] MTL::RenderPassDescriptor* GetMetalRenderPassDescriptor() const { return _renderPassDescriptor.get(); }
 
 RENDER_API_TYPE(Metal)
 

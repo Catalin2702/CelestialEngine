@@ -93,15 +93,16 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0 ? time - _time : 1.0f / 60.0f;
 	_time = time;
 
-	_frameContext.drawable = NS::TransferPtr(static_cast<CA::MetalLayer*>(_metalContext->GetNativeLayer())->nextDrawable());
+	_frameContext.drawable = NS::TransferPtr(_metalContext->GetMetalLayer()->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
+		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::TransferPtr(static_cast<MTL::CommandQueue*>(_metalContext->GetNativeCommandQueue())->commandBuffer());
+	_frameContext.commandBuffer = NS::TransferPtr(_metalContext->GetMetalCommandQueue()->commandBuffer());
 
-	const auto renderPassDescriptor = static_cast<MTL::RenderPassDescriptor*>(_metalContext->GetRenderPassDescriptor());
+	const auto renderPassDescriptor = _metalContext->GetMetalRenderPassDescriptor();
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
@@ -125,8 +126,7 @@ void ImGuiMetalLayer::End() {
 	ImGui::Render();
 	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
 
-	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
+	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}

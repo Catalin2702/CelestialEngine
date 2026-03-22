@@ -102,7 +102,7 @@ public:
 	 * @details Pure virtual method that returns a pointer to the underlying native render pass descriptor or equivalent structure used for configuring render passes.
 	 *			This allows the application to access platform-specific features or perform operations that require direct access to the render pass configuration.
 	 */
-	[[nodiscard]] virtual void* GetRenderPassDescriptor() const = 0;
+	[[nodiscard]] virtual void* GetNativeRenderPassDescriptor() const = 0;
 
 public:
 	/**
