@@ -35,6 +35,8 @@ public:
 	void setWantsLayer(bool wantsLayer) const;
 	void setCallbacks(const RenderViewCallbacks& callbacks, void* userData) const;
 	[[nodiscard]] void* getUserData() const;
+	[[nodiscard]] CGRect frame() const;
+	[[nodiscard]] void* layer() const;
 };
 
 _NS_INLINE NS::RenderView* NS::RenderView::alloc() {
@@ -63,6 +65,14 @@ _NS_INLINE void NS::RenderView::setCallbacks(const RenderViewCallbacks& callback
 
 _NS_INLINE void* NS::RenderView::getUserData() const {
 	return Object::sendMessage< void* >( this, _APPKIT_PRIVATE_SEL( getUserData_ ) );
+}
+
+_NS_INLINE CGRect NS::RenderView::frame() const {
+	return Object::sendMessage< CGRect >( this, _APPKIT_PRIVATE_SEL( frame ) );
+}
+
+_NS_INLINE void* NS::RenderView::layer() const {
+	return Object::sendMessage< void* >( this, _APPKIT_PRIVATE_SEL( layer ) );
 }
 
 }

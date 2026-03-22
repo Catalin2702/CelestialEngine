@@ -9,6 +9,8 @@
 
 #include "AppKit/View/RenderView.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 @interface RenderView()
 {
 	NSTrackingArea* _trackingArea;
@@ -32,6 +34,24 @@
 
 - (BOOL)isFlipped {
 	return YES;
+}
+
+- (BOOL)wantsLayer {
+	return YES;
+}
+
+- (BOOL)isOpaque {
+	return YES;
+}
+
+- (BOOL)wantsUpdateLayer {
+	return YES;
+}
+
+- (CALayer*)makeBackingLayer {
+	CAMetalLayer* layer = [CAMetalLayer layer];
+	layer.opaque = YES;
+	return layer;
 }
 
 - (void)updateTrackingAreas {

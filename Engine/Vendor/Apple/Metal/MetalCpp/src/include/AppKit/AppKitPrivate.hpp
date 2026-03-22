@@ -141,11 +141,17 @@ _APPKIT_PRIVATE_DEF_SEL( initWithContentRect_styleMask_backing_defer_,
 _APPKIT_PRIVATE_DEF_SEL( initWithFrame_,
 						"initWithFrame:" );
 
+_APPKIT_PRIVATE_DEF_SEL( frame,
+						"frame" );
+
 _APPKIT_PRIVATE_DEF_SEL( initWithTitle_,
 						"initWithTitle:" );
 
 _APPKIT_PRIVATE_DEF_SEL( setLayer_,
 						"setLayer:" );
+
+_APPKIT_PRIVATE_DEF_SEL( layer,
+						"layer" );
 
 _APPKIT_PRIVATE_DEF_SEL( setOpaque_,
 						"setOpaque:" );
