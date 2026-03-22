@@ -162,7 +162,7 @@ public:
 	 */
 	void SetVSync(bool enabled) override;
 
-	WINDOW_API_TYPE(GLFW)
+	void GetReady() override;
 
 protected:
 	/**
@@ -214,6 +214,9 @@ private:
 	 *			the GLFW window when there are no more references to it
 	 */
 	void _Shutdown() override;
+
+public:
+	WINDOW_API_TYPE(GLFW)
 
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime

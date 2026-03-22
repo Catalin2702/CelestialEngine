@@ -38,8 +38,8 @@ namespace CE::Layers {
 class ImGuiMetalLayer final: public I_ImGuiLayer {
 
 	struct MetalFrameContext {
-		NS::SharedPtr<CA::MetalDrawable> drawable = nullptr;							///< Pointer to the Metal drawable
-		NS::SharedPtr<MTL::CommandBuffer> commandBuffer = nullptr;					///< Pointer to the Metal command buffer
+		NS::SharedPtr<CA::MetalDrawable> drawable = nullptr;			///< Pointer to the Metal drawable
+		NS::SharedPtr<MTL::CommandBuffer> commandBuffer = nullptr;		//< Pointer to the Metal command buffer
 		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder
 	};
 

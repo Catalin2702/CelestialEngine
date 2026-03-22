@@ -178,6 +178,8 @@ public:
 	 */
 	virtual void SetVSyncCallback(const VSyncCallbackFn& callback) = 0;
 
+	virtual void GetReady() = 0;
+
 protected:
 	/**
 	 * @brief Sets internal callback functions for input/output events

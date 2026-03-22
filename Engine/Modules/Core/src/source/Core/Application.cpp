@@ -229,7 +229,7 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 	InitImGuiLayer(windowProps);
 
 	_SetWindowCallbacks();
-	_window->SetVSync(windowProps.VSync);
+	_window->GetReady();
 }
 
 void Application::_Init() {

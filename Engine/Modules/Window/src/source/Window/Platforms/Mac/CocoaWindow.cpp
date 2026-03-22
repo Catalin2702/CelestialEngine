@@ -186,6 +186,11 @@ void CocoaWindow::SetVSync(const bool enabled) {
 	}
 }
 
+void CocoaWindow::GetReady() {
+	SetVSync(_data.VSync);
+	_UpdateLayerSize();
+}
+
 void CocoaWindow::_Init() {
 	_InitWindow();
 

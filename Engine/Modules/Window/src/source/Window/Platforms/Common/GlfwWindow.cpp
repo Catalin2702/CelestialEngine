@@ -237,6 +237,14 @@ void GlfwWindow::SetVSync(const bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
 }
 
+void GlfwWindow::GetReady() {
+	if (not _st_GLFWInitialized) {
+		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
+		return;
+	}
+	SetVSync(_data.VSync);
+}
+
 void GlfwWindow::_Init() {
 	_InitWindow();
 

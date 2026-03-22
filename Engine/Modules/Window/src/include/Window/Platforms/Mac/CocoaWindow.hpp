@@ -185,7 +185,12 @@ public:
 	 */
 	void SetVSync(bool enabled) override;
 
-	WINDOW_API_TYPE(Cocoa)
+	/**
+	 * @brief Prepares the window for rendering
+	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
+	 *			For example, it can be used to ensure that the Metal layer is properly configured and ready for rendering.
+	 */
+	void GetReady() override;
 
 protected:
 	/**
@@ -227,6 +232,9 @@ private:
 	 * @details This method is called whenever the window is resized to ensure that the Metal layer's drawable area matches the new window size, allowing for correct rendering.
 	 */
 	void _UpdateLayerSize() const;
+
+public:
+	WINDOW_API_TYPE(Cocoa)
 
 private:
 	Types::Window::WindowProps _data;							///< Window data including event callback

@@ -112,7 +112,7 @@ void ImGuiMetalLayer::Begin() {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor);
-	// Apple::Bridge::ImGuiOSXNewFrame(_metalContext.window->GetContentView());
+	Apple::Bridge::ImGuiOSXNewFrame(_cocoaWindow->GetCocoaView());
 
 	ImGui::NewFrame();
 	_currentFrameStarted = true;
@@ -123,7 +123,7 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
+	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -133,11 +133,12 @@ void ImGuiMetalLayer::End() {
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
+
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
 		_renderSemaphore.release();
 	});
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
 	_frameContext.commandBuffer->commit();
 }
 
@@ -172,7 +173,7 @@ void ImGuiMetalLayer::_Init() {
 
 		Apple::Bridge::ImGuiMetalInit(_metalContext->GetNativeDevice());
 
-		if (not Apple::Bridge::ImGuiOSXInit(_metalContext->GetNativeLayer())) {
+		if (not Apple::Bridge::ImGuiOSXInit(_cocoaWindow->GetCocoaView())) {
 			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
