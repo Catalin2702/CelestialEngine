@@ -123,7 +123,7 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
+	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -133,7 +133,7 @@ void ImGuiMetalLayer::End() {
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
 
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
 		_renderSemaphore.release();
