@@ -14,6 +14,7 @@
 
 #include "Window/I_Window.hpp"
 
+#include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
 #include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -41,7 +42,7 @@ namespace CE::Window {
  *			that works on Windows, Linux, and macOS. It provides a complete windowing
  *			system with event handling, VSync control, and OpenGL context management.
  */
-class GlfwWindow final: public I_Window {
+class CE_API GlfwWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor

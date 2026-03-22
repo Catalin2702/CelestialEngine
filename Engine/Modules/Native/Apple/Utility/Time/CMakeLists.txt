@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-17
+# Updated: 2026-03-22
 #
 
 set(HEADERS
@@ -30,6 +30,10 @@ target_link_libraries(CE_AppleUtility_Time PUBLIC
 
 target_include_directories(CE_AppleUtility_Time PUBLIC
 	src/include
+)
+
+target_compile_definitions(CE_AppleUtility_Time PRIVATE
+	CE_DEFINE_EXPORTS
 )
 
 ce_copy_to_last(CE_AppleUtility_Time)

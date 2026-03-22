@@ -156,7 +156,7 @@ public:
 	 * @return Application& Reference to the application instance
 	 * @details Returns the current application instance (singleton pattern)
 	 */
-	[[nodiscard]] static Application& Get() { return *_instance; }
+	[[nodiscard]] static Application& Get();
 
 	/**
 	 * @brief Gets the application's window

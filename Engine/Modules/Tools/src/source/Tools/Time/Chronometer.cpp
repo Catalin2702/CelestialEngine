@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-01
+// Updated: 2026-03-22
 //
 
 #include "Tools/Time/Chronometer.hpp"
@@ -52,11 +52,13 @@ void Chronometer::Stop() {
  *			then logs it using the core logger with rounded values for better readability
  */
 void Chronometer::PrintResult() const {
+#ifdef CE_DEBUG
 	const auto start = std::chrono::time_point_cast<std::chrono::milliseconds>(_start).time_since_epoch().count();
 	const auto end = std::chrono::time_point_cast<std::chrono::milliseconds>(_end).time_since_epoch().count();
 	const auto duration = end - start;
 
 	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", duration * .001);
+#endif
 }
 
 }

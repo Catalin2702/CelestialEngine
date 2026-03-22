@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -13,6 +13,8 @@
 #define CE_INPUT_MAC_COCOAINPUT_HPP
 
 #include "Input/I_Input.hpp"
+
+#include "Define/DynamicLinker.hpp"
 
 #include <utility>
 
@@ -23,7 +25,7 @@ namespace NS {
 namespace CE::Input {
 
 
-class CocoaInput final: public I_Input {
+class CE_API CocoaInput final: public I_Input {
 protected:
 	[[nodiscard]] bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) override;
 	[[nodiscard]] bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) override;

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 set(HEADERS
@@ -45,6 +45,10 @@ target_link_libraries(CE_Types PUBLIC
 
 target_include_directories(CE_Types PUBLIC
 	src/include
+)
+
+target_compile_definitions(CE_Types PRIVATE
+	CE_DEFINE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

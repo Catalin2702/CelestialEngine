@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -51,7 +51,7 @@ public:
 	 *			the singleton instance to perform the actual check. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static bool IsKeyPressed(const KeyCode::KeyboardKeyCode keyCode) { return _instance->_IsKeyPressedImpl(keyCode); }
+	static bool IsKeyPressed(KeyCode::KeyboardKeyCode keyCode);
 	/**
 	 * @brief Checks if a specific mouse button is currently pressed
 	 * @param buttonCode The button code of the mouse button to check
@@ -60,7 +60,7 @@ public:
 	*			method is static and relies on the singleton instance to perform the check. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static bool IsMouseButtonPressed(const KeyCode::MouseButtonCode buttonCode) { return _instance->_IsMouseButtonPressedImpl(buttonCode); }
+	static bool IsMouseButtonPressed(KeyCode::MouseButtonCode buttonCode);
 	/**
 	 * @brief Gets the current X position of the mouse cursor
 	 * @return float The X coordinate of the mouse cursor
@@ -68,7 +68,7 @@ public:
 	*			on the singleton instance to perform the query. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static float GetMouseX() { return _instance->_GetMouseXImpl(); }
+	static float GetMouseX();
 	/**
 	 * @brief Gets the current Y position of the mouse cursor
 	 * @return float The Y coordinate of the mouse cursor
@@ -76,7 +76,7 @@ public:
 	*			is static and relies on the singleton instance. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static float GetMouseY() { return _instance->_GetMouseYImpl(); }
+	static float GetMouseY();
 	/**
 	 * @brief Gets the current X and Y position of the mouse cursor as a vector
 	 * @return std::pair<float, float> A vector containing the X and Y coordinates of the mouse cursor
@@ -84,7 +84,7 @@ public:
 	*			is static and relies on the singleton instance to perform the query. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static std::pair<float, float> GetMouseXY() { return _instance->_GetMouseXYImpl(); }
+	static std::pair<float, float> GetMouseXY();
 
 public:
 	/**
@@ -92,9 +92,7 @@ public:
 	 * @return Input* Pointer to the Input instance
 	 * @details Provides access to the global Input instance for handling input events throughout the application
 	 */
-	static I_Input* Get() {
-		return _instance;
-	}
+	static I_Input* Get();
 
 protected:
 	/**

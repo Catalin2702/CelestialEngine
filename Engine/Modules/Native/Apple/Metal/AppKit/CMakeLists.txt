@@ -57,5 +57,9 @@ target_include_directories(CE_AppKit PUBLIC
 	src/include
 )
 
+target_compile_definitions(CE_AppKit PRIVATE
+	CE_DEFINE_EXPORTS
+)
+
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_AppKit)

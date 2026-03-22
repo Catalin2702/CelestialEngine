@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_TOOLS_CMD_WINDOW_HPP
 #define CE_TOOLS_CMD_WINDOW_HPP
 
+#include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 /**
@@ -35,7 +36,7 @@ namespace CE::Tools::CMD {
  *			Returns default window properties if no arguments are provided or if
  *			parsing fails. Uses case-insensitive matching for argument names.
  */
-Types::Window::WindowProps GetWindowProps(int argc, const char* argv[]);
+CE_API Types::Window::WindowProps GetWindowProps(int argc, const char* argv[]);
 
 }
 

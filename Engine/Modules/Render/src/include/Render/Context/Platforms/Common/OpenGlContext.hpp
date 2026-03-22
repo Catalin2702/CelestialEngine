@@ -14,6 +14,7 @@
 
 #include "Render/Context/I_Context.hpp"
 
+#include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
 
 #include <utility>
@@ -29,7 +30,7 @@ namespace CE::Render::Context {
  *			Manages an OpenGL context associated with a GLFW window, allowing for cross-platform rendering using OpenGL.
  *			This class is designed for applications that want to use OpenGL for rendering across multiple platforms using GLFW for window management.
  */
-class OpenGlContext final: public I_Context {
+class CE_API OpenGlContext final: public I_Context {
 public:
 	/**
 	 * @brief Constructor

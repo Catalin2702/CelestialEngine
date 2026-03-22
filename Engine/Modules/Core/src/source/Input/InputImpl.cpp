@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-03-22
 //
 
 #include "Input/I_Input.hpp"
@@ -17,9 +17,36 @@
 #include "Input/Platforms/Mac/CocoaInput.hpp"
 #endif
 
+#include <cassert>
+
 namespace CE::Input {
 
 I_Input* I_Input::_instance = nullptr;
+
+bool I_Input::IsKeyPressed(const KeyCode::KeyboardKeyCode keyCode) {
+	return _instance->_IsKeyPressedImpl(keyCode);
+}
+
+bool I_Input::IsMouseButtonPressed(const KeyCode::MouseButtonCode buttonCode) {
+	return _instance->_IsMouseButtonPressedImpl(buttonCode);
+}
+
+float I_Input::GetMouseX() {
+	return _instance->_GetMouseXImpl();
+}
+
+float I_Input::GetMouseY() {
+	return _instance->_GetMouseYImpl();
+}
+
+std::pair<float, float> I_Input::GetMouseXY() {
+	return _instance->_GetMouseXYImpl();
+}
+
+I_Input* I_Input::Get() {
+	assert(_instance &&  "I_Input::Get: Input system not initialized! Call InitInput() before using.");
+	return _instance;
+}
 
 void InitInput(const Types::Window::WindowApi windowApi) {
 	if (I_Input::_instance) {

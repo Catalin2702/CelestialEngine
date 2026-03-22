@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-20
+# Updated: 2026-03-22
 #
 
 set(HEADERS
@@ -13,11 +13,11 @@ set(HEADERS
 	src/include/Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-	src/include/Input/Platforms/Common/GlfwInput.hpp
-	src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp
-#		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.hpp
+		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp
+		src/include/Input/Platforms/Mac/CocoaInput.hpp
 	>
-	src/include/Input/Platforms/Mac/CocoaInput.hpp
+
+	src/include/Input/Platforms/Common/GlfwInput.hpp
 )
 
 set(INTERFACES
@@ -34,12 +34,11 @@ set(SOURCES
 
 
 	$<$<PLATFORM_ID:Darwin>:
-	src/source/Input/Platforms/Common/GlfwInput.cpp
-	src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.cpp
-#		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayer.cpp
+		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.cpp
+		src/source/Input/Platforms/Mac/CocoaInput.cpp
 	>
 	src/source/Input/InputImpl.cpp
-	src/source/Input/Platforms/Mac/CocoaInput.cpp
+	src/source/Input/Platforms/Common/GlfwInput.cpp
 )
 
 add_library(CE_Core SHARED
@@ -55,7 +54,6 @@ set_target_properties(CE_Core PROPERTIES
 # Modules
 target_link_libraries(CE_Core PUBLIC
 	CE_Config
-	CE_AppleUtility
 	CE_Define
 	CE_Events
 	CE_Glfw
@@ -70,6 +68,7 @@ target_link_libraries(CE_Core PUBLIC
 # Platform-specific
 target_link_libraries(CE_Core PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
+		CE_AppleUtility
 		CE_MetalCpp
 	>
 )
@@ -85,6 +84,9 @@ target_include_directories(CE_Core PUBLIC
 	src/interface
 )
 
+target_compile_definitions(CE_Core PRIVATE
+	CE_DEFINE_EXPORTS
+)
+
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_Core)
-

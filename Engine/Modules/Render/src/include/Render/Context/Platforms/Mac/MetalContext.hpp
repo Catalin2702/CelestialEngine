@@ -14,6 +14,7 @@
 
 #include "Render/Context/I_Context.hpp"
 
+#include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
 
 #include <Foundation/Foundation.hpp>
@@ -39,7 +40,7 @@ class CocoaWindow;
 
 namespace CE::Render::Context {
 
-struct MetalContextProps {
+struct CE_API MetalContextProps {
 	Window::CocoaWindow* window = nullptr;
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 };
@@ -51,7 +52,7 @@ struct MetalContextProps {
  *			Manages Metal resources such as the device, command queue, and render layer. This class is designed
  *			for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class MetalContext final: public I_Context {
+class CE_API MetalContext final: public I_Context {
 public:
 	/**
 	 * @brief Constructor

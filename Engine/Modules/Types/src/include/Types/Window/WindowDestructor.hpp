@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-22
 //
 
 #pragma once
 
 #ifndef CE_TYPES_WINDOW_WINDOWDESTRUCTOR_HPP
 #define CE_TYPES_WINDOW_WINDOWDESTRUCTOR_HPP
+
+#include "Define/DynamicLinker.hpp"
 
 #include <memory>
 
@@ -31,7 +33,7 @@ namespace CE::Types::Window {
  * @details Provides proper cleanup for GLFW windows when used with std::unique_ptr.
  *			Ensures that glfwDestroyWindow is called when the window goes out of scope.
  */
-struct GLFWwindowDestructor {
+struct CE_API GLFWwindowDestructor {
 	/**
 	 * @brief Destroys the GLFW window
 	 * @param window Pointer to the GLFW window to destroy

@@ -19,6 +19,8 @@ set(CE_LAST_BUILD_DIR "${CMAKE_SOURCE_DIR}/Binaries/Last")
 
 set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release)
 
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
 if (NOT TARGET CE_Config)
 	add_library(CE_Config INTERFACE)
 
@@ -75,14 +77,31 @@ if (NOT TARGET CE_Config)
 				/MDd
 				/Od
 				/Zi
+				/W4
+				/WX
 			>
 			$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:
 				/MD
 				/O2
 			>
-			/W4
-			/WX
+
 			/permissive-
+		>
+	)
+
+	target_link_options(CE_Config INTERFACE
+		$<$<PLATFORM_ID:Windows>:
+			$<$<CONFIG:Debug>:
+				/DEFAULTLIB:msvcrtd
+				/DEFAULTLIB:vcruntimed
+				/DEFAULTLIB:ucrtd
+			>
+			$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:
+				/DEFAULTLIB:msvcrt
+				/DEFAULTLIB:vcruntime
+				/DEFAULTLIB:ucrt
+			>
+			/VERBOSE
 		>
 	)
 endif ()

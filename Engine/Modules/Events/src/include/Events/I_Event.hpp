@@ -160,7 +160,7 @@ protected:
  *			appropriate handlers based on the event's concrete type. It ensures
  *			type safety by checking the event type at runtime before casting.
  */
-class EventDispatcher {
+class CE_API EventDispatcher {
 template <typename T>
 using EventFn = std::function<bool(T&)>;
 

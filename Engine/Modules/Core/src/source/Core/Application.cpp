@@ -115,6 +115,11 @@ void Application::PopOverlay(Layers::I_Layer* overlay) {
 	_layerStack.PopOverlay(overlay);
 }
 
+Application& Application::Get() {
+	assert(_instance && "Application::Get: No application instance exists!");
+	return *_instance;
+}
+
 void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("Application::_Init: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
@@ -126,14 +131,14 @@ void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
 	switch (windowProps.windowApi) {
 		case TypeWindow::WindowApi::GLFW: {
 			window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<Window::GlfwWindow>(windowProps)
+				Window::I_Window::NewWindow<Window::GlfwWindow>(windowProps)
 			);
 			break;
 		}
 #ifdef CE_PLATFORM_MACOS
 		case TypeWindow::WindowApi::Cocoa: {
 			window = std::unique_ptr<Window::I_Window>(
-				Window::I_Window::CreateWindow<Window::CocoaWindow>(windowProps)
+				Window::I_Window::NewWindow<Window::CocoaWindow>(windowProps)
 			);
 			break;
 		}

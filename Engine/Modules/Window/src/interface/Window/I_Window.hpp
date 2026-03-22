@@ -151,7 +151,7 @@ public:
 	 *			of the specified type with the given properties
 	 */
 	template<std::derived_from<I_Window> T>
-	static I_Window* CreateWindow(const Types::Window::WindowProps& windowProps) {
+	static I_Window* NewWindow(const Types::Window::WindowProps& windowProps) {
 		auto window = std::make_unique<T>(windowProps);
 		return window.release();
 	}

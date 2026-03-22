@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-22
 //
 
 #pragma once
 
 #ifndef CE_TOOLS_TIME_TIMER_HPP
 #define CE_TOOLS_TIME_TIMER_HPP
+
+#include "Define/DynamicLinker.hpp"
 
 #include <chrono>
 
@@ -30,7 +32,7 @@ namespace CE::Tools::Time {
  *			printing the elapsed time. Only active in debug builds for performance
  *			profiling without impacting release builds.
  */
-class Chronometer {
+class CE_API Chronometer {
 public:
 	/**
 	 * @brief Constructor - starts the timer

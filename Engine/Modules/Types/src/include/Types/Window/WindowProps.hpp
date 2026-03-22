@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -12,11 +12,13 @@
 #ifndef CE_TYPES_WINDOW_WINDOWPROPS_HPP
 #define CE_TYPES_WINDOW_WINDOWPROPS_HPP
 
+#include "Define/DynamicLinker.hpp"
+#include "Types/Render/Render.hpp"
+
 #include <functional>
-#include <sstream>
+#include <ostream>
 #include <string>
 
-#include "Types/Render/Render.hpp"
 
 namespace CE::Events {
 class Event;
@@ -50,7 +52,7 @@ enum class WindowApi: uint8_t {
  * @details Contains all necessary information to create and configure a window,
  *			including title, dimensions, and VSync setting.
  */
-struct WindowProps {
+struct CE_API WindowProps {
 	std::string title;								///< Window title displayed in the title bar
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
@@ -92,49 +94,6 @@ struct WindowProps {
 		title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 };
 
-// /**
-//  * @struct WindowData
-//  * @brief Extended window properties including event callback
-//  * @tparam T Event type
-//  * @details Extends WindowProps with an event callback function. Used internally
-//  *			by window implementations to store window state and event handling.
-//  */
-// template<class T>
-// struct WindowData: WindowProps {
-// 	CallbackFn<T> EventCallback;					///< Callback function for event handling
-//
-// 	/**
-// 	 * @brief Default constructor
-// 	 * @details Initializes the WindowData structure with default values by calling
-// 	 *			the base WindowProps default constructor. The EventCallback is
-// 	 *			default-initialized to an empty function.
-// 	 */
-// 	WindowData() = default;
-//
-// 	/**
-// 	 * @brief Constructor
-// 	 * @param title Window title string
-// 	 * @param width Window width in pixels
-// 	 * @param height Window height in pixels
-// 	 * @param VSync Enable or disable vertical synchronization
-// 	 * @param graphicsApi Graphics API to use for rendering
-// 	 * @param windowApi Windowing API to use for window management
-// 	 * @details Initializes the WindowData structure with the provided values by
-// 	 *			calling the base WindowProps constructor.
-// 	 *			This structure is used internally by window implementations to store both configuration and event callback information.
-// 	 */
-// 	WindowData(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi)
-// 		: WindowProps(title, width, height, VSync, graphicsApi, windowApi) {}
-// 	/**
-// 	 * @brief Constructor from WindowProps
-// 	 * @param props WindowProps structure to initialize from
-// 	 * @details Initializes the WindowData structure with the provided values by
-// 	 *			calling the base WindowProps constructor.
-// 	 *			This structure is used internally by window implementations to store both configuration and event callback information.
-// 	 */
-// 	WindowData(const WindowProps& props): WindowProps(props) {}
-// };
-
 inline std::string format_as(const WindowApi& event) {
 	switch (event) {
 	case WindowApi::None:
@@ -163,7 +122,7 @@ inline std::ostream& operator<<(std::ostream& os, const WindowApi& event) {
  * @details This function checks if the given window API is supported on the current platform.
  *			For example, Cocoa is only supported on macOS, while Win32 is only supported on Windows.
  */
-bool IsWindowApiSupported(const WindowApi& api);
+CE_API bool IsWindowApiSupported(const WindowApi& api);
 
 /**
  * @brief Checks if the specified graphics API is compatible with the specified window API
@@ -173,7 +132,7 @@ bool IsWindowApiSupported(const WindowApi& api);
  * @details This function checks if the given graphics API can be used with the given window API.
  *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
  */
-bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi);
+CE_API bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 

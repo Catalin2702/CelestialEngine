@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-13
+// Updated: 2026-03-22
 //
 
 #pragma once
 
 #ifndef CE_TYPES_BUILD_BUILD_HPP
 #define CE_TYPES_BUILD_BUILD_HPP
+
+#include "Define/DynamicLinker.hpp"
 
 #include <string>
 
@@ -36,8 +38,8 @@ inline BuildType GetCurrentBuildType() {
 
 }
 
-std::string GetBuildTypeString(BuildType type);
-std::string GetCurrentBuildTypeString();
+CE_API std::string GetBuildTypeString(BuildType type);
+CE_API std::string GetCurrentBuildTypeString();
 
 }
 

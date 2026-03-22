@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -67,6 +67,10 @@ target_link_libraries(CE_Engine PUBLIC
 target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
+)
+
+target_compile_definitions(CE_Engine PRIVATE
+	CE_DEFINE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

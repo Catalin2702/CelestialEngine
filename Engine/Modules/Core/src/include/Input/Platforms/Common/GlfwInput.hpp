@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-17
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -13,6 +13,8 @@
 #define CE_INPUT_COMMON_GLFWINPUT_HPP
 
 #include "Input/I_Input.hpp"
+
+#include "Define/DynamicLinker.hpp"
 
 #include <utility>
 
@@ -28,7 +30,7 @@ namespace CE::Input {
  *			Caches a pointer to the GLFW window for efficient input state queries.
  *			This class is instantiated as the singleton instance of I_Input.
  */
-class GlfwInput final: public I_Input {
+class CE_API GlfwInput final: public I_Input {
 protected:
 	[[nodiscard]] bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) override;
 	[[nodiscard]] bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) override;

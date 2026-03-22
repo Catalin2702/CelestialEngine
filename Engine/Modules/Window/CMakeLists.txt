@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 set(HEADERS
@@ -13,8 +13,7 @@ set(HEADERS
 
 list(APPEND HEADERS
 	$<$<PLATFORM_ID:Darwin>:
-	src/include/Window/Platforms/Mac/CocoaWindow.hpp
-#		src/include/Window/Platforms/Mac/MetalGlfwWindow.hpp
+		src/include/Window/Platforms/Mac/CocoaWindow.hpp
 	>
 )
 
@@ -29,8 +28,7 @@ set(SOURCES
 # Platform-specific
 list(APPEND SOURCES
 	$<$<PLATFORM_ID:Darwin>:
-	src/source/Window/Platforms/Mac/CocoaWindow.cpp
-#		src/source/Window/Platforms/Mac/MetalGlfwWindow.cpp
+		src/source/Window/Platforms/Mac/CocoaWindow.cpp
 	>
 )
 
@@ -72,6 +70,9 @@ target_include_directories(CE_Window PUBLIC
 	src/template
 )
 
+target_compile_definitions(CE_Window PRIVATE
+	CE_DEFINE_EXPORTS
+)
+
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_Window)
-

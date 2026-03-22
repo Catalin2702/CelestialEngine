@@ -12,6 +12,8 @@
 #ifndef CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 #define CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
 #include <ostream>
@@ -118,7 +120,7 @@ inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned in
  * @details Provides a human-readable string representation of the KeyCode enum value. This is useful for debugging, logging, or displaying key names in the user interface.
  *			The function uses a switch statement to map each KeyCode value to its corresponding string name. If the KeyCode does not match any known value, it returns "Unknown".
  */
-const char* ToString(KeyboardKeyCode key);
+CE_API const char* ToString(KeyboardKeyCode key);
 
 /**
  * @brief Converts a GLFW key code to a KeyCode enum value
@@ -129,7 +131,7 @@ const char* ToString(KeyboardKeyCode key);
  *			The function uses a switch statement to match known GLFW key codes to their KeyCode equivalents.
  *			If the provided keycode does not match any known GLFW key code, it returns KeyCode::Unknown.
  */
-KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
+CE_API KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
 
 /**
  * @brief Converts a KeyCode enum value to a GLFW key code
@@ -140,7 +142,7 @@ KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
  *			The function uses a switch statement to match known KeyCode enum values to their GLFW integer equivalents.
  *			If the provided keycode does not match any known KeyCode value, it returns -1 to indicate an invalid key code for GLFW.
  */
-int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
+CE_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  * @brief Converts a KeyCode enum value to an ImGuiKey
@@ -151,19 +153,19 @@ int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
  *			The function uses a switch statement to match known KeyCode enum values to their ImGuiKey equivalents.
  *			If the provided keycode does not match any known KeyCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that key.
  */
-ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
+CE_API ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
  * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
  */
-KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
+CE_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
 
 /**
  * @brief Converts CE::KeyCode::KeyboardKeyCode to macOS/Cocoa virtual key codes
  * @details Maps the engine's keyboard key codes to NSEvent keyCode values
  */
-unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
+CE_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  *  @brief Formats a KeyboardKeyCode enum value as a string
@@ -214,7 +216,7 @@ inline unsigned int ToUInt(KeyboardCharsCode key) { return static_cast<unsigned 
  * @details Provides a human-readable string representation of the KeyboardCharsCode enum value. This is useful for debugging, logging, or displaying character names in the user interface.
  *			The function uses a switch statement to map each KeyboardCharsCode value to its corresponding string name. If the KeyboardCharsCode does not match any known value, it returns "Unknown".
  */
-const char* ToString(KeyboardCharsCode key);
+CE_API const char* ToString(KeyboardCharsCode key);
 
 /**
  * @brief Converts a GLFW character code to a KeyboardCharsCode enum value
@@ -225,7 +227,7 @@ const char* ToString(KeyboardCharsCode key);
  *			The function uses a switch statement to match known GLFW character codes to their KeyboardCharsCode equivalents.
  *			If the provided charCode does not match any known GLFW character code, it returns KeyboardCharsCode::Unknown.
  */
-KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
+CE_API KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
 
 /**
  * @brief Converts a KeyboardCharsCode enum value to a GLFW character code
@@ -236,7 +238,7 @@ KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode);
  *			The function uses a switch statement to match known KeyboardCharsCode enum values to their GLFW unsigned integer equivalents.
  *			If the provided charCode does not match any known KeyboardCharsCode value, it returns 0 to indicate an invalid character code for GLFW.
  */
-unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
+CE_API unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
 
 /**
  * @brief Converts a KeyboardCharsCode enum value to an ImGuiKey
@@ -247,13 +249,13 @@ unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
  *			The function uses a switch statement to match known KeyboardCharsCode enum values to their ImGuiKey equivalents.
  *			If the provided charCode does not match any known KeyboardCharsCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that character code.
  */
-unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
+CE_API unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
 
 /**
  * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
  * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
  */
-KeyboardCharsCode KeyboardCharsCodeFromCocoa(unsigned short keyCode);
+CE_API KeyboardCharsCode KeyboardCharsCodeFromCocoa(unsigned short keyCode);
 
 inline KeyboardCharsCode KeyboardCharsCodeFromChar(const char character) {
 	return static_cast<KeyboardCharsCode>(static_cast<unsigned char>(character));

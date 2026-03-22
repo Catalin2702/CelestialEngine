@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-26
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-03-22
 #
 
 set(HEADERS
@@ -49,6 +49,10 @@ target_compile_options(CE_Bridge
 
 target_include_directories(CE_Bridge PUBLIC
 	src/include
+)
+
+target_compile_definitions(CE_Bridge PRIVATE
+	CE_DEFINE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

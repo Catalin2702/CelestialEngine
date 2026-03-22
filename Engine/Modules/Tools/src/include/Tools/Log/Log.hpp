@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -59,7 +59,7 @@ public:
 	 * @details The core logger is used by the engine internals. Access it via
 	 *			the CE_CORE_* logging macros (CE_CORE_INFO, CE_CORE_ERROR, etc.).
 	 */
-	static std::shared_ptr<spdlog::logger>& GetCoreLogger() {return _s_coreLogger; }
+	static std::shared_ptr<spdlog::logger>& GetCoreLogger();
 
 	/**
 	 * @brief Gets the client logger instance
@@ -67,7 +67,7 @@ public:
 	 * @details The client logger is used by client applications. Access it via
 	 *			the CE_* logging macros (CE_INFO, CE_ERROR, etc.).
 	 */
-	static std::shared_ptr<spdlog::logger>& GetClientLogger() {return _s_clientLogger; }
+	static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
 private:
 	static std::shared_ptr<spdlog::logger> _s_coreLogger;	///< Logger for engine core messages

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-17
+# Updated: 2026-03-22
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -40,3 +40,9 @@ target_include_directories(CE_AppleUtility PUBLIC
 	src/include
 	Time/src/include
 )
+
+target_compile_definitions(CE_AppleUtility PRIVATE
+	CE_DEFINE_EXPORTS
+)
+
+ce_copy_to_last(CE_AppleUtility)

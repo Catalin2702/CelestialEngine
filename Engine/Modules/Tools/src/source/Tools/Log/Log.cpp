@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-03-22
 //
 
 #include "Tools/Log/Log.hpp"
@@ -18,14 +18,6 @@ namespace CE::Tools::Log {
 std::shared_ptr<spdlog::logger> Log::_s_coreLogger;
 std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
 
-/**
- * @brief Initializes the logging system
- * @details Creates two separate console loggers with color output:
- *			- Core logger: for engine internal messages (prefix "CELESTIAL_ENGINE")
- *			- Client logger: for application messages (prefix "APP")
- *			Both loggers are configured to show timestamps, logger names, and log levels.
- *			Drops any existing loggers before creating new ones to allow reinitialization.
- */
 void Log::Init() {
 #ifndef CE_DIST
 	spdlog::set_pattern("%^[%T] %n: %v%$");
@@ -43,11 +35,6 @@ void Log::Init() {
 #endif
 }
 
-/**
- * @brief Terminates the logging system
- * @details Flushes all pending log messages, resets logger pointers,
- *			and drops all loggers from the spdlog registry.
- */
 void Log::Shutdown() {
 #ifndef CE_DIST
 	spdlog::drop("CoreLogger");
@@ -55,6 +42,14 @@ void Log::Shutdown() {
 #endif
 	_s_coreLogger.reset();
 	_s_clientLogger.reset();
+}
+
+std::shared_ptr<spdlog::logger>& Log::GetCoreLogger() {
+	return _s_coreLogger;
+}
+
+std::shared_ptr<spdlog::logger>& Log::GetClientLogger() {
+	return _s_clientLogger;
 }
 
 }

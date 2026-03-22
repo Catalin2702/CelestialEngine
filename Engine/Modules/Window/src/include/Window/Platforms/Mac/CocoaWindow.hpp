@@ -14,6 +14,7 @@
 
 #include "Window/I_Window.hpp"
 
+#include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -56,7 +57,7 @@ namespace CE::Window {
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CocoaWindow final: public I_Window {
+class CE_API CocoaWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor

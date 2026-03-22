@@ -12,6 +12,8 @@
 #ifndef CE_TYPES_KEYCODE_MOUSEKEYS_HPP
 #define CE_TYPES_KEYCODE_MOUSEKEYS_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
 #include <ostream>
@@ -74,7 +76,7 @@ inline unsigned int ToUInt(const MouseButtonCode buttonCode) { return static_cas
  *			It uses a switch statement to return the corresponding string for each defined button.
  *			If the button value is not recognized, it returns "Unknown".
  */
-const char* ToString(MouseButtonCode buttonCode);
+CE_API const char* ToString(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a GLFW mouse button code to a MouseButton enum value
@@ -85,7 +87,7 @@ const char* ToString(MouseButtonCode buttonCode);
  *			The function uses a switch statement to match known GLFW mouse button codes to their MouseButton equivalents.
  *			If the provided buttonCode does not match any known GLFW mouse button code, it returns MouseButton::Unknown.
  */
-MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
+CE_API MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to a GLFW mouse button code
@@ -96,7 +98,7 @@ MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
  *			The function uses a switch statement to match known MouseButton enum values to their GLFW integer equivalents.
  *			If the provided buttonCode does not match any known MouseButton value, it returns -1 to indicate an invalid button code for GLFW.
  */
-int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
+CE_API int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to an ImGuiKey
@@ -107,19 +109,19 @@ int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
  *			The function uses a switch statement to match known MouseButton enum values to their ImGuiKey equivalents.
  *			If the provided buttonCode does not match any known MouseButton value, it returns ImGuiKey_None to indicate that there is no valid mapping for that button.
  */
-int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
+CE_API int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts NSEvent button numbers to CE::KeyCode::MouseButtonCode
  * @details Maps the NSEvent buttonNumber to the engine's mouse button key codes
  */
-MouseButtonCode MouseButtonKeyCodeFromCocoa(int buttonNumber);
+CE_API MouseButtonCode MouseButtonKeyCodeFromCocoa(int buttonNumber);
 
 /**
  * @brief Converts CE::KeyCode::MouseButtonCode to NSEvent button numbers
  * @details Maps the engine's mouse button key codes to NSEvent buttonNumber values
  */
-int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
+CE_API int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to its string representation
