@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -47,10 +47,12 @@ struct WindowInternalCallbacks {
 using EventCallbackFn = Utility::CallbackFn<Events::I_Event>;
 
 using ContentScaleCallbackFn = Utility::CallbackFn<const std::pair<float, float>>;
+using VSyncCallbackFn = Utility::CallbackFn<const bool>;
 
 struct WindowCallbacks {
 	EventCallbackFn EventCallback;				///< Callback function for handling engine events
 	ContentScaleCallbackFn ContentScaleCallback;	///< Callback function for handling window resize events
+	VSyncCallbackFn VSyncCallback;						///< Callback function for handling VSync state changes
 
 	WindowInternalCallbacks _internalCallbacks;
 };

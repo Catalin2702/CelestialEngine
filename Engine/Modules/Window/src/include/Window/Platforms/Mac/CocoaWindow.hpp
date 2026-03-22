@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -71,12 +71,7 @@ public:
 	~CocoaWindow() override;
 
 public:
-	/**
-	 * @brief Updates the window (processes events and manages rendering)
-	 * @details This method should be called every frame to ensure the window remains responsive and updates its contents.
-	 *			It processes any pending events and can be used to trigger rendering operations.
-	 */
-	void OnUpdate() const override;
+	void OnUpdate() const override {}
 
 public:
 	/**

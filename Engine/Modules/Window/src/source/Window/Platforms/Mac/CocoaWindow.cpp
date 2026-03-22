@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
@@ -31,149 +31,6 @@ namespace CE::Window {
 static bool _st_CocoaInitialized = false;
 static int _st_CocoaWindowCount = 0;
 
-/**
- * @brief Processes NSEvent and converts it to CE events
- * @details Intercepts and processes mouse and keyboard events from Cocoa
- */
-// static void ProcessCocoaEvent(const NS::Event* event, const EventWindowData* data) {
-// 	// ReSharper disable All
-// 	if (!event or !data or !data->EventCallback)
-// 		return;
-// 	// ReSharper restore All
-//
-// 	switch (event->type()) {
-// 		// Keyboard events
-// 		case NS::EventTypeKeyDown: {
-// 			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
-// 			const bool isRepeat = event->isARepeat();
-// 			Events::KeyPressedEvent keyEvent{keyCode, isRepeat ? 1 : 0};
-// 			data->EventCallback(keyEvent);
-//
-// 			// Also generate KeyTypedEvent for character input
-// 			if (const auto* chars = event->characters()) {
-// 				if (const char* str = chars->utf8String(); str and str[0]) {
-// 					Events::KeyTypedEvent typedEvent{static_cast<KeyCode::KeyboardCharsCode>(static_cast<unsigned int>(str[0]))};
-// 					data->EventCallback(typedEvent);
-// 				}
-// 			}
-// 			break;
-// 		}
-//
-// 		case NS::EventTypeKeyUp: {
-// 			const auto keyCode = KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode());
-// 			Events::KeyReleasedEvent keyEvent{keyCode};
-// 			data->EventCallback(keyEvent);
-// 			break;
-// 		}
-//
-// 		// Mouse button events
-// 		case NS::EventTypeLeftMouseDown:
-// 		case NS::EventTypeRightMouseDown:
-// 		case NS::EventTypeOtherMouseDown: {
-// 			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
-// 			Events::MouseButtonPressedEvent mouseEvent{button};
-// 			data->EventCallback(mouseEvent);
-// 			break;
-// 		}
-//
-// 		case NS::EventTypeLeftMouseUp:
-// 		case NS::EventTypeRightMouseUp:
-// 		case NS::EventTypeOtherMouseUp: {
-// 			const auto button = KeyCode::MouseButtonKeyCodeFromCocoa(static_cast<int>(event->buttonNumber()));
-// 			Events::MouseButtonReleasedEvent mouseEvent{button};
-// 			data->EventCallback(mouseEvent);
-// 			break;
-// 		}
-//
-// 		// Mouse movement events
-// 		case NS::EventTypeMouseMoved:
-// 		case NS::EventTypeLeftMouseDragged:
-// 		case NS::EventTypeRightMouseDragged:
-// 		case NS::EventTypeOtherMouseDragged: {
-// 			const auto [x, y] = event->locationInWindow();
-// 			// Flip Y coordinate (Cocoa uses bottom-left origin, we use top-left)
-// 			const auto flippedY = static_cast<float>(data->height - y);
-// 			Events::MouseMovedEvent mouseEvent{static_cast<float>(x), flippedY};
-// 			data->EventCallback(mouseEvent);
-// 			break;
-// 		}
-//
-// 		// Scroll wheel events
-// 		case NS::EventTypeScrollWheel: {
-// 			// Use precise scrolling deltas if available, otherwise use regular deltas
-// 			float deltaX, deltaY;
-// 			if (event->hasPreciseScrollingDeltas()) {
-// 				deltaX = static_cast<float>(event->scrollingDeltaX());
-// 				deltaY = static_cast<float>(event->scrollingDeltaY());
-// 			} else {
-// 				deltaX = static_cast<float>(event->deltaX());
-// 				deltaY = static_cast<float>(event->deltaY());
-// 			}
-// 			Events::MouseScrolledEvent scrollEvent{deltaX, deltaY};
-// 			data->EventCallback(scrollEvent);
-// 			break;
-// 		}
-//
-// 		default:
-// 			// Other event types are not handled
-// 			break;
-// 	}
-// }
-//
-// /**
-//  * @brief Callback function for Cocoa window events
-//  * @details This function is called by the Cocoa bridge when window events occur
-//  */
-// static void CocoaWindowEventCallback(void* userData, const int eventType, const unsigned int width, const unsigned int height) {
-// 	auto* data = static_cast<EventWindowData*>(userData);
-// 	if (!data or !data->EventCallback)
-// 		return;
-//
-// 	switch (eventType) {
-// 		case 0: // Resize
-// 			data->width = width;
-// 			data->height = height;
-// 			{
-// 				Events::WindowResizeEvent event{width, height};
-// 				data->EventCallback(event);
-// 			}
-// 			break;
-//
-// 		case 1: // Close
-// 			{
-// 				Events::WindowCloseEvent event;
-// 				data->EventCallback(event);
-// 			}
-// 			break;
-//
-// 		case 2: // Focus gained
-// 		case 3: // Focus lost
-// 			// Could emit WindowLostFocusEvent if implemented
-// 			break;
-//
-// 		case 4: // Minimize
-// 			data->width = 0;
-// 			data->height = 0;
-// 			{
-// 				Events::WindowResizeEvent event{0, 0};
-// 				data->EventCallback(event);
-// 			}
-// 			break;
-//
-// 		case 5: // Restore
-// 			data->width = width;
-// 			data->height = height;
-// 			{
-// 				Events::WindowResizeEvent event{width, height};
-// 				data->EventCallback(event);
-// 			}
-// 			break;
-//
-// 		default:
-// 			break;
-// 	}
-// }
-
 CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
 	_data(windowProps), _window(nullptr) {
 	_Init();
@@ -181,18 +38,6 @@ CocoaWindow::CocoaWindow(const TypeWindow::WindowProps& windowProps):
 
 CocoaWindow::~CocoaWindow() {
 	_Shutdown();
-}
-
-void CocoaWindow::OnUpdate() const {
-	// Process all pending Cocoa events using the bridge
-	// Apple::Bridge::ProcessCocoaEvents([](void* userData, void* eventPtr) {
-	// 	if (!userData || !eventPtr)
-	// 		return;
-	//
-	// 	const auto* data = static_cast<EventWindowData*>(userData);
-	// 	const auto* event = static_cast<NS::Event*>(eventPtr);
-	// 	ProcessCocoaEvent(event, data);
-	// }, const_cast<EventWindowData*>(&_data));
 }
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {
@@ -345,24 +190,6 @@ void CocoaWindow::_InitWindow() {
 	}
 	_window = NS::RetainPtr(rawWindow);
 
-	// NS::View* rawView;
-	// try {
-	// 	rawView = NS::View::alloc()->init(frame);
-	// 	if (not rawView) {
-	// 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa view!");
-	// 		throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa view!");
-	// 	}
-	// }
-	// catch (const std::exception& e) {
-	// 	CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa view: {0}", e.what());
-	// 	throw;
-	// }
-	// catch (...) {
-	// 	CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
-	// 	throw;
-	// }
-	// _view = NS::RetainPtr(rawView);
-
 	NS::RenderView* rawCocoaView;
 	try {
 		rawCocoaView = NS::RenderView::alloc()->init(frame);
@@ -412,10 +239,6 @@ void CocoaWindow::_UpdateLayerSize() const {
 
 	const auto scale = GetContentScale();
 	_callbacks.ContentScaleCallback(scale);
-	// _layer->setDrawableSize({
-	// 	static_cast<float>(_data.width) * scale,
-	// 	static_cast<float>(_data.height) * scale
-	// });
 }
 
 }
