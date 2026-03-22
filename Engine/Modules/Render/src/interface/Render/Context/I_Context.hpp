@@ -56,13 +56,12 @@ public:
 
 public:
 	/**
-	 * @brief Handles changes in content scale (e.g., when the window is resized)
-	 * @param scale New content scale as a pair of floats (x, y)
-	 * @details Pure virtual method that updates the graphics context's viewport and related settings
-	 *			when the content scale changes, such as during window resizing. Must be implemented
-	 *			by derived classes to ensure correct rendering at different scales.
+	 * @brief Handles changes in content size (e.g., when the window is resized)
+	 * @param size New content size as a pair of floats (width, height)
+	 * @details Pure virtual method that updates the graphics context's settings when the content size changes, such as during window resizing.
+	 *			This ensures that rendering remains correct at different sizes and that the viewport and related settings are updated accordingly.
 	 */
-	virtual void HandleContentScaleChange(const std::pair<float, float>& scale) = 0;
+	virtual void HandleContentSizeChange(const std::pair<float, float>& size) = 0;
 
 	/**
 	 * @brief Handles changes in VSync state
@@ -74,9 +73,43 @@ public:
 
 public:
 	/**
+	 * @brief Gets the native graphics device or context handle
+	 * @return void* Pointer to the native graphics device or context (e.g., OpenGL context, Metal device)
+	 * @details Pure virtual method that returns a pointer to the underlying native graphics device or context.
+	 *			This allows the application to access platform-specific features or perform operations that require direct access to the native context.
+	 */
+	[[nodiscard]] virtual void* GetNativeDevice() const = 0;
+
+	/**
+	 * @brief Gets the native rendering layer or surface handle
+	 * @return void* Pointer to the native rendering layer or surface (e.g., Metal layer, OpenGL framebuffer)
+	 * @details Pure virtual method that returns a pointer to the underlying native rendering layer or surface.
+	 *			This allows the application to access platform-specific features or perform operations that require direct access to the rendering target.
+	 */
+	[[nodiscard]] virtual void* GetNativeLayer() const = 0;
+
+	/**
+	 * @brief Gets the native command queue or command list handle
+	 * @return void* Pointer to the native command queue or command list (e.g., Metal command queue, OpenGL command list)
+	 * @details Pure virtual method that returns a pointer to the underlying native command queue or command list used for issuing rendering commands.
+	 *			This allows the application to access platform-specific features or perform operations that require direct access to the command submission mechanism.
+	 */
+	[[nodiscard]] virtual void* GetNativeCommandQueue() const = 0;
+
+	/**
+	 * @brief Gets the native render pass descriptor or equivalent
+	 * @return void* Pointer to the native render pass descriptor or equivalent (e.g., Metal render pass descriptor)
+	 * @details Pure virtual method that returns a pointer to the underlying native render pass descriptor or equivalent structure used for configuring render passes.
+	 *			This allows the application to access platform-specific features or perform operations that require direct access to the render pass configuration.
+	 */
+	[[nodiscard]] virtual void* GetRenderPassDescriptor() const = 0;
+
+public:
+	/**
 	 * @brief Gets the graphics API used by this context
 	 * @return Types::Render::GraphicsApi Enum value representing the graphics API (e.g., OpenGL, Metal)
-	 * @details Pure virtual method that returns the graphics API type used by this context. This allows the application to query the context for its underlying graphics API, which can be useful for conditional rendering logic or debugging.
+	 * @details Pure virtual method that returns the graphics API type used by this context.
+	 *			This allows the application to query the context for its underlying graphics API, which can be useful for conditional rendering logic or debugging.
 	 */
 	[[nodiscard]] virtual Types::Render::GraphicsApi GetGraphicsApi() const = 0;
 };

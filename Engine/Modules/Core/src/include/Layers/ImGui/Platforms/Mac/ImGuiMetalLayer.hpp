@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-22
 //
 
 #pragma once
@@ -13,39 +13,29 @@
 #define CE_LAYERS_IMGUIMETALLAYER_HPP
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
+#include "Render/Context/Platforms/Mac/MetalContext.hpp"
+#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include <semaphore>
 #include <Foundation/Foundation.hpp>
 
 namespace CA {
+
 class MetalDrawable;
 class MetalLayer;
-}
-namespace MTL {
-class CommandBuffer;
-class CommandQueue;
-class Device;
-class RenderCommandEncoder;
-class RenderPassDescriptor;
-}
-namespace NS {
-class AutoreleasePool;
-}
-namespace CE::Window {
-class CocoaWindow;
+
 }
 
+namespace MTL {
+class CommandBuffer;
+class RenderCommandEncoder;
+
+}
 
 namespace CE::Layers {
 
+
 class ImGuiMetalLayer final: public I_ImGuiLayer {
-	struct MetalContext {
-		Window::CocoaWindow* window = nullptr;						///< Pointer to the Metal window
-		MTL::Device* metalDevice = nullptr;								///< Pointer to the Metal device
-		MTL::CommandQueue* commandQueue = nullptr;						///< Pointer to the Metal command queue
-		CA::MetalLayer* metalLayer = nullptr;							///< Pointer to the Core Animation Metal layer
-		MTL::RenderPassDescriptor* renderPassDescriptor = nullptr;		///< Pointer to the Metal render pass descriptor
-	};
 
 	struct MetalFrameContext {
 		NS::SharedPtr<CA::MetalDrawable> drawable = nullptr;							///< Pointer to the Metal drawable
@@ -89,8 +79,9 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	MetalContext _metalContext;							///< Cached Metal context for rendering
-	MetalFrameContext _frameContext;					///< Cached frame context for the current frame
+	Render::Context::MetalContext* _metalContext = nullptr;	///< Cached Metal context for rendering
+	Window::CocoaWindow* _cocoaWindow = nullptr;	///< Cached Cocoa window for event handling and context access
+	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
 };

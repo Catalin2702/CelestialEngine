@@ -102,6 +102,8 @@ public:
 	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
+
+	[[nodiscard]] std::pair<float, float> GetContentSize() const override;
 	
 	/**
 	 * @brief Sets the event callback function
@@ -116,7 +118,7 @@ public:
 	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
 	 *			Note: GLFW handles window resizing through its own callbacks, so this function may not be used in this implementation.
 	 */
-	void SetContentScaleCallback(const ContentScaleCallbackFn&) override {};
+	void SetContentScaleCallback(const ContentSizeCallbackFn&) override {};
 
 	/**
 	 * @brief Sets the VSync state change callback function
@@ -198,14 +200,20 @@ private:
 	 *			9. Registers all event callbacks
 	 *			Exits with EXIT_FAILURE if GLAD initialization fails
 	 */
-	void _Init();
+	void _Init() override;
+
+	/**
+	 * @brief Initializes the GLFW window and OpenGL context
+	 * @details This method is called by _Init() to perform the actual creation of the GLFW window and setup of the OpenGL context. It handles GLFW initialization, window creation, OpenGL context configuration, and error handling. If any step fails (e.g., GLFW initialization, window creation, GLAD initialization), it logs an error message and throws a runtime exception.
+	 */
+	void _InitWindow() override;
 
 	/**
 	 * @brief Cleans up and releases window resources
 	 * @details Resets the GLFW window smart pointer, which automatically destroys
 	 *			the GLFW window when there are no more references to it
 	 */
-	void _Shutdown();
+	void _Shutdown() override;
 
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime

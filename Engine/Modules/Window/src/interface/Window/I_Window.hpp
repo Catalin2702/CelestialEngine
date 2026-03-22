@@ -46,13 +46,13 @@ struct WindowInternalCallbacks {
  */
 using EventCallbackFn = Utility::CallbackFn<Events::I_Event>;
 
-using ContentScaleCallbackFn = Utility::CallbackFn<const std::pair<float, float>>;
+using ContentSizeCallbackFn = Utility::CallbackFn<const std::pair<float, float>>;
 using VSyncCallbackFn = Utility::CallbackFn<const bool>;
 
 struct WindowCallbacks {
 	EventCallbackFn EventCallback;				///< Callback function for handling engine events
-	ContentScaleCallbackFn ContentScaleCallback;	///< Callback function for handling window resize events
-	VSyncCallbackFn VSyncCallback;						///< Callback function for handling VSync state changes
+	ContentSizeCallbackFn ContentSizeCallback;	///< Callback function for handling window resize events
+	VSyncCallbackFn VSyncCallback;				///< Callback function for handling VSync state changes
 
 	WindowInternalCallbacks _internalCallbacks;
 };
@@ -98,6 +98,8 @@ public:
 	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
 
 	[[nodiscard]] virtual std::pair<float, float> GetContentScale() const = 0;
+
+	[[nodiscard]] virtual std::pair<float, float> GetContentSize() const = 0;
 
 	/**
 	 * @brief Checks if VSync is enabled
@@ -167,7 +169,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized
 	 */
-	virtual void SetContentScaleCallback(const ContentScaleCallbackFn& callback) = 0;
+	virtual void SetContentScaleCallback(const ContentSizeCallbackFn& callback) = 0;
 
 	/**
 	 * @brief Sets the VSync state change callback function
@@ -200,6 +202,11 @@ protected:
 	 *			internally and invoked when the corresponding events occur.
 	 */
 	virtual void _SetInternalCallbacks() = 0;
+
+protected:
+	virtual void _Init() = 0;
+	virtual void _InitWindow() = 0;
+	virtual void _Shutdown() = 0;
 
 	WindowCallbacks _callbacks;
 };

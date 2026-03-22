@@ -106,7 +106,19 @@ public:
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return GetCocoaWindow(); }
 
+	/**
+	 * @brief Gets the content scale of the window
+	 * @return std::pair<float, float> Pair of content scale factors for x and y axes
+	 * @details The content scale represents the scaling factor applied to the window's content, which is important for rendering at the correct resolution on high-DPI displays. This method returns the current content scale factors for both axes.
+	 */
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
+
+	/**
+	 * @brief Gets the content size of the window
+	 * @return std::pair<float, float> Pair of content width and height in pixels
+	 * @details The content size represents the actual drawable area of the window, which may differ from the window's logical size due to scaling. This method returns the current content width and height in pixels, which is important for rendering at the correct resolution.
+	 */
+	[[nodiscard]] std::pair<float, float> GetContentSize() const override;
 
 	/**
 	 * @brief Gets the native macOS window
@@ -135,7 +147,7 @@ public:
 	 * @param callback Function to be called when the window is resized
 	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
 	 */
-	void SetContentScaleCallback(const ContentScaleCallbackFn& callback) override;
+	void SetContentScaleCallback(const ContentSizeCallbackFn& callback) override;
 
 	/**
 	 * @brief Sets the VSync state change callback function
@@ -199,17 +211,17 @@ private:
 	/** @brief Initializes the window and Metal resources
 	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
 	 */
-	void _Init();
+	void _Init() override;
 
 	/** @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering. This includes configuring the layer's properties and attaching it to the window's content view.
 	 */
-	void _InitWindow();
+	void _InitWindow() override;
 
 	/** @brief Shuts down the window and cleans up resources
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
 	 */
-	void _Shutdown();
+	void _Shutdown() override;
 
 	/** @brief Updates the size of the Metal layer to match the window dimensions
 	 * @details This method is called whenever the window is resized to ensure that the Metal layer's drawable area matches the new window size, allowing for correct rendering.

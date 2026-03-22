@@ -75,6 +75,15 @@ std::pair<float, float> GlfwWindow::GetContentScale() const {
 	return {xScale, yScale};
 }
 
+std::pair<float, float> GlfwWindow::GetContentSize() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("Could not get content size because window is not initialized.");
+		return {static_cast<float>(_data.width), static_cast<float>(_data.height)};
+	}
+	const auto [xScale, yScale] = GetContentScale();
+	return {static_cast<float>(_data.width) * xScale, static_cast<float>(_data.height) * yScale};
+}
+
 /**
  * @brief Sets the callback function for event handling
  * @param callback Constant reference to a callback function that will be invoked when events occur
@@ -229,6 +238,16 @@ void GlfwWindow::SetVSync(const bool enabled) {
 }
 
 void GlfwWindow::_Init() {
+	_InitWindow();
+
+	_SetIOEventCallbacks();
+	_SetWindowEventCallbacks();
+	_SetInternalCallbacks();
+
+	_st_GLFWWindowCount++;
+}
+
+void GlfwWindow::_InitWindow() {
 	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
 			CE_CORE_ERROR("Could not initialize GLFW!");
@@ -253,8 +272,6 @@ void GlfwWindow::_Init() {
 		nullptr
 	));
 
-	SetVSync(_data.VSync);
-
 	if (not _glfwWindow) {
 		CE_CORE_ERROR("Failed to create GLFW window!");
 		throw std::runtime_error("Failed to create GLFW window!");
@@ -266,11 +283,6 @@ void GlfwWindow::_Init() {
 		throw std::runtime_error("Error to initialize GLAD");
 	}
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_callbacks);
-	_SetIOEventCallbacks();
-	_SetWindowEventCallbacks();
-	_SetInternalCallbacks();
-
-	_st_GLFWWindowCount++;
 }
 
 void GlfwWindow::_Shutdown() {

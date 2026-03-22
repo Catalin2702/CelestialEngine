@@ -191,7 +191,6 @@ void Application::InitRenderer(const TypeWindow::WindowProps& windowProps) {
 	assert(context && "Application::InitRenderer: Failed to create graphics context instance");
 
 	_context = std::move(context);
-	_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleContentScaleChange));
 
 	_context->Init();
 }
@@ -230,6 +229,7 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 	InitImGuiLayer(windowProps);
 
 	_SetWindowCallbacks();
+	_window->SetVSync(windowProps.VSync);
 }
 
 void Application::_Init() {
@@ -241,7 +241,7 @@ void Application::_SetWindowCallbacks() const {
 	assert(_window && "Application::_SetWindowCallbacks: Window must be initialized before setting window callbacks");
 
 	if (_context) {
-		_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleContentScaleChange));
+		_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleContentSizeChange));
 		_window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::I_Context::HandleVSyncChange));
 	}
 }

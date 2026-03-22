@@ -50,12 +50,17 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 	return {scale, scale};
 }
 
+std::pair<float, float> CocoaWindow::GetContentSize() const {
+	const auto [fst, snd] = GetContentScale();
+	return {static_cast<float>(_data.width) * fst, static_cast<float>(_data.height) * snd};
+}
+
 void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_callbacks.EventCallback = callback;
 }
 
-void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentScaleCallbackFn& callback) {
-	_callbacks.ContentScaleCallback = callback;
+void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentSizeCallbackFn& callback) {
+	_callbacks.ContentSizeCallback = callback;
 }
 
 void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
@@ -176,13 +181,14 @@ void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 }
 
 void CocoaWindow::SetVSync(const bool enabled) {
-	_callbacks.VSyncCallback(enabled);
+	if (_callbacks.VSyncCallback) {
+		_callbacks.VSyncCallback(enabled);
+	}
 }
 
 void CocoaWindow::_Init() {
 	_InitWindow();
 
-	SetVSync(_data.VSync);
 	_SetIOEventCallbacks();
 	_SetWindowEventCallbacks();
 	_SetInternalCallbacks();
@@ -290,8 +296,9 @@ void CocoaWindow::_UpdateLayerSize() const {
 	if (not _window)
 		return;
 
-	const auto scale = GetContentScale();
-	_callbacks.ContentScaleCallback(scale);
+	if (_callbacks.ContentSizeCallback) {
+		_callbacks.ContentSizeCallback(GetSize());
+	}
 }
 
 }

@@ -27,6 +27,7 @@ class MetalLayer;
 namespace MTL {
 class CommandQueue;
 class Device;
+class RenderPassDescriptor;
 }
 namespace NS {
 class Window;
@@ -80,11 +81,11 @@ public:
 
 public:
 	/**
-	 * @brief Handles changes in content scale (e.g., when the window is resized)
-	 * @param scale New content scale as a pair of floats (x, y)
-	 * @details Updates the Metal layer's drawable size and related settings when the content scale changes, such as during window resizing. This ensures that rendering remains correct at different scales.
+	 * @brief Handles changes in content size (e.g., when the window is resized)
+	 * @param size New content size as a pair of floats (width, height)
+	 * @details Updates the Metal layer's drawable size to match the new content size. This method should be called whenever the window is resized to ensure that rendering remains correct at different sizes and that the viewport and related settings are updated accordingly.
 	 */
-	void HandleContentScaleChange(const std::pair<float, float>& scale) override;
+	void HandleContentSizeChange(const std::pair<float, float>& size) override;
 	/**
 	 * @brief Handles changes in VSync state
 	 * @param enabled True if VSync is enabled, false otherwise
@@ -92,12 +93,42 @@ public:
 	 */
 	void HandleVSyncChange(bool enabled) override;
 
+public:
+	/**
+	 * @brief Gets the native Metal device
+	 * @return void* Pointer to the MTL::Device representing the Metal device (GPU)
+	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
+	 */
+	[[nodiscard]] void* GetNativeDevice() const override { return _device.get(); }
+
+	/**
+	 * @brief Gets the native Core Animation Metal layer
+	 * @return void* Pointer to the CA::MetalLayer used for rendering
+	 * @details Returns a pointer to the underlying CA::MetalLayer that serves as the rendering target. This allows the application to access platform-specific features or perform operations that require direct access to the Metal layer.
+	 */
+	[[nodiscard]] void* GetNativeLayer() const override { return _layer.get(); }
+
+	/**
+	 * @brief Gets the native Metal command queue
+	 * @return void* Pointer to the MTL::CommandQueue used for issuing rendering commands
+	 * @details Returns a pointer to the underlying MTL::CommandQueue used for issuing rendering commands. This allows the application to access platform-specific features or perform operations that require direct access to the Metal command queue.
+	 */
+	[[nodiscard]] void* GetNativeCommandQueue() const override { return _commandQueue.get(); }
+
+	/**
+	 * @brief Gets the native Metal render pass descriptor
+	 * @return void* Pointer to the MTL::RenderPassDescriptor used for configuring render passes
+	 * @details Returns a pointer to the underlying MTL::RenderPassDescriptor used for configuring render passes. This allows the application to access platform-specific features or perform operations that require direct access to the Metal render pass descriptor.
+	 */
+	[[nodiscard]] void* GetRenderPassDescriptor() const override { return _renderPassDescriptor.get(); }
+
 RENDER_API_TYPE(Metal)
 
 private:
-	NS::SharedPtr<CA::MetalLayer> _layer = nullptr;				///< Core Animation Metal layer for rendering
-	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
+	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
+	NS::SharedPtr<CA::MetalLayer> _layer = nullptr;				///< Core Animation Metal layer for rendering
+	NS::SharedPtr<MTL::RenderPassDescriptor> _renderPassDescriptor = nullptr;	///< Metal render pass descriptor for configuring render passes
 
 	MetalContextProps _props;							///< Properties for initializing the Metal context, including window and pixel format
 };

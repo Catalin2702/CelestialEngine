@@ -46,8 +46,7 @@ public:
 	~OpenGlContext() override;
 
 public:
-	void HandleContentScaleChange(const std::pair<float, float>&) override {}
-
+	void HandleContentSizeChange(const std::pair<float, float>&) override {}
 	void HandleVSyncChange(const bool) override {}
 
 public:
@@ -63,6 +62,12 @@ public:
 	 *			Must be implemented by derived classes to ensure proper presentation of rendered content.
 	 */
 	void SwapBuffers() override;
+
+public:
+	void* GetNativeDevice() const override { return nullptr; }
+	void* GetNativeLayer() const override { return nullptr; }
+	void* GetNativeCommandQueue() const override { return nullptr; }
+	void* GetRenderPassDescriptor() const override { return nullptr; }
 
 RENDER_API_TYPE(OpenGL)
 

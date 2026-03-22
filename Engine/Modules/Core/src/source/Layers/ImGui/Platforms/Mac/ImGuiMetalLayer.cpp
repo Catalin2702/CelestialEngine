@@ -4,22 +4,21 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-22
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
 
+#include "Bridge/ImGui/ImGuiBridge.h"
 #include "Core/Application.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Bridge/ImGui/ImGuiBridge.h"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Time.hpp"
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include <imgui.h>
 
@@ -91,33 +90,28 @@ void ImGuiMetalLayer::Begin() {
 
 	auto& io = ImGui::GetIO();
 	const auto time = Apple::Utility::GetTime();
-	io.DeltaTime = _time > 0.0 ? static_cast<float>(time - _time) : 1.0f / 60.0f;
+	io.DeltaTime = _time > 0.0 ? time - _time : 1.0f / 60.0f;
 	_time = time;
 
-	const auto scale = _metalContext.window->GetCocoaWindow()->backingScaleFactor();
-	const auto [width, height] = _metalContext.window->GetSize();
-	_metalContext.metalLayer->setDrawableSize({
-		static_cast<float>(width) * scale,
-		static_cast<float>(height) * scale
-	});
-
-	_frameContext.drawable = NS::TransferPtr(_metalContext.metalLayer->nextDrawable());
+	_frameContext.drawable = NS::TransferPtr(static_cast<CA::MetalLayer*>(_metalContext->GetNativeLayer())->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::TransferPtr(_metalContext.commandQueue->commandBuffer());
+	_frameContext.commandBuffer = NS::TransferPtr(static_cast<MTL::CommandQueue*>(_metalContext->GetNativeCommandQueue())->commandBuffer());
 
-	const auto colorAttachment = _metalContext.renderPassDescriptor->colorAttachments()->object(0);
+	const auto renderPassDescriptor = static_cast<MTL::RenderPassDescriptor*>(_metalContext->GetRenderPassDescriptor());
+
+	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 1));
 	colorAttachment->setTexture(_frameContext.drawable->texture());
 	colorAttachment->setLoadAction(MTL::LoadActionClear);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
-	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(_metalContext.renderPassDescriptor);
+	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
-	Apple::Bridge::ImGuiMetalNewFrame(_metalContext.renderPassDescriptor);
+	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor);
 	// Apple::Bridge::ImGuiOSXNewFrame(_metalContext.window->GetContentView());
 
 	ImGui::NewFrame();
@@ -148,88 +142,54 @@ void ImGuiMetalLayer::End() {
 }
 
 void ImGuiMetalLayer::_Init() {
-	// IMGUI_CHECKVERSION();
-	//
-	// try {
-	// 	const auto context = ImGui::CreateContext();
-	// 	ImGui::SetCurrentContext(context);
-	// 	ImGui::StyleColorsDark();
-	//
-	// 	auto& io = ImGui::GetIO();
-	// 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	// 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	// 	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Temporarily disabled to debug
-	//
-	// 	const auto& app = Core::Application::Get();
-	//
-	// 	_metalContext.window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
-	// 	if (not _metalContext.window) {
-	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a CocoaWindow window!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("ImGuiMetalLayer requires a CocoaWindow window!");
-	// 	}
-	//
-	// 	_metalContext.metalDevice = _metalContext.window->GetDevice();
-	// 	if (not _metalContext.metalDevice) {
-	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::Device!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::Device!");
-	// 	}
-	//
-	// 	_metalContext.commandQueue = _metalContext.window->GetCommandQueue();
-	// 	if (not _metalContext.commandQueue) {
-	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid MTL::CommandQueue!");
-	// 	}
-	//
-	// 	_metalContext.metalLayer = _metalContext.window->GetMetalLayer();
-	// 	if (not _metalContext.metalLayer) {
-	// 		CE_CORE_ERROR("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("ImGuiMetalLayer requires a valid CA::MetalLayer!");
-	// 	}
-	//
-	// 	_metalContext.renderPassDescriptor = MTL::RenderPassDescriptor::alloc()->init();
-	// 	if (not _metalContext.renderPassDescriptor) {
-	// 		CE_CORE_ERROR("Failed to create MTL::RenderPassDescriptor!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("Failed to create MTL::RenderPassDescriptor!");
-	// 	}
-	//
-	// 	Apple::Bridge::ImGuiMetalInit(_metalContext.metalDevice);
-	//
-	// 	// Initialize OSX backend for platform handling
-	// 	if (const auto contentView = _metalContext.window->GetContentView()) {
-	// 		if (not Apple::Bridge::ImGuiOSXInit(contentView)) {
-	// 			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
-	// 			ImGui::DestroyContext(context);
-	// 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
-	// 		}
-	// 	}
-	// 	else {
-	// 		CE_CORE_ERROR("Failed to get content view for ImGui OSX backend!");
-	// 		ImGui::DestroyContext(context);
-	// 		throw std::runtime_error("Failed to get content view for ImGui OSX backend!");
-	// 	}
-	//
-	// 	_initialized = true;
-	// }
-	// catch (...) {
-	// 	_initialized = false;
-	// 	throw;
-	// }
+	IMGUI_CHECKVERSION();
+
+	try {
+		const auto context = ImGui::CreateContext();
+		ImGui::SetCurrentContext(context);
+		ImGui::StyleColorsDark();
+
+		auto& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		const auto& app = Core::Application::Get();
+
+		_cocoaWindow = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
+		if (not _cocoaWindow) {
+			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
+		}
+
+		_metalContext = dynamic_cast<Render::Context::MetalContext*>(app.GetContext());
+		if (not _metalContext) {
+			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
+		}
+
+		Apple::Bridge::ImGuiMetalInit(_metalContext->GetNativeDevice());
+
+		if (not Apple::Bridge::ImGuiOSXInit(_metalContext->GetNativeLayer())) {
+			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
+			ImGui::DestroyContext(context);
+			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+		}
+
+		_initialized = true;
+	}
+	catch (...) {
+		_initialized = false;
+		throw;
+	}
 }
 
 void ImGuiMetalLayer::_Shutdown() {
 	if (not _initialized)
 		return;
 	_initialized = false;
-
-	if (_metalContext.renderPassDescriptor) {
-		_metalContext.renderPassDescriptor->release();
-		_metalContext.renderPassDescriptor = nullptr;
-	}
 
 	Apple::Bridge::ImGuiMetalShutdown();
 	Apple::Bridge::ImGuiOSXShutdown();
@@ -304,7 +264,7 @@ bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _metalContext.window->GetContentScale();
+	const auto [xScale, yScale] = _cocoaWindow->GetContentScale();
 	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;

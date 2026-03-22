@@ -49,6 +49,12 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create CAMetalLayer!");
 	}
 
+	_renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
+	if (not _renderPassDescriptor) {
+		CE_CORE_ERROR("MetalContext::Init: Could not create Metal Render Pass Descriptor!");
+		throw std::runtime_error("MetalContext::Init: Could not create Metal Render Pass Descriptor!");
+	}
+
 	// ReSharper disable All
 	const auto metalView = window->GetCocoaView();
 	metalView->setLayer(_layer.get());
@@ -81,17 +87,17 @@ void MetalContext::SwapBuffers() {
 	commandBuffer->commit();
 }
 
-void MetalContext::HandleContentScaleChange(const std::pair<float, float>& scale) {
+void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) {
 	if (not _layer) {
-		CE_CORE_WARN("MetalContext::HandleContentScaleChange: Cannot handle content scale change because Metal layer is not initialized.");
+		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content scale change because Metal layer is not initialized.");
 		return;
 	}
 
-	const auto [xScale, yScale] = scale;
-	_layer->setDrawableSize(CGSizeMake(xScale, yScale));
+	const auto [width, height] = size;
+	_layer->setDrawableSize(CGSizeMake(width, height));
 }
 
-void MetalContext::HandleVSyncChange(bool enabled) {
+void MetalContext::HandleVSyncChange(const bool enabled) {
 	if (not _layer) {
 		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because Metal layer is not initialized.");
 		return;
