@@ -122,6 +122,7 @@ void ImGuiOpenGlLayer::End() {
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(_window->GetGlfwWindow());
 	}
 }
 
