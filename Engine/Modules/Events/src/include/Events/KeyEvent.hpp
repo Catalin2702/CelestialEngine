@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-03-23
 //
 
 #pragma once
@@ -39,7 +39,7 @@ namespace CE::Events {
  *			All keyboard events store a key code and belong to both the Keyboard and Input categories.
  */
 template<typename T>
-class CE_API I_KeyEvent: public I_Event {
+class I_KeyEvent: public I_Event {
 public:
 	/**
 	 * @brief Gets the key code associated with this event

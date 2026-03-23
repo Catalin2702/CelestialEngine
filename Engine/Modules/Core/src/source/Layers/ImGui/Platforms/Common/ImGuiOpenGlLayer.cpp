@@ -4,10 +4,8 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-23
 //
-
-#include "Window/Platforms/Common/GlfwWindow.hpp"
 
 #include "Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp"
 
@@ -17,8 +15,10 @@
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
+#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
+#include "Window/Platforms/Common/GlfwWindow.hpp"
 
 #include <glad/glad.h>
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
@@ -110,20 +110,18 @@ void ImGuiOpenGlLayer::End() {
 	ImGui::Render();
 
 	int width, height;
-	glfwGetFramebufferSize(_glfwWindow, &width, &height);
+	glfwGetFramebufferSize(_window->GetGlfwWindow(), &width, &height);
 
-	glViewport(0, 0, width, height);
+	Render::Context::OpenGlContext::SetViewport(0, 0, width, height);
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	Render::Context::OpenGlContext::ClearBuffers(GL_COLOR_BUFFER_BIT);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
 	}
 }
 
@@ -141,22 +139,24 @@ void ImGuiOpenGlLayer::_Init() {
 
 	const auto& app = Core::Application::Get();
 
+	_context = dynamic_cast<Render::Context::OpenGlContext*>(app.GetContext());
+	if (not _context) {
+		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
+		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
+	}
+
 	_window = dynamic_cast<Window::GlfwWindow*>(app.GetWindow());
 	if (not _window) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires an GlfwWindow window!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires an GlfwWindow window!");
+		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
+		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 	}
 
-	io.DisplaySize = ImVec2(static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()));
+	io.DisplaySize = ImVec2(_window->GetWidth(),_window->GetHeight());
 
-	_glfwWindow = static_cast<GLFWwindow*>(_window->GetNativeWindow());
-	if (not _glfwWindow) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-		throw std::runtime_error("ImGuiOpenGlLayer requires a valid GLFWwindow!");
-	}
+	assert(_window->GetGlfwWindow() != nullptr);
 
 	float x, y;
-	glfwGetWindowContentScale(_glfwWindow, &x, &y);
+	glfwGetWindowContentScale(_window->GetGlfwWindow(), &x, &y);
 	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -166,7 +166,7 @@ void ImGuiOpenGlLayer::_Init() {
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	ImGui_ImplGlfw_InitForOpenGL(_glfwWindow, false);
+	ImGui_ImplGlfw_InitForOpenGL(_window->GetGlfwWindow(), false);
 
 	ImGui_ImplOpenGL3_Init("#version 410");
 
@@ -256,8 +256,6 @@ bool ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const 
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	// float x, y;
-	// glfwGetWindowContentScale(_glfwWindow, &x, &y);
 	const auto [xScale, yScale] = _window->GetContentScale();
 	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 

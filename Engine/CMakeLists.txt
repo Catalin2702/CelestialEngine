@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-23
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -45,14 +45,14 @@ add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
 add_subdirectory(Modules/Window)
 
-add_library(CE_Engine SHARED
+add_library(CE_Engine INTERFACE
 	${HEADERS}
 )
 
 set_target_properties(CE_Engine PROPERTIES LINKER_LANGUAGE CXX)
 
 # Modules
-target_link_libraries(CE_Engine PUBLIC
+target_link_libraries(CE_Engine INTERFACE
 	CE_Config
 	CE_Core
 	CE_Define
@@ -64,12 +64,12 @@ target_link_libraries(CE_Engine PUBLIC
 	CE_Window
 )
 
-target_include_directories(CE_Engine PUBLIC
+target_include_directories(CE_Engine INTERFACE
 	src/include
 	src/internal
 )
 
-target_compile_definitions(CE_Engine PRIVATE
+target_compile_definitions(CE_Engine INTERFACE
 	CE_DEFINE_EXPORTS
 )
 

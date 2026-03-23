@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-23
 #
 
 set(HEADERS
@@ -14,7 +14,7 @@ set(HEADERS
 set(SOURCES
 )
 
-add_library(CE_Utility SHARED
+add_library(CE_Utility INTERFACE
 	${HEADERS}
 	${SOURCES}
 )
@@ -24,15 +24,15 @@ set_target_properties(CE_Utility PROPERTIES
 )
 
 # Modules
-target_link_libraries(CE_Utility PUBLIC
+target_link_libraries(CE_Utility INTERFACE
 	CE_Config
 )
 
-target_include_directories(CE_Utility PUBLIC
+target_include_directories(CE_Utility INTERFACE
 	src/include
 )
 
-target_compile_definitions(CE_Utility PRIVATE
+target_compile_definitions(CE_Utility INTERFACE
 	CE_DEFINE_EXPORTS
 )
 

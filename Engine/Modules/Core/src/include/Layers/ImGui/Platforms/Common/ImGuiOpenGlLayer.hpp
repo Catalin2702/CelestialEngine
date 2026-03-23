@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-23
 //
 
 #pragma once
@@ -14,8 +14,11 @@
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
-struct GLFWwindow;
+#include "Define/DynamicLinker.hpp"
 
+namespace CE::Render::Context {
+class OpenGlContext;
+}
 namespace CE::Window {
 class GlfwWindow;
 }
@@ -40,7 +43,7 @@ namespace CE::Layers {
  *			on Windows, Linux, and macOS. It integrates ImGui with OpenGL windows
  *			and handles all input events through GLFW.
  */
-class ImGuiOpenGlLayer final: public I_ImGuiLayer {
+class CE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
 public:
 	/**
 	 * @brief Constructor
@@ -109,7 +112,7 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	GLFWwindow* _glfwWindow = nullptr;				///< Cached GLFW window pointer
+	Render::Context::OpenGlContext* _context = nullptr;		///< Cached OpenGL context pointer
 	Window::GlfwWindow* _window = nullptr;			///< Cached OpenGL window pointer
 };
 

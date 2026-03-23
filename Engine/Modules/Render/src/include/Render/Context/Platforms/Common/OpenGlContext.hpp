@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-23
 //
 
 #pragma once
@@ -37,7 +37,7 @@ public:
 	 * @param window Pointer to the GLFW window associated with this OpenGL context
 	 * @details Creates an OpenGlContext instance associated with the specified GLFW window. The constructor does not perform initialization of the OpenGL context; the Init() method must be called separately to set up the context.
 	 */
-	OpenGlContext(GLFWwindow* window);
+	explicit OpenGlContext(GLFWwindow* window);
 
 	/**
 	 * @brief Destructor
@@ -57,12 +57,17 @@ public:
 	 *			and prepares it for rendering. Must be implemented by derived classes.
 	 */
 	void Init() override;
+
 	/**
 	 * @brief Swaps the front and back buffers
 	 * @details Pure virtual method that handles buffer swapping to present the rendered frame on the screen.
 	 *			Must be implemented by derived classes to ensure proper presentation of rendered content.
 	 */
 	void SwapBuffers() override;
+
+	static void SetViewport(int x, int y, int width, int height);
+
+	static void ClearBuffers(unsigned int mask);
 
 public:
 	[[nodiscard]] void* GetNativeDevice() const override { return nullptr; }

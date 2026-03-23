@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-23
 //
 
 #include <Core/Application.hpp>
@@ -28,8 +28,8 @@ using namespace CE::KeyCode;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 
-constexpr WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 
+const WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 
 /**
  * @brief Test fixture for ImGuiMetalLayer tests

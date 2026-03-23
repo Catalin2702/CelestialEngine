@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-23
 #
 
 set(HEADERS
@@ -17,7 +17,7 @@ set(HEADERS
 	src/include/Define/Render.hpp
 )
 
-add_library(CE_Define SHARED
+add_library(CE_Define INTERFACE
 	${HEADERS}
 )
 
@@ -26,16 +26,12 @@ set_target_properties(CE_Define PROPERTIES
 )
 
 # Modules
-target_link_libraries(CE_Define PUBLIC
+target_link_libraries(CE_Define INTERFACE
 	CE_Config
 )
 
-target_include_directories(CE_Define PUBLIC
+target_include_directories(CE_Define INTERFACE
 	src/include
-)
-
-target_compile_definitions(CE_Define PRIVATE
-	CE_DEFINE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

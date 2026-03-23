@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-23
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -16,7 +16,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")
 		if (APPLE)
 			set(VCPKG_TARGET_TRIPLET "arm64-osx-release" CACHE STRING "")
 		elseif (WIN32)
-			set(VCPKG_TARGET_TRIPLET "x64-windows-release" CACHE STRING "")
+			if (CXX_COMPILER_ID STREQUAL "MSVC")
+				set(VCPKG_TARGET_TRIPLET "x64-windows-msvc-release" CACHE STRING "")
+			elseif (CXX_COMPILER_ID STREQUAL "Clang")
+				set(VCPKG_TARGET_TRIPLET "x64-windows-clang-release" CACHE STRING "")
+			elseif (CXX_COMPILER_ID STREQUAL "GNU")
+				set(VCPKG_TARGET_TRIPLET "x64-windows-gcc-release" CACHE STRING "")
+			endif ()
 		elseif (UNIX)
 			set(VCPKG_TARGET_TRIPLET "x64-linux-release" CACHE STRING "")
 		endif ()

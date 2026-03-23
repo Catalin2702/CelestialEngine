@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-23
 //
 
 #include <Core/Application.hpp>
@@ -88,7 +88,7 @@ protected:
 	}
 };
 
-constexpr WindowProps defaultProps{"AppTest", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
+const WindowProps defaultProps{"AppTest", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 /**
  * @brief Test Application construction with default parameters
@@ -125,7 +125,7 @@ TEST_F(ApplicationTest, ConstructionWithWindowProps) {
  * @brief Test Application construction with individual parameters
  */
 TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
-	constexpr WindowProps props{"MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW};
+	const WindowProps props{"MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW};
 	const auto app = CreateApplication();
 	app->InitWindow(props);
 

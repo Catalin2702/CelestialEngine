@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-23
 //
 
 #pragma once
 
 #ifndef CE_TOOLS_IMGUI_IMGUI_HPP
 #define CE_TOOLS_IMGUI_IMGUI_HPP
+
+#include "Define/DynamicLinker.hpp"
 
 #include <imgui.h>
 
@@ -30,7 +32,7 @@ namespace CE::Tools::ImGui {
  *			It includes mappings for common keys such as navigation keys, editing keys, function keys, alphanumeric keys,
  *			special keys, modifier keys, and keypad keys. If a GLFW key code does not have a corresponding ImGui key code, the function returns ImGuiKey_None.
  */
-ImGuiKey GlfwKeyToImGuiKey(int key);
+CE_API ImGuiKey GlfwKeyToImGuiKey(int key);
 
 }
 

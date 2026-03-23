@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-23
 //
 
 #pragma once
 
 #ifndef CE_TOOLS_MANIPULATION_STRING_HPP
 #define CE_TOOLS_MANIPULATION_STRING_HPP
+
+#include "Define/DynamicLinker.hpp"
 
 #include <string>
 
@@ -28,7 +30,7 @@ namespace CE::Tools::Manipulation {
  * @details Creates a copy of the input string and converts all uppercase letters
  *			to their lowercase equivalents. Non-alphabetic characters remain unchanged.
  */
-std::string ToLowerCase(const std::string& source);
+CE_API std::string ToLowerCase(const std::string& source);
 
 }
 

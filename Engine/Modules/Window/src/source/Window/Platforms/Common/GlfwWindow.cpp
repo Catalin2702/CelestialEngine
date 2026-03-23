@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-23
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -17,7 +17,7 @@
 #include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Types/Window/WindowProps.hpp"
 
-#include <glad/glad.h>
+// #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
@@ -38,30 +38,14 @@ static bool _st_GLFWInitialized = false;
  */
 static int _st_GLFWWindowCount = 0;
 
-/**
- * @brief Constructor of the OpenGLWindow class
- * @param windowProps Constant reference to window properties (title, width, height, VSync)
- * @details Initializes window data with the provided properties and calls _Init() to create
- *			and configure the GLFW window with OpenGL 4.1 Core Profile context.
- *			Increments the window count.
- */
 GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps): _data(std::move(windowProps)){
 	_Init();
 }
 
-/**
- * @brief Destructor of the OpenGLWindow class
- * @details Calls _Shutdown() to release GLFW window resources and clean up state
- *			before the object is destroyed
- */
 GlfwWindow::~GlfwWindow() {
 	_Shutdown();
 }
 
-/**
- * @brief Updates the window state every frame
- * @details Processes all queued events via glfwPollEvents()
- */
 void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 }
@@ -103,28 +87,10 @@ std::pair<float, float> GlfwWindow::GetContentSize() const {
 	return {static_cast<float>(_data.width) * xScale, static_cast<float>(_data.height) * yScale};
 }
 
-/**
- * @brief Sets the callback function for event handling
- * @param callback Constant reference to a callback function that will be invoked when events occur
- * @details This function will be called whenever an event occurs (resize, close,
- *			keyboard input, mouse, etc.)
- */
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_callbacks.EventCallback = callback;
 }
 
-/**
- * @brief Configures all GLFW callbacks for window event handling
- * @details Registers the following callbacks:
- *			- Window resize: generates WindowResizeEvent
- *			- Window close: generates WindowCloseEvent
- *			- Keyboard input (press/release/repeat): generates KeyPressedEvent and KeyReleasedEvent
- *			- Typed characters: generates KeyTypedEvent for text input
- *			- Mouse buttons (press/release): generates MouseButtonPressedEvent and MouseButtonReleasedEvent
- *			- Mouse scroll: generates MouseScrolledEvent
- *			- Mouse movement: generates MouseMovedEvent
- *			Verifies that _glfwWindow is valid before registering callbacks
- */
 void GlfwWindow::_SetIOEventCallbacks() {
 	if (not _glfwWindow)
 		return;
@@ -222,22 +188,10 @@ void GlfwWindow::_SetInternalCallbacks() {
 	};
 }
 
-/**
- * @brief Sets the window width
- * @param width New window width in pixels
- * @details Updates the internal value in the _data structure. Note: this method only updates
- *			the stored value, it does not actually resize the window
- */
 void GlfwWindow::SetWidth(const unsigned int width) {
 	_data.width = width;
 }
 
-/**
- * @brief Sets the window height
- * @param height New window height in pixels
- * @details Updates the internal value in the _data structure. Note: this method only updates
- *			the stored value, it does not actually resize the window
- */
 void GlfwWindow::SetHeight(const unsigned int height) {
 	_data.height = height;
 }
@@ -304,11 +258,11 @@ void GlfwWindow::_InitWindow() {
 		throw std::runtime_error("Failed to create GLFW window!");
 	}
 
-	glfwMakeContextCurrent(_glfwWindow.get());
-	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
-		CE_CORE_ERROR("Error to initialize GLAD");
-		throw std::runtime_error("Error to initialize GLAD");
-	}
+	// glfwMakeContextCurrent(_glfwWindow.get());
+	// if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
+	// 	CE_CORE_ERROR("Error to initialize GLAD");
+	// 	throw std::runtime_error("Error to initialize GLAD");
+	// }
 	glfwSetWindowUserPointer(_glfwWindow.get(), &_callbacks);
 }
 

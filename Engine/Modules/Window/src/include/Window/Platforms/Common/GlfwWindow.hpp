@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-23
 //
 
 #pragma once
@@ -33,7 +33,6 @@ namespace TypeWindow = CE::Types::Window;
  *			while the MetalWindow class provides a macOS-specific implementation using Metal.
  */
 namespace CE::Window {
-
 /**
  * @class GlfwWindow
  * @brief Cross-platform window implementation using GLFW
@@ -50,7 +49,7 @@ public:
 	 * @details Creates and initializes an OpenGL-based window with the specified properties.
 	 *			Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
 	 */
-	GlfwWindow(TypeWindow::WindowProps windowProps);
+	explicit GlfwWindow(TypeWindow::WindowProps windowProps);
 
 	/**
 	 * @brief Destructor
@@ -102,10 +101,27 @@ public:
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 
+	/**
+	 * @brief Gets the underlying GLFW window pointer
+	 * @return GLFWwindow* Raw pointer to the GLFW window
+	 * @details Provides access to the GLFW window for platform-specific operations.
+	 *			Returns the raw pointer from the smart pointer wrapper.
+	 */
+	[[nodiscard]] GLFWwindow* GetGlfwWindow() const { return _glfwWindow.get(); }
+
+	/**
+	 * @brief Gets the content scale factors for the window
+	 * @return std::pair<float, float> Content scale factors for X and Y axes
+	 */
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
+	/**
+	 * @brief Gets the content size of the window
+	 * @return std::pair<float, float> Content size in pixels for width and height
+	 * @details This method retrieves the current content scale factors and multiplies them by the window's width and height to calculate the actual content size in pixels. This is useful for rendering and UI layout calculations that need to account for high-DPI displays.
+	 */
 	[[nodiscard]] std::pair<float, float> GetContentSize() const override;
-	
+
 	/**
 	 * @brief Sets the event callback function
 	 * @param callback Function to be called when events occur

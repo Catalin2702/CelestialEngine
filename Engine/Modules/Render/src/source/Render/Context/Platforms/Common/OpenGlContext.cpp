@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-23
 //
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
@@ -15,6 +15,8 @@
 #include <stdexcept>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <iostream>
 
 namespace CE::Render::Context {
 
@@ -36,6 +38,14 @@ void OpenGlContext::Init() {
 
 void OpenGlContext::SwapBuffers() {
 	glfwSwapBuffers(_window);
+}
+
+void OpenGlContext::SetViewport(const int x, const int y, const int width, const int height) {
+	glViewport(x, y, width, height);
+}
+
+void OpenGlContext::ClearBuffers(const unsigned int mask) {
+	glClear(mask);
 }
 
 }
