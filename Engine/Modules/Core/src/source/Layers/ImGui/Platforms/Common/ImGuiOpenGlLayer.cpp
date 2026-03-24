@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-24
 //
 
 #include "Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp"
@@ -18,13 +18,12 @@
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
+#include "Types/Render/Platforms/Common/OpenGl.hpp"
 #include "Window/Platforms/Common/GlfwWindow.hpp"
 
-#include <glad/glad.h>
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <GLFW/glfw3.h>
 
 #include <stdexcept>
 
@@ -92,7 +91,7 @@ void ImGuiOpenGlLayer::Begin() {
 	_currentFrameStarted = false;
 
 	auto& io = ImGui::GetIO();
-	const auto time = static_cast<float>(glfwGetTime());
+	const auto time = static_cast<float>(Window::GlfwWindow::GetTime());
 	io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);
 	_time = time;
 
@@ -109,12 +108,11 @@ void ImGuiOpenGlLayer::End() {
 
 	ImGui::Render();
 
-	int width, height;
-	glfwGetFramebufferSize(_window->GetGlfwWindow(), &width, &height);
+	const auto [width, height] = _window->GetFrameBufferSize();
 
 	Render::Context::OpenGlContext::SetViewport(0, 0, width, height);
 
-	Render::Context::OpenGlContext::ClearBuffers(GL_COLOR_BUFFER_BIT);
+	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -122,7 +120,7 @@ void ImGuiOpenGlLayer::End() {
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(_window->GetGlfwWindow());
+		_window->SetCurrentContext();
 	}
 }
 
@@ -156,8 +154,8 @@ void ImGuiOpenGlLayer::_Init() {
 
 	assert(_window->GetGlfwWindow() != nullptr);
 
-	float x, y;
-	glfwGetWindowContentScale(_window->GetGlfwWindow(), &x, &y);
+	const auto [x, y] = _window->GetContentScale();
+
 	io.DisplayFramebufferScale = ImVec2(x, y);
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

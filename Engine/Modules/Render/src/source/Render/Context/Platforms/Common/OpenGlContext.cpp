@@ -4,19 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-24
 //
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 
 #include "Tools/Log/Log.hpp"
+#include "Types/Render/Platforms/Common/OpenGl.hpp"
 
 #include <cassert>
 #include <stdexcept>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <iostream>
 
 namespace CE::Render::Context {
 
@@ -44,8 +43,8 @@ void OpenGlContext::SetViewport(const int x, const int y, const int width, const
 	glViewport(x, y, width, height);
 }
 
-void OpenGlContext::ClearBuffers(const unsigned int mask) {
-	glClear(mask);
+void OpenGlContext::ClearBuffers(const Types::Render::BufferBit mask) {
+	glClear(Types::Render::ToInt(mask));
 }
 
 }

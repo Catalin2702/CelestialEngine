@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-24
 //
 
 #pragma once
@@ -123,6 +123,19 @@ public:
 	[[nodiscard]] std::pair<float, float> GetContentSize() const override;
 
 	/**
+	 * @brief Gets the framebuffer size of the window
+	 * @return std::pair<int, int> Framebuffer width and height in pixels
+	 * @details Retrieves the actual size of the framebuffer, which may differ from the window size due to scaling. This is important for rendering at the correct resolution, especially on high-DPI displays.
+	 */
+	[[nodiscard]] std::pair<int, int> GetFrameBufferSize() const;
+
+	/**
+	 * @brief Gets the current time since GLFW was initialized
+	 * @return double Time
+	 */
+	[[nodiscard]] static double GetTime() ;
+
+	/**
 	 * @brief Sets the event callback function
 	 * @param callback Function to be called when events occur
 	 * @details Stores the callback function that will be invoked for all window and
@@ -178,6 +191,14 @@ public:
 	 *			a warning and returns without making changes.
 	 */
 	void SetVSync(bool enabled) override;
+
+	/**
+	 * @brief Prepares the window for rendering
+	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
+	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
+	 *			In this implementation, it sets the VSync state according to the configuration in _data.
+	 */
+	void SetCurrentContext(GLFWwindow* window = nullptr) const;
 
 	void GetReady() override;
 

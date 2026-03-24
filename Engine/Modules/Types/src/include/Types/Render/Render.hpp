@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_TYPES_RENDER_RENDER_HPP
 #define CE_TYPES_RENDER_RENDER_HPP
 
+// ReSharper disable CppUnusedIncludeDirective
 #include <cstdint>
 #include <ostream>
 #include <string>

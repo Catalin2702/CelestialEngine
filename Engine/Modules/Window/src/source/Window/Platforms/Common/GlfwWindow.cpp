@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-24
 //
 
 #include "Window/Platforms/Common/GlfwWindow.hpp"
@@ -17,7 +17,6 @@
 #include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Types/Window/WindowProps.hpp"
 
-// #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
@@ -85,6 +84,20 @@ std::pair<float, float> GlfwWindow::GetContentSize() const {
 	}
 	const auto [xScale, yScale] = GetContentScale();
 	return {static_cast<float>(_data.width) * xScale, static_cast<float>(_data.height) * yScale};
+}
+
+std::pair<int, int> GlfwWindow::GetFrameBufferSize() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("Could not get framebuffer size because window is not initialized.");
+		return {static_cast<int>(_data.width), static_cast<int>(_data.height)};
+	}
+	int width = 0, height = 0;
+	glfwGetFramebufferSize(_glfwWindow.get(), &width, &height);
+	return {width, height};
+}
+
+double GlfwWindow::GetTime() {
+	return glfwGetTime();
 }
 
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
@@ -208,6 +221,11 @@ void GlfwWindow::SetVSync(const bool enabled) {
 	}
 	_data.VSync = enabled;
 	glfwSwapInterval(enabled ? 1 : 0);
+}
+
+void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
+	const auto ptr = window ? window : _glfwWindow.get();
+	glfwMakeContextCurrent(ptr);
 }
 
 void GlfwWindow::GetReady() {

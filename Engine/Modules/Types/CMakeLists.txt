@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-24
 #
 
 set(HEADERS
@@ -12,6 +12,7 @@ set(HEADERS
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 	src/include/Types/Render/Render.hpp
+	src/include/Types/Render/Platforms/Common/OpenGl.hpp
 	src/include/Types/Container/Vec.hpp
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/WindowDestructor.hpp
@@ -22,6 +23,7 @@ set(SOURCES
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
 	src/source/Types/Render/Render.cpp
+	src/source/Types/Render/Platforms/Common/OpenGl.cpp
 	src/source/Types/Window/WindowProps.cpp
 	src/source/Types/Window/WindowDestructor.cpp
 )
