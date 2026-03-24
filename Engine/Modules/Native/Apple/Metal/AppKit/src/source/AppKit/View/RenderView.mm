@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #include "AppKit/View/RenderView.h"
@@ -148,8 +148,8 @@
 	}
 	if (const auto* chars = [event characters]) {
 		if (const char* utf8Chars = [chars UTF8String]; utf8Chars && utf8Chars[0] != '\0') {
-			if (self.callbacks.KeyPressedEventCallback) {
-				self.callbacks.KeyPressedEventCallback(self.userData, [event keyCode], utf8Chars[0]);
+			if (self.callbacks.KeyTypedEventCallback) {
+				self.callbacks.KeyTypedEventCallback(self.userData, utf8Chars[0]);
 			}
 		}
 	}

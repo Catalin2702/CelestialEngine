@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #pragma once
@@ -238,11 +238,11 @@ public:
 	WINDOW_API_TYPE(Cocoa)
 
 private:
-	Types::Window::WindowProps _data;							///< Window data including event callback
+	Types::Window::WindowProps _data;						///< Window data including event callback
 
 	NS::SharedPtr<NS::RenderView> _view;					///< Content view of the window
-	NS::SharedPtr<NS::Window> _window;				///< Native macOS window
-	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;	///< Delegate for handling window events
+	NS::SharedPtr<NS::Window> _window;						///< Native macOS window
+	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;		///< Delegate for handling window events
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-24
 //
 
 #pragma once
@@ -81,8 +81,8 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	Render::Context::MetalContext* _metalContext = nullptr;	///< Cached Metal context for rendering
-	Window::CocoaWindow* _cocoaWindow = nullptr;	///< Cached Cocoa window for event handling and context access
+	Render::Context::MetalContext* _context = nullptr;	///< Cached Metal context for rendering
+	Window::CocoaWindow* _window = nullptr;	///< Cached Cocoa window for event handling and context access
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #pragma once
@@ -252,11 +252,13 @@ CE_API unsigned int GlfwCharCodeFromKeyboard(KeyboardCharsCode charCode);
 CE_API unsigned int ImGuiKeyFromKeyboard(KeyboardCharsCode charCode);
 
 /**
- * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
- * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
+ * @brief Converts a character to a KeyboardCharsCode enum value
+ * @param character The character to convert
+ * @return KeyboardCharsCode The corresponding KeyboardCharsCode enum value for the given character
+ * @details Converts a single character to its corresponding KeyboardCharsCode enum value.
+ *			This is useful for handling text input where characters are received as char types and need to be mapped to the engine's character code definitions.
+ *			The function uses static_cast to convert the character to an unsigned char (to ensure it is treated as a positive value) and then to the corresponding KeyboardCharsCode enum value.
  */
-CE_API KeyboardCharsCode KeyboardCharsCodeFromCocoa(unsigned short keyCode);
-
 inline KeyboardCharsCode KeyboardCharsCodeFromChar(const char character) {
 	return static_cast<KeyboardCharsCode>(static_cast<unsigned char>(character));
 }

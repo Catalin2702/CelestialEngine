@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
@@ -93,14 +93,14 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0 ? time - _time : 1.0f / 60.0f;
 	_time = time;
 
-	_frameContext.drawable = NS::TransferPtr(_metalContext->GetMetalLayer()->nextDrawable());
+	_frameContext.drawable = NS::TransferPtr(_context->GetMetalLayer()->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::TransferPtr(_metalContext->GetMetalCommandQueue()->commandBuffer());
+	_frameContext.commandBuffer = NS::TransferPtr(_context->GetMetalCommandQueue()->commandBuffer());
 
 	const auto renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
@@ -113,7 +113,7 @@ void ImGuiMetalLayer::Begin() {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
-	Apple::Bridge::ImGuiOSXNewFrame(_cocoaWindow->GetCocoaView());
+	Apple::Bridge::ImGuiOSXNewFrame(_window->GetCocoaView());
 
 	ImGui::NewFrame();
 	_currentFrameStarted = true;
@@ -156,29 +156,29 @@ void ImGuiMetalLayer::_Init() {
 
 		const auto& app = Core::Application::Get();
 
-		_cocoaWindow = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
-		if (not _cocoaWindow) {
+		_window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
+		if (not _window) {
 			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
 		}
 
-		_metalContext = dynamic_cast<Render::Context::MetalContext*>(app.GetContext());
-		if (not _metalContext) {
+		_context = dynamic_cast<Render::Context::MetalContext*>(app.GetContext());
+		if (not _context) {
 			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
 		}
 
-		Apple::Bridge::ImGuiMetalInit(_metalContext->GetNativeDevice());
+		Apple::Bridge::ImGuiMetalInit(_context->GetNativeDevice());
 
-		if (not Apple::Bridge::ImGuiOSXInit(_cocoaWindow->GetCocoaView())) {
+		if (not Apple::Bridge::ImGuiOSXInit(_window->GetCocoaView())) {
 			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
 		}
 
-		const auto [width, height] = _cocoaWindow->GetSize();
+		const auto [width, height] = _window->GetSize();
 
 		io.DisplaySize = ImVec2(width, height);
 
@@ -268,7 +268,7 @@ bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _cocoaWindow->GetContentScale();
+	const auto [xScale, yScale] = _window->GetContentScale();
 	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;

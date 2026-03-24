@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-24
 //
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
@@ -118,14 +118,14 @@ void CocoaWindow::_SetIOEventCallbacks() {
 
 	callbacks.KeyPressedEventCallback = [](void* userData, const int keyCode, const bool isRepeat) {
 		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
-			Events::KeyPressedEvent event{static_cast<KeyCode::KeyboardKeyCode>(keyCode), isRepeat ? 1 : 0};
+			Events::KeyPressedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode), isRepeat ? 1 : 0};
 			_callbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.KeyReleasedEventCallback = [](void* userData, const int keyCode) {
 		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
-			Events::KeyReleasedEvent event{static_cast<KeyCode::KeyboardKeyCode>(keyCode)};
+			Events::KeyReleasedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode)};
 			_callbacks->EventCallback(event);
 		}
 	};
