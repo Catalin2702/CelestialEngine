@@ -4,10 +4,13 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-29
 #
 
 set(HEADERS
+	# Init
+	src/include/AppKit/AppKitInit.hpp
+
 	# View
 	src/include/AppKit/View/RenderView.h
 	src/include/AppKit/View/RenderViewCallback.h
@@ -19,6 +22,9 @@ set(HEADERS
 )
 
 set(SOURCES
+	# Init
+	src/source/AppKit/AppKitInit.mm
+
 	# View
 	src/source/AppKit/View/RenderView.mm
 

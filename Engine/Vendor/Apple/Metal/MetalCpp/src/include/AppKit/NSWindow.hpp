@@ -47,6 +47,8 @@ public:
 	void setContentView(const View* pContentView) const;
 	void setDelegate(const Object* pDelegate) const;
 	void setFrameAutosaveName(const String* pName) const;
+	void setFrame(const CGRect& frame, bool display = true) const;
+	void setFrame(const CGRect& frame, bool display, bool animate) const;
 	void setOpaque(bool flag) const;
 	void setTitle(const String* pTitle) const;
 
@@ -87,6 +89,14 @@ _NS_INLINE void NS::Window::setDelegate(const Object* pDelegate) const {
 
 _NS_INLINE void NS::Window::setFrameAutosaveName(const String* pName) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrameAutosaveName_), pName);
+}
+
+_NS_INLINE void NS::Window::setFrame(const CGRect& frame, const bool display) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrame_display_), frame, display);
+}
+
+_NS_INLINE void NS::Window::setFrame(const CGRect& frame, const bool display, const bool animate) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrame_display_animate_), frame, display, animate);
 }
 
 _NS_INLINE void NS::Window::setOpaque(const bool flag) const {

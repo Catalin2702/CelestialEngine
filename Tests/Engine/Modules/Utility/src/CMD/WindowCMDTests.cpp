@@ -4,17 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-29
 //
 
-#include <Tools/CMD/Window.hpp>
+#include <Utility/CMD/Window.hpp>
+
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 
-using namespace CE::Tools::CMD;
+using namespace CE::Utility::CMD;
 using namespace CE::Tools::Log;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;

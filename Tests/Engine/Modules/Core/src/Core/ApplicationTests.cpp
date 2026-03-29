@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-29
 //
 
 #include <Core/Application.hpp>
@@ -117,8 +117,8 @@ TEST_F(ApplicationTest, ConstructionWithWindowProps) {
 
 	// Verify window properties
 	const auto* window = app->GetWindow();
-	EXPECT_EQ(window->GetWidth(), 800);
-	EXPECT_EQ(window->GetHeight(), 600);
+	EXPECT_EQ(window->GetWindowWidth(), 800);
+	EXPECT_EQ(window->GetWindowHeight(), 600);
 }
 
 /**
@@ -135,8 +135,8 @@ TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
 
 	// Verify window properties
 	const auto* window = app->GetWindow();
-	EXPECT_EQ(window->GetWidth(), 1024);
-	EXPECT_EQ(window->GetHeight(), 768);
+	EXPECT_EQ(window->GetWindowWidth(), 1024);
+	EXPECT_EQ(window->GetWindowHeight(), 768);
 }
 
 /**
@@ -173,8 +173,8 @@ TEST_F(ApplicationTest, GetWindow) {
 	const auto* window = app->GetWindow();
 
 	ASSERT_NE(window, nullptr);
-	EXPECT_GT(window->GetWidth(), 0);
-	EXPECT_GT(window->GetHeight(), 0);
+	EXPECT_GT(window->GetWindowWidth(), 0);
+	EXPECT_GT(window->GetWindowHeight(), 0);
 }
 
 /**
@@ -324,6 +324,7 @@ TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
 TEST_F(ApplicationTest, UpdateCallsLayerOnUpdate) {
 	const auto app = CreateApplication();
 	app->InitWindow(defaultProps);
+	app->InitRenderer(defaultProps);
 	app->InitImGuiLayer(defaultProps);
 
 	const auto layer1 = new MockAppLayer("Layer1");

@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/Time
+// Module: CelestialEngine/Engine/Modules/Utility/Time
 // File: Chronometer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-29
 //
 
 #pragma once
 
-#ifndef CE_TOOLS_TIME_TIMER_HPP
-#define CE_TOOLS_TIME_TIMER_HPP
+#ifndef CE_UTILITY_TIME_TIMER_HPP
+#define CE_UTILITY_TIME_TIMER_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -18,12 +18,12 @@
 
 
 /**
- * @namespace CE::Tools::Time
+ * @namespace CE::Utility::Time
  * @brief Timing utilities for performance measurement and profiling
  * @details Provides the Chronometer class, a RAII-style timing utility that automatically measures the duration of a code block. The timer starts on construction and stops on destruction,
  * 			printing the elapsed time. This is useful for profiling specific sections of code without manually starting and stopping timers. The Chronometer is only active in debug builds to avoid performance overhead in release builds.
  */
-namespace CE::Tools::Time {
+namespace CE::Utility::Time {
 
 /**
  * @class Chronometer
@@ -72,4 +72,4 @@ private:
 
 }
 
-#endif //CE_TOOLS_TIME_TIMER_HPP
+#endif //CE_UTILITY_TIME_TIMER_HPP

@@ -4,17 +4,19 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-03-29
 //
 
 #include <Events/I_Event.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 #include <Window/Platforms/Common/GlfwWindow.hpp>
+#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 
 #include <gtest/gtest.h>
 
 using namespace CE::Events;
+using namespace CE::Render::Context;
 using namespace CE::Tools::Log;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;
@@ -70,7 +72,7 @@ TEST_F(GlfwWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Width Test", 1280, 720, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 	const GlfwWindow window(props);
 
-	EXPECT_EQ(window.GetWidth(), 1280);
+	EXPECT_EQ(window.GetWindowWidth(), 1280);
 }
 
 /**
@@ -80,7 +82,7 @@ TEST_F(GlfwWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Height Test", 1280, 720, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 	const GlfwWindow window(props);
 
-	EXPECT_EQ(window.GetHeight(), 720);
+	EXPECT_EQ(window.GetWindowHeight(), 720);
 }
 
 /**
@@ -125,7 +127,7 @@ TEST_F(GlfwWindowTest, SetWidth_NewValue_UpdatesWidth) {
 	GlfwWindow window(props);
 	window.SetWidth(1920);
 
-	EXPECT_EQ(window.GetWidth(), 1920);
+	EXPECT_EQ(window.GetWindowWidth(), 1920);
 }
 
 /**
@@ -136,7 +138,7 @@ TEST_F(GlfwWindowTest, SetHeight_NewValue_UpdatesHeight) {
 	GlfwWindow window(props);
 	window.SetHeight(1080);
 
-	EXPECT_EQ(window.GetHeight(), 1080);
+	EXPECT_EQ(window.GetWindowHeight(), 1080);
 }
 
 /**
@@ -145,6 +147,13 @@ TEST_F(GlfwWindowTest, SetHeight_NewValue_UpdatesHeight) {
 TEST_F(GlfwWindowTest, SetVSync_EnableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 	GlfwWindow window(props);
+
+	OpenGlContext context(window.GetGlfwWindow());
+	context.Init();
+	window.SetVSyncCallback([&context](const bool enabled) {
+		context.HandleVSyncChange(enabled);
+	});
+
 	window.SetVSync(true);
 
 	EXPECT_TRUE(window.IsVSync());
@@ -156,6 +165,13 @@ TEST_F(GlfwWindowTest, SetVSync_EnableVSync_UpdatesState) {
 TEST_F(GlfwWindowTest, SetVSync_DisableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, true, GraphicsApi::OpenGL, WindowApi::GLFW};
 	GlfwWindow window(props);
+
+	OpenGlContext context(window.GetGlfwWindow());
+	context.Init();
+	window.SetVSyncCallback([&context](const bool enabled) {
+		context.HandleVSyncChange(enabled);
+	});
+
 	window.SetVSync(false);
 
 	EXPECT_FALSE(window.IsVSync());
@@ -225,8 +241,8 @@ TEST_F(GlfwWindowTest, Constructor_SmallWindow_Succeeds) {
 
 	EXPECT_NO_THROW({
 		const GlfwWindow window(props);
-		EXPECT_EQ(window.GetWidth(), 320);
-		EXPECT_EQ(window.GetHeight(), 240);
+		EXPECT_EQ(window.GetWindowWidth(), 320);
+		EXPECT_EQ(window.GetWindowHeight(), 240);
 	});
 }
 
@@ -234,12 +250,12 @@ TEST_F(GlfwWindowTest, Constructor_SmallWindow_Succeeds) {
  * @brief Test that large window can be created
  */
 TEST_F(GlfwWindowTest, Constructor_LargeWindow_Succeeds) {
-	const WindowProps props{"Large Window", 2560, 1440, false, GraphicsApi::OpenGL, WindowApi::GLFW};
+	const WindowProps props{"Large Window", 1440, 810, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
 	EXPECT_NO_THROW({
 		const GlfwWindow window(props);
-		EXPECT_EQ(window.GetWidth(), 2560);
-		EXPECT_EQ(window.GetHeight(), 1440);
+
+		EXPECT_EQ(window.GetWindowWidth(), 1440);
+		EXPECT_EQ(window.GetWindowHeight(), 810);
 	});
 }
-

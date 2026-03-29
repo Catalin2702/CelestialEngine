@@ -1,21 +1,22 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/CMD
+// Module: CelestialEngine/Engine/Modules/Utility/CMD
 // File: Window.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-29
 //
 
-#include "Tools/CMD/Window.hpp"
+#include "Utility/CMD/Window.hpp"
+
 #include "Tools/Log/Log.hpp"
-#include "Tools/Manipulation/String.hpp"
 #include "Types/Window/WindowProps.hpp"
+#include "Utility/Manipulation/String.hpp"
 
 #include <stdexcept>
 
 
-namespace CE::Tools::CMD {
+namespace CE::Utility::CMD {
 
 /**
  * @brief Parses command-line arguments to create window properties

@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-29
 //
 
 #include <Events/I_Event.hpp>
+#include <Render/Context/Platforms/Mac/MetalContext.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 #include <Window/Platforms/Mac/CocoaWindow.hpp>
@@ -15,6 +16,7 @@
 #include <gtest/gtest.h>
 
 using namespace CE::Events;
+using namespace CE::Render::Context;
 using namespace CE::Tools::Log;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;
@@ -64,35 +66,39 @@ TEST_F(CocoaWindowTest, Constructor_ValidProperties_Succeeds) {
 // ============================================================================
 
 /**
- * @brief Test that GetWidth returns the correct width
+ * @brief Test that GetWindowWidth returns the correct width
  */
-TEST_F(CocoaWindowTest, GetWidth_AfterConstruction_ReturnsCorrectValue) {
+TEST_F(CocoaWindowTest, GetWindowWidth_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Width Test", 1280, 720, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_EQ(window.GetWidth(), 1280);
+	EXPECT_EQ(window.GetWindowWidth(), 1280);
 }
 
 /**
- * @brief Test that GetHeight returns the correct height
+ * @brief Test that GetWindowHeight returns the correct height
  */
-TEST_F(CocoaWindowTest, GetHeight_AfterConstruction_ReturnsCorrectValue) {
+TEST_F(CocoaWindowTest, GetWindowHeight_AfterConstruction_ReturnsCorrectValue) {
 	const WindowProps props{"Height Test", 1280, 720, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	EXPECT_EQ(window.GetHeight(), 720);
+	constexpr float navbarHeight = 32;
+
+	EXPECT_EQ(window.GetWindowHeight(), 720 + navbarHeight);
 }
 
 /**
- * @brief Test that GetSize returns the correct dimensions
+ * @brief Test that GetWindowSize returns the correct dimensions
  */
-TEST_F(CocoaWindowTest, GetSize_AfterConstruction_ReturnsCorrectValues) {
+TEST_F(CocoaWindowTest, GetWindowSize_AfterConstruction_ReturnsCorrectValues) {
 	const WindowProps props{"Size Test", 1280, 720, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	const CocoaWindow window(props);
 
-	const auto [width, height] = window.GetSize();
+	constexpr float navbarHeight = 32;
+
+	const auto [width, height] = window.GetWindowSize();
 	EXPECT_EQ(width, 1280);
-	EXPECT_EQ(height, 720);
+	EXPECT_EQ(height, 720 + navbarHeight);
 }
 
 /**
@@ -161,7 +167,7 @@ TEST_F(CocoaWindowTest, SetWidth_NewValue_UpdatesWidth) {
 	CocoaWindow window(props);
 	window.SetWidth(1920);
 
-	EXPECT_EQ(window.GetWidth(), 1920);
+	EXPECT_EQ(window.GetWindowWidth(), 1920);
 }
 
 /**
@@ -172,7 +178,7 @@ TEST_F(CocoaWindowTest, SetHeight_NewValue_UpdatesHeight) {
 	CocoaWindow window(props);
 	window.SetHeight(1080);
 
-	EXPECT_EQ(window.GetHeight(), 1080);
+	EXPECT_EQ(window.GetWindowHeight(), 1080);
 }
 
 /**
@@ -181,6 +187,13 @@ TEST_F(CocoaWindowTest, SetHeight_NewValue_UpdatesHeight) {
 TEST_F(CocoaWindowTest, SetVSync_EnableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	CocoaWindow window(props);
+
+	MetalContext context(window.GetNativeWindow());
+	context.Init();
+	window.SetVSyncCallback([&context](const bool enabled) {
+		context.HandleVSyncChange(enabled);
+	});
+
 	window.SetVSync(true);
 
 	EXPECT_TRUE(window.IsVSync());
@@ -192,6 +205,13 @@ TEST_F(CocoaWindowTest, SetVSync_EnableVSync_UpdatesState) {
 TEST_F(CocoaWindowTest, SetVSync_DisableVSync_UpdatesState) {
 	const WindowProps props{"VSync Setter Test", 800, 600, true, GraphicsApi::Metal, WindowApi::Cocoa};
 	CocoaWindow window(props);
+
+	MetalContext context(window.GetNativeWindow());
+	context.Init();
+	window.SetVSyncCallback([&context](const bool enabled) {
+		context.HandleVSyncChange(enabled);
+	});
+
 	window.SetVSync(false);
 
 	EXPECT_FALSE(window.IsVSync());
@@ -261,8 +281,8 @@ TEST_F(CocoaWindowTest, Constructor_SmallWindow_Succeeds) {
 
 	EXPECT_NO_THROW({
 		const CocoaWindow window(props);
-		EXPECT_EQ(window.GetWidth(), 320);
-		EXPECT_EQ(window.GetHeight(), 240);
+		EXPECT_EQ(window.GetWindowWidth(), 320);
+		EXPECT_EQ(window.GetWindowHeight(), 240);
 	});
 }
 
@@ -274,8 +294,8 @@ TEST_F(CocoaWindowTest, Constructor_LargeWindow_Succeeds) {
 
 	EXPECT_NO_THROW({
 		const CocoaWindow window(props);
-		EXPECT_EQ(window.GetWidth(), 2560);
-		EXPECT_EQ(window.GetHeight(), 1440);
+		EXPECT_EQ(window.GetWindowWidth(), 2560);
+		EXPECT_EQ(window.GetWindowHeight(), 1440);
 	});
 }
 
@@ -318,12 +338,12 @@ TEST_F(CocoaWindowTest, MultipleWindows_SequentialCreation_Succeeds) {
 
 	EXPECT_NO_THROW({
 		const CocoaWindow window1(props1);
-		EXPECT_EQ(window1.GetWidth(), 800);
+		EXPECT_EQ(window1.GetWindowWidth(), 800);
 	});
 
 	EXPECT_NO_THROW({
 		const CocoaWindow window2(props2);
-		EXPECT_EQ(window2.GetWidth(), 1024);
+		EXPECT_EQ(window2.GetWindowWidth(), 1024);
 	});
 }
 
@@ -333,6 +353,12 @@ TEST_F(CocoaWindowTest, MultipleWindows_SequentialCreation_Succeeds) {
 TEST_F(CocoaWindowTest, FullLifecycle_WithEventsAndUpdates_Succeeds) {
 	const WindowProps props{"Lifecycle Test", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	CocoaWindow window(props);
+
+	MetalContext context(window.GetNativeWindow());
+	context.Init();
+	window.SetVSyncCallback([&context](const bool enabled) {
+		context.HandleVSyncChange(enabled);
+	});
 
 	// Set event callback
 	bool eventCallbackSet = false;
@@ -348,8 +374,8 @@ TEST_F(CocoaWindowTest, FullLifecycle_WithEventsAndUpdates_Succeeds) {
 	window.SetHeight(768);
 	window.SetVSync(true);
 
-	EXPECT_EQ(window.GetWidth(), 1024);
-	EXPECT_EQ(window.GetHeight(), 768);
+	EXPECT_EQ(window.GetWindowWidth(), 1024);
+	EXPECT_EQ(window.GetWindowHeight(), 768);
 	EXPECT_TRUE(window.IsVSync());
 
 	// Update again

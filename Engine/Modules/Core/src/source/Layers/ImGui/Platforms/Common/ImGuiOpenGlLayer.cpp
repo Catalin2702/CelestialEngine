@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #include "Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp"
@@ -150,7 +150,7 @@ void ImGuiOpenGlLayer::_Init() {
 		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 	}
 
-	io.DisplaySize = ImVec2(_window->GetWidth(),_window->GetHeight());
+	io.DisplaySize = ImVec2(_window->GetWindowWidth(),_window->GetWindowHeight());
 
 	assert(_window->GetGlfwWindow() != nullptr);
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #pragma once
@@ -77,22 +77,61 @@ public:
 
 public:
 	/**
-	 * @brief Gets the current width of the view (content area) of the window
+	 * @brief Gets the current width of the window
 	 * @return unsigned int Current width in pixels
 	 */
-	[[nodiscard]] float GetWidth() const override;
+	[[nodiscard]] float GetWindowWidth() const override;
+
+	/**
+	 * @brief Gets the current height of the window
+	 * @return unsigned int Current height in pixels
+	 */
+	[[nodiscard]] float GetWindowHeight() const override;
+
+	/**
+	 * @brief Gets the current size of the window
+	 * @return std::pair<float, float> Pair of width and height in pixels
+	 */
+	[[nodiscard]] std::pair<float, float> GetWindowSize() const override;
+
+	/**
+	 * @brief Gets the current width of the view (content area) of the window
+	 * @return float Current width in pixels
+	 */
+	[[nodiscard]] float GetViewWidth() const override;
 
 	/**
 	 * @brief Gets the current height of the view (content area) of the window
-	 * @return unsigned int Current height in pixels
+	 * @return float Current height in pixels
 	 */
-	[[nodiscard]] float GetHeight() const override;
+	[[nodiscard]] float GetViewHeight() const override;
 
 	/**
 	 * @brief Gets the current size of the view (content area) of the window
 	 * @return std::pair<float, float> Pair of width and height in pixels
 	 */
-	[[nodiscard]] std::pair<float, float> GetSize() const override;
+	[[nodiscard]] std::pair<float, float> GetViewSize() const override;
+
+	/**
+	 * @brief Gets the current width of the monitor
+	 * @return float Current monitor width in pixels
+	 * @details Returns the width of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] float GetMonitorWidth() const override;
+
+	/**
+	 * @brief Gets the current height of the monitor
+	 * @return float Current monitor height in pixels
+	 * @details Returns the height of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] float GetMonitorHeight() const override;
+
+	/**
+	 * @brief Gets the current size of the monitor
+	 * @return std::pair<float, float> Pair of monitor width and height in pixels
+	 * @details Returns the width and height of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] std::pair<float, float> GetMonitorSize() const override;
 
 	/**
 	 * @brief Checks if VSync is enabled

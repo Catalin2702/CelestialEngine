@@ -1,17 +1,17 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/Manipulation
+// Module: CelestialEngine/Engine/Modules/Utility/Manipulation
 // File: String.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-03-29
 //
 
-#include "Tools/Manipulation/String.hpp"
+#include "Utility/Manipulation/String.hpp"
 
 #include <algorithm>
 
-namespace CE::Tools::Manipulation {
+namespace CE::Utility::Manipulation {
 
 /**
  * @brief Converts a string to lowercase

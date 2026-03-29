@@ -1,26 +1,26 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/CMD
+// Module: CelestialEngine/Engine/Modules/Utility/CMD
 // File: Window.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-29
 //
 
 #pragma once
 
-#ifndef CE_TOOLS_CMD_WINDOW_HPP
-#define CE_TOOLS_CMD_WINDOW_HPP
+#ifndef CE_UTILITY_CMD_WINDOW_HPP
+#define CE_UTILITY_CMD_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 /**
- * @namespace CE::Tools::CMD
+ * @namespace CE::Utility::CMD
  * @brief Command-line argument parsing utilities
  * @details Provides functions to parse command-line arguments and extract configuration
  */
-namespace CE::Tools::CMD {
+namespace CE::Utility::CMD {
 
 /**
  * @brief Parses command-line arguments to create window properties
@@ -40,4 +40,4 @@ CE_API Types::Window::WindowProps GetWindowProps(int argc, const char* argv[]);
 
 }
 
-#endif //CE_TOOLS_CMD_WINDOW_HPP
+#endif //CE_UTILITY_CMD_WINDOW_HPP

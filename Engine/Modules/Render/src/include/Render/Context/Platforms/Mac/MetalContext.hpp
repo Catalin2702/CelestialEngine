@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-29
 //
 
 #pragma once
@@ -59,7 +59,14 @@ public:
 	 * @param props Properties for initializing the Metal context, including window and pixel format
 	 * @details Creates a MetalContext instance with the specified properties. The constructor does not perform initialization of Metal resources; the Init() method must be called separately to set up the context.
 	 */
-	MetalContext(const MetalContextProps& props);
+	explicit MetalContext(const MetalContextProps& props);
+
+	/**
+	 * @brief Constructor
+	 * @param window Pointer to the native window associated with this Metal context (expected to be a CocoaWindow)
+	 * @details Creates a MetalContext instance associated with the specified native window. The constructor does not perform initialization of Metal resources; the Init() method must be called separately to set up the context. This constructor is provided for convenience when only the window pointer is available, and it will use default properties for pixel format and other settings.
+	 */
+	explicit MetalContext(void* window);
 
 	/**
 	 * @brief Destructor

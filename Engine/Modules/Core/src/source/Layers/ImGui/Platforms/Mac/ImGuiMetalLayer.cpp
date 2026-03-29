@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
@@ -178,7 +178,7 @@ void ImGuiMetalLayer::_Init() {
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
 		}
 
-		const auto [width, height] = _window->GetSize();
+		const auto [width, height] = _window->GetViewSize();
 
 		io.DisplaySize = ImVec2(width, height);
 

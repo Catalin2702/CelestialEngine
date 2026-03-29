@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-20
+# Updated: 2026-03-29
 #
 
 enable_testing()
@@ -28,6 +28,7 @@ set_target_properties(CE_TestsWindow PROPERTIES
 # Modules
 target_link_libraries(CE_TestsWindow PRIVATE
 	CE_Config
+	CE_Render
 	CE_Window
 )
 

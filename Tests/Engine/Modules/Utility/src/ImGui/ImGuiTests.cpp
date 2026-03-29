@@ -4,15 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-29
 //
 
-#include <Tools/ImGui/ImGui.hpp>
+#include <Utility/ImGui/ImGui.hpp>
 
 #include <GLFW/glfw3.h>
 #include <gtest/gtest.h>
 
-using namespace CE::Tools::ImGui;
+using namespace CE::Utility::ImGui;
 
 /**
  * @brief Test fixture for ImGui tests

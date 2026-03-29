@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-29
 //
 
 #include <Core/Application.hpp>
@@ -43,6 +43,7 @@ protected:
 		try {
 			_app = std::make_unique<Application>();
 			_app->InitWindow(windowProps);
+			_app->InitRenderer(windowProps);
 		}
 		catch (...) {
 			_windowAvailable = false;

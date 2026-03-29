@@ -4,23 +4,15 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-29
 #
 
 set(HEADERS
-	src/include/Tools/CMD/Window.hpp
 	src/include/Tools/Log/Log.hpp
-	src/include/Tools/Manipulation/String.hpp
-	src/include/Tools/Time/Chronometer.hpp
-	src/include/Tools/ImGui/ImGui.hpp
 )
 
 set(SOURCES
-	src/source/Tools/CMD/Window.cpp
 	src/source/Tools/Log/Log.cpp
-	src/source/Tools/Manipulation/String.cpp
-	src/source/Tools/Time/Chronometer.cpp
-	src/source/Tools/ImGui/ImGui.cpp
 )
 
 add_library(CE_Tools SHARED

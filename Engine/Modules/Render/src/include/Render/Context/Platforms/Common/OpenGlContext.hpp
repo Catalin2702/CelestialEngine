@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #pragma once
@@ -42,6 +42,13 @@ public:
 	 * @details Creates an OpenGlContext instance associated with the specified GLFW window. The constructor does not perform initialization of the OpenGL context; the Init() method must be called separately to set up the context.
 	 */
 	explicit OpenGlContext(GLFWwindow* window);
+
+	/**
+	 * @brief Constructor
+	 * @param window Generic pointer to the GLFW window associated with this OpenGL context
+	 * @details Creates an OpenGlContext instance associated with the specified GLFW window. The constructor does not perform initialization of the OpenGL context; the Init() method must be called separately to set up the context. The window parameter is expected to be a pointer to a GLFWwindow, and it will be cast accordingly.
+	 */
+	explicit OpenGlContext(void* window);
 
 	/**
 	 * @brief Destructor

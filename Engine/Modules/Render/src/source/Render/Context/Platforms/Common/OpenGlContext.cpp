@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
@@ -20,6 +20,8 @@
 namespace CE::Render::Context {
 
 OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {}
+
+OpenGlContext::OpenGlContext(void* window): _window(static_cast<GLFWwindow*>(window)) {}
 
 OpenGlContext::~OpenGlContext() {
 	_window = nullptr;

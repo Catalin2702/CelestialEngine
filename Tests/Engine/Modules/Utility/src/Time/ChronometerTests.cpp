@@ -4,17 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-02
+// Updated: 2026-03-29
 //
 
+#include <Utility/Time/Chronometer.hpp>
+
 #include <Tools/Log/Log.hpp>
-#include <Tools/Time/Chronometer.hpp>
 
 #include <chrono>
 #include <thread>
 #include <gtest/gtest.h>
 
-using namespace CE::Tools::Time;
+using namespace CE::Utility::Time;
 
 /**
  * @brief Test fixture for Chronometer tests

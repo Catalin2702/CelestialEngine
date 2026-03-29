@@ -198,6 +198,12 @@ _APPKIT_PRIVATE_DEF_SEL( title_,
 _APPKIT_PRIVATE_DEF_SEL( setFrameAutosaveName_,
 						"setFrameAutosaveName:" );
 
+_APPKIT_PRIVATE_DEF_SEL(setFrame_display_,
+						"setFrame:display:" );
+
+_APPKIT_PRIVATE_DEF_SEL( setFrame_display_animate_,
+						"setFrame:display:animate:" );
+
 _APPKIT_PRIVATE_DEF_SEL( windows,
 						"windows" );
 

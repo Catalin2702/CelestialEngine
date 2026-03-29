@@ -4,17 +4,25 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-23
+# Updated: 2026-03-29
 #
 
 set(HEADERS
 	src/include/Utility/Callback/Callback.hpp
+	src/include/Utility/CMD/Window.hpp
+	src/include/Utility/Manipulation/String.hpp
+	src/include/Utility/Time/Chronometer.hpp
+	src/include/Utility/ImGui/ImGui.hpp
 )
 
 set(SOURCES
+	src/source/Utility/CMD/Window.cpp
+	src/source/Utility/Manipulation/String.cpp
+	src/source/Utility/Time/Chronometer.cpp
+	src/source/Utility/ImGui/ImGui.cpp
 )
 
-add_library(CE_Utility INTERFACE
+add_library(CE_Utility SHARED
 	${HEADERS}
 	${SOURCES}
 )
@@ -24,15 +32,17 @@ set_target_properties(CE_Utility PROPERTIES
 )
 
 # Modules
-target_link_libraries(CE_Utility INTERFACE
+target_link_libraries(CE_Utility PUBLIC
 	CE_Config
+	CE_Tools
+	CE_Types
 )
 
-target_include_directories(CE_Utility INTERFACE
+target_include_directories(CE_Utility PUBLIC
 	src/include
 )
 
-target_compile_definitions(CE_Utility INTERFACE
+target_compile_definitions(CE_Utility PUBLIC
 	CE_DEFINE_EXPORTS
 )
 

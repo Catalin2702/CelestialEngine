@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-03-29
 //
 
 #include <Core/Application.hpp>
@@ -52,7 +52,7 @@ protected:
 	/**
 	 *
 	 */
-	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal, WindowApi::GLFW};
+	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
 	std::unique_ptr<Application> _app;
 };
 
@@ -78,10 +78,13 @@ TEST_F(MetalInputTest, MetalInputManager_Init_CreatesSingletonInstance) {
 TEST_F(MetalInputTest, MetalInputManager_Shutdown_CleansUpSingleton) {
 	_ShutdownInput();
 
-	// After shutdown, instance should still exist but be cleaned up properly
-	EXPECT_NO_THROW({
-		[[maybe_unused]] const auto* instance = I_Input::Get();
-	});
+#ifdef CE_DEBUG
+	EXPECT_DEATH({
+		I_Input::Get();
+	}, "I_Input::Get");
+#else
+	EXPECT_EQ(I_Input::Get(), nullptr);
+#endif
 }
 
 /**

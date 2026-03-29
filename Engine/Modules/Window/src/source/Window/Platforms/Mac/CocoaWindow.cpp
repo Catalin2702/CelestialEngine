@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
@@ -52,7 +52,37 @@ void CocoaWindow::OnUpdate() const {
 	}
 }
 
-float CocoaWindow::GetWidth() const {
+float CocoaWindow::GetWindowWidth() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetWidth: Could not get width because window is not initialized.");
+		return 0;
+	}
+
+	const auto [origin, size] = _window->frame();
+	return static_cast<float>(size.width);
+}
+
+float CocoaWindow::GetWindowHeight() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetHeight: Could not get height because window is not initialized.");
+		return 0;
+	}
+
+	const auto [origin, size] = _window->frame();
+	return static_cast<float>(size.height);
+}
+
+std::pair<float, float> CocoaWindow::GetWindowSize() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
+		return {0, 0};
+	}
+
+	const auto [origin, size] = _window->frame();
+	return {static_cast<float>(size.width), static_cast<float>(size.height)};
+}
+
+float CocoaWindow::GetViewWidth() const {
 	if (not _view) {
 		CE_CORE_WARN("CocoaWindow::GetWidth: Could not get width because window is not initialized.");
 		return 0;
@@ -62,7 +92,7 @@ float CocoaWindow::GetWidth() const {
 	return static_cast<float>(size.width);
 }
 
-float CocoaWindow::GetHeight() const {
+float CocoaWindow::GetViewHeight() const {
 	if (not _view) {
 		CE_CORE_WARN("CocoaWindow::GetHeight: Could not get height because window is not initialized.");
 		return 0;
@@ -72,7 +102,7 @@ float CocoaWindow::GetHeight() const {
 	return static_cast<float>(size.height);
 }
 
-std::pair<float, float> CocoaWindow::GetSize() const {
+std::pair<float, float> CocoaWindow::GetViewSize() const {
 	if (not _view) {
 		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
 		return {0, 0};
@@ -80,6 +110,33 @@ std::pair<float, float> CocoaWindow::GetSize() const {
 
 	const auto [origin, size] = _view->frame();
 	return {static_cast<float>(size.width), static_cast<float>(size.height)};
+}
+
+float CocoaWindow::GetMonitorWidth() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetMonitorWidth: Could not get monitor width because window is not initialized.");
+		return 0;
+	}
+
+	return 0.f;
+}
+
+float CocoaWindow::GetMonitorHeight() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetMonitorHeight: Could not get monitor height because window is not initialized.");
+		return 0;
+	}
+
+	return 0.f;
+}
+
+std::pair<float, float> CocoaWindow::GetMonitorSize() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetMonitorSize: Could not get monitor size because window is not initialized.");
+		return {0, 0};
+	}
+
+	return {0.f, 0.f};
 }
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {
@@ -94,7 +151,7 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 
 std::pair<float, float> CocoaWindow::GetContentSize() const {
 	const auto [fst, snd] = GetContentScale();
-	const auto [width, height] = GetSize();
+	const auto [width, height] = GetWindowSize();
 	return {width * fst, height * snd};
 }
 
@@ -117,58 +174,58 @@ void CocoaWindow::_SetIOEventCallbacks() {
 	RenderViewCallbacks callbacks{};
 
 	callbacks.KeyPressedEventCallback = [](void* userData, const int keyCode, const bool isRepeat) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::KeyPressedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode), isRepeat ? 1 : 0};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.KeyReleasedEventCallback = [](void* userData, const int keyCode) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::KeyReleasedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode)};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.KeyTypedEventCallback = [](void* userData, const char character) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(character)};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseMovedEventCallback = [](void* userData, const float x, const float y) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::MouseMovedEvent event{x, y};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseScrolledEventCallback = [](void* userData, const float xOffset, const float yOffset) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::MouseScrolledEvent event{xOffset, yOffset};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseButtonPressedEventCallback = [](void* userData, const int buttonCode) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::MouseButtonPressedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseButtonReleasedEventCallback = [](void* userData, const int buttonCode) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::MouseButtonReleasedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseDraggedEventCallback = [](void* userData, const int buttonCode, const float x, const float y) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::MouseDraggedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode), x, y};
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
@@ -182,17 +239,17 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 	WindowDelegateCallbacks callbacks{};
 
 	callbacks.WindowDidResizeEventCallback = [](void* userData, const unsigned int width, const unsigned int height) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::WindowResizeEvent event{width, height};
-			_callbacks->EventCallback(event);
-			_callbacks->_internalCallbacks.ResizeEventCallback(event);
+			windowCallbacks->EventCallback(event);
+			windowCallbacks->_internalCallbacks.ResizeEventCallback(event);
 		}
 	};
 
 	callbacks.WindowWillCloseEventCallback = [](void* userData) {
-		if (const auto _callbacks = static_cast<WindowCallbacks*>(userData)) {
+		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
 			Events::WindowCloseEvent event;
-			_callbacks->EventCallback(event);
+			windowCallbacks->EventCallback(event);
 		}
 	};
 
@@ -212,6 +269,13 @@ void CocoaWindow::SetWidth(const unsigned int width) {
 		return;
 
 	_data.width = width;
+
+	const CGRect frame = {
+		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
+		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
+	};
+	_window->setFrame(frame, true, true);
+
 	_UpdateLayerSize();
 }
 
@@ -220,6 +284,13 @@ void CocoaWindow::SetHeight(const unsigned int height) {
 		return;
 
 	_data.height = height;
+
+	const CGRect frame = {
+		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
+		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
+	};
+	_window->setFrame(frame, true, true);
+
 	_UpdateLayerSize();
 }
 
@@ -229,6 +300,13 @@ void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 
 	_data.width = width;
 	_data.height = height;
+
+	const CGRect frame = {
+		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
+		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
+	};
+	_window->setFrame(frame, true, true);
+
 	_UpdateLayerSize();
 }
 

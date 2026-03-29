@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-29
 //
 
 /**
@@ -63,23 +63,26 @@
 // -----------------------------------------------
 
 // ---- Tools ------------------------------------
-#include <Tools/CMD/Window.hpp>
 #include <Tools/Log/Log.hpp>
-#include <Tools/Time/Chronometer.hpp>
 // -----------------------------------------------
 
 // ---- Types ------------------------------------
 #include <Types/Window/WindowProps.hpp>
 // -----------------------------------------------
 
+// ---- Utility ----------------------------------
+#include <Utility/CMD/Window.hpp>
+#include <Utility/Time/Chronometer.hpp>
+// -----------------------------------------------
+
 // ---- Convenient namespace aliases -------------
-namespace CMD = CE::Tools::CMD;						///< Command-line parsing utilities
+namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
 namespace Core = CE::Core;							///< Core engine functionality
 namespace Events = CE::Events;						///< Event system
 namespace Input = CE::Input;						///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
 namespace Layers = CE::Layers;						///< Layer management
-namespace Time = CE::Tools::Time;					///< Time utilities
+namespace Time = CE::Utility::Time;					///< Time utilities
 namespace TypeWindow = CE::Types::Window;			///< Window-related types
 // -----------------------------------------------
 

@@ -1,27 +1,27 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/Manipulation
+// Module: CelestialEngine/Engine/Modules/Utility/Manipulation
 // File: String.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-29
 //
 
 #pragma once
 
-#ifndef CE_TOOLS_MANIPULATION_STRING_HPP
-#define CE_TOOLS_MANIPULATION_STRING_HPP
+#ifndef CE_UTILITY_MANIPULATION_STRING_HPP
+#define CE_UTILITY_MANIPULATION_STRING_HPP
 
 #include "Define/DynamicLinker.hpp"
 
 #include <string>
 
 /**
- * @namespace CE::Tools::Manipulation
+ * @namespace CE::Utility::Manipulation
  * @brief String manipulation utilities
  * @details Provides helper functions for common string operations like case conversion
  */
-namespace CE::Tools::Manipulation {
+namespace CE::Utility::Manipulation {
 
 /**
  * @brief Converts a string to lowercase
@@ -34,4 +34,4 @@ CE_API std::string ToLowerCase(const std::string& source);
 
 }
 
-#endif //CE_TOOLS_MANIPULATION_STRING_HPP
+#endif //CE_UTILITY_MANIPULATION_STRING_HPP

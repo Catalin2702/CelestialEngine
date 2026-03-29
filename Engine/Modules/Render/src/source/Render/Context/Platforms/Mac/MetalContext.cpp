@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-29
 //
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
@@ -23,6 +23,18 @@
 namespace CE::Render::Context {
 
 MetalContext::MetalContext(const MetalContextProps& props): _props(props) {}
+
+MetalContext::MetalContext(void* window) {
+	if (not window) {
+		CE_CORE_ERROR("MetalContext constructor: Invalid window pointer provided.");
+		throw std::invalid_argument("MetalContext constructor: Invalid window pointer provided.");
+	}
+
+	_props = MetalContextProps {
+		.window = static_cast<Window::CocoaWindow*>(window),
+		.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm
+	};
+}
 
 MetalContext::~MetalContext() = default;
 

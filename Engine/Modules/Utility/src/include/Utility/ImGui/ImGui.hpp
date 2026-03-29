@@ -1,28 +1,28 @@
 //
-// Module: CelestialEngine/Engine/Modules/Tools/ImGui
+// Module: CelestialEngine/Engine/Modules/Utility/ImGui
 // File: ImGui.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-29
 //
 
 #pragma once
 
-#ifndef CE_TOOLS_IMGUI_IMGUI_HPP
-#define CE_TOOLS_IMGUI_IMGUI_HPP
+#ifndef CE_UTILITY_IMGUI_IMGUI_HPP
+#define CE_UTILITY_IMGUI_IMGUI_HPP
 
 #include "Define/DynamicLinker.hpp"
 
 #include <imgui.h>
 
 /**
- * @namespace CE::Tools::ImGui
+ * @namespace CE::Utility::ImGui
  * @brief Utility functions for ImGui setup and configuration
  * @details Provides helper functions to initialize and configure ImGui with
  *			appropriate styles and settings for the engine.
  */
-namespace CE::Tools::ImGui {
+namespace CE::Utility::ImGui {
 
 /**
  * @brief Converts a GLFW key code to the corresponding ImGui key code
@@ -36,4 +36,4 @@ CE_API ImGuiKey GlfwKeyToImGuiKey(int key);
 
 }
 
-#endif //CE_TOOLS_IMGUI_IMGUI_HPP
+#endif //CE_UTILITY_IMGUI_IMGUI_HPP

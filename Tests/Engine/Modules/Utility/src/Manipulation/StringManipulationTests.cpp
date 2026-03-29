@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-03-29
 //
 
-#include <Tools/Manipulation/String.hpp>
+#include <Utility/Manipulation/String.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Tools::Manipulation;
+using namespace CE::Utility::Manipulation;
 
 /**
  * @brief Test fixture for String Manipulation tests

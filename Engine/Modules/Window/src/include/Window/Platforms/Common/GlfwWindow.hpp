@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-29
 //
 
 #pragma once
@@ -71,20 +71,62 @@ public:
 	 * @return unsigned int Width in pixels
 	 * @details Inline getter that returns the cached width value from _data
 	 */
-	[[nodiscard]] float GetWidth() const override;
+	[[nodiscard]] float GetWindowWidth() const override;
 
 	/**
 	 * @brief Gets the current height of the window
 	 * @return unsigned int Height in pixels
 	 * @details Inline getter that returns the cached height value from _data
 	 */
-	[[nodiscard]] float GetHeight() const override;
+	[[nodiscard]] float GetWindowHeight() const override;
 
 	/**
 	 * @brief Gets the current size of the window
 	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
 	 */
-	[[nodiscard]] std::pair<float, float> GetSize() const override;
+	[[nodiscard]] std::pair<float, float> GetWindowSize() const override;
+
+	/**
+	 * @brief Gets the current width of the view (content area) of the window
+	 * @return float Current width in pixels
+	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same value as GetWindowWidth(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
+	 */
+	[[nodiscard]] float GetViewWidth() const override { return GetWindowWidth(); }
+
+	/**
+	 * @brief Gets the current height of the view (content area) of the window
+	 * @return float Current height in pixels
+	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same value as GetWindowHeight(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
+	 */
+	[[nodiscard]] float GetViewHeight() const override { return GetWindowHeight(); }
+
+	/**
+	 * @brief Gets the current size of the view (content area) of the window
+	 * @return std::pair<float, float> Pair of width and height in pixels
+	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same values as GetWindowSize(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
+	 */
+	[[nodiscard]] std::pair<float, float> GetViewSize() const override { return GetWindowSize(); }
+
+	/**
+	 * @brief Gets the current width of the monitor
+	 * @return float Current monitor width in pixels
+	 * @details Retrieves the width of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] float GetMonitorWidth() const override;
+
+	/**
+	 * @brief Gets the current height of the monitor
+	 * @return float Current monitor height in pixels
+	 * @details Retrieves the height of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] float GetMonitorHeight() const override;
+
+	/**
+	 * @brief Gets the current size of the monitor
+	 * @return std::pair<float, float> Pair of monitor width and height in pixels
+	 * @details Retrieves the width and height of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
+	 */
+	[[nodiscard]] std::pair<float, float> GetMonitorSize() const override;
 
 	/**
 	 * @brief Checks if VSync is enabled
@@ -200,6 +242,12 @@ public:
 	 */
 	void SetCurrentContext(GLFWwindow* window = nullptr) const;
 
+	/**
+	 * @brief Prepares the window for rendering
+	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
+	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
+	 *			In this implementation, it sets the VSync state according to the configuration in _data.
+	 */
 	void GetReady() override;
 
 protected:
