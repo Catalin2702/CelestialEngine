@@ -13,6 +13,8 @@
 #define CE_LAYERS_I_LAYER_HPP
 
 #include "Define/DynamicLinker.hpp"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "Events/I_Event.hpp"
 
 
 /**
