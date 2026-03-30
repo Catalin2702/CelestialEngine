@@ -18,7 +18,7 @@
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
-#include "Types/Render/Platforms/Common/OpenGl.hpp"
+#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 #include "Window/Platforms/Common/GlfwWindow.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM

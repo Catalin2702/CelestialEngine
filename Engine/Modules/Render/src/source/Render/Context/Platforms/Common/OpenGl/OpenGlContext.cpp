@@ -10,7 +10,7 @@
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 
 #include "Tools/Log/Log.hpp"
-#include "Types/Render/Platforms/Common/OpenGl.hpp"
+#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 
 #include <cassert>
 #include <stdexcept>
