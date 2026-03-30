@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
-#include "AppKit/View/RenderView.hpp"
 
+#include "AppKit/Utility/AppKit.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <cassert>
@@ -95,6 +95,15 @@ void MetalContext::HandleVSyncChange(const bool enabled) {
 	}
 
 	_layer->setDisplaySyncEnabled(enabled);
+}
+
+bool MetalContext::IsVSyncEnabled() const {
+	if (not _layer) {
+		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get VSync state because Metal layer is not initialized.");
+		return false;
+	}
+
+	return _layer->displaySyncEnabled();
 }
 
 }

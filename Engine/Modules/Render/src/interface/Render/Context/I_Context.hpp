@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-30
 //
 
 #pragma once
@@ -70,6 +70,14 @@ public:
 	 *			This allows the context to enable or disable synchronization with the monitor's refresh rate as needed.
 	 */
 	virtual void HandleVSyncChange(bool enabled) = 0;
+
+public:
+	/**
+	 * @brief Checks if VSync is currently enabled
+	 * @return bool True if VSync is enabled, false otherwise
+	 * @details Pure virtual method that returns the current state of VSync in the graphics context. This allows the application to query whether VSync is active and adjust rendering behavior accordingly.
+	 */
+	[[nodiscard]] virtual bool IsVSyncEnabled() const = 0;
 
 public:
 	/**

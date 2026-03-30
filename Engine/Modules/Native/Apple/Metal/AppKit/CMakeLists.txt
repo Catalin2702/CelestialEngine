@@ -4,12 +4,15 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-29
+# Updated: 2026-03-30
 #
 
 set(HEADERS
-	# Init
-	src/include/AppKit/AppKitInit.hpp
+	# Screen
+	src/include/AppKit/Screen/Screen.hpp
+
+	# Utility
+	src/include/AppKit/Utility/AppKit.hpp
 
 	# View
 	src/include/AppKit/View/RenderView.h
@@ -22,9 +25,6 @@ set(HEADERS
 )
 
 set(SOURCES
-	# Init
-	src/source/AppKit/AppKitInit.mm
-
 	# View
 	src/source/AppKit/View/RenderView.mm
 

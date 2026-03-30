@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #pragma once
@@ -100,6 +100,14 @@ public:
 	 * @details Updates the Metal layer's display sync setting based on the new VSync state. This method should be called when the VSync state changes to ensure that rendering is synchronized with the monitor's refresh rate if VSync is enabled.
 	 */
 	void HandleVSyncChange(bool enabled) override;
+
+public:
+	/**
+	 * @brief Checks if VSync is currently enabled
+	 * @return bool True if VSync is enabled, false otherwise
+	 * @details Returns the current state of VSync in the Metal context by checking the display sync setting of the Metal layer. This allows the application to query whether VSync is active and adjust rendering behavior accordingly.
+	 */
+	[[nodiscard]] bool IsVSyncEnabled() const override;
 
 public:
 	/**

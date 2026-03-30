@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-29
+# Updated: 2026-03-30
 #
 
 enable_testing()
@@ -28,6 +28,7 @@ set_target_properties(CE_TestsWindow PROPERTIES
 # Modules
 target_link_libraries(CE_TestsWindow PRIVATE
 	CE_Config
+	CE_Native
 	CE_Render
 	CE_Window
 )
@@ -35,6 +36,13 @@ target_link_libraries(CE_TestsWindow PRIVATE
 # Third-party
 target_link_libraries(CE_TestsWindow PRIVATE
 	GTest::gtest_main
+)
+
+target_link_options(CE_TestsWindow PRIVATE
+	$<$<PLATFORM_ID:Darwin>:
+		-ObjC++
+		-fno-objc-arc
+	>
 )
 
 add_test(NAME WindowTests

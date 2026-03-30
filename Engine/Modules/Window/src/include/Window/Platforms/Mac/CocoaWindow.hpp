@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #pragma once
@@ -137,7 +137,7 @@ public:
 	 * @brief Checks if VSync is enabled
 	 * @return bool True if VSync is enabled, false otherwise
 	 */
-	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
+	[[nodiscard]] bool IsVSync() const override;
 
 	/**
 	 * @brief Gets the native macOS window
@@ -252,7 +252,7 @@ protected:
 	 */
 	void _SetInternalCallbacks() override;
 
-private:
+protected:
 	/** @brief Initializes the window and Metal resources
 	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
 	 */

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
@@ -47,6 +47,10 @@ void OpenGlContext::SetViewport(const int x, const int y, const int width, const
 
 void OpenGlContext::ClearBuffers(const Types::Render::BufferBit mask) {
 	glClear(Types::Render::ToInt(mask));
+}
+
+bool OpenGlContext::IsVSyncEnabled() const {
+	return false;
 }
 
 }

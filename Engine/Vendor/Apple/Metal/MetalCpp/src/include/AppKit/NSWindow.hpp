@@ -32,6 +32,10 @@
 
 #include "Metal/MTLEvent.hpp"
 
+namespace NS {
+class Screen;
+}
+
 
 namespace NS {
 
@@ -57,6 +61,7 @@ public:
 	[[nodiscard]] View* contentView() const;
 	[[nodiscard]] Object* delegate() const;
 	[[nodiscard]] CGRect frame() const;
+	[[nodiscard]] Screen* screen() const;
 	[[nodiscard]] String* title() const;
 };
 
@@ -121,6 +126,10 @@ _NS_INLINE NS::Object* NS::Window::delegate() const {
 
 _NS_INLINE CGRect NS::Window::frame() const {
 	return sendMessage<CGRect>(this, _APPKIT_PRIVATE_SEL(frame));
+}
+
+_NS_INLINE NS::Screen* NS::Window::screen() const {
+	return sendMessage<Screen*>(this, _APPKIT_PRIVATE_SEL(screen));
 }
 
 _NS_INLINE NS::String* NS::Window::title() const {

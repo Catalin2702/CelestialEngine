@@ -4,13 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
-#include "AppKit/View/RenderView.hpp"
-#include "AppKit/Window/WindowDelegate.hpp"
+#include "AppKit/Utility/AppKit.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
@@ -21,7 +20,6 @@
 
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
-#include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
 #include <stdexcept>
@@ -137,6 +135,15 @@ std::pair<float, float> CocoaWindow::GetMonitorSize() const {
 	}
 
 	return {0.f, 0.f};
+}
+
+bool CocoaWindow::IsVSync() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::IsVSync: Could not get VSync state because window is not initialized.");
+		return false;
+	}
+
+	return _data.VSync;
 }
 
 std::pair<float, float> CocoaWindow::GetContentScale() const {

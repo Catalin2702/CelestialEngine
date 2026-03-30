@@ -397,6 +397,17 @@ _APPKIT_PRIVATE_DEF_SEL( setMouseCoalescingEnabled_,
 _APPKIT_PRIVATE_DEF_SEL( isSwipeTrackingFromScrollEventsEnabled,
 						"isSwipeTrackingFromScrollEventsEnabled" );
 
+// Screen
+_APPKIT_PRIVATE_DEF_SEL(mainScreen, "mainScreen");
+
+_APPKIT_PRIVATE_DEF_SEL(maximumFramesPerSecond, "maximumFramesPerSecond");
+
+_APPKIT_PRIVATE_DEF_SEL(screen, "screen");
+
+_APPKIT_PRIVATE_DEF_SEL(screens, "screens");
+
+_APPKIT_PRIVATE_DEF_SEL(visibleFrame, "visibleFrame");
+
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

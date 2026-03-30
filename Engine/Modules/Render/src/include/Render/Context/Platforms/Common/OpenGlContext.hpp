@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #pragma once
@@ -79,6 +79,14 @@ public:
 	static void SetViewport(int x, int y, int width, int height);
 
 	static void ClearBuffers(Types::Render::BufferBit mask);
+
+public:
+	/**
+	 * @brief Checks if VSync is currently enabled
+	 * @return bool True if VSync is enabled, false otherwise
+	 * @details Returns the current state of VSync in the OpenGL context. This method can be implemented to query the current VSync state based on the context's settings or platform-specific APIs.
+	 */
+	[[nodiscard]] bool IsVSyncEnabled() const override;
 
 public:
 	[[nodiscard]] void* GetNativeDevice() const override { return nullptr; }
