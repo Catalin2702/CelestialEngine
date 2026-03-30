@@ -17,7 +17,7 @@
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 
 namespace CE::Render::Context {

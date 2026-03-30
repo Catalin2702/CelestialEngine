@@ -13,7 +13,7 @@
 #include "Core/Application.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 
 namespace CE::Input {

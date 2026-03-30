@@ -4,16 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-30
 #
 
 set(HEADERS
-	src/include/Window/Platforms/Common/GlfwWindow.hpp
-)
+	src/include/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
-list(APPEND HEADERS
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Window/Platforms/Mac/CocoaWindow.hpp
+		src/include/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp
 	>
 )
 
@@ -22,13 +20,10 @@ set(INTERFACES
 )
 
 set(SOURCES
-	src/source/Window/Platforms/Common/GlfwWindow.cpp
-)
+	src/source/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 
-# Platform-specific
-list(APPEND SOURCES
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Window/Platforms/Mac/CocoaWindow.cpp
+		src/source/Window/Platforms/Mac/Cocoa/CocoaWindow.cpp
 	>
 )
 

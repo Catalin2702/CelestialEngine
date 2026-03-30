@@ -12,7 +12,7 @@
 #include <Render/Context/Platforms/Mac/Metal/MetalContext.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
-#include <Window/Platforms/Mac/CocoaWindow.hpp>
+#include <Window/Platforms/Mac/Cocoa/CocoaWindow.hpp>
 
 #include <gtest/gtest.h>
 

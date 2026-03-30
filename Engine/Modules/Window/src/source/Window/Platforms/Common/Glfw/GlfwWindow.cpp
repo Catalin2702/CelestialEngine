@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
-#include "Window/Platforms/Common/GlfwWindow.hpp"
+#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"

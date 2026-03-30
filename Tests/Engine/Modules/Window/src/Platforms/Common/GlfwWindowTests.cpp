@@ -11,7 +11,7 @@
 #include <Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
-#include <Window/Platforms/Common/GlfwWindow.hpp>
+#include <Window/Platforms/Common/Glfw/GlfwWindow.hpp>
 
 #include <gtest/gtest.h>
 

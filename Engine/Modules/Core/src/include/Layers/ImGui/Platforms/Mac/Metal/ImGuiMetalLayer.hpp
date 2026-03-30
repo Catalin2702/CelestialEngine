@@ -16,7 +16,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include <semaphore>
 #include <Foundation/Foundation.hpp>

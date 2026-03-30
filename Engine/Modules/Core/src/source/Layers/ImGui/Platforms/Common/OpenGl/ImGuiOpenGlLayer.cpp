@@ -19,7 +19,7 @@
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
-#include "Window/Platforms/Common/GlfwWindow.hpp"
+#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>

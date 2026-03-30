@@ -18,7 +18,7 @@
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
-#include "Window/Platforms/Common/GlfwWindow.hpp"
+#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 
 #ifdef CE_PLATFORM_MACOS
@@ -26,7 +26,7 @@
 
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #endif
 
 #include <cassert>

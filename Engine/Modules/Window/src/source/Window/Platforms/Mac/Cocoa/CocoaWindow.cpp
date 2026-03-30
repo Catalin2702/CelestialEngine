@@ -7,7 +7,7 @@
 // Updated: 2026-03-30
 //
 
-#include "Window/Platforms/Mac/CocoaWindow.hpp"
+#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include "AppKit/Utility/AppKit.hpp"
 
