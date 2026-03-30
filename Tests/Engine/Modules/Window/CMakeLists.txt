@@ -38,13 +38,6 @@ target_link_libraries(CE_TestsWindow PRIVATE
 	GTest::gtest_main
 )
 
-#target_link_options(CE_TestsWindow PRIVATE
-#	$<$<PLATFORM_ID:Darwin>:
-#		-ObjC++
-#		-fno-objc-arc
-#	>
-#)
-
 add_test(NAME WindowTests
 	COMMAND CE_TestsWindow
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
