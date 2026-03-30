@@ -4,19 +4,19 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-20
+# Updated: 2026-03-30
 #
 
 set(SOURCES
 	src/Core/ApplicationTests.cpp
-	src/Input/MetalInputTests.cpp
-	src/Layers/ImGui/Platforms/Common/ImGuiOpenGlLayerTests.cpp
+	src/Input/Platforms/Glfw/GlfwInputTests.cpp
+	src/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayerTests.cpp
 	src/Layers/LayerStackTests.cpp
 	src/Layers/LayerTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-#		src/Layers/ImGui/Platforms/Mac/ImGuiMetalGlfwLayerTests.cpp
-		src/Layers/ImGui/Platforms/Mac/ImGuiMetalLayerTests.cpp
+		src/Input/Platforms/Metal/MetalInputTests.cpp
+		src/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayerTests.cpp
 	>
 )
 
@@ -51,4 +51,3 @@ set_tests_properties(CoreTests PROPERTIES
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsCore)
-

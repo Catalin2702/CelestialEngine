@@ -10,10 +10,10 @@
 enable_testing()
 
 set(SOURCES
-	src/Platforms/Common/GlfwWindowTests.cpp
+	src/Platforms/Common/Glfw/GlfwWindowTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Platforms/Mac/CocoaWindowTests.cpp
+		src/Platforms/Mac/Cocoa/CocoaWindowTests.cpp
 	>
 )
 
@@ -38,12 +38,12 @@ target_link_libraries(CE_TestsWindow PRIVATE
 	GTest::gtest_main
 )
 
-target_link_options(CE_TestsWindow PRIVATE
-	$<$<PLATFORM_ID:Darwin>:
-		-ObjC++
-		-fno-objc-arc
-	>
-)
+#target_link_options(CE_TestsWindow PRIVATE
+#	$<$<PLATFORM_ID:Darwin>:
+#		-ObjC++
+#		-fno-objc-arc
+#	>
+#)
 
 add_test(NAME WindowTests
 	COMMAND CE_TestsWindow
@@ -56,4 +56,3 @@ set_tests_properties(WindowTests PROPERTIES
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsWindow)
-

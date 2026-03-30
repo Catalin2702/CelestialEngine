@@ -1,8 +1,8 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Core/Input
-// File: MetalInputTests.cpp
+// Module: CelestialEngine/Tests/Engine/Modules/Core/Input/Platforms/Glfw
+// File: GlfwInputTests.cpp
 // Created by: Catalin Chirosca
-// Created: 2026-03-08
+// Created: 2026-03-30
 // Updated by: Catalin Chirosca
 // Updated: 2026-03-30
 //
@@ -27,9 +27,9 @@ using namespace CE::Types::Render;
 using namespace CE::Types::Window;
 
 /**
- * @brief Test fixture for MetalInput tests
+ * @brief Test fixture for GlfwInput tests
  */
-class MetalInputTest: public ::testing::Test {
+class GlfwInputTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
@@ -52,7 +52,7 @@ protected:
 	/**
 	 *
 	 */
-	WindowProps _props{"MetalInputTests", 800, 600, false, GraphicsApi::Metal, WindowApi::Cocoa};
+	WindowProps _props{"GlfwInputTests", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 	std::unique_ptr<Application> _app;
 };
 
@@ -61,9 +61,9 @@ protected:
 // ============================================================================
 
 /**
- * @brief Test that MetalInputManager initializes the singleton instance
+ * @brief Test that GlfwInputManager initializes the singleton instance
  */
-TEST_F(MetalInputTest, MetalInputManager_Init_CreatesSingletonInstance) {
+TEST_F(GlfwInputTest, GlfwInputManager_Init_CreatesSingletonInstance) {
 	_InitInput();
 
 	const auto* instance = I_Input::Get();
@@ -73,9 +73,9 @@ TEST_F(MetalInputTest, MetalInputManager_Init_CreatesSingletonInstance) {
 }
 
 /**
- * @brief Test that MetalInputManager shutdown cleans up the singleton
+ * @brief Test that GlfwInputManager shutdown cleans up the singleton
  */
-TEST_F(MetalInputTest, MetalInputManager_Shutdown_CleansUpSingleton) {
+TEST_F(GlfwInputTest, GlfwInputManager_Shutdown_CleansUpSingleton) {
 	_ShutdownInput();
 
 #ifdef CE_DEBUG
@@ -88,9 +88,9 @@ TEST_F(MetalInputTest, MetalInputManager_Shutdown_CleansUpSingleton) {
 }
 
 /**
- * @brief Test that MetalInputManager can be initialized multiple times
+ * @brief Test that GlfwInputManager can be initialized multiple times
  */
-TEST_F(MetalInputTest, MetalInputManager_MultipleInit_DoesNotCrash) {
+TEST_F(GlfwInputTest, GlfwInputManager_MultipleInit_DoesNotCrash) {
 	EXPECT_NO_THROW({
 		_InitInput();
 		_InitInput(); // Should handle re-initialization gracefully
@@ -99,9 +99,9 @@ TEST_F(MetalInputTest, MetalInputManager_MultipleInit_DoesNotCrash) {
 }
 
 /**
- * @brief Test that MetalInputManager shutdown can be called multiple times
+ * @brief Test that GlfwInputManager shutdown can be called multiple times
  */
-TEST_F(MetalInputTest, MetalInputManager_MultipleShutdown_DoesNotCrash) {
+TEST_F(GlfwInputTest, GlfwInputManager_MultipleShutdown_DoesNotCrash) {
 	_InitInput();
 
 	EXPECT_NO_THROW({
@@ -117,7 +117,7 @@ TEST_F(MetalInputTest, MetalInputManager_MultipleShutdown_DoesNotCrash) {
 /**
  * @brief Test that IsKeyPressed can be called with valid key code
  */
-TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
 		[[maybe_unused]] const bool pressed = I_Input::IsKeyPressed(KeyboardKeyCode::A);
@@ -128,7 +128,7 @@ TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_DoesNotCrash) {
 /**
  * @brief Test that IsKeyPressed returns boolean value
  */
-TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_ReturnsBoolean) {
+TEST_F(GlfwInputTest, IsKeyPressed_ValidKeyCode_ReturnsBoolean) {
 	_InitInput();
 
 	EXPECT_NO_THROW({
@@ -141,7 +141,7 @@ TEST_F(MetalInputTest, IsKeyPressed_ValidKeyCode_ReturnsBoolean) {
 /**
  * @brief Test that IsKeyPressed works with multiple key codes
  */
-TEST_F(MetalInputTest, IsKeyPressed_MultipleKeyCodes_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsKeyPressed_MultipleKeyCodes_DoesNotCrash) {
 	_InitInput();
 	// GLFW_KEY_ESCAPE = 256
 	EXPECT_NO_THROW({
@@ -157,7 +157,7 @@ TEST_F(MetalInputTest, IsKeyPressed_MultipleKeyCodes_DoesNotCrash) {
 /**
  * @brief Test that IsKeyPressed handles letter keys
  */
-TEST_F(MetalInputTest, IsKeyPressed_LetterKeys_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsKeyPressed_LetterKeys_DoesNotCrash) {
 	_InitInput();
 	// Test A-Z keys (GLFW_KEY_A through GLFW_KEY_Z = 65-90)
 	for (int keyCode = 65; keyCode <= 90; ++keyCode) {
@@ -171,7 +171,7 @@ TEST_F(MetalInputTest, IsKeyPressed_LetterKeys_DoesNotCrash) {
 /**
  * @brief Test that IsKeyPressed handles number keys
  */
-TEST_F(MetalInputTest, IsKeyPressed_NumberKeys_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsKeyPressed_NumberKeys_DoesNotCrash) {
 	_InitInput();
 	// Test 0-9 keys (GLFW_KEY_0 through GLFW_KEY_9 = 48-57)
 	for (int keyCode = 48; keyCode <= 57; ++keyCode) {
@@ -185,7 +185,7 @@ TEST_F(MetalInputTest, IsKeyPressed_NumberKeys_DoesNotCrash) {
 /**
  * @brief Test that IsKeyPressed handles function keys
  */
-TEST_F(MetalInputTest, IsKeyPressed_FunctionKeys_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsKeyPressed_FunctionKeys_DoesNotCrash) {
 	_InitInput();
 	// Test F1-F12 keys (GLFW_KEY_F1 through GLFW_KEY_F12 = 290-301)
 	for (int keyCode = 290; keyCode <= 301; ++keyCode) {
@@ -203,7 +203,7 @@ TEST_F(MetalInputTest, IsKeyPressed_FunctionKeys_DoesNotCrash) {
 /**
  * @brief Test that IsMouseButtonPressed can be called with valid button code
  */
-TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
 	_InitInput();
 	// GLFW_MOUSE_BUTTON_LEFT = 0
 	EXPECT_NO_THROW({
@@ -215,7 +215,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_DoesNotCrash) {
 /**
  * @brief Test that IsMouseButtonPressed returns boolean value
  */
-TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_ReturnsBoolean) {
+TEST_F(GlfwInputTest, IsMouseButtonPressed_ValidButtonCode_ReturnsBoolean) {
 	_InitInput();
 
 	EXPECT_NO_THROW({
@@ -228,7 +228,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ValidButtonCode_ReturnsBoolean) {
 /**
  * @brief Test that IsMouseButtonPressed works with all mouse buttons
  */
-TEST_F(MetalInputTest, IsMouseButtonPressed_AllButtons_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsMouseButtonPressed_AllButtons_DoesNotCrash) {
 	_InitInput();
 	// GLFW_MOUSE_BUTTON_LEFT = 0
 	// GLFW_MOUSE_BUTTON_RIGHT = 1
@@ -244,7 +244,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_AllButtons_DoesNotCrash) {
 /**
  * @brief Test that IsMouseButtonPressed works with extended mouse buttons
  */
-TEST_F(MetalInputTest, IsMouseButtonPressed_ExtendedButtons_DoesNotCrash) {
+TEST_F(GlfwInputTest, IsMouseButtonPressed_ExtendedButtons_DoesNotCrash) {
 	_InitInput();
 	// GLFW supports up to 8 mouse buttons (0-7)
 	for (int buttonCode = 0; buttonCode <= 7; ++buttonCode) {
@@ -262,7 +262,7 @@ TEST_F(MetalInputTest, IsMouseButtonPressed_ExtendedButtons_DoesNotCrash) {
 /**
  * @brief Test that GetMouseX returns a valid float value
  */
-TEST_F(MetalInputTest, GetMouseX_Called_ReturnsValidFloat) {
+TEST_F(GlfwInputTest, GetMouseX_Called_ReturnsValidFloat) {
 	_InitInput();
 	const float mouseX = I_Input::GetMouseX();
 
@@ -275,7 +275,7 @@ TEST_F(MetalInputTest, GetMouseX_Called_ReturnsValidFloat) {
 /**
  * @brief Test that GetMouseY returns a valid float value
  */
-TEST_F(MetalInputTest, GetMouseY_Called_ReturnsValidFloat) {
+TEST_F(GlfwInputTest, GetMouseY_Called_ReturnsValidFloat) {
 	_InitInput();
 	const float mouseY = I_Input::GetMouseY();
 
@@ -288,7 +288,7 @@ TEST_F(MetalInputTest, GetMouseY_Called_ReturnsValidFloat) {
 /**
  * @brief Test that GetMouseXY returns a valid vector
  */
-TEST_F(MetalInputTest, GetMouseXY_Called_ReturnsValidVector) {
+TEST_F(GlfwInputTest, GetMouseXY_Called_ReturnsValidVector) {
 	_InitInput();
 	const auto [x, y] = I_Input::GetMouseXY();
 
@@ -303,7 +303,7 @@ TEST_F(MetalInputTest, GetMouseXY_Called_ReturnsValidVector) {
 /**
  * @brief Test that GetMouseXY matches individual GetMouseX and GetMouseY
  */
-TEST_F(MetalInputTest, GetMouseXY_Consistency_MatchesIndividualGetters) {
+TEST_F(GlfwInputTest, GetMouseXY_Consistency_MatchesIndividualGetters) {
 	_InitInput();
 	const float mouseX = I_Input::GetMouseX();
 	const float mouseY = I_Input::GetMouseY();
@@ -321,7 +321,7 @@ TEST_F(MetalInputTest, GetMouseXY_Consistency_MatchesIndividualGetters) {
 /**
  * @brief Test that mouse position calls can be made repeatedly
  */
-TEST_F(MetalInputTest, MousePosition_RepeatedCalls_DoesNotCrash) {
+TEST_F(GlfwInputTest, MousePosition_RepeatedCalls_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
 		for (int i = 0; i < 100; ++i) {
@@ -340,7 +340,7 @@ TEST_F(MetalInputTest, MousePosition_RepeatedCalls_DoesNotCrash) {
 /**
  * @brief Test that multiple rapid input queries don't crash
  */
-TEST_F(MetalInputTest, MultipleInputQueries_RapidFire_DoesNotCrash) {
+TEST_F(GlfwInputTest, MultipleInputQueries_RapidFire_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
 		for (int i = 0; i < 1000; ++i) {
@@ -356,7 +356,7 @@ TEST_F(MetalInputTest, MultipleInputQueries_RapidFire_DoesNotCrash) {
 /**
  * @brief Test that mixed input queries work correctly
  */
-TEST_F(MetalInputTest, MixedInputQueries_Sequential_DoesNotCrash) {
+TEST_F(GlfwInputTest, MixedInputQueries_Sequential_DoesNotCrash) {
 	_InitInput();
 	EXPECT_NO_THROW({
 		[[maybe_unused]] const bool keyA = I_Input::IsKeyPressed(KeyboardKeyCode::A);
