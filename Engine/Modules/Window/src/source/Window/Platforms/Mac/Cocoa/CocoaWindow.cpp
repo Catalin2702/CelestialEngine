@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac
+// Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac/Cocoa
 // File: CocoaWindow.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-16

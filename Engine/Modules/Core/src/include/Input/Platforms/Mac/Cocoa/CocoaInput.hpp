@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Input/Platform/Mac
+// Module: CelestialEngine/Engine/Input/Platforms/Mac/Cocoa
 // File: CocoaInput.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17

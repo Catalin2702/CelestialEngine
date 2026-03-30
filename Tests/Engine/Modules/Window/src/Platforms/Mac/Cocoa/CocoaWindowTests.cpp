@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Window/Platforms/Mac
+// Module: CelestialEngine/Tests/Engine/Modules/Window/Platforms/Mac/Cocoa
 // File: CocoaWindowTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-18

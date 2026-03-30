@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/Render/Platforms/Common
+// Module: CelestialEngine/Engine/Modules/Types/Render/Platforms/Common/OpenGl
 // File: OpenGl.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-24

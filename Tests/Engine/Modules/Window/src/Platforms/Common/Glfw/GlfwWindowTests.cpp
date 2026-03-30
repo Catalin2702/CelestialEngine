@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Window/Platforms/Common
+// Module: CelestialEngine/Tests/Engine/Modules/Window/Platforms/Common/Glfw
 // File: GlfwWindowTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02

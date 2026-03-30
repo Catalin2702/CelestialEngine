@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Common
+// Module: CelestialEngine/Engine/Modules/Window/Platforms/Common/Glfw
 // File: GlfwWindow.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17

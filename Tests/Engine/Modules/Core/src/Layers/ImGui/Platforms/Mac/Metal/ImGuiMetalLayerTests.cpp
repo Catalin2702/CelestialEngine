@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Tests/Engine/Modules/Core/Layers/ImGui/Platforms/Mac
+// Module: CelestialEngine/Tests/Engine/Modules/Core/Layers/ImGui/Platforms/Mac/Metal
 // File: ImGuiMetalLayerTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-18

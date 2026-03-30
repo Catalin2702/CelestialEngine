@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common
+// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common/OpenGl
 // File: ImGuiOpenGlLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24

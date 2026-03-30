@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Input/Platforms/Common
+// Module: CelestialEngine/Engine/Modules/Input/Platforms/Common/Glfw
 // File: GlfwInput.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-06

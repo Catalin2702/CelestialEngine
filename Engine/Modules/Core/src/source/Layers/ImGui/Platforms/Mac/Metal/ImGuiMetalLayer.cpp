@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac
+// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac/Metal
 // File: ImGuiMetalLayer.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
