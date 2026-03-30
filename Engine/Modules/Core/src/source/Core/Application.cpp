@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-30
 //
 
 #include "Core/Application.hpp"
@@ -13,7 +13,7 @@
 #include "Events/I_Event.hpp"
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
-#include "Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp"
+#include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Render/Context/Platforms/Common/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -22,7 +22,7 @@
 
 
 #ifdef CE_PLATFORM_MACOS
-#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
+#include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Render/Context/Platforms/Mac/MetalContext.hpp"
 

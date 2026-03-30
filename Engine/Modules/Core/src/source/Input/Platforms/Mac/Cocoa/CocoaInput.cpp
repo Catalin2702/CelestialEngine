@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-03-30
 //
 
-#include "Input/Platforms/Mac/CocoaInput.hpp"
+#include "Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 
 #include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Core/Application.hpp"

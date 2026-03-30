@@ -4,41 +4,39 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-30
 #
 
 set(HEADERS
 	src/include/Core/Application.hpp
+	src/include/Input/Platforms/Common/Glfw/GlfwInput.hpp
 	src/include/Layers/LayerStack.hpp
-	src/include/Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp
+	src/include/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp
-		src/include/Input/Platforms/Mac/CocoaInput.hpp
+		src/include/Input/Platforms/Mac/Cocoa/CocoaInput.hpp
+		src/include/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
 	>
-
-	src/include/Input/Platforms/Common/GlfwInput.hpp
 )
 
 set(INTERFACES
-	src/interface/Layers/I_Layer.hpp
-	src/interface/Layers/Render/I_RenderLayer.hpp
-	src/interface/Layers/ImGui/I_ImGuiLayer.hpp
 	src/interface/Input/I_Input.hpp
+	src/interface/Layers/I_Layer.hpp
+	src/interface/Layers/ImGui/I_ImGuiLayer.hpp
+	src/interface/Layers/Render/I_RenderLayer.hpp
 )
 
 set(SOURCES
 	src/source/Core/Application.cpp
+	src/source/Input/InputImpl.cpp
+	src/source/Input/Platforms/Common/Glfw/GlfwInput.cpp
 	src/source/Layers/LayerStack.cpp
-	src/source/Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.cpp
-
+	src/source/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.cpp
-		src/source/Input/Platforms/Mac/CocoaInput.cpp
+		src/source/Input/Platforms/Mac/Cocoa/CocoaInput.cpp
+		src/source/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.cpp
 	>
-	src/source/Input/InputImpl.cpp
-	src/source/Input/Platforms/Common/GlfwInput.cpp
 )
 
 add_library(CE_Core SHARED

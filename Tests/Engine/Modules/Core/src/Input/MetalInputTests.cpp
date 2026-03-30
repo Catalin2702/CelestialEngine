@@ -4,11 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #include <Core/Application.hpp>
-#include <Input/Platforms/Common/GlfwInput.hpp>
+#include <Input/Platforms/Common/Glfw/GlfwInput.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>

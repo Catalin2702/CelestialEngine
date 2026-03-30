@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
-#include "Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp"
+#include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Bridge/ImGui/ImGuiBridge.h"
 #include "Core/Application.hpp"

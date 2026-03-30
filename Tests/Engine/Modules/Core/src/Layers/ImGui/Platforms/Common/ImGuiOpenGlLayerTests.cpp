@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 #include <Core/Application.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>

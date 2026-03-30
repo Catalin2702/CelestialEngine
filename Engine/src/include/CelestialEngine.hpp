@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-03-30
 //
 
 /**
@@ -46,19 +46,19 @@
 
 // ---- Input ------------------------------------
 #include <Input/I_Input.hpp>
-#include <Input/Platforms/Common/GlfwInput.hpp>
+#include <Input/Platforms/Common/Glfw/GlfwInput.hpp>
 
 #ifdef CE_PLATFORM_MACOS
-	#include <Input/Platforms/Mac/CocoaInput.hpp>
+	#include <Input/Platforms/Mac/Cocoa/CocoaInput.hpp>
 #endif
 // -----------------------------------------------
 
 // ---- Layer ------------------------------------
 #include <Layers/I_Layer.hpp>
-#include <Layers/ImGui/Platforms/Common/ImGuiOpenGlLayer.hpp>
+#include <Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 
 #ifdef CE_PLATFORM_MACOS
-#include <Layers/ImGui/Platforms/Mac/ImGuiMetalLayer.hpp>
+#include <Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
 #endif
 // -----------------------------------------------
 

@@ -7,7 +7,7 @@
 // Updated: 2026-03-18
 //
 
-#include "Input/Platforms/Common/GlfwInput.hpp"
+#include "Input/Platforms/Common/Glfw/GlfwInput.hpp"
 
 #include "Core/Application.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
