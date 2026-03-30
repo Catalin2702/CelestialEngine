@@ -7,7 +7,7 @@
 // Updated: 2026-03-30
 //
 
-#include "Render/Context/Platforms/Mac/MetalContext.hpp"
+#include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 
 #include "AppKit/Utility/AppKit.hpp"
 #include "Tools/Log/Log.hpp"

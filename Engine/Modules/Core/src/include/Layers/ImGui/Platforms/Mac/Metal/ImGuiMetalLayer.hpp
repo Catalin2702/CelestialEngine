@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-03-30
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
 #include "Define/DynamicLinker.hpp"
-#include "Render/Context/Platforms/Mac/MetalContext.hpp"
+#include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 
 #include <semaphore>

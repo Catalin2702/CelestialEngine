@@ -9,7 +9,7 @@
 
 #include <AppKit/Utility/AppKit.hpp>
 #include <Events/I_Event.hpp>
-#include <Render/Context/Platforms/Mac/MetalContext.hpp>
+#include <Render/Context/Platforms/Mac/Metal/MetalContext.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 #include <Window/Platforms/Mac/CocoaWindow.hpp>

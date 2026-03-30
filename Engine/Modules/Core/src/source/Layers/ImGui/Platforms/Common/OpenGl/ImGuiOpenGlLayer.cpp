@@ -15,7 +15,7 @@
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
+#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Types/Render/Platforms/Common/OpenGl.hpp"

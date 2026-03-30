@@ -14,7 +14,7 @@
 #include "Input/I_Input.hpp"
 #include "Layers/I_Layer.hpp"
 #include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
-#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
+#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
@@ -24,7 +24,7 @@
 #ifdef CE_PLATFORM_MACOS
 #include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
-#include "Render/Context/Platforms/Mac/MetalContext.hpp"
+#include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 
 #include "Window/Platforms/Mac/CocoaWindow.hpp"
 #endif

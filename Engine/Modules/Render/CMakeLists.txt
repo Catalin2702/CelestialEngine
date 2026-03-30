@@ -4,32 +4,29 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-19
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-30
 #
 
 set(HEADERS
 	# Context
-	src/include/Render/Context/Platforms/Common/OpenGlContext.hpp
+	src/include/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Render/Context/Platforms/Mac/MetalContext.hpp
+		src/include/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
 )
 
 set(INTERFACES
 	# Context
 	src/interface/Render/Context/I_Context.hpp
-
-	# View
-	src/interface/Render/View/I_InputView.hpp
 )
 
 set(SOURCES
 	# Context
-	src/source/Render/Context/Platforms/Common/OpenGlContext.cpp
+	src/source/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Render/Context/Platforms/Mac/MetalContext.cpp
+		src/source/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
 )
 

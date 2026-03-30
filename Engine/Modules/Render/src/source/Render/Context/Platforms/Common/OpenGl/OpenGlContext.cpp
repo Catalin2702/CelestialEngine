@@ -7,7 +7,7 @@
 // Updated: 2026-03-30
 //
 
-#include "Render/Context/Platforms/Common/OpenGlContext.hpp"
+#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Platforms/Common/OpenGl.hpp"
