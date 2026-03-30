@@ -13,7 +13,6 @@
 #define CE_LAYERS_I_LAYER_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Events/I_Event.hpp"
 
 
 /**
