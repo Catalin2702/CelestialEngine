@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-20
+// Updated: 2026-04-01
 //
 
 #pragma once
 
-#ifndef CE_I_IMGUILAYER_HPP
-#define CE_I_IMGUILAYER_HPP
+#ifndef CE_LAYERS_IMGUI_I_IMGUILAYER_HPP
+#define CE_LAYERS_IMGUI_I_IMGUILAYER_HPP
 
 #include "Layers/Render/I_RenderLayer.hpp"
 
@@ -134,4 +134,4 @@ protected:
 
 }
 
-#endif //CE_I_IMGUILAYER_HPP
+#endif //CE_LAYERS_IMGUI_I_IMGUILAYER_HPP

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-01
 #
 
 set(HEADERS
@@ -16,7 +16,7 @@ set(HEADERS
 
 set(SOURCES
 	src/source/Events/ApplicationEvent.cpp
-	src/source/Events/I_Event.cpp
+	src/source/Events/EventImpl.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
 )

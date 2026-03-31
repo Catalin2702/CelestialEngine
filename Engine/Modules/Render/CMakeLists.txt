@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-19
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-01
 #
 
 set(HEADERS
@@ -14,11 +14,15 @@ set(HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
+	src/include/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
 )
 
 set(INTERFACES
 	# Context
 	src/interface/Render/Context/I_Context.hpp
+
+	# Shader
+	src/interface/Render/Shader/I_Shader.hpp
 )
 
 set(SOURCES
@@ -28,6 +32,7 @@ set(SOURCES
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
+	src/source/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp
 )
 
 add_library(CE_Render SHARED

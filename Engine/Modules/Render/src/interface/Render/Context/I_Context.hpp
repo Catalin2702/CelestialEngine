@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-01
 //
 
 #pragma once
 
-#ifndef CE_RENDER_CONTEXT_CONTEXT_HPP
-#define CE_RENDER_CONTEXT_CONTEXT_HPP
+#ifndef CE_RENDER_CONTEXT_I_CONTEXT_HPP
+#define CE_RENDER_CONTEXT_I_CONTEXT_HPP
 
 #include "Types/Render/Render.hpp"
 
@@ -116,4 +116,4 @@ public:
 
 }
 
-#endif //CE_RENDER_CONTEXT_CONTEXT_HPP
+#endif //CE_RENDER_CONTEXT_I_CONTEXT_HPP
