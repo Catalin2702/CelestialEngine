@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-30
+# Updated: 2026-03-31
 #
 
 set(HEADERS
@@ -35,6 +35,8 @@ add_library(CE_Window SHARED
 
 set_target_properties(CE_Window PROPERTIES
 	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
 )
 
 # Modules

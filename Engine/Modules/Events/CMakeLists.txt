@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-03-31
 #
 
 set(HEADERS
@@ -28,6 +28,8 @@ add_library(CE_Events SHARED
 
 set_target_properties(CE_Events PROPERTIES
 	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
 )
 
 # Modules

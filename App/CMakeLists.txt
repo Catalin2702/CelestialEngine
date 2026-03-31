@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-10
+# Updated: 2026-03-31
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -17,14 +17,24 @@ set(SOURCES
 	src/App.cpp
 )
 
+if (APPLE)
+	add_executable(CE_App MACOSX_BUNDLE
+		${SOURCES}
+	)
+else ()
+	add_executable(CE_App
+		${SOURCES}
+	)
+endif()
+
+set_target_properties(CE_App PROPERTIES
+	LINKER_LANGUAGE CXX
+)
+
 # Create macOS bundle to avoid system warnings
 if(APPLE)
 	# Set the Asset Catalog for the app icon
 	set(ASSET_CATALOG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Assets.xcassets")
-
-	add_executable(CE_App MACOSX_BUNDLE
-		${SOURCES}
-	)
 
 	# Set bundle properties
 	set_target_properties(CE_App PROPERTIES
@@ -34,7 +44,6 @@ if(APPLE)
 		MACOSX_BUNDLE_EXECUTABLE_NAME "CE_App"
 		MACOSX_BUNDLE_GUI_IDENTIFIER "com.celestialengine.app"
 		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-		LINKER_LANGUAGE CXX
 	)
 
 	# Copy Info.plist to bundle (fallback if MACOSX_BUNDLE_INFO_PLIST doesn't work)
@@ -64,12 +73,6 @@ if(APPLE)
 			--deep "$<TARGET_BUNDLE_DIR:CE_App>"
 		COMMENT "Code signing CE_App with entitlements"
 	)
-else()
-	add_executable(CE_App
-		${SOURCES}
-	)
-
-	set_target_properties(CE_App PROPERTIES LINKER_LANGUAGE CXX)
 endif()
 
 target_link_libraries(CE_App PRIVATE

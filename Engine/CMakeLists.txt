@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-23
+# Updated: 2026-03-31
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -49,7 +49,11 @@ add_library(CE_Engine INTERFACE
 	${HEADERS}
 )
 
-set_target_properties(CE_Engine PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(CE_Engine PROPERTIES
+	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
+)
 
 # Modules
 target_link_libraries(CE_Engine INTERFACE
