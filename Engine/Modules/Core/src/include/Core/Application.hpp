@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-01
 //
 
 #pragma once
@@ -204,6 +204,11 @@ private:
 
 private:
 	static Application* _instance;					///< Singleton application instance
+
+private:
+	unsigned int _vertexArray = 0;
+	unsigned int _vertexBuffer = 0;
+	unsigned int _indexBuffer = 0;
 };
 
 /**
