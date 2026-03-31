@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-23
+# Updated: 2026-03-30
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -17,7 +17,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
 set(CE_LAST_BUILD_DIR "${CMAKE_SOURCE_DIR}/Binaries/Last")
 
-set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release)
+set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
