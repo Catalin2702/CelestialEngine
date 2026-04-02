@@ -45,13 +45,13 @@ Application::Application() {
 }
 
 Application::~Application() {
-	// Detach all layers (they may use GLFW in their cleanup)
+	// Detach and delete all layers in the stack
 	_layerStack.Clear();
 
 	// Shutdown input system (deletes the singleton instance)
 	Input::ShutdownInput();
 
-	// Destroy the window (calls glfwDestroyWindow)
+	// Destroy the window
 	_window.reset();
 
 	// Reset the singleton instance pointer
