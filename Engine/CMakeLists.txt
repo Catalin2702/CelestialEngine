@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-02
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Engine LANGUAGES CXX VERSION 0.0.6)
+project(CE_Engine LANGUAGES CXX VERSION 0.1.0)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
