@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-01
+// Updated: 2026-03-30
 //
 
 #include "Core/Application.hpp"
@@ -33,8 +33,6 @@
 #include <memory>
 #include <stdexcept>
 
-#include <glad/glad.h>
-
 
 namespace CE::Core {
 
@@ -60,9 +58,6 @@ Application::~Application() {
 }
 
 void Application::Update() {
-	glBindVertexArray(_vertexArray);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
@@ -242,28 +237,6 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 
 	_SetWindowCallbacks();
 	_window->GetReady();
-
-	glGenVertexArrays(1, &_vertexArray);
-	glBindVertexArray(_vertexArray);
-
-	glGenBuffers(1, &_vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-
-	constexpr float vertices[] = {
-		-.5f, -.5f, .0f,	// Bottom-left
-		.5f, -.5f, .0f,	// Bottom-right
-		.5f, .5f, .0f,	// Top-right
-	};
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-	glGenBuffers(1, &_indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
-
-	constexpr unsigned int indices[] = {0, 1, 2};
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void Application::_Init() {
