@@ -124,7 +124,9 @@ void Application::PopOverlay(Layers::I_Layer* overlay) {
 
 Application& Application::Get() {
 	assert(_instance && "Application::Get: No application instance exists!");
+	// ReSharper disable All // This is a singleton pattern, the instance is guaranteed to be valid after the first call to the constructor
 	return *_instance;
+	// ReSharper restore All
 }
 
 void Application::InitWindow(const TypeWindow::WindowProps& windowProps) {
