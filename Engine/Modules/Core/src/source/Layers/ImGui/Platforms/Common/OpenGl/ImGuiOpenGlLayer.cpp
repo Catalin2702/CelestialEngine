@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-02
+// Updated: 2026-03-30
 //
 
 #include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -42,7 +42,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 	if (not _currentFrameStarted)
 		return;
 
-	ImGui::DockSpaceOverViewport(0, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+	ImGui::DockSpaceOverViewport();
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
@@ -89,7 +89,6 @@ void ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 
 void ImGuiOpenGlLayer::Begin() {
 	_currentFrameStarted = false;
-	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	auto& io = ImGui::GetIO();
 	const auto time = static_cast<float>(Window::GlfwWindow::GetTime());
@@ -112,6 +111,8 @@ void ImGuiOpenGlLayer::End() {
 	const auto [width, height] = _window->GetFrameBufferSize();
 
 	Render::Context::OpenGlContext::SetViewport(0, 0, width, height);
+
+	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

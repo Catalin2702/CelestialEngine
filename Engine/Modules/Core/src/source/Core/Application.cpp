@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-02
+// Updated: 2026-04-01
 //
 
 #include "Core/Application.hpp"
@@ -15,7 +15,6 @@
 #include "Layers/I_Layer.hpp"
 #include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Window/I_Window.hpp"
@@ -24,7 +23,9 @@
 
 #ifdef CE_PLATFORM_MACOS
 #include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
+
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #endif
 
@@ -59,19 +60,16 @@ Application::~Application() {
 }
 
 void Application::Update() {
-	for (const auto layer: _layerStack)
-		layer->OnUpdate();
-
-	_renderLayer->Begin();
-
-	_shader->Bind();
 	glBindVertexArray(_vertexArray);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
 	for (const auto layer: _layerStack)
+		layer->OnUpdate();
+
+	_renderLayer->Begin();
+	for (const auto layer: _layerStack)
 		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
 			renderLayer->OnRender();
-
 	_renderLayer->End();
 
 	_window->OnUpdate();
@@ -254,7 +252,7 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 	constexpr float vertices[] = {
 		-.5f, -.5f, .0f,	// Bottom-left
 		.5f, -.5f, .0f,	// Bottom-right
-		.0f, .5f, .0f,	// Top-right
+		.5f, .5f, .0f,	// Top-right
 	};
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -266,54 +264,6 @@ void Application::InitAll(const TypeWindow::WindowProps& windowProps) {
 
 	constexpr unsigned int indices[] = {0, 1, 2};
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	const std::string vertexSource = R"(
-		#version 330 core
-
-		layout(location = 0) in vec3 _iPosition;
-
-		out vec3 _vPosition;
-
-		void main() {
-			_vPosition = _iPosition;
-			gl_Position = vec4(_iPosition, 1.0);
-		}
-	)";
-
-	const std::string fragmentSource = R"(
-		#version 330 core
-
-		layout(location = 0) out vec4 color;
-
-		in vec3 _vPosition;
-
-		void main() {
-			color = vec4(_vPosition * .5 + .5, 1.0);
-		}
-	)";
-
-	std::unique_ptr<Render::Shader::I_Shader> shader;
-
-	switch (windowProps.graphicsApi) {
-		case Types::Render::GraphicsApi::OpenGL: {
-			shader = std::make_unique<Render::Shader::OpenGlShader>(vertexSource, fragmentSource);
-			break;
-		}
-#ifdef CE_PLATFORM_MACOS
-		case Types::Render::GraphicsApi::Metal: {
-			CE_CORE_ERROR("Application::InitAll: Shader creation for Metal graphics API on macOS is not yet implemented");
-			throw std::runtime_error("Shader creation for Metal graphics API on macOS is not yet implemented");
-		}
-#endif
-		default: {
-			CE_CORE_ERROR("Application::InitAll: Unsupported graphics API specified in window properties for shader creation. Graphics API: {0}", windowProps.graphicsApi);
-			throw std::runtime_error("Unsupported graphics API specified in window properties for shader creation");
-		}
-	}
-
-	assert(shader && "Application::InitAll: Failed to create shader instance");
-
-	_shader = std::move(shader);
 }
 
 void Application::_Init() {
