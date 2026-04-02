@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-01
+// Updated: 2026-04-02
 //
 
 #include "Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
@@ -64,9 +64,10 @@ OpenGlShader::OpenGlShader(const std::string& vertexSource, const std::string& f
 	_rendererId = glCreateProgram();
 	glAttachShader(_rendererId, vertexShader);
 	glAttachShader(_rendererId, fragmentShader);
+	glLinkProgram(_rendererId);
 
 	GLint isLinked = 0;
-	glGetProgramiv(_rendererId, GL_LINK_STATUS, &isLinked);
+	glGetProgramiv(_rendererId, GL_LINK_STATUS, static_cast<int*>(&isLinked));
 	if (isLinked == GL_FALSE) {
 		GLint maxLength = 0;
 		glGetProgramiv(_rendererId, GL_INFO_LOG_LENGTH, &maxLength);
@@ -78,7 +79,12 @@ OpenGlShader::OpenGlShader(const std::string& vertexSource, const std::string& f
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 
-		CE_CORE_ERROR("Failed to link shader _rendererId:\n{0}", infoLog.data());
+		if (infoLog.empty()) {
+			CE_CORE_ERROR("Failed to link shader _rendererId: No additional information provided by OpenGL");
+		}
+		else {
+			CE_CORE_ERROR("Failed to link shader _rendererId:\n{0}", infoLog.data());
+		}
 		return;
 	}
 
@@ -91,8 +97,11 @@ OpenGlShader::~OpenGlShader() {
 }
 
 void OpenGlShader::Bind() const {
+	glUseProgram(_rendererId);
 }
 
 void OpenGlShader::Unbind() const {
+	glUseProgram(0);
 }
+
 }

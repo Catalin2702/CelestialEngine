@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-01
+// Updated: 2026-04-02
 //
 
 #pragma once
@@ -28,8 +28,16 @@ class I_Layer;
 class I_RenderLayer;
 }
 
-namespace CE::Render::Context {
+namespace CE::Render{
+
+namespace Context {
 class I_Context;
+}
+
+namespace Shader {
+class I_Shader;
+}
+
 }
 
 namespace CE::Window {
@@ -198,6 +206,7 @@ private:
 private:
 	std::unique_ptr<Window::I_Window> _window;		///< Application window
 	std::unique_ptr<Render::Context::I_Context> _context;	///< Graphics context for rendering
+	std::unique_ptr<Render::Shader::I_Shader> _shader;	///< Shader used for rendering
 	Layers::I_RenderLayer* _renderLayer = nullptr;	///< ImGui layer for rendering UI
 	bool _running = false;							///< Flag indicating if application is running
 	Layers::LayerStack _layerStack;					///< Stack of layers and overlays

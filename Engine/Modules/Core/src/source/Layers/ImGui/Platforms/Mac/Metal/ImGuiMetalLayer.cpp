@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-02
 //
 
 #include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -39,7 +39,7 @@ void ImGuiMetalLayer::OnRender() const {
 	if (not _currentFrameStarted)
 		return;
 
-	ImGui::DockSpaceOverViewport();
+	ImGui::DockSpaceOverViewport(0, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
