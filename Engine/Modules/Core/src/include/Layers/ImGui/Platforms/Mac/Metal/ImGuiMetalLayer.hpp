@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-01
+// Updated: 2026-03-30
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUI_IMGUIMETALLAYER_HPP
-#define CE_LAYERS_IMGUI_IMGUIMETALLAYER_HPP
+#ifndef CE_LAYERS_IMGUIMETALLAYER_HPP
+#define CE_LAYERS_IMGUIMETALLAYER_HPP
 
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -90,4 +90,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_IMGUI_IMGUIMETALLAYER_HPP
+#endif //CE_LAYERS_IMGUIMETALLAYER_HPP

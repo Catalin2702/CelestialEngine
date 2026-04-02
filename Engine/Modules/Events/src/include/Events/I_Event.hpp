@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-01
+// Updated: 2026-03-22
 //
 
 #pragma once
 
-#ifndef CE_EVENTS_I_EVENT_HPP
-#define CE_EVENTS_I_EVENT_HPP
+#ifndef CE_EVENTS_EVENT_HPP
+#define CE_EVENTS_EVENT_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Type.hpp"
@@ -219,4 +219,4 @@ inline std::string format_as(const I_Event& event) {
 
 }
 
-#endif //CE_EVENTS_I_EVENT_HPP
+#endif //CE_EVENTS_EVENT_HPP
