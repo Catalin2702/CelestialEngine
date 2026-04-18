@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-18
 //
 
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -372,7 +372,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window");
 		throw;
 	}
-	_window = NS::RetainPtr(rawWindow);
+	_window = NS::TransferPtr(rawWindow);
 
 	NS::RenderView* rawCocoaView;
 	try {
@@ -390,7 +390,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
 		throw;
 	}
-	_view = NS::RetainPtr(rawCocoaView);
+	_view = NS::TransferPtr(rawCocoaView);
 
 	NS::WindowDelegate* rawDelegate;
 	try {
@@ -408,7 +408,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window delegate");
 		throw;
 	}
-	_windowDelegate = NS::RetainPtr(rawDelegate);
+	_windowDelegate = NS::TransferPtr(rawDelegate);
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
 	// Make the window visible
