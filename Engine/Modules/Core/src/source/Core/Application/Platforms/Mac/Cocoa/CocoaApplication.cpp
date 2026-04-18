@@ -41,10 +41,23 @@ void CocoaApplication::Quit() {
 	_appCocoa->terminate(nullptr);
 }
 
-void CocoaApplication::Update() {
+void CocoaApplication::Tick() {
 }
 
 void CocoaApplication::OnEvent(Events::I_Event& event) {
+}
+
+void CocoaApplication::StartDisplayLink() {
+}
+
+void CocoaApplication::StopDisplayLink() {
+}
+
+Window::I_Window& CocoaApplication::GetWindow() const {
+
+}
+
+Render::Context::I_Context& CocoaApplication::GetRenderContext() const {
 }
 
 }

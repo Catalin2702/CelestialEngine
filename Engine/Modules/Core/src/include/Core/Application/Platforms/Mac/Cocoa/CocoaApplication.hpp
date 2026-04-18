@@ -23,8 +23,19 @@ namespace NS {
 class Application;
 }
 
-namespace CE::Core::Application {
+namespace CE {
+namespace Core::Application {
 class CocoaApplicationDelegate;
+}
+
+namespace Render::Context {
+class I_Context;
+}
+
+namespace Window {
+class I_Window;
+}
+
 }
 
 namespace CE::Core::Application {
@@ -85,7 +96,7 @@ public:
 	 * @brief Updates the application state
 	 * @details Called every frame to update the application. Updates all layers in the layer stack.
 	 */
-	void Update() override;
+	void Tick() override;
 
 	/**
 	 * @brief Handles events
@@ -93,6 +104,22 @@ public:
 	 * @details Dispatches events to the appropriate layers in the layer stack
 	 */
 	void OnEvent(Events::I_Event& event) override;
+
+	/**
+	 * @brief Starts the display link for rendering
+	 * @details Initializes and starts the display link, which synchronizes the rendering loop with the display's refresh rate. This ensures smooth rendering and optimal performance on macOS.
+	 */
+	void StartDisplayLink();
+
+	/**
+	 * @brief Stops the display link for rendering
+	 * @details Stops and cleans up the display link, which is used to synchronize the rendering loop with the display's refresh rate. This should be called when the application is quitting or when rendering is no longer needed to free up system resources.
+	 */
+	void StopDisplayLink();
+
+public:
+	[[nodiscard]] Window::I_Window& GetWindow() const override;
+	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override;
 
 private:
 	NS::SharedPtr<NS::Application> _appCocoa;				///< Pointer to the Cocoa application instance

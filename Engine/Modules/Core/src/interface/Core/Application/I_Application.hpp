@@ -72,7 +72,7 @@ public:
 	/**
 	 * @brief Virtual method to update the application state
 	 */
-	virtual void Update() = 0;
+	virtual void Tick() = 0;
 
 	/**
 	 * @brief Virtual method to handle events
