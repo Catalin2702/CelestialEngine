@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Define/DynamicLinker.hpp"
+
 #include <AppKit/AppKit.hpp>
 
 #ifndef CE_CORE_APPLICATION_PLATFORMS_MAC_COCOA_COCOAAPPLICATIONDELEGATE_HPP
@@ -21,7 +23,7 @@ class Notification;
 
 namespace CE::Core::Application {
 
-class CocoaApplicationDelegate: public NS::ApplicationDelegate {
+class CE_API CocoaApplicationDelegate: public NS::ApplicationDelegate {
 public:
 	/**
 	 * @brief Default constructor
@@ -46,7 +48,7 @@ public:
 	 * @param pNotification Notification object containing information about the launch event
 	 * @details This method is called by the Cocoa framework before the application has completed its launch process. It can be used to perform any necessary setup before the application is fully launched, such as configuring application-wide settings or initializing resources that need to be ready before the main loop starts.
 	 */
-	void applicationWillFinishLaunching(NS::Notification* pNotification) override;
+	void applicationWillFinishLaunching(NS::Notification* pNotification) override {}
 
 	/**
 	 * @brief Determines whether the application should terminate after the last window is closed

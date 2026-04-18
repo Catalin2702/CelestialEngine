@@ -13,9 +13,7 @@
 
 namespace CE::Core::Application {
 
-void CocoaApplicationDelegate::applicationDidFinishLaunching(NS::Notification* pNotification) {}
-
-void CocoaApplicationDelegate::applicationWillFinishLaunching(NS::Notification* pNotification) {
+void CocoaApplicationDelegate::applicationDidFinishLaunching(NS::Notification* pNotification) {
 	auto& app = dynamic_cast<CocoaApplication&>(I_Application::StGet());
 	app.StartDisplayLink();
 }
