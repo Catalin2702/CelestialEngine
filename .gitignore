@@ -15,7 +15,9 @@ vcpkg_link/
 
 # --- Build Directories ---
 [Bb]uild/
+[Bb]uild-[Xx][Cc]ode/
 .[Bb]uild/
+.[Bb]uild-[Xx][Cc]ode/
 [Dd]ebug/
 .[Dd]ebug/
 [Rr]elease/

@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-09
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-18
+# Updated: 2026-04-18
 #
 
 # Script to run the CE_App application and all tests
@@ -161,6 +161,7 @@ run_command() {
 		# For crashes (exit codes > 128), capture full output
 		# For normal test failures, extract failure information
 		if [ "$exit_code" -gt 128 ]; then
+			# shellcheck disable=SC2129
 			echo "CRASH DETECTED (Signal $((exit_code - 128)))" >> "$FAILED_TESTS_FILE"
 			echo "Full output:" >> "$FAILED_TESTS_FILE"
 			tail -100 "$temp_output" >> "$FAILED_TESTS_FILE" 2>/dev/null
