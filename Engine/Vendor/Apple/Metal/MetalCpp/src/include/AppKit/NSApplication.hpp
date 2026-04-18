@@ -30,150 +30,162 @@
 #include "AppKitPrivate.hpp"
 #include "NSEvent.hpp"
 
-namespace NS
-{
-	_NS_OPTIONS( NS::UInteger, WindowStyleMask )
-	{
-		WindowStyleMaskBorderless	   = 0,
-		WindowStyleMaskTitled		   = ( 1 << 0 ),
-		WindowStyleMaskClosable		 = ( 1 << 1 ),
-		WindowStyleMaskMiniaturizable   = ( 1 << 2 ),
-		WindowStyleMaskResizable		= ( 1 << 3 ),
-		WindowStyleMaskTexturedBackground = ( 1 << 8 ),
-		WindowStyleMaskUnifiedTitleAndToolbar = ( 1 << 12 ),
-		WindowStyleMaskFullScreen	   = ( 1 << 14 ),
-		WindowStyleMaskFullSizeContentView = ( 1 << 15 ),
-		WindowStyleMaskUtilityWindow	= ( 1 << 4 ),
-		WindowStyleMaskDocModalWindow   = ( 1 << 6 ),
-		WindowStyleMaskNonactivatingPanel   = ( 1 << 7 ),
-		WindowStyleMaskHUDWindow		= ( 1 << 13 )
-	};
+namespace NS {
+_NS_OPTIONS(NS::UInteger, WindowStyleMask) {
+	WindowStyleMaskBorderless = 0,
+	WindowStyleMaskTitled = (1 << 0),
+	WindowStyleMaskClosable = (1 << 1),
+	WindowStyleMaskMiniaturizable = (1 << 2),
+	WindowStyleMaskResizable = (1 << 3),
+	WindowStyleMaskTexturedBackground = (1 << 8),
+	WindowStyleMaskUnifiedTitleAndToolbar = (1 << 12),
+	WindowStyleMaskFullScreen = (1 << 14),
+	WindowStyleMaskFullSizeContentView = (1 << 15),
+	WindowStyleMaskUtilityWindow = (1 << 4),
+	WindowStyleMaskDocModalWindow = (1 << 6),
+	WindowStyleMaskNonactivatingPanel = (1 << 7),
+	WindowStyleMaskHUDWindow = (1 << 13)
+};
 
-	_NS_ENUM( NS::UInteger, BackingStoreType )
-	{
-		BackingStoreRetained = 0,
-		BackingStoreNonretained = 1,
-		BackingStoreBuffered = 2
-	};
+_NS_ENUM(NS::UInteger, BackingStoreType) {
+	BackingStoreRetained = 0,
+	BackingStoreNonretained = 1,
+	BackingStoreBuffered = 2
+};
 
-	_NS_ENUM( NS::UInteger, ActivationPolicy )
-	{
-		ActivationPolicyRegular,
-		ActivationPolicyAccessory,
-		ActivationPolicyProhibited
-	};
+_NS_ENUM(NS::UInteger, ActivationPolicy) {
+	ActivationPolicyRegular,
+	ActivationPolicyAccessory,
+	ActivationPolicyProhibited
+};
 
-	class ApplicationDelegate
-	{
-		public:
-			virtual					~ApplicationDelegate() = default;
-			virtual void			applicationWillFinishLaunching( [[maybe_unused]] Notification* pNotification ) { }
-			virtual void			applicationDidFinishLaunching( [[maybe_unused]] Notification* pNotification ) { }
-			virtual bool			applicationShouldTerminateAfterLastWindowClosed( [[maybe_unused]] class Application* pSender ) { return false; }
-	};
+class Application;
+class Date;
+class Event;
+class Menu;
+class String;
 
-	class Application : public NS::Referencing< Application >
-	{
-		public:
-			static Application*		sharedApplication();
+class ApplicationDelegate {
+public:
+	virtual ~ApplicationDelegate() = default;
 
-			void 					setDelegate( const ApplicationDelegate* pDelegate );
+	virtual void applicationWillFinishLaunching([[maybe_unused]] Notification* pNotification) {}
 
-			bool					setActivationPolicy( ActivationPolicy activationPolicy );
+	virtual void applicationDidFinishLaunching([[maybe_unused]] Notification* pNotification) {}
 
-			void					activateIgnoringOtherApps( bool ignoreOtherApps );
+	virtual bool applicationShouldTerminateAfterLastWindowClosed([[maybe_unused]] Application* pSender) { return false; }
+};
 
-			void					setMainMenu( const class Menu* pMenu );
+class Application: public Referencing<Application> {
+public:
+	static Application* sharedApplication();
 
-			NS::Array*				windows() const;
+	void setDelegate(const ApplicationDelegate* pDelegate);
 
-			class Event*			nextEventMatchingMask( EventMask mask, class Date* expiration, class String* mode, bool dequeue );
+	bool setActivationPolicy(ActivationPolicy activationPolicy) const;
 
-			void					sendEvent( class Event* event );
+	void activateIgnoringOtherApps(bool ignoreOtherApps) const;
 
-			void					run();
+	void setMainMenu(const Menu* pMenu) const;
 
-			void					terminate( const Object* pSender );
-	};
+	[[nodiscard]] Array* windows() const;
+
+	 Event* nextEventMatchingMask(EventMask mask,  Date* expiration,  String* mode, bool dequeue) const;
+
+	void sendEvent( Event* event) const;
+
+	void postEvent(Event* event, bool atStart) const;
+
+	void run() const;
+
+	void terminate(const Object* pSender) const;
+
+	void stop(const Object* pSender) const;
+};
 
 }
 
-_NS_INLINE NS::Application* NS::Application::sharedApplication()
-{
-	return Object::sendMessage< Application* >( _APPKIT_PRIVATE_CLS( NSApplication ), _APPKIT_PRIVATE_SEL( sharedApplication ) );
+_NS_INLINE NS::Application* NS::Application::sharedApplication() {
+	return sendMessage<Application*>(_APPKIT_PRIVATE_CLS(NSApplication), _APPKIT_PRIVATE_SEL(sharedApplication));
 }
 
-_NS_INLINE void NS::Application::setDelegate( const ApplicationDelegate* pAppDelegate )
-{
+_NS_INLINE void NS::Application::setDelegate(const ApplicationDelegate* pAppDelegate) {
 	// NOTE: this pWrapper is only held with a weak reference
-	NS::Value* pWrapper = NS::Value::value( pAppDelegate );
+	Value* pWrapper = Value::value(pAppDelegate);
 
-	typedef void (*DispatchFunction)( NS::Value*, SEL, void* );
-	
-	DispatchFunction willFinishLaunching = []( Value* pSelf, SEL, void* pNotification ){
-		auto pDel = reinterpret_cast< NS::ApplicationDelegate* >( pSelf->pointerValue() );
-		pDel->applicationWillFinishLaunching( (NS::Notification *)pNotification );
+	typedef void (*DispatchFunction)(Value*, SEL, void*);
+
+	DispatchFunction willFinishLaunching = [](Value* pSelf, SEL, void* pNotification) {
+		const auto pDel = reinterpret_cast<ApplicationDelegate*>(pSelf->pointerValue());
+		pDel->applicationWillFinishLaunching(static_cast<Notification*>(pNotification));
 	};
 
-	DispatchFunction didFinishLaunching = []( Value* pSelf, SEL, void* pNotification ){
-		auto pDel = reinterpret_cast< NS::ApplicationDelegate* >( pSelf->pointerValue() );
-		pDel->applicationDidFinishLaunching( (NS::Notification *)pNotification );
+	DispatchFunction didFinishLaunching = [](Value* pSelf, SEL, void* pNotification) {
+		const auto pDel = reinterpret_cast<ApplicationDelegate*>(pSelf->pointerValue());
+		pDel->applicationDidFinishLaunching(static_cast<Notification*>(pNotification));
 	};
 
-	DispatchFunction shouldTerminateAfterLastWindowClosed = []( Value* pSelf, SEL, void* pApplication ){
-		auto pDel = reinterpret_cast< NS::ApplicationDelegate* >( pSelf->pointerValue() );
-		pDel->applicationShouldTerminateAfterLastWindowClosed( (NS::Application *)pApplication );
+	DispatchFunction shouldTerminateAfterLastWindowClosed = [](Value* pSelf, SEL, void* pApplication) {
+		const auto pDel = reinterpret_cast<ApplicationDelegate*>(pSelf->pointerValue());
+		pDel->applicationShouldTerminateAfterLastWindowClosed(static_cast<Application*>(pApplication));
 	};
 
 #ifdef __OBJC__
-	class_addMethod( (__bridge Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationWillFinishLaunching_ ), (IMP)willFinishLaunching, "v@:@" );
-	class_addMethod( (__bridge Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationDidFinishLaunching_ ), (IMP)didFinishLaunching, "v@:@" );
-	class_addMethod( (__bridge Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationShouldTerminateAfterLastWindowClosed_), (IMP)shouldTerminateAfterLastWindowClosed, "B@:@" );
+	class_addMethod((__bridge Class)_NS_PRIVATE_CLS(NSValue), _APPKIT_PRIVATE_SEL(applicationWillFinishLaunching_), (
+		IMP)willFinishLaunching, "v@:@" );
+	class_addMethod((__bridge Class)_NS_PRIVATE_CLS(NSValue), _APPKIT_PRIVATE_SEL(applicationDidFinishLaunching_), (IMP)
+		didFinishLaunching, "v@:@" );
+	class_addMethod((__bridge Class)_NS_PRIVATE_CLS(NSValue), _APPKIT_PRIVATE_SEL(
+		applicationShouldTerminateAfterLastWindowClosed_), (IMP)shouldTerminateAfterLastWindowClosed, "B@:@" );
 #else
-    class_addMethod( (Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationWillFinishLaunching_ ), (IMP)willFinishLaunching, "v@:@" );
-    class_addMethod( (Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationDidFinishLaunching_ ), (IMP)didFinishLaunching, "v@:@" );
-    class_addMethod( (Class)_NS_PRIVATE_CLS( NSValue ), _APPKIT_PRIVATE_SEL( applicationShouldTerminateAfterLastWindowClosed_), (IMP)shouldTerminateAfterLastWindowClosed, "B@:@" );
+	class_addMethod((Class)_NS_PRIVATE_CLS(NSValue), _APPKIT_PRIVATE_SEL(applicationWillFinishLaunching_),
+					(IMP)willFinishLaunching, "v@:@");
+	class_addMethod((Class)_NS_PRIVATE_CLS(NSValue), _APPKIT_PRIVATE_SEL(applicationDidFinishLaunching_),
+					(IMP)didFinishLaunching, "v@:@");
+	class_addMethod((Class)_NS_PRIVATE_CLS(NSValue),
+					_APPKIT_PRIVATE_SEL(applicationShouldTerminateAfterLastWindowClosed_),
+					(IMP)shouldTerminateAfterLastWindowClosed, "B@:@");
 #endif
 
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setDelegate_ ), pWrapper );
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setDelegate_), pWrapper);
 }
 
-_NS_INLINE bool NS::Application::setActivationPolicy( ActivationPolicy activationPolicy )
-{
-	return NS::Object::sendMessage< bool >( this, _APPKIT_PRIVATE_SEL( setActivationPolicy_ ), activationPolicy );
+_NS_INLINE bool NS::Application::setActivationPolicy(const ActivationPolicy activationPolicy) const {
+	return sendMessage<bool>(this, _APPKIT_PRIVATE_SEL(setActivationPolicy_), activationPolicy);
 }
 
-_NS_INLINE void NS::Application::activateIgnoringOtherApps( bool ignoreOtherApps )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( activateIgnoringOtherApps_ ), (ignoreOtherApps ? YES : NO) );
+_NS_INLINE void NS::Application::activateIgnoringOtherApps(const bool ignoreOtherApps) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(activateIgnoringOtherApps_), (ignoreOtherApps ? YES : NO));
 }
 
-_NS_INLINE void NS::Application::setMainMenu( const class Menu* pMenu )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( setMainMenu_ ), pMenu );
+_NS_INLINE void NS::Application::setMainMenu(const  Menu* pMenu) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setMainMenu_), pMenu);
 }
 
-_NS_INLINE NS::Array* NS::Application::windows() const
-{
-	return Object::sendMessage< NS::Array* >( this, _APPKIT_PRIVATE_SEL( windows ) );
+_NS_INLINE NS::Array* NS::Application::windows() const {
+	return sendMessage<NS::Array*>(this, _APPKIT_PRIVATE_SEL(windows));
 }
 
-_NS_INLINE NS::Event* NS::Application::nextEventMatchingMask( EventMask mask, class Date* expiration, class String* mode, bool dequeue )
-{
-	return Object::sendMessage< NS::Event* >( this, _APPKIT_PRIVATE_SEL( nextEventMatchingMask_untilDate_inMode_dequeue_ ), mask, expiration, mode, dequeue );
+_NS_INLINE NS::Event* NS::Application::nextEventMatchingMask(const EventMask mask, Date* expiration,  String* mode, const bool dequeue) const {
+	return sendMessage<Event*>(this, _APPKIT_PRIVATE_SEL(nextEventMatchingMask_untilDate_inMode_dequeue_), mask, expiration, mode, dequeue);
 }
 
-_NS_INLINE void NS::Application::sendEvent( class Event* event )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( sendEvent_ ), event );
+_NS_INLINE void NS::Application::sendEvent( Event* event) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(sendEvent_), event);
 }
 
-_NS_INLINE void NS::Application::run()
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( run ) );
+_NS_INLINE void NS::Application::postEvent(Event* event, const bool atStart) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(postEvent_atStart_), event, atStart);
 }
 
-_NS_INLINE void NS::Application::terminate( const Object* pSender )
-{
-	Object::sendMessage< void >( this, _APPKIT_PRIVATE_SEL( terminate_ ), pSender );
+_NS_INLINE void NS::Application::run() const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(run));
+}
+
+_NS_INLINE void NS::Application::terminate(const Object* pSender) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(terminate_), pSender);
+}
+
+_NS_INLINE void NS::Application::stop(const Object* pSender) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(stop_), pSender);
 }

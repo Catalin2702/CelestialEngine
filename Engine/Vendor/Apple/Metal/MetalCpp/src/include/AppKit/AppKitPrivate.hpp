@@ -135,8 +135,14 @@ _APPKIT_PRIVATE_DEF_SEL( nextEventMatchingMask_untilDate_inMode_dequeue_,
 _APPKIT_PRIVATE_DEF_SEL( sendEvent_,
 						"sendEvent:" );
 
+_APPKIT_PRIVATE_DEF_SEL(postEvent_atStart_,
+						"postEvent:atStart:");
+
 _APPKIT_PRIVATE_DEF_SEL( terminate_,
 						"terminate:" );
+
+_APPKIT_PRIVATE_DEF_SEL(stop_,
+						"stop:");
 
 _APPKIT_PRIVATE_DEF_SEL( initWithContentRect_styleMask_backing_defer_,
 						"initWithContentRect:styleMask:backing:defer:" );
@@ -396,6 +402,9 @@ _APPKIT_PRIVATE_DEF_SEL( setMouseCoalescingEnabled_,
 
 _APPKIT_PRIVATE_DEF_SEL( isSwipeTrackingFromScrollEventsEnabled,
 						"isSwipeTrackingFromScrollEventsEnabled" );
+
+_APPKIT_PRIVATE_DEF_SEL(otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_,
+						"otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:");
 
 // Screen
 _APPKIT_PRIVATE_DEF_SEL(mainScreen, "mainScreen");
