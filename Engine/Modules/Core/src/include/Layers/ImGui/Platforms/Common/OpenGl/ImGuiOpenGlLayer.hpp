@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -15,6 +15,9 @@
 #include "Layers/ImGui/I_ImGuiLayer.hpp"
 
 #include "Define/DynamicLinker.hpp"
+
+#include <functional>
+#include <optional>
 
 namespace CE::Render::Context {
 class OpenGlContext;
@@ -70,6 +73,11 @@ public:
 	 */
 	void OnRender() const override;
 
+	/**
+	 * @brief Called when an event is received
+	 * @param event Reference to the event to be processed
+	 * @details Dispatches input events to ImGui for processing and updates ImGui's internal state accordingly. This allows ImGui to respond to user interactions such as mouse movement, clicks, keyboard input, and window resizing.
+	 */
 	void OnEvent(Events::I_Event& event) override;
 
 	/**
@@ -112,8 +120,8 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	// Render::Context::OpenGlContext* _context = nullptr;		///< Cached OpenGL context pointer
-	Window::GlfwWindow* _window = nullptr;			///< Cached OpenGL window pointer
+	std::optional<std::reference_wrapper<Render::Context::OpenGlContext>> _context; ///< Cached OpenGL context pointer
+	std::optional<std::reference_wrapper<Window::GlfwWindow>> _window; ///< Cached OpenGL window pointer
 };
 
 }

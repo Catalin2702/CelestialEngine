@@ -4,7 +4,146 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-20
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
+#include "Define/Bind.hpp"
+#include "Events/ApplicationEvent.hpp"
+#include "Events/I_Event.hpp"
+#include "Input/Platforms/Common/Glfw/GlfwInput.hpp"
+#include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
+#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Tools/Log/Log.hpp"
+#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
+
+#include <cassert>
+
+namespace CE::Core::Application {
+
+GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr), _lastFrameTime(Clock::now()) {
+	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
+	_stInstance = this;
+
+	SetRunning(false);
+}
+
+GlfwApplication::~GlfwApplication() {
+	if (IsRunning())
+		GlfwApplication::Quit();
+
+	_layerStack.Clear();
+	_imguiLayer = nullptr;
+
+	_context.reset();
+	_window.reset();
+}
+
+void GlfwApplication::Run() {
+	SetRunning(true);
+
+	_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
+	while (IsRunning()) {
+		const auto currentTime = Clock::now();
+		const auto deltaTime = std::chrono::duration<float>(currentTime - _lastFrameTime).count();
+		_lastFrameTime = currentTime;
+		Tick(deltaTime);
+	}
+}
+
+void GlfwApplication::Quit() {
+	Input::ShutdownInput();
+	SetRunning(false);
+}
+
+void GlfwApplication::Tick(const float) {
+	for (const auto layer: _layerStack)
+		layer->OnUpdate();
+
+	_imguiLayer->Begin();
+
+	for (const auto layer: _layerStack)
+		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
+			renderLayer->OnRender();
+
+	_imguiLayer->End();
+
+	_window->OnUpdate();
+	_context->SwapBuffers();
+}
+
+void GlfwApplication::OnEvent(Events::I_Event& event) {
+	Events::EventDispatcher eventDispatcher{event};
+
+	switch (event.GetEventType()) {
+		case Events::EventType::WindowClose: {
+			eventDispatcher.Dispatch<Events::WindowCloseEvent>([this](const Events::WindowCloseEvent& e) {
+				Quit();
+				e.Consume();
+				return true;
+			});
+			break;
+		}
+		default:
+			break;
+	}
+
+	if (event.IsHandled())
+		return;
+
+	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
+		(*--it)->OnEvent(event);
+		if (event.IsHandled())
+			break;
+	}
+}
+
+void GlfwApplication::Init(const Types::Window::WindowProps& windowProps) {
+	InitWindow(windowProps);
+	InitRenderer(windowProps.graphicsApi);
+	InitImGuiLayer(windowProps.graphicsApi);
+
+	_window->GetReady();
+}
+
+void GlfwApplication::InitWindow(const Types::Window::WindowProps& windowProps) {
+	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
+
+	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+		CE_CORE_ERROR("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
+		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
+	}
+
+	_window = std::make_unique<Window::GlfwWindow>(windowProps);
+	_window->SetEventCallback(BIND_FN_ONE_PARAM(GlfwApplication::OnEvent));
+
+	Input::InitInput(windowProps.windowApi);
+}
+
+void GlfwApplication::InitRenderer(Types::Render::GraphicsApi) {
+	assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
+	assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
+
+	_context = std::make_unique<Render::Context::OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+	_context->Init();
+}
+
+void GlfwApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
+	assert(_window && "GlfwApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
+	assert(_context && "GlfwApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
+	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
+
+	auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+	_imguiLayer = overlay.release();
+	PushOverlay(_imguiLayer);
+}
+
+Window::I_Window& GlfwApplication::GetWindow() const {
+	return *_window;
+}
+
+Render::Context::I_Context& GlfwApplication::GetRenderContext() const {
+	return *_context;
+}
+
+}

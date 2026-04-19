@@ -28,7 +28,7 @@
 namespace CE::Core::Application {
 
 CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), _window(nullptr), _imguiLayer(nullptr), _lastFrameTime(Clock::now()) {
-	assert(_stInstance == nullptr && "CocoaApplication already exists!");
+	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
 
 	SetRunning(false);
@@ -39,8 +39,17 @@ CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), 
 }
 
 CocoaApplication::~CocoaApplication() {
-	_appCocoa.reset();
+	if (IsRunning())
+		CocoaApplication::Quit();
+
+	_layerStack.Clear();
+	_imguiLayer = nullptr;
+
+	_context.reset();
+	_window.reset();
+
 	_appDelegate.reset();
+	_appCocoa.reset();
 }
 
 void CocoaApplication::Run() {
@@ -75,6 +84,9 @@ void CocoaApplication::Quit() {
 		0
 	);
 	_appCocoa->postEvent(dummyEvent, true);
+
+	Input::ShutdownInput();
+	SetRunning(false);
 }
 
 void CocoaApplication::Tick(const float) {
@@ -88,8 +100,6 @@ void CocoaApplication::Tick(const float) {
 			renderLayer->OnRender();
 
 	_imguiLayer->End();
-
-	_context->SwapBuffers();
 }
 
 void CocoaApplication::OnEvent(Events::I_Event& event) {
@@ -107,6 +117,15 @@ void CocoaApplication::OnEvent(Events::I_Event& event) {
 		default:
 			break;
 	}
+
+	if (event.IsHandled())
+		return;
+
+	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
+		(*--it)->OnEvent(event);
+		if (event.IsHandled())
+			break;
+	}
 }
 
 void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
@@ -119,21 +138,6 @@ void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
 	_window->GetReady();
 }
 
-void CocoaApplication::_StDisplayLinkCallback(void* userData) {
-	if (not userData)
-		return;
-
-	const auto app = static_cast<CocoaApplication*>(userData);
-	if (not app->IsRunning())
-		return;
-
-	const auto currentTime = Clock::now();
-	const auto deltaTime = std::chrono::duration<float>(currentTime - app->_lastFrameTime).count();
-	app->_lastFrameTime = currentTime;
-
-	app->Tick(deltaTime);
-}
-
 void CocoaApplication::StartDisplayLink() {
 	if (_displayLink)
 		return;
@@ -141,7 +145,7 @@ void CocoaApplication::StartDisplayLink() {
 	_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
 	_displayLink->setCallback(&CocoaApplication::_StDisplayLinkCallback, this);
 
-	_lastFrameTime = Clock::now(); // Reset per evitare un grande deltaTime al primo frame
+	_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
 	_displayLink->start();
 }
 
@@ -178,6 +182,10 @@ void CocoaApplication::InitRenderer(Types::Render::GraphicsApi) {
 }
 
 void CocoaApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
+	assert(_window && "CocoaApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
+	assert(_context && "CocoaApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
+	assert(not _imguiLayer && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
+
 	auto overlay = std::make_unique<Layers::ImGuiMetalLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
@@ -189,6 +197,21 @@ Window::I_Window& CocoaApplication::GetWindow() const {
 
 Render::Context::I_Context& CocoaApplication::GetRenderContext() const {
 	return *_context;
+}
+
+void CocoaApplication::_StDisplayLinkCallback(void* userData) {
+	if (not userData)
+		return;
+
+	const auto app = static_cast<CocoaApplication*>(userData);
+	if (not app->IsRunning())
+		return;
+
+	const auto currentTime = Clock::now();
+	const auto deltaTime = std::chrono::duration<float>(currentTime - app->_lastFrameTime).count();
+	app->_lastFrameTime = currentTime;
+
+	app->Tick(deltaTime);
 }
 
 void CocoaApplication::_SetWindowCallbacks() const {

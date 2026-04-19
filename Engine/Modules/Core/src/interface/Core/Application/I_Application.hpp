@@ -65,7 +65,7 @@ public:
 	/**
 	 * @brief Virtual destructor
 	 */
-	virtual ~I_Application() = default;
+	virtual ~I_Application();
 
 public:
 	/**

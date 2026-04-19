@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-20
 //
 
 #include "Core/Application/I_Application.hpp"
@@ -15,6 +15,10 @@
 namespace CE::Core::Application {
 
 std::atomic<I_Application*> I_Application::_stInstance = nullptr;
+
+I_Application::~I_Application() {
+	_stInstance = nullptr;
+}
 
 void I_Application::PushLayer(Layers::I_Layer* layer) {
 	assert(layer != nullptr && "I_Application::PushLayer: Cannot push a null layer");

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 // #include <Core/Application.hpp>
 #include <Core/Application/I_Application.hpp>
 #ifdef CE_PLATFORM_MACOS
+#include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
 #include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
 #endif
 // -----------------------------------------------
