@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -26,20 +26,5 @@ typedef void (*DisplayLinkCallbackFn)(void* userData);
 	- (void)setCallback:(DisplayLinkCallbackFn)callback userData:(void*)userData;
 
 @end
-
-// C wrapper functions for C++ interop
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void* CE_DisplayLink_Create(void);
-void CE_DisplayLink_Destroy(void* displayLink);
-void CE_DisplayLink_SetCallback(void* displayLink, DisplayLinkCallbackFn callback, void* userData);
-void CE_DisplayLink_Start(void* displayLink);
-void CE_DisplayLink_Stop(void* displayLink);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //CE_NATIVE_APPLE_METAL_COREANIMATION_DISPLAYLINK_DISPLAYLINK_H

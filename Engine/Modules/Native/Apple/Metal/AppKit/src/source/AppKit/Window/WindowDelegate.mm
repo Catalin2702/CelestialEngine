@@ -4,12 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-20
 //
 
 #include "AppKit/Window/WindowDelegate.h"
 
 @implementation WindowDelegate
+
+- (void)dealloc {
+	self.callbacks = {};
+	self.userData = nullptr;
+	[super dealloc];
+}
 
 - (void *)getUserData {
 	return self.userData;

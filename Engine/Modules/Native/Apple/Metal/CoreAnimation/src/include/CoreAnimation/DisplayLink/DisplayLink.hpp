@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -12,108 +12,44 @@
 #ifndef CE_NATIVE_APPLE_METAL_COREANIMATION_DISPLAYLINK_DISPLAYLINK_HPP
 #define CE_NATIVE_APPLE_METAL_COREANIMATION_DISPLAYLINK_DISPLAYLINK_HPP
 
-// C wrapper function declarations
-extern "C" {
-	typedef void (*DisplayLinkCallbackFn)(void* userData);
+#include <Foundation/Foundation.hpp>
+#include <QuartzCore/QuartzCore.hpp>
 
-	void* CE_DisplayLink_Create(void);
-	void CE_DisplayLink_Destroy(void* displayLink);
-	void CE_DisplayLink_SetCallback(void* displayLink, DisplayLinkCallbackFn callback, void* userData);
-	void CE_DisplayLink_Start(void* displayLink);
-	void CE_DisplayLink_Stop(void* displayLink);
-}
 
 namespace CA {
 
-/**
- * @class DisplayLink
- * @brief C++ wrapper for the CVDisplayLink-based display synchronization
- */
-class DisplayLink {
+class DisplayLink: public NS::Referencing<DisplayLink> {
 public:
 	using TickFn = void(*)(void*);
 
-	DisplayLink() : _handle(nullptr) {}
+	static DisplayLink* alloc();
+	[[nodiscard]] DisplayLink* init() const;
 
-	~DisplayLink() {
-		if (_handle) {
-			CE_DisplayLink_Destroy(_handle);
-			_handle = nullptr;
-		}
-	}
-
-	// Non-copyable
-	DisplayLink(const DisplayLink&) = delete;
-	DisplayLink& operator=(const DisplayLink&) = delete;
-
-	// Movable
-	DisplayLink(DisplayLink&& other) noexcept : _handle(other._handle) {
-		other._handle = nullptr;
-	}
-
-	DisplayLink& operator=(DisplayLink&& other) noexcept {
-		if (this != &other) {
-			if (_handle) {
-				CE_DisplayLink_Destroy(_handle);
-			}
-			_handle = other._handle;
-			other._handle = nullptr;
-		}
-		return *this;
-	}
-
-	/**
-	 * @brief Creates a new DisplayLink instance
-	 * @return Pointer to a new DisplayLink, or nullptr on failure
-	 */
-	static DisplayLink* create() {
-		auto* link = new DisplayLink();
-		link->_handle = CE_DisplayLink_Create();
-		if (!link->_handle) {
-			delete link;
-			return nullptr;
-		}
-		return link;
-	}
-
-	/**
-	 * @brief Sets the callback function to be called on each display refresh
-	 */
-	void setCallback(TickFn callback, void* userData) const {
-		if (_handle) {
-			CE_DisplayLink_SetCallback(_handle, callback, userData);
-		}
-	}
-
-	/**
-	 * @brief Starts the display link
-	 */
-	void start() const {
-		if (_handle) {
-			CE_DisplayLink_Start(_handle);
-		}
-	}
-
-	/**
-	 * @brief Stops the display link
-	 */
-	void stop() const {
-		if (_handle) {
-			CE_DisplayLink_Stop(_handle);
-		}
-	}
-
-	/**
-	 * @brief Checks if the display link is valid
-	 */
-	[[nodiscard]] bool isValid() const {
-		return _handle != nullptr;
-	}
-
-private:
-	void* _handle;
+	void setCallback(TickFn callback, void* userData) const;
+	void start() const;
+	void stop() const;
 };
 
+}
+
+_NS_INLINE CA::DisplayLink* CA::DisplayLink::alloc() {
+	return sendMessage<DisplayLink*>(objc_getClass("DisplayLink"), _CA_PRIVATE_SEL(alloc));
+}
+
+_NS_INLINE CA::DisplayLink* CA::DisplayLink::init() const {
+	return sendMessage<DisplayLink*>(this, _CA_PRIVATE_SEL(init));
+}
+
+_NS_INLINE void CA::DisplayLink::setCallback(TickFn callback, void* userData) const {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setCallback_userData_), callback, userData);
+}
+
+_NS_INLINE void CA::DisplayLink::start() const {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(start));
+}
+
+_NS_INLINE void CA::DisplayLink::stop() const {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(stop));
 }
 
 #endif //CE_NATIVE_APPLE_METAL_COREANIMATION_DISPLAYLINK_DISPLAYLINK_HPP

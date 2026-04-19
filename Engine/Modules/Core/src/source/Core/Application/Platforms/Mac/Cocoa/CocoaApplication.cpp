@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -27,11 +27,11 @@
 
 namespace CE::Core::Application {
 
-CocoaApplication::CocoaApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
+CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), _window(nullptr), _imguiLayer(nullptr), _lastFrameTime(Clock::now()) {
 	assert(_stInstance == nullptr && "CocoaApplication already exists!");
 	_stInstance = this;
 
-	_isRunning = false;
+	SetRunning(false);
 
 	_appCocoa = NS::RetainPtr(NS::Application::sharedApplication());
 
@@ -46,12 +46,15 @@ CocoaApplication::~CocoaApplication() {
 void CocoaApplication::Run() {
 	_appCocoa->setDelegate(_appDelegate.get());
 
-	_appCocoa->setActivationPolicy(NS::ActivationPolicyRegular);
+	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
+		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
+			CE_CORE_ERROR("CocoaApplication::Run: Failed to set activation policy for the application");
+			throw std::runtime_error("Failed to set activation policy for the application");
+		}
+	}
+
 	_appCocoa->activateIgnoringOtherApps(true);
 
-	StartDisplayLink();
-
-	_isRunning = true;
 	_appCocoa->run();
 }
 
@@ -74,18 +77,19 @@ void CocoaApplication::Quit() {
 	_appCocoa->postEvent(dummyEvent, true);
 }
 
-void CocoaApplication::Tick([[maybe_unused]] const float deltaTime) {
+void CocoaApplication::Tick(const float) {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
 	_imguiLayer->Begin();
+
 	for (const auto layer: _layerStack)
 		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
 			renderLayer->OnRender();
+
 	_imguiLayer->End();
 
 	_context->SwapBuffers();
-	CE_CORE_ERROR("CIAOOO");
 }
 
 void CocoaApplication::OnEvent(Events::I_Event& event) {
@@ -115,41 +119,36 @@ void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
 	_window->GetReady();
 }
 
-void CocoaApplication::DisplayLinkCallback(void* userData) {
-	CE_CORE_WARN("DisplayLinkCallback called!");
+void CocoaApplication::_StDisplayLinkCallback(void* userData) {
+	if (not userData)
+		return;
+
 	const auto app = static_cast<CocoaApplication*>(userData);
-	app->Tick(1.0f / 60.0f); // Assuming a fixed timestep of 60 FPS for simplicity
+	if (not app->IsRunning())
+		return;
+
+	const auto currentTime = Clock::now();
+	const auto deltaTime = std::chrono::duration<float>(currentTime - app->_lastFrameTime).count();
+	app->_lastFrameTime = currentTime;
+
+	app->Tick(deltaTime);
 }
 
 void CocoaApplication::StartDisplayLink() {
-	CE_CORE_INFO("StartDisplayLink: Beginning...");
-
-	if (_displayLink) {
-		CE_CORE_WARN("StartDisplayLink: DisplayLink already exists!");
+	if (_displayLink)
 		return;
-	}
 
-	_displayLink.reset(CA::DisplayLink::create());
+	_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
+	_displayLink->setCallback(&CocoaApplication::_StDisplayLinkCallback, this);
 
-	if (!_displayLink || !_displayLink->isValid()) {
-		CE_CORE_ERROR("StartDisplayLink: Failed to create DisplayLink!");
-		return;
-	}
-
-	CE_CORE_INFO("StartDisplayLink: DisplayLink created successfully");
-	CE_CORE_INFO("StartDisplayLink: Setting callback...");
-	_displayLink->setCallback(&CocoaApplication::DisplayLinkCallback, this);
-
-	CE_CORE_INFO("StartDisplayLink: Starting...");
+	_lastFrameTime = Clock::now(); // Reset per evitare un grande deltaTime al primo frame
 	_displayLink->start();
-	CE_CORE_INFO("StartDisplayLink: Done!");
 }
 
 void CocoaApplication::StopDisplayLink() {
 	if (not _displayLink)
 		return;
 
-	_displayLink->stop();
 	_displayLink.reset();
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-04-20
 //
 
 #include "AppKit/View/RenderView.h"
@@ -18,6 +18,19 @@
 @end
 
 @implementation RenderView
+
+- (void)dealloc {
+	if (_trackingArea) {
+		[self removeTrackingArea:_trackingArea];
+		[_trackingArea release];
+		_trackingArea = nil;
+	}
+
+	_callbacks = {};
+	_userData = nullptr;
+
+	[super dealloc];
+}
 
 - (void)setCallbacks:(RenderViewCallbacks)callbacks userData:(void*)userData {
 	_callbacks = callbacks;

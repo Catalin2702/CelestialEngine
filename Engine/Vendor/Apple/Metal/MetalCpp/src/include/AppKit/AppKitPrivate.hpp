@@ -123,6 +123,9 @@ _APPKIT_PRIVATE_DEF_SEL( setDelegate_,
 _APPKIT_PRIVATE_DEF_SEL( setActivationPolicy_,
 						"setActivationPolicy:" );
 
+_APPKIT_PRIVATE_DEF_SEL(activationPolicy,
+						"activationPolicy");
+
 _APPKIT_PRIVATE_DEF_SEL( activateIgnoringOtherApps_,
 						"activateIgnoringOtherApps:" );
 

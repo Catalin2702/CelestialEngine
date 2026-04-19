@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 
 #include <Foundation/Foundation.hpp>
 
+#include <chrono>
 #include <memory>
 
 namespace CA {
@@ -172,18 +173,23 @@ public:
 	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override;
 
 private:
-	static void DisplayLinkCallback(void* userData);
+	static void _StDisplayLinkCallback(void* userData);
 	void _SetWindowCallbacks() const;
 
 private:
-	NS::SharedPtr<NS::Application> _appCocoa; ///< Pointer to the Cocoa application instance
-	std::unique_ptr<CA::DisplayLink> _displayLink; ///< Pointer to the display link for synchronizing rendering
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = std::chrono::time_point<Clock>;
 
+	NS::SharedPtr<NS::Application> _appCocoa; ///< Pointer to the Cocoa application instance
+	NS::SharedPtr<CA::DisplayLink> _displayLink; ///< Pointer to the display link for synchronizing rendering
 	std::unique_ptr<CocoaApplicationDelegate> _appDelegate; ///< Delegate for handling Cocoa application events
+
 	std::unique_ptr<Render::Context::MetalContext> _context; ///< Pointer to the Metal rendering context
 	std::unique_ptr<Window::CocoaWindow> _window; ///< Pointer to the application window
 
 	Layers::ImGuiMetalLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
+
+	TimePoint _lastFrameTime; ///< Timestamp of the last frame for delta time calculation
 };
 
 }

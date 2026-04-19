@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-20
 //
 
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -55,7 +55,7 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
 
-	_layer = NS::TransferPtr(CA::MetalLayer::layer());
+	_layer = NS::RetainPtr(CA::MetalLayer::layer());
 	if (not _layer) {
 		CE_CORE_ERROR("MetalContext::Init: Could not create CAMetalLayer!");
 		throw std::runtime_error("MetalContext::Init: Could not create CAMetalLayer!");

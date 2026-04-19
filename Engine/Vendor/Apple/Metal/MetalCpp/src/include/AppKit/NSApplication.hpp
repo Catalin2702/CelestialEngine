@@ -82,15 +82,17 @@ public:
 
 	void setDelegate(const ApplicationDelegate* pDelegate);
 
-	bool setActivationPolicy(ActivationPolicy activationPolicy) const;
+	[[nodiscard]] bool setActivationPolicy(ActivationPolicy activationPolicy) const;
 
 	void activateIgnoringOtherApps(bool ignoreOtherApps) const;
 
 	void setMainMenu(const Menu* pMenu) const;
 
+	[[nodiscard]] ActivationPolicy activationPolicy() const;
+
 	[[nodiscard]] Array* windows() const;
 
-	 Event* nextEventMatchingMask(EventMask mask,  Date* expiration,  String* mode, bool dequeue) const;
+	[[nodiscard]] Event* nextEventMatchingMask(EventMask mask,  Date* expiration,  String* mode, bool dequeue) const;
 
 	void sendEvent( Event* event) const;
 
@@ -160,6 +162,10 @@ _NS_INLINE void NS::Application::activateIgnoringOtherApps(const bool ignoreOthe
 
 _NS_INLINE void NS::Application::setMainMenu(const  Menu* pMenu) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setMainMenu_), pMenu);
+}
+
+_NS_INLINE NS::ActivationPolicy NS::Application::activationPolicy() const {
+	return sendMessage<ActivationPolicy>(this, _APPKIT_PRIVATE_SEL(activationPolicy));
 }
 
 _NS_INLINE NS::Array* NS::Application::windows() const {

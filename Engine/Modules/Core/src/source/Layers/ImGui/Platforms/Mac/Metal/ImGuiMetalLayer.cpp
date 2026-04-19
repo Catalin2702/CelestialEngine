@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -94,16 +94,16 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0 ? time - _time : 1.0f / 60.0f;
 	_time = time;
 
-	_frameContext.drawable = NS::TransferPtr(_context->get().GetMetalLayer()->nextDrawable());
+	_frameContext.drawable = NS::RetainPtr(_context->get().GetMetalLayer()->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::TransferPtr(_context->get().GetMetalCommandQueue()->commandBuffer());
+	_frameContext.commandBuffer = NS::RetainPtr(_context->get().GetMetalCommandQueue()->commandBuffer());
 
-	const auto renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
+	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 0));

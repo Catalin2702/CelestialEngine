@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -177,6 +177,10 @@ public:
 	 * @return Render::Context::I_Context* Pointer to the graphics context
 	 */
 	[[nodiscard]] virtual Render::Context::I_Context& GetRenderContext() const = 0;
+
+	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
+
+	void SetRunning(const bool running) { _isRunning.store(running); }
 
 protected:
 	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance
