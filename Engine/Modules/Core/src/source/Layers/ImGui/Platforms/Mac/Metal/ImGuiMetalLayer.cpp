@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-19
 //
 
 #include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Bridge/ImGui/ImGuiBridge.h"
-#include "Core/Application.hpp"
+#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
@@ -28,7 +28,8 @@
 
 namespace CE::Layers {
 
-ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer") {}
+ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _context(std::nullopt), _window(std::nullopt) {
+}
 
 ImGuiMetalLayer::~ImGuiMetalLayer() {
 	// Ensure _Shutdown is called if OnDetach was not called
@@ -93,14 +94,14 @@ void ImGuiMetalLayer::Begin() {
 	io.DeltaTime = _time > 0.0 ? time - _time : 1.0f / 60.0f;
 	_time = time;
 
-	_frameContext.drawable = NS::TransferPtr(_context->GetMetalLayer()->nextDrawable());
+	_frameContext.drawable = NS::TransferPtr(_context->get().GetMetalLayer()->nextDrawable());
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::TransferPtr(_context->GetMetalCommandQueue()->commandBuffer());
+	_frameContext.commandBuffer = NS::TransferPtr(_context->get().GetMetalCommandQueue()->commandBuffer());
 
 	const auto renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
@@ -113,7 +114,7 @@ void ImGuiMetalLayer::Begin() {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
-	Apple::Bridge::ImGuiOSXNewFrame(_window->GetCocoaView());
+	Apple::Bridge::ImGuiOSXNewFrame(_window->get().GetCocoaView());
 
 	ImGui::NewFrame();
 	_currentFrameStarted = true;
@@ -154,31 +155,21 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-		const auto& app = Core::Application::Get();
+		const auto& app = Core::Application::CocoaApplication::StGet();
 
-		_window = dynamic_cast<Window::CocoaWindow*>(app.GetWindow());
-		if (not _window) {
-			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a CocoaWindow window!");
-		}
+		_window = dynamic_cast<Window::CocoaWindow&>(app.GetWindow());
 
-		_context = dynamic_cast<Render::Context::MetalContext*>(app.GetContext());
-		if (not _context) {
-			CE_CORE_ERROR("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("ImGuiMetalLayer::_Init: ImGuiMetalLayer requires a MetalContext!");
-		}
+		_context = dynamic_cast<Render::Context::MetalContext&>(app.GetRenderContext());
 
-		Apple::Bridge::ImGuiMetalInit(_context->GetNativeDevice());
+		Apple::Bridge::ImGuiMetalInit(_context->get().GetNativeDevice());
 
-		if (not Apple::Bridge::ImGuiOSXInit(_window->GetCocoaView())) {
+		if (not Apple::Bridge::ImGuiOSXInit(_window->get().GetCocoaView())) {
 			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
 			ImGui::DestroyContext(context);
 			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
 		}
 
-		const auto [width, height] = _window->GetViewSize();
+		const auto [width, height] = _window->get().GetViewSize();
 
 		io.DisplaySize = ImVec2(width, height);
 
@@ -268,7 +259,7 @@ bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _window->GetContentScale();
+	const auto [xScale, yScale] = _window->get().GetContentScale();
 	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;

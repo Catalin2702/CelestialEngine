@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-19
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
@@ -13,12 +13,12 @@
 
 namespace CE::Core::Application {
 
-void CocoaApplicationDelegate::applicationDidFinishLaunching(NS::Notification* pNotification) {
+void CocoaApplicationDelegate::applicationDidFinishLaunching(NS::Notification*) {
 	auto& app = dynamic_cast<CocoaApplication&>(I_Application::StGet());
 	app.StartDisplayLink();
 }
 
-bool CocoaApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application* pSender) {
+bool CocoaApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application*) {
 	return true;
 }
 

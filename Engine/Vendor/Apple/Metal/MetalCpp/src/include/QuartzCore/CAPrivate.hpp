@@ -55,8 +55,8 @@
 #define _CA_PRIVATE_DEF_PRO(symbol) void* s_k##symbol _CA_PRIVATE_VISIBILITY = _CA_PRIVATE_OBJC_GET_PROTOCOL(symbol)
 #define _CA_PRIVATE_DEF_SEL(accessor, symbol) SEL s_k##accessor _CA_PRIVATE_VISIBILITY = sel_registerName(symbol)
 #define _CA_PRIVATE_DEF_STR(type, symbol)                \
-    _CA_EXTERN type const CA##symbol _CA_PRIVATE_IMPORT; \
-    type const                       CA::symbol = (nullptr != &CA##symbol) ? CA##symbol : nullptr
+	_CA_EXTERN type const CA##symbol _CA_PRIVATE_IMPORT; \
+	type const					   CA::symbol = (nullptr != &CA##symbol) ? CA##symbol : nullptr
 
 #else
 
@@ -69,84 +69,85 @@
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-namespace CA
-{
-namespace Private
-{
-    namespace Class
-    {
-        _CA_PRIVATE_DEF_CLS(CAMetalLayer);
-    } // Class
-} // Private
+namespace CA {
+	namespace Private {
+		namespace Class {
+			_CA_PRIVATE_DEF_CLS(CAMetalLayer);
+		} // Class
+	} // Private
 } // CA
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-namespace CA
-{
-namespace Private
-{
-    namespace Protocol
-    {
+namespace CA {
+	namespace Private {
+		namespace Protocol {
 
-        _CA_PRIVATE_DEF_PRO(CAMetalDrawable);
+			_CA_PRIVATE_DEF_PRO(CAMetalDrawable);
 
-    } // Protocol
-} // Private
+		} // Protocol
+	} // Private
 } // CA
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-namespace CA
-{
-namespace Private
-{
-    namespace Selector
-    {
-        _CA_PRIVATE_DEF_SEL(allowsNextDrawableTimeout,
-            "allowsNextDrawableTimeout");
-        _CA_PRIVATE_DEF_SEL(colorspace,
-            "colorspace");
-        _CA_PRIVATE_DEF_SEL(device,
-            "device");
-        _CA_PRIVATE_DEF_SEL(displaySyncEnabled,
-            "displaySyncEnabled");
-        _CA_PRIVATE_DEF_SEL(drawableSize,
-            "drawableSize");
-        _CA_PRIVATE_DEF_SEL(framebufferOnly,
-            "framebufferOnly");
-        _CA_PRIVATE_DEF_SEL(layer,
-            "layer");
-        _CA_PRIVATE_DEF_SEL(maximumDrawableCount,
-            "maximumDrawableCount");
-        _CA_PRIVATE_DEF_SEL(nextDrawable,
-            "nextDrawable");
-        _CA_PRIVATE_DEF_SEL(pixelFormat,
-            "pixelFormat");
-        _CA_PRIVATE_DEF_SEL(residencySet,
-            "residencySet");
-        _CA_PRIVATE_DEF_SEL(setAllowsNextDrawableTimeout_,
-            "setAllowsNextDrawableTimeout:");
-        _CA_PRIVATE_DEF_SEL(setColorspace_,
-            "setColorspace:");
-        _CA_PRIVATE_DEF_SEL(setDevice_,
-            "setDevice:");
-        _CA_PRIVATE_DEF_SEL(setDisplaySyncEnabled_,
-            "setDisplaySyncEnabled:");
-        _CA_PRIVATE_DEF_SEL(setDrawableSize_,
-            "setDrawableSize:");
-        _CA_PRIVATE_DEF_SEL(setFramebufferOnly_,
-            "setFramebufferOnly:");
-        _CA_PRIVATE_DEF_SEL(setMaximumDrawableCount_,
-            "setMaximumDrawableCount:");
-        _CA_PRIVATE_DEF_SEL(setPixelFormat_,
-            "setPixelFormat:");
-        _CA_PRIVATE_DEF_SEL(setContentsScale_,
-            "setContentsScale:");
-        _CA_PRIVATE_DEF_SEL(texture,
-            "texture");
-    } // Class
-} // Private
+namespace CA {
+	namespace Private {
+		namespace Selector {
+			_CA_PRIVATE_DEF_SEL(alloc,
+								"alloc");
+			_CA_PRIVATE_DEF_SEL(init,
+			                    "init");
+			_CA_PRIVATE_DEF_SEL(allowsNextDrawableTimeout,
+								"allowsNextDrawableTimeout");
+			_CA_PRIVATE_DEF_SEL(colorspace,
+								"colorspace");
+			_CA_PRIVATE_DEF_SEL(device,
+								"device");
+			_CA_PRIVATE_DEF_SEL(displaySyncEnabled,
+								"displaySyncEnabled");
+			_CA_PRIVATE_DEF_SEL(drawableSize,
+								"drawableSize");
+			_CA_PRIVATE_DEF_SEL(framebufferOnly,
+								"framebufferOnly");
+			_CA_PRIVATE_DEF_SEL(layer,
+								"layer");
+			_CA_PRIVATE_DEF_SEL(maximumDrawableCount,
+								"maximumDrawableCount");
+			_CA_PRIVATE_DEF_SEL(nextDrawable,
+								"nextDrawable");
+			_CA_PRIVATE_DEF_SEL(pixelFormat,
+								"pixelFormat");
+			_CA_PRIVATE_DEF_SEL(residencySet,
+								"residencySet");
+			_CA_PRIVATE_DEF_SEL(setAllowsNextDrawableTimeout_,
+								"setAllowsNextDrawableTimeout:");
+			_CA_PRIVATE_DEF_SEL(setColorspace_,
+								"setColorspace:");
+			_CA_PRIVATE_DEF_SEL(setDevice_,
+								"setDevice:");
+			_CA_PRIVATE_DEF_SEL(setDisplaySyncEnabled_,
+								"setDisplaySyncEnabled:");
+			_CA_PRIVATE_DEF_SEL(setDrawableSize_,
+								"setDrawableSize:");
+			_CA_PRIVATE_DEF_SEL(setFramebufferOnly_,
+								"setFramebufferOnly:");
+			_CA_PRIVATE_DEF_SEL(setMaximumDrawableCount_,
+								"setMaximumDrawableCount:");
+			_CA_PRIVATE_DEF_SEL(setPixelFormat_,
+								"setPixelFormat:");
+			_CA_PRIVATE_DEF_SEL(setContentsScale_,
+								"setContentsScale:");
+			_CA_PRIVATE_DEF_SEL(texture,
+								"texture");
+			_CA_PRIVATE_DEF_SEL(setCallback_userData_, 
+								"setCallback:userData:");
+			_CA_PRIVATE_DEF_SEL(start, 
+								"start");
+			_CA_PRIVATE_DEF_SEL(stop, 
+								"stop");
+		} // Class
+	} // Private
 } // CA
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

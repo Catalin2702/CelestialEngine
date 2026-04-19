@@ -4,27 +4,8 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-19
 //
-
-/**
- * @file CelestialEngine.hpp
- * @brief Main include file for the Celestial Engine
- * @details This is the primary header file that client applications should include.
- *			It provides access to all public engine APIs including:
- *			- Application framework (Core::Application)
- *			- Event system (Events::*)
- *			- Layer system (Layers::*)
- *			- Tools and utilities (Log, Chronometer, CMD)
- *			- Type definitions (WindowProps)
- *			- Entry point (main function)
- *
- *			Client applications only need to include this single header to access
- *			the full engine functionality.
- *
- * @author Catalin Chirosca
- * @date 2026-02-15
- */
 
 #pragma once
 
@@ -34,7 +15,11 @@
 // ReSharper disable CppUnusedIncludeDirective
 
 // ---- Use in CelestialEngine applications ------
-#include <Core/Application.hpp>
+// #include <Core/Application.hpp>
+#include <Core/Application/I_Application.hpp>
+#ifdef CE_PLATFORM_MACOS
+#include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
+#endif
 // -----------------------------------------------
 
 // ---- Event ------------------------------------
@@ -76,6 +61,7 @@
 // -----------------------------------------------
 
 // ---- Convenient namespace aliases -------------
+namespace Application = CE::Core::Application;		///< Application framework
 namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
 namespace Core = CE::Core;							///< Core engine functionality
 namespace Events = CE::Events;						///< Event system

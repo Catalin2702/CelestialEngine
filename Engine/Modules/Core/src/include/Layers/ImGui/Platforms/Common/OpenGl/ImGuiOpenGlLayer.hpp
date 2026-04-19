@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-04-19
 //
 
 #pragma once
@@ -112,7 +112,7 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	Render::Context::OpenGlContext* _context = nullptr;		///< Cached OpenGL context pointer
+	// Render::Context::OpenGlContext* _context = nullptr;		///< Cached OpenGL context pointer
 	Window::GlfwWindow* _window = nullptr;			///< Cached OpenGL window pointer
 };
 

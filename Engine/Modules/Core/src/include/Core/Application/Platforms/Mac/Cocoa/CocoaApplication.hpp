@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-19
 //
 
 #pragma once
@@ -19,6 +19,10 @@
 
 #include <memory>
 
+namespace CA {
+class DisplayLink;
+}
+
 namespace NS {
 class Application;
 }
@@ -28,12 +32,18 @@ namespace Core::Application {
 class CocoaApplicationDelegate;
 }
 
+namespace Layers {
+class ImGuiMetalLayer;
+}
+
 namespace Render::Context {
 class I_Context;
+class MetalContext;
 }
 
 namespace Window {
 class I_Window;
+class CocoaWindow;
 }
 
 }
@@ -94,9 +104,10 @@ public:
 
 	/**
 	 * @brief Updates the application state
+	 * @param deltaTime Time elapsed since the last update in seconds
 	 * @details Called every frame to update the application. Updates all layers in the layer stack.
 	 */
-	void Tick() override;
+	void Tick(float deltaTime) override;
 
 	/**
 	 * @brief Handles events
@@ -104,6 +115,13 @@ public:
 	 * @details Dispatches events to the appropriate layers in the layer stack
 	 */
 	void OnEvent(Events::I_Event& event) override;
+
+	/**
+     * @brief Initializes the application with window properties
+     * @param windowProps Window configuration properties
+     * @details Initializes the application by creating the window and setting up the rendering context based on the provided window properties. This method should be called before running the application to ensure that all necessary components are properly initialized.
+     */
+	void Init(const Types::Window::WindowProps& windowProps) override;
 
 	/**
 	 * @brief Starts the display link for rendering
@@ -117,13 +135,55 @@ public:
 	 */
 	void StopDisplayLink();
 
+protected:
+	/**
+     * @brief Initializes the application window
+     * @param windowProps Window configuration properties
+     * @details Creates the application window and sets up event callbacks based on the provided window properties.
+     *			Initializes the appropriate input system based on the window API.
+     */
+	void InitWindow(const Types::Window::WindowProps& windowProps) override;
+
+	/**
+     * @brief Initializes the renderer
+     * @details Initializes the rendering context based on the specified graphics API. For macOS, this will typically involve setting up a Metal rendering context.
+     */
+	void InitRenderer(Types::Render::GraphicsApi) override;
+
+	/**
+     * @brief Initializes the ImGui layer
+     * @details Initializes the ImGui layer for rendering UI based on the specified graphics API. For macOS with Metal, this will involve creating an ImGuiMetalLayer instance and pushing it as an overlay.
+     */
+	void InitImGuiLayer(Types::Render::GraphicsApi) override;
+
 public:
+	/**
+     * @brief Gets the application's window
+     * @return Window::I_Window& Reference to the window
+     * @details Provides access to the window for rendering operations. This method returns a reference to the window instance managed by the CocoaApplication, allowing other components to interact with the window as needed.
+     */
 	[[nodiscard]] Window::I_Window& GetWindow() const override;
+
+	/**
+     * @brief Gets the rendering context
+     * @return Render::Context::I_Context& Reference to the rendering context
+     * @details Provides access to the rendering context for rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering using the Metal API.
+     */
 	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override;
 
 private:
-	NS::SharedPtr<NS::Application> _appCocoa;				///< Pointer to the Cocoa application instance
-	std::unique_ptr<CocoaApplicationDelegate> _appDelegate;	///< Delegate for handling Cocoa application events
+	static void DisplayLinkCallback(void* userData);
+	void _SetWindowCallbacks() const;
+
+private:
+	NS::SharedPtr<NS::Application> _appCocoa; ///< Pointer to the Cocoa application instance
+	std::unique_ptr<CA::DisplayLink> _displayLink; ///< Pointer to the display link for synchronizing rendering
+
+	std::unique_ptr<CocoaApplicationDelegate> _appDelegate; ///< Delegate for handling Cocoa application events
+	std::unique_ptr<Render::Context::MetalContext> _context; ///< Pointer to the Metal rendering context
+	std::unique_ptr<Window::CocoaWindow> _window; ///< Pointer to the application window
+
+	Layers::ImGuiMetalLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 };
 
 }

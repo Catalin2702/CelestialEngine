@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-19
 //
 
 #include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
-#include "Core/Application.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
@@ -125,52 +124,52 @@ void ImGuiOpenGlLayer::End() {
 }
 
 void ImGuiOpenGlLayer::_Init() {
-	IMGUI_CHECKVERSION();
-
-	const auto context = ImGui::CreateContext();
-	ImGui::SetCurrentContext(context);
-	ImGui::StyleColorsDark();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-	const auto& app = Core::Application::Get();
-
-	_context = dynamic_cast<Render::Context::OpenGlContext*>(app.GetContext());
-	if (not _context) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
-		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
-	}
-
-	_window = dynamic_cast<Window::GlfwWindow*>(app.GetWindow());
-	if (not _window) {
-		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
-		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
-	}
-
-	io.DisplaySize = ImVec2(_window->GetWindowWidth(),_window->GetWindowHeight());
-
-	assert(_window->GetGlfwWindow() != nullptr);
-
-	const auto [x, y] = _window->GetContentScale();
-
-	io.DisplayFramebufferScale = ImVec2(x, y);
-
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
-
-	ImGui_ImplGlfw_InitForOpenGL(_window->GetGlfwWindow(), false);
-
-	ImGui_ImplOpenGL3_Init("#version 410");
-
-	_initialized = true;
-	_st_imGuiOpenGlLayerCount++;
+	// IMGUI_CHECKVERSION();
+	//
+	// const auto context = ImGui::CreateContext();
+	// ImGui::SetCurrentContext(context);
+	// ImGui::StyleColorsDark();
+	//
+	// ImGuiIO& io = ImGui::GetIO();
+	// io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	// io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	//
+	// const auto& app = Core::Application::Get();
+	//
+	// _context = dynamic_cast<Render::Context::OpenGlContext*>(app.GetContext());
+	// if (not _context) {
+	// 	CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
+	// 	throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
+	// }
+	//
+	// _window = dynamic_cast<Window::GlfwWindow*>(app.GetWindow());
+	// if (not _window) {
+	// 	CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
+	// 	throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
+	// }
+	//
+	// io.DisplaySize = ImVec2(_window->GetWindowWidth(),_window->GetWindowHeight());
+	//
+	// assert(_window->GetGlfwWindow() != nullptr);
+	//
+	// const auto [x, y] = _window->GetContentScale();
+	//
+	// io.DisplayFramebufferScale = ImVec2(x, y);
+	//
+	// if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	// {
+	// 	ImGuiStyle& style = ImGui::GetStyle();
+	// 	style.WindowRounding = 0.0f;
+	// 	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	// }
+	//
+	// ImGui_ImplGlfw_InitForOpenGL(_window->GetGlfwWindow(), false);
+	//
+	// ImGui_ImplOpenGL3_Init("#version 410");
+	//
+	// _initialized = true;
+	// _st_imGuiOpenGlLayerCount++;
 }
 
 void ImGuiOpenGlLayer::_Shutdown() {

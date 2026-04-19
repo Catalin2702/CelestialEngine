@@ -4,12 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-18
+# Updated: 2026-04-19
 #
 
 set(HEADERS
 	src/include/Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp
-	src/include/Core/Application.hpp
+#	src/include/Core/Application.hpp
 
 	src/include/Input/Platforms/Common/Glfw/GlfwInput.hpp
 
@@ -39,7 +39,7 @@ set(INTERFACES
 set(SOURCES
 	src/source/Core/Application/ApplicationImpl.cpp
 	src/source/Core/Application/Platforms/Common/Glfw/GlfwApplication.cpp
-	src/source/Core/Application.cpp
+#	src/source/Core/Application.cpp
 
 	src/source/Input/InputImpl.cpp
 	src/source/Input/Platforms/Common/Glfw/GlfwInput.cpp
@@ -87,6 +87,7 @@ target_link_libraries(CE_Core PUBLIC
 target_link_libraries(CE_Core PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
 		CE_AppleUtility
+		CE_CoreAnimation
 		CE_MetalCpp
 	>
 )

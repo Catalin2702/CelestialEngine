@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-19
 //
 
 #include "Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 
 #include "Bridge/AppKit/Window/WindowBridge.h"
-#include "Core/Application.hpp"
+#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -61,11 +61,9 @@ std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
 }
 
 void CocoaInput::_InitCocoaWindow() {
-	if (const auto window = Core::Application::Get().GetWindow()) {
-		if (const auto cocoaWindow = dynamic_cast<Window::CocoaWindow*>(window)) {
-			_cocoaWindow = cocoaWindow->GetCocoaWindow();
-		}
-	}
+	const auto& window = Core::Application::CocoaApplication::StGet().GetWindow();
+	const auto& cocoaWindow = dynamic_cast<const Window::CocoaWindow&>(window);
+	_cocoaWindow = cocoaWindow.GetCocoaWindow();
 }
 
 }

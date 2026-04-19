@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-19
 //
 
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -28,7 +28,6 @@
 
 namespace CE::Window {
 
-static bool _st_CocoaInitialized = false;
 static int _st_CocoaWindowCount = 0;
 
 CocoaWindow::CocoaWindow(TypeWindow::WindowProps windowProps):
@@ -41,13 +40,13 @@ CocoaWindow::~CocoaWindow() {
 }
 
 void CocoaWindow::OnUpdate() const {
-	const auto app = NS::Application::sharedApplication();
-	const auto mode = NS::String::string("kCFRunLoopDefaultMode", NS::UTF8StringEncoding);
-
-	NS::Event* event;
-	while ((event = app->nextEventMatchingMask(NS::EventMaskAny,NS::Date::distantPast(), mode, true))) {
-		app->sendEvent(event);
-	}
+	// const auto app = NS::Application::sharedApplication();
+	// const auto mode = NS::String::string("kCFRunLoopDefaultMode", NS::UTF8StringEncoding);
+	//
+	// NS::Event* event;
+	// while ((event = app->nextEventMatchingMask(NS::EventMaskAny,NS::Date::distantPast(), mode, true))) {
+	// 	app->sendEvent(event);
+	// }
 }
 
 float CocoaWindow::GetWindowWidth() const {
@@ -339,12 +338,6 @@ void CocoaWindow::_Init() {
 }
 
 void CocoaWindow::_InitWindow() {
-	const auto app = NS::Application::sharedApplication();
-	if (not _st_CocoaInitialized) {
-		app->setActivationPolicy(NS::ActivationPolicyRegular);
-		_st_CocoaInitialized = true;
-	}
-
 	const CGRect frame = {
 		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
 		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
@@ -419,9 +412,6 @@ void CocoaWindow::_InitWindow() {
 
 	// Set frame autosave name to remember window position between launches
 	_window->setFrameAutosaveName(_window->title());
-
-	// Activate the application
-	app->activateIgnoringOtherApps(true);
 }
 
 void CocoaWindow::_Shutdown() {
@@ -431,10 +421,6 @@ void CocoaWindow::_Shutdown() {
 	}
 
 	_st_CocoaWindowCount--;
-
-	if (_st_CocoaWindowCount <= 0 and _st_CocoaInitialized) {
-		_st_CocoaInitialized = false;
-	}
 }
 
 void CocoaWindow::_UpdateLayerSize() const {

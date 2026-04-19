@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-21
+# Updated: 2026-04-19
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -15,6 +15,7 @@ add_library(CE_Metal INTERFACE)
 # Add the Bridge subdirectory
 add_subdirectory(AppKit)
 add_subdirectory(Bridge)
+add_subdirectory(CoreAnimation)
 
 # Link Bridge to CE_Metal
 target_link_libraries(CE_Metal INTERFACE
@@ -32,4 +33,5 @@ target_link_libraries(CE_Metal INTERFACE
 target_include_directories(CE_Metal INTERFACE
 	$<TARGET_PROPERTY:CE_AppKit,INTERFACE_INCLUDE_DIRECTORIES>
 	$<TARGET_PROPERTY:CE_Bridge,INTERFACE_INCLUDE_DIRECTORIES>
+	$<TARGET_PROPERTY:CE_CoreAnimation,INTERFACE_INCLUDE_DIRECTORIES>
 )

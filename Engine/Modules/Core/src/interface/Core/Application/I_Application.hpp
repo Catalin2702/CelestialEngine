@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-18
+// Updated: 2026-04-19
 //
 
 #pragma once
@@ -29,6 +29,15 @@ class I_Layer;
 
 namespace Render::Context {
 class I_Context;
+}
+
+namespace Types {
+namespace Window {
+struct WindowProps;
+}
+namespace Render {
+enum class GraphicsApi: uint8_t;
+}
 }
 
 namespace Window {
@@ -71,14 +80,21 @@ public:
 
 	/**
 	 * @brief Virtual method to update the application state
+	 * @param deltaTime Time elapsed since the last update in seconds
 	 */
-	virtual void Tick() = 0;
+	virtual void Tick(float deltaTime) = 0;
 
 	/**
 	 * @brief Virtual method to handle events
 	 * @param event Reference to the event to be processed
 	 */
 	virtual void OnEvent(Events::I_Event& event) = 0;
+
+	/**
+     * @brief Virtual method to initialize the application with window properties
+     * @param windowProps Window configuration properties
+     */
+	virtual void Init(const Types::Window::WindowProps& windowProps) = 0;
 
 	/**
 	 * @brief Adds a layer to the layer stack
@@ -110,6 +126,25 @@ public:
 	 *			from the stack and calls its OnDetach method
 	 */
 	void PopOverlay(Layers::I_Layer* overlay);
+
+protected:
+	/**
+	 * @brief Initializes the application with the specified window properties
+	 * @param windowProps Window configuration properties
+	 */
+	void virtual InitWindow(const Types::Window::WindowProps& windowProps) = 0;
+
+	/**
+	 * @brief Initializes the renderer with the specified graphics API
+	 * @param graphicsApi Graphics API to use for rendering
+	 */
+	void virtual InitRenderer(Types::Render::GraphicsApi graphicsApi) = 0;
+
+	/**
+     * @brief Initializes the ImGui layer with the specified graphics API
+     * @param graphicsApi Graphics API to use for the ImGui layer
+     */
+	void virtual InitImGuiLayer(Types::Render::GraphicsApi graphicsApi) = 0;
 
 public:
 	/**
@@ -144,13 +179,13 @@ public:
 	[[nodiscard]] virtual Render::Context::I_Context& GetRenderContext() const = 0;
 
 protected:
-	static std::atomic<I_Application*> _stInstance;			///< Singleton application instance
+	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance
 
-private:
-	Layers::LayerStack _layerStack;							///< Stack of layers and overlays
+	std::atomic<bool> _isRunning; ///< Flag indicating if the application is running
+	Layers::LayerStack _layerStack; ///< Stack of layers and overlays
 };
 
-std::unique_ptr<I_Application> CreateApplication(int argc, char** argv);
+std::unique_ptr<I_Application> CreateApplication(int argc, const char* argv[]);
 
 }
 

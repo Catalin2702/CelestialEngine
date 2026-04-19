@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-19
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #import "RenderViewCallback.h"
 
 #import <AppKit/AppKit.h>
+
 
 @interface RenderView: NSView
 

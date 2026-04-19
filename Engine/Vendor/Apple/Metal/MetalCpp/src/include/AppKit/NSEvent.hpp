@@ -317,7 +317,7 @@ public:
 	static bool isSwipeTrackingFromScrollEventsEnabled();
 
 	static Event* otherEventWithType(EventType type, CGPoint location, EventModifierFlags modifierFlags, double timestamp,
-									Integer windowNumber, void* context, Integer subtype, Integer data1,Integer data2);
+		Integer windowNumber, void* context, Integer subtype, Integer data1,Integer data2);
 };
 }
 

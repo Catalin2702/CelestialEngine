@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-19
 //
 
 #pragma once
@@ -18,6 +18,8 @@
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
+#include <functional>
+#include <optional>
 #include <semaphore>
 #include <Foundation/Foundation.hpp>
 
@@ -81,8 +83,8 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	Render::Context::MetalContext* _context = nullptr;	///< Cached Metal context for rendering
-	Window::CocoaWindow* _window = nullptr;	///< Cached Cocoa window for event handling and context access
+	std::optional<std::reference_wrapper<Render::Context::MetalContext>> _context;	///< Cached Metal context for rendering
+	std::optional<std::reference_wrapper<Window::CocoaWindow>> _window;	///< Cached Cocoa window for event handling and context access
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
