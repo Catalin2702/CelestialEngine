@@ -12,8 +12,8 @@
 #ifndef CE_CORE_APPLICATION_I_APPLICATION_HPP
 #define CE_CORE_APPLICATION_I_APPLICATION_HPP
 
+#include "Core/Layers/LayerStack.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "Layers/LayerStack.hpp"
 
 #include <atomic>
 #include <memory>

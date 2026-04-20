@@ -4,16 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-11
+// Updated: 2026-04-20
 //
 
+#include <Core/Layers/I_Layer.hpp>
+#include <Core/Layers/LayerStack.hpp>
 #include <Events/I_Event.hpp>
-#include <Layers/I_Layer.hpp>
-#include <Layers/LayerStack.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Layers;
+using namespace CE::Core::Layers;
 
 
 /**

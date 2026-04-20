@@ -8,10 +8,10 @@
 //
 
 #include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
+#include <Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -23,7 +23,7 @@
 
 using namespace CE::Core::Application;
 using namespace CE::Events;
-using namespace CE::Layers;
+using namespace CE::Core::Layers;
 using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Render;
@@ -334,8 +334,7 @@ TEST_F(ImGuiMetalLayerTest, BeginEnd) {
 	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		imguiLayer->Begin();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 	});
 
 	_app->RemoveImGuiLayer();
@@ -350,12 +349,9 @@ TEST_F(ImGuiMetalLayerTest, MultipleBeginEnd) {
 	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		imguiLayer->Begin();
-		imguiLayer->End();
-		imguiLayer->Begin();
-		imguiLayer->End();
-		imguiLayer->Begin();
-		imguiLayer->End();
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
 	});
 
 	_app->RemoveImGuiLayer();
@@ -370,9 +366,7 @@ TEST_F(ImGuiMetalLayerTest, OnRender) {
 	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		imguiLayer->Begin();
-		imguiLayer->OnRender();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 	});
 
 	_app->RemoveImGuiLayer();
@@ -388,19 +382,13 @@ TEST_F(ImGuiMetalLayerTest, CompleteRenderCycle) {
 
 	EXPECT_NO_THROW({
 		// First frame
-		imguiLayer->Begin();
-		imguiLayer->OnRender();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 
 		// Second frame
-		imguiLayer->Begin();
-		imguiLayer->OnRender();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 
 		// Third frame
-		imguiLayer->Begin();
-		imguiLayer->OnRender();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 	});
 
 	_app->RemoveImGuiLayer();
@@ -419,16 +407,11 @@ TEST_F(ImGuiMetalLayerTest, EventsDuringRender) {
 	auto mouseEvent = MouseMovedEvent{150.0f, 250.0f};
 
 	EXPECT_NO_THROW({
-		// Start rendering
-		imguiLayer->Begin();
-
 		// Handle events
 		_app->OnEvent(keyEvent);
 		_app->OnEvent(mouseEvent);
 
-		// Continue rendering
-		imguiLayer->OnRender();
-		imguiLayer->End();
+		_app->Tick(0.016f);
 	});
 
 	_app->RemoveImGuiLayer();

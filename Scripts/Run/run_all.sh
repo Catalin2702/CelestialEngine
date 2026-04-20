@@ -189,12 +189,6 @@ if [ "$RUN_GUI_APPS" = true ]; then
 	echo "${BLUE}========================================${NC}"
 	echo ""
 
-	# Execute CE_App with Metal
-	run_command \
-		"CE_App (MetalGlfw)" \
-		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalGlfw\" -w 1280 -h 720 -v true -g metal -wa glfw" \
-		"true"
-
 	# Execute CE_App with OpenGL
 	run_command \
 		"CE_App (OpenGLGlfw)" \

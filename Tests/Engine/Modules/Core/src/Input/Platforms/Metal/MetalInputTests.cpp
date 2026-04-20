@@ -8,7 +8,7 @@
 //
 
 #include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
-#include <Input/Platforms/Common/Glfw/GlfwInput.hpp>
+#include <Core/Input/Platforms/Common/Glfw/GlfwInput.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>

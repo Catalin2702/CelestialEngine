@@ -8,9 +8,9 @@
 //
 
 #include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
+#include <Core/Layers/I_Layer.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/I_Event.hpp>
-#include <Layers/I_Layer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/Window/WindowProps.hpp>
 #include <Window/I_Window.hpp>
@@ -19,7 +19,7 @@
 
 using namespace CE::Core::Application;
 using namespace CE::Events;
-using namespace CE::Layers;
+using namespace CE::Core::Layers;
 using namespace CE::Tools::Log;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;

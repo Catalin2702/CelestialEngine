@@ -9,12 +9,12 @@
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
+#include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
+#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "CoreAnimation/DisplayLink/DisplayLink.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
-#include "Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -41,6 +41,8 @@ CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), 
 CocoaApplication::~CocoaApplication() {
 	if (IsRunning())
 		CocoaApplication::Quit();
+
+	Input::ShutdownInput();
 
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
@@ -84,16 +86,14 @@ void CocoaApplication::Quit() {
 		0
 	);
 	_appCocoa->postEvent(dummyEvent, true);
-
-	Input::ShutdownInput();
 	SetRunning(false);
 }
 
-void CocoaApplication::Tick(const float) {
+void CocoaApplication::Tick(const float deltaTime) {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
-	_imguiLayer->Begin();
+	_imguiLayer->Begin(deltaTime);
 
 	for (const auto layer: _layerStack)
 		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))

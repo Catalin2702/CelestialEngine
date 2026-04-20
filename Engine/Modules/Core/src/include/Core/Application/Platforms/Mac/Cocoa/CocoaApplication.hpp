@@ -30,12 +30,14 @@ class Application;
 }
 
 namespace CE {
-namespace Core::Application {
+namespace Core {
+namespace Application {
 class CocoaApplicationDelegate;
 }
-
 namespace Layers {
+class I_Layer;
 class ImGuiMetalLayer;
+}
 }
 
 namespace Render::Context {

@@ -31,20 +31,20 @@
 // -----------------------------------------------
 
 // ---- Input ------------------------------------
-#include <Input/I_Input.hpp>
-#include <Input/Platforms/Common/Glfw/GlfwInput.hpp>
+#include <Core/Input/I_Input.hpp>
+#include <Core/Input/Platforms/Common/Glfw/GlfwInput.hpp>
 
 #ifdef CE_PLATFORM_MACOS
-	#include <Input/Platforms/Mac/Cocoa/CocoaInput.hpp>
+	#include <Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp>
 #endif
 // -----------------------------------------------
 
 // ---- Layer ------------------------------------
-#include <Layers/I_Layer.hpp>
-#include <Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
+#include <Core/Layers/I_Layer.hpp>
+#include <Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 
 #ifdef CE_PLATFORM_MACOS
-#include <Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
+#include <Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
 #endif
 // -----------------------------------------------
 
@@ -67,7 +67,7 @@ namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
 namespace Events = CE::Events;						///< Event system
 namespace Input = CE::Core::Input;					///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
-namespace Layers = CE::Layers;						///< Layer management
+namespace Layers = CE::Core::Layers;						///< Layer management
 namespace Time = CE::Utility::Time;					///< Time utilities
 namespace TypeWindow = CE::Types::Window;			///< Window-related types
 // -----------------------------------------------

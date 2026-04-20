@@ -8,10 +8,10 @@
 //
 
 #include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
+#include <Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 #include <Tools/Log/Log.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -23,7 +23,7 @@
 
 using namespace CE::Core::Application;
 using namespace CE::Events;
-using namespace CE::Layers;
+using namespace CE::Core::Layers;
 using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Render;

@@ -7,15 +7,15 @@
 // Updated: 2026-04-20
 //
 
+#include <Core/Layers/I_Layer.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
-#include <Layers/I_Layer.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Layers;
+using namespace CE::Core::Layers;
 using namespace CE::Events;
 using namespace CE::KeyCode;
 

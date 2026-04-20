@@ -8,11 +8,11 @@
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
+#include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
+#include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "Input/Platforms/Common/Glfw/GlfwInput.hpp"
-#include "Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -56,14 +56,14 @@ void GlfwApplication::Quit() {
 	SetRunning(false);
 }
 
-void GlfwApplication::Tick(const float) {
+void GlfwApplication::Tick(const float deltaTime) {
 	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
 	if (_imguiLayer) {
-		_imguiLayer->Begin();
+		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
 			if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))

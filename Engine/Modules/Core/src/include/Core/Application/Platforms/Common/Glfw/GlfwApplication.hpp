@@ -20,7 +20,8 @@
 
 
 namespace CE {
-namespace Layers {
+namespace Core::Layers {
+class I_Layer;
 class ImGuiOpenGlLayer;
 }
 
