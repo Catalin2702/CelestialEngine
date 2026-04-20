@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-04-20
 //
 
-#include <Core/Application.hpp>
+#include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/I_Event.hpp>
 #include <Layers/I_Layer.hpp>
@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 using namespace CE::Core;
+using namespace CE::Core::Application;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
@@ -83,8 +84,8 @@ protected:
 		Log::Shutdown();
 	}
 
-	static std::unique_ptr<Application> CreateApplication() {
-		return std::make_unique<Application>();
+	static std::unique_ptr<GlfwApplication> CreateApplication() {
+		return std::make_unique<GlfwApplication>();
 	}
 };
 
@@ -95,13 +96,14 @@ const WindowProps defaultProps{"AppTest", 800, 600, false, GraphicsApi::OpenGL, 
  */
 TEST_F(ApplicationTest, ConstructionDefault) {
 	const auto app = CreateApplication();
-	app->InitWindow(defaultProps);
+	app->Init(defaultProps);
 
 	ASSERT_NE(app, nullptr);
-	EXPECT_EQ(&Application::Get(), app.get());
-	EXPECT_NE(app->GetWindow(), nullptr);
-	EXPECT_FALSE(app->HasLayers());
-	EXPECT_EQ(app->LayersSize(), 0);
+	EXPECT_EQ(&I_Application::StGet(), app.get());
+	EXPECT_NE(&app->GetWindow(), nullptr);
+	// Init() automatically adds the ImGui layer, so we expect at least 1 layer
+	EXPECT_TRUE(app->HasLayers());
+	EXPECT_GE(app->LayersSize(), 1);
 }
 
 /**
@@ -109,16 +111,16 @@ TEST_F(ApplicationTest, ConstructionDefault) {
  */
 TEST_F(ApplicationTest, ConstructionWithWindowProps) {
 	const auto app = CreateApplication();
-	app->InitWindow(defaultProps);
+	app->Init(defaultProps);
 
 	ASSERT_NE(app, nullptr);
-	EXPECT_EQ(&Application::Get(), app.get());
-	EXPECT_NE(app->GetWindow(), nullptr);
+	EXPECT_EQ(&I_Application::StGet(), app.get());
+	EXPECT_NE(&app->GetWindow(), nullptr);
 
 	// Verify window properties
-	const auto* window = app->GetWindow();
-	EXPECT_EQ(window->GetWindowWidth(), 800);
-	EXPECT_EQ(window->GetWindowHeight(), 600);
+	const auto& window = app->GetWindow();
+	EXPECT_EQ(window.GetWindowWidth(), 800);
+	EXPECT_EQ(window.GetWindowHeight(), 600);
 }
 
 /**
@@ -127,16 +129,16 @@ TEST_F(ApplicationTest, ConstructionWithWindowProps) {
 TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
 	const WindowProps props{"MyApp", 1024, 768, true, GraphicsApi::OpenGL, WindowApi::GLFW};
 	const auto app = CreateApplication();
-	app->InitWindow(props);
+	app->Init(props);
 
 	ASSERT_NE(app, nullptr);
-	EXPECT_EQ(&Application::Get(), app.get());
-	EXPECT_NE(app->GetWindow(), nullptr);
+	EXPECT_EQ(&I_Application::StGet(), app.get());
+	EXPECT_NE(&app->GetWindow(), nullptr);
 
 	// Verify window properties
-	const auto* window = app->GetWindow();
-	EXPECT_EQ(window->GetWindowWidth(), 1024);
-	EXPECT_EQ(window->GetWindowHeight(), 768);
+	const auto& window = app->GetWindow();
+	EXPECT_EQ(window.GetWindowWidth(), 1024);
+	EXPECT_EQ(window.GetWindowHeight(), 768);
 }
 
 /**
@@ -144,7 +146,7 @@ TEST_F(ApplicationTest, ConstructionWithIndividualParams) {
  */
 TEST_F(ApplicationTest, SingletonPattern) {
 	const auto app1 = CreateApplication();
-	EXPECT_EQ(&Application::Get(), app1.get());
+	EXPECT_EQ(&I_Application::StGet(), app1.get());
 
 	// Note: Creating a second instance would trigger an assertion in debug builds
 	// In release builds, this would violate the singleton pattern
@@ -156,12 +158,12 @@ TEST_F(ApplicationTest, SingletonPattern) {
  */
 TEST_F(ApplicationTest, GetInstance) {
 	const auto app = CreateApplication();
-	app->InitWindow(defaultProps);
+	app->Init(defaultProps);
 
-	Application& instance = Application::Get();
+	I_Application& instance = I_Application::StGet();
 
 	EXPECT_EQ(&instance, app.get());
-	EXPECT_EQ(instance.GetWindow(), app->GetWindow());
+	EXPECT_EQ(&instance.GetWindow(), &app->GetWindow());
 }
 
 /**
@@ -169,12 +171,11 @@ TEST_F(ApplicationTest, GetInstance) {
  */
 TEST_F(ApplicationTest, GetWindow) {
 	const auto app = CreateApplication();
-	app->InitWindow(defaultProps);
-	const auto* window = app->GetWindow();
+	app->Init(defaultProps);
+	const auto& window = app->GetWindow();
 
-	ASSERT_NE(window, nullptr);
-	EXPECT_GT(window->GetWindowWidth(), 0);
-	EXPECT_GT(window->GetWindowHeight(), 0);
+	EXPECT_GT(window.GetWindowWidth(), 0);
+	EXPECT_GT(window.GetWindowHeight(), 0);
 }
 
 /**
@@ -323,9 +324,7 @@ TEST_F(ApplicationTest, MultipleLayersAndOverlays) {
  */
 TEST_F(ApplicationTest, UpdateCallsLayerOnUpdate) {
 	const auto app = CreateApplication();
-	app->InitWindow(defaultProps);
-	app->InitRenderer(defaultProps);
-	app->InitImGuiLayer(defaultProps);
+	app->Init(defaultProps);
 
 	const auto layer1 = new MockAppLayer("Layer1");
 	const auto layer2 = new MockAppLayer("Layer2");
@@ -339,14 +338,14 @@ TEST_F(ApplicationTest, UpdateCallsLayerOnUpdate) {
 	EXPECT_EQ(layer2->GetUpdateCount(), 0);
 	EXPECT_EQ(overlay->GetUpdateCount(), 0);
 
-	app->Update();
+	app->Tick(0.016f);
 
 	EXPECT_EQ(layer1->GetUpdateCount(), 1);
 	EXPECT_EQ(layer2->GetUpdateCount(), 1);
 	EXPECT_EQ(overlay->GetUpdateCount(), 1);
 
-	app->Update();
-	app->Update();
+	app->Tick(0.016f);
+	app->Tick(0.016f);
 
 	EXPECT_EQ(layer1->GetUpdateCount(), 3);
 	EXPECT_EQ(layer2->GetUpdateCount(), 3);

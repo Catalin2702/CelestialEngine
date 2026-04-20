@@ -97,6 +97,12 @@ public:
 	virtual void Init(const Types::Window::WindowProps& windowProps) = 0;
 
 	/**
+	 * @brief Initializes the ImGui layer with the specified graphics API
+	 * @param graphicsApi Graphics API to use for the ImGui layer
+	 */
+	void virtual InitImGuiLayer(Types::Render::GraphicsApi graphicsApi) = 0;
+
+	/**
 	 * @brief Adds a layer to the layer stack
 	 * @param layer Pointer to the layer to add
 	 * @details Layers are updated and receive events in the order they are pushed
@@ -132,19 +138,13 @@ protected:
 	 * @brief Initializes the application with the specified window properties
 	 * @param windowProps Window configuration properties
 	 */
-	void virtual InitWindow(const Types::Window::WindowProps& windowProps) = 0;
+	void virtual _InitWindow(const Types::Window::WindowProps& windowProps) = 0;
 
 	/**
 	 * @brief Initializes the renderer with the specified graphics API
 	 * @param graphicsApi Graphics API to use for rendering
 	 */
-	void virtual InitRenderer(Types::Render::GraphicsApi graphicsApi) = 0;
-
-	/**
-     * @brief Initializes the ImGui layer with the specified graphics API
-     * @param graphicsApi Graphics API to use for the ImGui layer
-     */
-	void virtual InitImGuiLayer(Types::Render::GraphicsApi graphicsApi) = 0;
+	void virtual _InitRenderer(Types::Render::GraphicsApi graphicsApi) = 0;
 
 public:
 	/**
@@ -181,6 +181,17 @@ public:
 	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
 
 	void SetRunning(const bool running) { _isRunning.store(running); }
+
+	/**
+	 * @brief Sets the ImGui layer for the application
+	 * @param imguiLayer Pointer to the ImGui layer to set
+	 */
+	virtual void SetImGuiLayer(Layers::I_Layer* imguiLayer) = 0;
+
+	/**
+	 * @brief Removes the ImGui layer from the application
+	 */
+	virtual void RemoveImGuiLayer() = 0;
 
 protected:
 	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance

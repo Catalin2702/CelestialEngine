@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-20
 //
 
-#include <Core/Application.hpp>
+#include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 using namespace CE::Core;
+using namespace CE::Core::Application;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
@@ -43,9 +44,8 @@ protected:
 		Log::Init();
 
 		try {
-			_app = std::make_unique<Application>();
-			_app->InitWindow(windowProps);
-			_app->InitRenderer(windowProps);
+			_app = std::make_unique<CocoaApplication>();
+			_app->Init(windowProps);
 		}
 		catch (...) {
 			GTEST_SKIP() << "Window not available (no display)";
@@ -58,21 +58,21 @@ protected:
 	}
 	
 public:
-	std::unique_ptr<Application> _app;
+	std::unique_ptr<CocoaApplication> _app;
 };
 
 /**
  * @brief Test ImGuiMetalLayer construction
  */
 TEST_F(ImGuiMetalLayerTest, Construction) {
-	const auto layerConstruction = new ImGuiMetalLayer();
-	EXPECT_NE(layerConstruction, nullptr);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	EXPECT_NE(imguiLayer, nullptr);
 
 #ifdef CE_DEBUG
-	EXPECT_EQ(layerConstruction->GetDebugName(), "ImGuiMetalLayer");
+	EXPECT_EQ(imguiLayer->GetDebugName(), "ImGuiMetalLayer");
 #endif
 
-	delete layerConstruction;
+	delete imguiLayer;
 }
 
 /**
@@ -80,15 +80,14 @@ TEST_F(ImGuiMetalLayerTest, Construction) {
  */
 TEST_F(ImGuiMetalLayerTest, OnAttach) {
 
-	const auto layerOnAttach = new ImGuiMetalLayer();
+	const auto imguiLayer = new ImGuiMetalLayer();
 	EXPECT_NO_THROW({
-		_app->PushLayer(layerOnAttach);
-		_app->SetRenderLayer(layerOnAttach);
+		_app->SetImGuiLayer(imguiLayer);
 	});
 
 	// Clean up - pop the layer before the test ends
-	_app->PopLayer(layerOnAttach);
-	delete layerOnAttach;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
@@ -96,58 +95,54 @@ TEST_F(ImGuiMetalLayerTest, OnAttach) {
  */
 TEST_F(ImGuiMetalLayerTest, OnDetach) {
 
-	const auto layerOnDetach = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnDetach);
-	_app->SetRenderLayer(layerOnDetach);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		_app->PopLayer(layerOnDetach);
+		_app->RemoveImGuiLayer();
 	});
 
-	delete layerOnDetach;
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnUpdate
  */
 TEST_F(ImGuiMetalLayerTest, OnUpdate) {
-	const auto layerOnUpdate = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnUpdate);
-	_app->SetRenderLayer(layerOnUpdate);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		_app->Update();
+		_app->Tick(0.016f);
 	});
 
-	_app->PopLayer(layerOnUpdate);
-	delete layerOnUpdate;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer multiple OnUpdate calls
  */
 TEST_F(ImGuiMetalLayerTest, MultipleOnUpdate) {
-	const auto layerMultipleOnUpdate = new ImGuiMetalLayer();
-	_app->PushLayer(layerMultipleOnUpdate);
-	_app->SetRenderLayer(layerMultipleOnUpdate);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		_app->Update();
-		_app->Update();
-		_app->Update();
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
 	});
 
-	_app->PopLayer(layerMultipleOnUpdate);
-	delete layerMultipleOnUpdate;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with KeyPressed
  */
 TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
-	const auto layerOnEventKeyPressed = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventKeyPressed);
-	_app->SetRenderLayer(layerOnEventKeyPressed);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	KeyPressedEvent event{KeyboardKeyCode::A, 0};
 	_app->OnEvent(event);
@@ -155,136 +150,128 @@ TEST_F(ImGuiMetalLayerTest, OnEventKeyPressed) {
 	// ImGui layers typically don't block event propagation
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventKeyPressed);
-	delete layerOnEventKeyPressed;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with KeyReleased
  */
 TEST_F(ImGuiMetalLayerTest, OnEventKeyReleased) {
-	const auto layerOnEventKeyReleased = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventKeyReleased);
-	_app->SetRenderLayer(layerOnEventKeyReleased);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	KeyReleasedEvent event{KeyboardKeyCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventKeyReleased);
-	delete layerOnEventKeyReleased;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with KeyTyped
  */
 TEST_F(ImGuiMetalLayerTest, OnEventKeyTyped) {
-	const auto layerOnEventKeyTyped = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventKeyTyped);
-	_app->SetRenderLayer(layerOnEventKeyTyped);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	KeyTypedEvent event{KeyboardCharsCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventKeyTyped);
-	delete layerOnEventKeyTyped;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with MouseButtonPressed
  */
 TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonPressed) {
-	const auto layerOnEventMouseButtonPressed = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventMouseButtonPressed);
-	_app->SetRenderLayer(layerOnEventMouseButtonPressed);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	MouseButtonPressedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventMouseButtonPressed);
-	delete layerOnEventMouseButtonPressed;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with MouseButtonReleased
  */
 TEST_F(ImGuiMetalLayerTest, OnEventMouseButtonReleased) {
-	const auto layerOnEventMouseButtonReleased = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventMouseButtonReleased);
-	_app->SetRenderLayer(layerOnEventMouseButtonReleased);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	MouseButtonReleasedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventMouseButtonReleased);
-	delete layerOnEventMouseButtonReleased;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with MouseMoved
  */
 TEST_F(ImGuiMetalLayerTest, OnEventMouseMoved) {
-	const auto layerOnEventMouseMoved = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventMouseMoved);
-	_app->SetRenderLayer(layerOnEventMouseMoved);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	MouseMovedEvent event{100.0f, 200.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventMouseMoved);
-	delete layerOnEventMouseMoved;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with MouseScrolled
  */
 TEST_F(ImGuiMetalLayerTest, OnEventMouseScrolled) {
-	const auto layerOnEventMouseScrolled = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventMouseScrolled);
-	_app->SetRenderLayer(layerOnEventMouseScrolled);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	MouseScrolledEvent event{0.0f, 1.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventMouseScrolled);
-	delete layerOnEventMouseScrolled;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnEvent with WindowResize
  */
 TEST_F(ImGuiMetalLayerTest, OnEventWindowResize) {
-	const auto layerOnEventWindowResize = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnEventWindowResize);
-	_app->SetRenderLayer(layerOnEventWindowResize);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	WindowResizeEvent event{1024, 768};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layerOnEventWindowResize);
-	delete layerOnEventWindowResize;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer handling multiple events
  */
 TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
-	const auto layerMultipleEvents = new ImGuiMetalLayer();
-	_app->PushLayer(layerMultipleEvents);
-	_app->SetRenderLayer(layerMultipleEvents);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
 	MouseMovedEvent mouseEvent{100.0f, 200.0f};
@@ -296,26 +283,25 @@ TEST_F(ImGuiMetalLayerTest, MultipleEvents) {
 		_app->OnEvent(resizeEvent);
 	});
 
-	_app->PopLayer(layerMultipleEvents);
-	delete layerMultipleEvents;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer full lifecycle
  */
 TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
-	const auto layerFullLifecycle = new ImGuiMetalLayer();
+	const auto imguiLayer = new ImGuiMetalLayer();
 
 	// Attach
 	EXPECT_NO_THROW({
-		_app->PushLayer(layerFullLifecycle);
-		_app->SetRenderLayer(layerFullLifecycle);
+		_app->SetImGuiLayer(imguiLayer);
 	});
 
 	// Update multiple times
 	EXPECT_NO_THROW({
-		_app->Update();
-		_app->Update();
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
 	});
 
 	// Handle events
@@ -329,109 +315,104 @@ TEST_F(ImGuiMetalLayerTest, FullLifecycle) {
 
 	// Update again
 	EXPECT_NO_THROW({
-		_app->Update();
+		_app->Tick(0.016f);
 	});
 
 	// Detach
 	EXPECT_NO_THROW({
-		_app->PopLayer(layerFullLifecycle);
+		_app->RemoveImGuiLayer();
 	});
 
-	delete layerFullLifecycle;
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer Begin and End methods
  */
 TEST_F(ImGuiMetalLayerTest, BeginEnd) {
-	const auto layerBeginEnd = new ImGuiMetalLayer();
-	_app->PushLayer(layerBeginEnd);
-	_app->SetRenderLayer(layerBeginEnd);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		layerBeginEnd->Begin();
-		layerBeginEnd->End();
+		imguiLayer->Begin();
+		imguiLayer->End();
 	});
 
-	_app->PopLayer(layerBeginEnd);
-	delete layerBeginEnd;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer multiple Begin/End cycles
  */
 TEST_F(ImGuiMetalLayerTest, MultipleBeginEnd) {
-	const auto layerMultipleBeginEnd = new ImGuiMetalLayer();
-	_app->PushLayer(layerMultipleBeginEnd);
-	_app->SetRenderLayer(layerMultipleBeginEnd);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		layerMultipleBeginEnd->Begin();
-		layerMultipleBeginEnd->End();
-		layerMultipleBeginEnd->Begin();
-		layerMultipleBeginEnd->End();
-		layerMultipleBeginEnd->Begin();
-		layerMultipleBeginEnd->End();
+		imguiLayer->Begin();
+		imguiLayer->End();
+		imguiLayer->Begin();
+		imguiLayer->End();
+		imguiLayer->Begin();
+		imguiLayer->End();
 	});
 
-	_app->PopLayer(layerMultipleBeginEnd);
-	delete layerMultipleBeginEnd;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer OnRender
  */
 TEST_F(ImGuiMetalLayerTest, OnRender) {
-	const auto layerOnRender = new ImGuiMetalLayer();
-	_app->PushLayer(layerOnRender);
-	_app->SetRenderLayer(layerOnRender);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
-		layerOnRender->Begin();
-		layerOnRender->OnRender();
-		layerOnRender->End();
+		imguiLayer->Begin();
+		imguiLayer->OnRender();
+		imguiLayer->End();
 	});
 
-	_app->PopLayer(layerOnRender);
-	delete layerOnRender;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer complete render cycle
  */
 TEST_F(ImGuiMetalLayerTest, CompleteRenderCycle) {
-	const auto layerCompleteRenderCycle = new ImGuiMetalLayer();
-	_app->PushLayer(layerCompleteRenderCycle);
-	_app->SetRenderLayer(layerCompleteRenderCycle);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	EXPECT_NO_THROW({
 		// First frame
-		layerCompleteRenderCycle->Begin();
-		layerCompleteRenderCycle->OnRender();
-		layerCompleteRenderCycle->End();
+		imguiLayer->Begin();
+		imguiLayer->OnRender();
+		imguiLayer->End();
 
 		// Second frame
-		layerCompleteRenderCycle->Begin();
-		layerCompleteRenderCycle->OnRender();
-		layerCompleteRenderCycle->End();
+		imguiLayer->Begin();
+		imguiLayer->OnRender();
+		imguiLayer->End();
 
 		// Third frame
-		layerCompleteRenderCycle->Begin();
-		layerCompleteRenderCycle->OnRender();
-		layerCompleteRenderCycle->End();
+		imguiLayer->Begin();
+		imguiLayer->OnRender();
+		imguiLayer->End();
 	});
 
-	_app->PopLayer(layerCompleteRenderCycle);
-	delete layerCompleteRenderCycle;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }
 
 /**
  * @brief Test ImGuiMetalLayer with events during render
  */
 TEST_F(ImGuiMetalLayerTest, EventsDuringRender) {
-	const auto layerEventsDuringRender = new ImGuiMetalLayer();
-	_app->PushLayer(layerEventsDuringRender);
-	_app->SetRenderLayer(layerEventsDuringRender);
+	const auto imguiLayer = new ImGuiMetalLayer();
+	_app->SetImGuiLayer(imguiLayer);
 
 	// Prepare events
 	auto keyEvent = KeyPressedEvent{KeyboardKeyCode::Space, 0};
@@ -439,17 +420,17 @@ TEST_F(ImGuiMetalLayerTest, EventsDuringRender) {
 
 	EXPECT_NO_THROW({
 		// Start rendering
-		layerEventsDuringRender->Begin();
+		imguiLayer->Begin();
 
 		// Handle events
 		_app->OnEvent(keyEvent);
 		_app->OnEvent(mouseEvent);
 
 		// Continue rendering
-		layerEventsDuringRender->OnRender();
-		layerEventsDuringRender->End();
+		imguiLayer->OnRender();
+		imguiLayer->End();
 	});
 
-	_app->PopLayer(layerEventsDuringRender);
-	delete layerEventsDuringRender;
+	_app->RemoveImGuiLayer();
+	delete imguiLayer;
 }

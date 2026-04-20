@@ -57,16 +57,20 @@ void GlfwApplication::Quit() {
 }
 
 void GlfwApplication::Tick(const float) {
+	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
+	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
-	_imguiLayer->Begin();
+	if (_imguiLayer) {
+		_imguiLayer->Begin();
 
-	for (const auto layer: _layerStack)
-		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
-			renderLayer->OnRender();
+		for (const auto layer: _layerStack)
+			if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
+				renderLayer->OnRender();
 
-	_imguiLayer->End();
+		_imguiLayer->End();
+	}
 
 	_window->OnUpdate();
 	_context->SwapBuffers();
@@ -99,14 +103,14 @@ void GlfwApplication::OnEvent(Events::I_Event& event) {
 }
 
 void GlfwApplication::Init(const Types::Window::WindowProps& windowProps) {
-	InitWindow(windowProps);
-	InitRenderer(windowProps.graphicsApi);
+	_InitWindow(windowProps);
+	_InitRenderer(windowProps.graphicsApi);
 	InitImGuiLayer(windowProps.graphicsApi);
 
 	_window->GetReady();
 }
 
-void GlfwApplication::InitWindow(const Types::Window::WindowProps& windowProps) {
+void GlfwApplication::_InitWindow(const Types::Window::WindowProps& windowProps) {
 	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
 
 	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
@@ -120,7 +124,7 @@ void GlfwApplication::InitWindow(const Types::Window::WindowProps& windowProps) 
 	Input::InitInput(windowProps.windowApi);
 }
 
-void GlfwApplication::InitRenderer(Types::Render::GraphicsApi) {
+void GlfwApplication::_InitRenderer(Types::Render::GraphicsApi) {
 	assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
 	assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
 
@@ -136,6 +140,35 @@ void GlfwApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
 	auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
+}
+
+void GlfwApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
+	if (not imguiLayer) {
+		CE_CORE_WARN("GlfwApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
+		return;
+	}
+
+	if (const auto openGlLayer = dynamic_cast<Layers::ImGuiOpenGlLayer*>(imguiLayer)) {
+		if (_imguiLayer) {
+			PopOverlay(_imguiLayer);
+			_imguiLayer = nullptr;
+		}
+
+		_imguiLayer = openGlLayer;
+		PushOverlay(_imguiLayer);
+	}
+	else {
+		CE_CORE_ERROR("GlfwApplication::SetImGuiLayer: Provided ImGui layer is not compatible with OpenGlContext. Expected ImGuiOpenGlLayer or derived class.");
+		throw std::runtime_error("Provided ImGui layer is not compatible with OpenGlContext. Expected ImGuiOpenGlLayer or derived class.");
+	}
+}
+
+void GlfwApplication::RemoveImGuiLayer() {
+	if (not _imguiLayer)
+		return;
+
+	PopOverlay(_imguiLayer);
+	_imguiLayer = nullptr;
 }
 
 Window::I_Window& GlfwApplication::GetWindow() const {

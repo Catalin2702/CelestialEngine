@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-20
 //
 
-#include <Core/Application.hpp>
+#include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
 #include <Events/ApplicationEvent.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 using namespace CE::Core;
+using namespace CE::Core::Application;
 using namespace CE::Events;
 using namespace CE::Layers;
 using namespace CE::Tools::Log;
@@ -41,9 +42,8 @@ protected:
 		Log::Init();
 
 		try {
-			_app = std::make_unique<Application>();
-			_app->InitWindow(windowProps);
-			_app->InitRenderer(windowProps);
+			_app = std::make_unique<GlfwApplication>();
+			_app->Init(windowProps);
 		}
 		catch (...) {
 			_windowAvailable = false;
@@ -59,7 +59,7 @@ protected:
 	}
 
 	bool _windowAvailable = false;
-	std::unique_ptr<Application> _app = nullptr;
+	std::unique_ptr<GlfwApplication> _app = nullptr;
 };
 //
 /**
@@ -91,12 +91,11 @@ TEST_F(ImGuiOpenGlLayerTest, OnAttach) {
 	const auto layer = new ImGuiOpenGlLayer();
 
 	EXPECT_NO_THROW({
-		_app->PushLayer(layer);
-		_app->SetRenderLayer(layer);
+		_app->SetImGuiLayer(layer);
 	});
 
 	// Clean up - pop the layer before the test ends
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -111,12 +110,11 @@ TEST_F(ImGuiOpenGlLayerTest, OnDetach) {
 	const auto layer = new ImGuiOpenGlLayer();
 
 	// First attach the layer
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	// Then detach it
 	EXPECT_NO_THROW({
-		_app->PopLayer(layer);
+		_app->RemoveImGuiLayer();
 	});
 
 	delete layer;
@@ -131,14 +129,13 @@ TEST_F(ImGuiOpenGlLayerTest, OnUpdate) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	EXPECT_NO_THROW({
-		_app->Update();
+		_app->Tick(0.016f);
 	});
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -151,16 +148,15 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleOnUpdate) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	EXPECT_NO_THROW({
-		_app->Update();
-		_app->Update();
-		_app->Update();
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
 	});
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -173,8 +169,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
 	_app->OnEvent(event);
@@ -182,7 +177,7 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyPressed) {
 	// ImGui layers typically don't block event propagation
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -195,15 +190,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyReleased) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	KeyReleasedEvent event{KeyboardKeyCode::A}; // 'A' key
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -216,15 +210,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventKeyTyped) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	KeyTypedEvent event{KeyboardCharsCode::A};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -237,15 +230,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonPressed) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	MouseButtonPressedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -258,15 +250,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseButtonReleased) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	MouseButtonReleasedEvent event{MouseButtonCode::Left};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -279,15 +270,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseMoved) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	MouseMovedEvent event{100.0f, 200.0f};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -300,15 +290,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventMouseScrolled) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	MouseScrolledEvent event{0.0f, 1.0f}; // Scroll up
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -321,15 +310,14 @@ TEST_F(ImGuiOpenGlLayerTest, OnEventWindowResize) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	WindowResizeEvent event{1024, 768};
 	_app->OnEvent(event);
 
 	EXPECT_FALSE(event.IsHandled());
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -342,8 +330,7 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
 	}
 
 	const auto layer = new ImGuiOpenGlLayer();
-	_app->PushLayer(layer);
-	_app->SetRenderLayer(layer);
+	_app->SetImGuiLayer(layer);
 
 	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
 	MouseMovedEvent mouseEvent{100.0f, 200.0f};
@@ -355,7 +342,7 @@ TEST_F(ImGuiOpenGlLayerTest, MultipleEvents) {
 		_app->OnEvent(resizeEvent);
 	});
 
-	_app->PopLayer(layer);
+	_app->RemoveImGuiLayer();
 	delete layer;
 }
 
@@ -371,14 +358,13 @@ TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
 
 	// Attach
 	EXPECT_NO_THROW({
-		_app->PushLayer(layer);
-		_app->SetRenderLayer(layer);
+		_app->SetImGuiLayer(layer);
 	});
 
 	// Update multiple times
 	EXPECT_NO_THROW({
-		_app->Update();
-		_app->Update();
+		_app->Tick(0.016f);
+		_app->Tick(0.016f);
 	});
 
 	// Handle events
@@ -392,12 +378,12 @@ TEST_F(ImGuiOpenGlLayerTest, FullLifecycle) {
 
 	// Update again
 	EXPECT_NO_THROW({
-		_app->Update();
+		_app->Tick(0.016f);
 	});
 
 	// Detach
 	EXPECT_NO_THROW({
-		_app->PopLayer(layer);
+		_app->RemoveImGuiLayer();
 	});
 
 	delete layer;

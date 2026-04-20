@@ -111,6 +111,27 @@ public:
 	 */
 	void Init(const Types::Window::WindowProps& windowProps) override;
 
+	/**
+	 * @brief Initializes the ImGui layer
+	 * @details Initializes the ImGui layer for rendering UI based on the specified graphics API. For GLFW with OpenGL, this will involve creating an ImGuiOpenGLLayer instance and pushing it as an overlay.
+	 */
+	void InitImGuiLayer(Types::Render::GraphicsApi) override;
+
+public:
+	/**
+	 * @brief Sets the ImGui layer for the application
+	 * @param imguiLayer Pointer to the ImGui layer to set
+	 * @details Sets the ImGui layer for rendering UI. This method allows you to specify the ImGui layer that will be used for rendering the user interface.
+	 *			It must be an ImGuiOpenGlLayer or derived class that is compatible with the OpenGL rendering context used by the application.
+	 */
+	void SetImGuiLayer(Layers::I_Layer* imguiLayer) override;
+
+	/**
+	 * @brief Removes the ImGui layer from the application
+	 * @details Removes the currently set ImGui layer from the application and pops it from the layer stack. This will stop rendering the ImGui UI and free up resources associated with the ImGui layer.
+	 */
+	void RemoveImGuiLayer() override;
+
 protected:
 	/**
 	 * @brief Initializes the application window
@@ -118,19 +139,13 @@ protected:
 	 * @details Creates the application window and sets up event callbacks based on the provided window properties.
 	 *			Initializes the appropriate input system based on the window API.
 	 */
-	void InitWindow(const Types::Window::WindowProps& windowProps) override;
+	void _InitWindow(const Types::Window::WindowProps& windowProps) override;
 
 	/**
 	 * @brief Initializes the renderer
 	 * @details Initializes the rendering context based on the specified graphics API. For GLFW, this will typically involve setting up an OpenGL or Vulkan rendering context.
 	 */
-	void InitRenderer(Types::Render::GraphicsApi) override;
-
-	/**
-	 * @brief Initializes the ImGui layer
-	 * @details Initializes the ImGui layer for rendering UI based on the specified graphics API. For GLFW with OpenGL, this will involve creating an ImGuiOpenGLLayer instance and pushing it as an overlay.
-	 */
-	void InitImGuiLayer(Types::Render::GraphicsApi) override;
+	void _InitRenderer(Types::Render::GraphicsApi) override;
 
 public:
 	/**

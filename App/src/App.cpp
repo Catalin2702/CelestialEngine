@@ -30,5 +30,6 @@ std::unique_ptr<Application::I_Application> Application::CreateApplication(const
 		}
 	}
 	app->Init(windowProps);
+	app->InitImGuiLayer(windowProps.graphicsApi);
 	return app;
 }

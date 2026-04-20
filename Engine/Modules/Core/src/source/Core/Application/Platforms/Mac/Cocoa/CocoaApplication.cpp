@@ -129,9 +129,8 @@ void CocoaApplication::OnEvent(Events::I_Event& event) {
 }
 
 void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
-	InitWindow(windowProps);
-	InitRenderer(windowProps.graphicsApi);
-	InitImGuiLayer(windowProps.graphicsApi);
+	_InitWindow(windowProps);
+	_InitRenderer(windowProps.graphicsApi);
 
 	_SetWindowCallbacks();
 
@@ -156,7 +155,36 @@ void CocoaApplication::StopDisplayLink() {
 	_displayLink.reset();
 }
 
-void CocoaApplication::InitWindow(const Types::Window::WindowProps& windowProps) {
+void CocoaApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
+	if (not imguiLayer){
+		CE_WARN("CocoaApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
+		return;
+	}
+
+	if (const auto metalLayer = dynamic_cast<Layers::ImGuiMetalLayer*>(imguiLayer)) {
+		if (_imguiLayer) {
+			PopOverlay(_imguiLayer);
+			_imguiLayer = nullptr;
+		}
+
+		_imguiLayer = metalLayer;
+		PushOverlay(_imguiLayer);
+	}
+	else {
+		CE_CORE_ERROR("CocoaApplication::SetImGuiLayer: Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.");
+		throw std::runtime_error("Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.");
+	}
+}
+
+void CocoaApplication::RemoveImGuiLayer() {
+	if (not _imguiLayer)
+		return;
+
+	PopOverlay(_imguiLayer);
+	_imguiLayer = nullptr;
+}
+
+void CocoaApplication::_InitWindow(const Types::Window::WindowProps& windowProps) {
 	assert(not _window && "CocoaApplication::InitWindow: Window is already initialized!");
 
 	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
@@ -170,7 +198,7 @@ void CocoaApplication::InitWindow(const Types::Window::WindowProps& windowProps)
 	Input::InitInput(windowProps.windowApi);
 }
 
-void CocoaApplication::InitRenderer(Types::Render::GraphicsApi) {
+void CocoaApplication::_InitRenderer(Types::Render::GraphicsApi) {
 	assert(not _context && "CocoaApplication::InitRenderer: Renderer is already initialized!");
 	assert(_window && "CocoaApplication::InitRenderer: Window must be initialized before initializing renderer");
 
