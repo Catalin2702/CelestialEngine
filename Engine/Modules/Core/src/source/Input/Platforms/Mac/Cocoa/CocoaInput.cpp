@@ -16,7 +16,7 @@
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 
-namespace CE::Input {
+namespace CE::Core::Input {
 
 bool CocoaInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
 	// Convert CE keycode to macOS virtual key code and check state

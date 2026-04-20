@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-04-20
 //
 
 #include "Input/I_Input.hpp"
@@ -19,7 +19,8 @@
 
 #include <cassert>
 
-namespace CE::Input {
+
+namespace CE::Core::Input {
 
 I_Input* I_Input::_instance = nullptr;
 

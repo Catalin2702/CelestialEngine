@@ -16,7 +16,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace CE::Input {
+namespace CE::Core::Input {
 
 bool GlfwInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
 	if (not _glfWwindow) {

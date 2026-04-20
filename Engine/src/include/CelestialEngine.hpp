@@ -64,9 +64,8 @@
 // ---- Convenient namespace aliases -------------
 namespace Application = CE::Core::Application;		///< Application framework
 namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
-namespace Core = CE::Core;							///< Core engine functionality
 namespace Events = CE::Events;						///< Event system
-namespace Input = CE::Input;						///< Input handling
+namespace Input = CE::Core::Input;					///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
 namespace Layers = CE::Layers;						///< Layer management
 namespace Time = CE::Utility::Time;					///< Time utilities

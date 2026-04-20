@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -20,7 +20,8 @@
 
 struct GLFWwindow;
 
-namespace CE::Input {
+
+namespace CE::Core::Input {
 
 /**
  * @class GlfwInput

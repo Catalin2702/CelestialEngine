@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -19,12 +19,13 @@
 
 #include <utility>
 
+
 /**
- * @namespace CE::Input
+ * @namespace CE::Core::Input
  * @brief Input handling module for processing user input events
  * @details
  */
-namespace CE::Input {
+namespace CE::Core::Input {
 
 /**
  * @class I_Input

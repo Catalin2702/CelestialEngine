@@ -19,9 +19,8 @@
 #include <memory>
 #include <gtest/gtest.h>
 
-using namespace CE::Core;
 using namespace CE::Core::Application;
-using namespace CE::Input;
+using namespace CE::Core::Input;
 using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Render;

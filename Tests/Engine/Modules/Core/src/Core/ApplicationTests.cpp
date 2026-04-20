@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 
-using namespace CE::Core;
 using namespace CE::Core::Application;
 using namespace CE::Events;
 using namespace CE::Layers;

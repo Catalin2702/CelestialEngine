@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -22,8 +22,8 @@ namespace NS {
 	class Window;
 }
 
-namespace CE::Input {
 
+namespace CE::Core::Input {
 
 class CE_API CocoaInput final: public I_Input {
 protected:

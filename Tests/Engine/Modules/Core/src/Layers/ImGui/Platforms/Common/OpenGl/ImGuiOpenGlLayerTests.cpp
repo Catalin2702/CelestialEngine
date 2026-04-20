@@ -20,7 +20,7 @@
 #include <memory>
 #include <gtest/gtest.h>
 
-using namespace CE::Core;
+
 using namespace CE::Core::Application;
 using namespace CE::Events;
 using namespace CE::Layers;
@@ -28,6 +28,7 @@ using namespace CE::Tools::Log;
 using namespace CE::KeyCode;
 using namespace CE::Types::Render;
 using namespace CE::Types::Window;
+
 
 const WindowProps windowProps{"Test", 800, 600, false, GraphicsApi::OpenGL, WindowApi::GLFW};
 
