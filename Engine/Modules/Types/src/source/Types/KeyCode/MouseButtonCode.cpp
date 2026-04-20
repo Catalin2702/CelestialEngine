@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-18
+// Updated: 2026-04-20
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
-#include <imgui.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <GLFW/glfw3.h>
 
@@ -82,10 +81,10 @@ int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 
 MouseButtonCode MouseButtonKeyCodeFromCocoa(const int buttonNumber) {
 	switch (buttonNumber) {
-		case 0: return KeyCode::MouseButtonCode::Left;
-		case 1: return KeyCode::MouseButtonCode::Right;
-		case 2: return KeyCode::MouseButtonCode::Middle;
-		default: return KeyCode::MouseButtonCode::Unknown;
+		case 0: return MouseButtonCode::Left;
+		case 1: return MouseButtonCode::Right;
+		case 2: return MouseButtonCode::Middle;
+		default: return MouseButtonCode::Unknown;
 	}
 }
 

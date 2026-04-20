@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-04-20
 //
 
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -39,15 +39,7 @@ CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
 
-void CocoaWindow::OnUpdate() const {
-	// const auto app = NS::Application::sharedApplication();
-	// const auto mode = NS::String::string("kCFRunLoopDefaultMode", NS::UTF8StringEncoding);
-	//
-	// NS::Event* event;
-	// while ((event = app->nextEventMatchingMask(NS::EventMaskAny,NS::Date::distantPast(), mode, true))) {
-	// 	app->sendEvent(event);
-	// }
-}
+void CocoaWindow::OnUpdate() const {}
 
 float CocoaWindow::GetWindowWidth() const {
 	if (not _window) {
@@ -157,7 +149,7 @@ std::pair<float, float> CocoaWindow::GetContentScale() const {
 
 std::pair<float, float> CocoaWindow::GetContentSize() const {
 	const auto [fst, snd] = GetContentScale();
-	const auto [width, height] = GetWindowSize();
+	const auto [width, height] = GetViewSize();
 	return {width * fst, height * snd};
 }
 
@@ -216,14 +208,14 @@ void CocoaWindow::_SetIOEventCallbacks() {
 
 	callbacks.MouseButtonPressedEventCallback = [](void* userData, const int buttonCode) {
 		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseButtonPressedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
+			Events::MouseButtonPressedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(buttonCode)};
 			windowCallbacks->EventCallback(event);
 		}
 	};
 
 	callbacks.MouseButtonReleasedEventCallback = [](void* userData, const int buttonCode) {
 		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseButtonReleasedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode)};
+			Events::MouseButtonReleasedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(buttonCode)};
 			windowCallbacks->EventCallback(event);
 		}
 	};

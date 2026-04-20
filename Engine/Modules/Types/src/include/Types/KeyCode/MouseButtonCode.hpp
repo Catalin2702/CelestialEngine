@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-04-20
 //
 
 #pragma once
@@ -36,19 +36,19 @@ namespace CE::KeyCode {
  *			An Unknown value is also provided to represent unrecognized or unsupported mouse button codes.
  */
 enum class MouseButtonCode : uint8_t {
-	Left = 1,
-	Right = 2,
-	Middle = 3,
-	Button4 = 4,
-	Button5 = 5,
-	Button6 = 6,
-	Button7 = 7,
-	Button8 = 8,
+	Left = 0,
+	Right = 1,
+	Middle = 2,
+	Button4 = 3,
+	Button5 = 4,
+	Button6 = 5,
+	Button7 = 6,
+	Button8 = 7,
 
-	WheelX = 9,
-	WheelY = 10,
+	WheelX = 8,
+	WheelY = 9,
 
-	Unknown = 0
+	Unknown = 255
 };
 
 /**
