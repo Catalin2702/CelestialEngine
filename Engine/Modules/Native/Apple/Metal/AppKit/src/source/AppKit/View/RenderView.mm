@@ -45,6 +45,21 @@
 	return YES;
 }
 
+- (BOOL)becomeFirstResponder {
+	return YES;
+}
+
+- (BOOL)canBecomeKeyView {
+	return YES;
+}
+
+- (void)viewDidMoveToWindow {
+	[super viewDidMoveToWindow];
+	if (self.window) {
+		[self.window makeFirstResponder:self];
+	}
+}
+
 - (BOOL)isFlipped {
 	return YES;
 }
@@ -86,6 +101,10 @@
 }
 
 - (void)mouseDown:(NSEvent*)event {
+	// Ensure this view is the first responder to receive all input events
+	if (self.window.firstResponder != self) {
+		[self.window makeFirstResponder:self];
+	}
 	if (self.callbacks.MouseButtonPressedEventCallback) {
 		self.callbacks.MouseButtonPressedEventCallback(self.userData, [event buttonNumber]);
 	}
@@ -105,6 +124,10 @@
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
+	// Ensure this view is the first responder to receive all input events
+	if (self.window.firstResponder != self) {
+		[self.window makeFirstResponder:self];
+	}
 	if (self.callbacks.MouseButtonPressedEventCallback) {
 		self.callbacks.MouseButtonPressedEventCallback(self.userData, [event buttonNumber]);
 	}
@@ -124,6 +147,10 @@
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
+	// Ensure this view is the first responder to receive all input events
+	if (self.window.firstResponder != self) {
+		[self.window makeFirstResponder:self];
+	}
 	if (self.callbacks.MouseButtonPressedEventCallback) {
 		self.callbacks.MouseButtonPressedEventCallback(self.userData, [event buttonNumber]);
 	}

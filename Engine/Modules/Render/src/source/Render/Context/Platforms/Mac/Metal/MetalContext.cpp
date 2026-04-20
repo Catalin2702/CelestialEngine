@@ -66,13 +66,15 @@ void MetalContext::Init() {
 	metalView->setLayer(_layer.get());
 	metalView->setWantsLayer(true);
 
-	const auto metalWindow = window->GetCocoaWindow();
+	const auto scaleFactor = window->GetContentScale();
+	const auto [width, height] = window->GetContentSize();
 
 	_layer->setDevice(_device.get());
 	_layer->setPixelFormat(_props.pixelFormat);
-	_layer->setContentsScale(metalWindow->backingScaleFactor());
+	_layer->setContentsScale(scaleFactor.first);
 	_layer->setMaximumDrawableCount(3);
 	_layer->setAllowsNextDrawableTimeout(false);
+	_layer->setDrawableSize(CGSizeMake(width, height));
 	// ReSharper restore All
 }
 

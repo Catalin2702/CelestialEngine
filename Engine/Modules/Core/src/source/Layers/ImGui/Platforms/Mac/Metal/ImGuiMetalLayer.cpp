@@ -127,11 +127,6 @@ void ImGuiMetalLayer::End() {
 	ImGui::Render();
 	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
 
-	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
-
 	_frameContext.renderCommandEncoder->endEncoding();
 
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
@@ -152,8 +147,8 @@ void ImGuiMetalLayer::_Init() {
 
 		auto& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		const auto& app = Core::Application::CocoaApplication::StGet();
 
