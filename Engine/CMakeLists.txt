@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.21)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Engine LANGUAGES CXX VERSION 0.1.0)
+project(CE_Engine LANGUAGES CXX VERSION 0.1.2)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
