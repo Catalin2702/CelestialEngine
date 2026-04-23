@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -49,6 +49,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::Text("Hello from ImGui with OpenGL and GLFW!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
 	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
+	ImGui::Text("Application average delta time: %.5f s", _deltaTime);
 	ImGui::End();
 
 	static bool show = true;
@@ -93,6 +94,9 @@ void ImGuiOpenGlLayer::Begin(const float deltaTime) {
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
+
+	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
+
 	ImGui::NewFrame();
 
 	_currentFrameStarted = true;

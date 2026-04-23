@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -45,7 +45,8 @@ void ImGuiMetalLayer::OnRender() const {
 	ImGui::Begin("Test Window");
 	ImGui::Text("Hello from ImGui with Metal and Cocoa on macOS!");
 	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
-	ImGui::Text("Application average: %.1f FPS", ImGui::GetIO().Framerate);
+	ImGui::Text("Application average: %.5f FPS", ImGui::GetIO().Framerate);
+	ImGui::Text("Application average delta time: %.5f s", _deltaTime);
 	ImGui::End();
 
 	static bool show = true;
@@ -110,6 +111,8 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
 	Apple::Bridge::ImGuiOSXNewFrame(_window->get().GetCocoaView());
+
+	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
 
 	ImGui::NewFrame();
 	_currentFrameStarted = true;

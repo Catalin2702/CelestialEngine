@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #pragma once
@@ -61,6 +61,10 @@ namespace Core::Application {
  *			Client applications should implement this interface and provide a factory function to create an instance of their application.
  */
 class CE_API I_Application {
+public:
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = std::chrono::time_point<Clock>;
+
 public:
 	/**
 	 * @brief Virtual destructor
@@ -193,10 +197,15 @@ public:
 	 */
 	virtual void RemoveImGuiLayer() = 0;
 
+	float GetDeltaTime() const;
+
+	void ResetDeltaTime() const;
+
 protected:
 	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance
+	mutable std::atomic<TimePoint> _lastFrameTime = Clock::now(); ///< Timestamp of the last frame for delta time calculation
 
-	std::atomic<bool> _isRunning; ///< Flag indicating if the application is running
+	std::atomic<bool> _isRunning = false; ///< Flag indicating if the application is running
 	Layers::LayerStack _layerStack; ///< Stack of layers and overlays
 };
 

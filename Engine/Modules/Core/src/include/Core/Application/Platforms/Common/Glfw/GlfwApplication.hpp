@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #pragma once
@@ -164,15 +164,10 @@ public:
 	Render::Context::I_Context& GetRenderContext() const override;
 
 private:
-	using Clock = std::chrono::steady_clock;
-	using TimePoint = std::chrono::time_point<Clock>;
-
 	std::unique_ptr<Render::Context::OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
 	std::unique_ptr<Window::GlfwWindow> _window; ///< Pointer to the GLFW window
 
 	Layers::ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
-
-	TimePoint _lastFrameTime; ///< Timestamp of the last frame for delta time calculation
 };
 
 }

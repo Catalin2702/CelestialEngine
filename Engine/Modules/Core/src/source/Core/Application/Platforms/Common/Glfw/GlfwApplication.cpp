@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -21,7 +21,7 @@
 
 namespace CE::Core::Application {
 
-GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr), _lastFrameTime(Clock::now()) {
+GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
 
@@ -42,12 +42,9 @@ GlfwApplication::~GlfwApplication() {
 void GlfwApplication::Run() {
 	SetRunning(true);
 
-	_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
+	ResetDeltaTime();
 	while (IsRunning()) {
-		const auto currentTime = Clock::now();
-		const auto deltaTime = std::chrono::duration<float>(currentTime - _lastFrameTime).count();
-		_lastFrameTime = currentTime;
-		Tick(deltaTime);
+		Tick(GetDeltaTime());
 	}
 }
 

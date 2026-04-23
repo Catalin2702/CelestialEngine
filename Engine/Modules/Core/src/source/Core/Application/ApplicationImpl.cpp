@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #include "Core/Application/I_Application.hpp"
@@ -43,6 +43,17 @@ void I_Application::PopOverlay(Layers::I_Layer* overlay) {
 I_Application& I_Application::StGet() {
 	assert(_stInstance != nullptr && "I_Application::StGet: _stInstance is null - did you forget to create an Application?");
 	return *_stInstance;
+}
+
+float I_Application::GetDeltaTime() const {
+	const auto currentTime = Clock::now();
+	const auto deltaTime = std::chrono::duration<float>(currentTime - _lastFrameTime.load()).count();
+	_lastFrameTime.store(currentTime);
+	return deltaTime;
+}
+
+void I_Application::ResetDeltaTime() const {
+	_lastFrameTime.store(Clock::now());
 }
 
 }

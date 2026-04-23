@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-04-23
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -27,7 +27,7 @@
 
 namespace CE::Core::Application {
 
-CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), _window(nullptr), _imguiLayer(nullptr), _lastFrameTime(Clock::now()) {
+CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
 
@@ -43,6 +43,10 @@ CocoaApplication::~CocoaApplication() {
 		CocoaApplication::Quit();
 
 	Input::ShutdownInput();
+
+	if (_loopThread.joinable()) {
+		_loopThread.join();
+	}
 
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
@@ -74,8 +78,8 @@ void CocoaApplication::Quit() {
 
 	_appCocoa->stop(nullptr);
 
-	NS::Event* dummyEvent = NS::Event::otherEventWithType(
-		NS::EventTypeAppKitDefined,
+	const auto dummyEvent = NS::Event::otherEventWithType(
+	NS::EventTypeAppKitDefined,
 		CGPointZero,
 		0,
 		0.0,
@@ -138,14 +142,29 @@ void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
 }
 
 void CocoaApplication::StartDisplayLink() {
-	if (_displayLink)
-		return;
+	assert(IsRunning() && "CocoaApplication::StartDisplayLink: Application must be running to start display link");
+	assert(_window && "CocoaApplication::StartDisplayLink: Window must be initialized before starting display link");
+	assert(_context && "CocoaApplication::StartDisplayLink: Renderer must be initialized before starting display link");
+	assert(_imguiLayer && "CocoaApplication::StartDisplayLink: ImGui layer must be initialized before starting display link");
 
-	_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
-	_displayLink->setCallback(&CocoaApplication::_StDisplayLinkCallback, this);
+	if (_window->IsVSync()) {
+		assert(_displayLink && "CocoaApplication::StartDisplayLink: Display link is already running!");
 
-	_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
-	_displayLink->start();
+		_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
+		_displayLink->setCallback(&CocoaApplication::_StDisplayLinkCallback, this);
+
+		_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
+		_displayLink->start();
+	}
+	else {
+		_loopThread = std::thread([this] {
+			while (_isRunning.load(std::memory_order_acquire)) {
+				if (not _tickPending.exchange(true)) {
+					dispatch_async_f(dispatch_get_main_queue(), this, &CocoaApplication::_StAsyncTickCallback);
+				}
+			}
+		});
+	}
 }
 
 void CocoaApplication::StopDisplayLink() {
@@ -235,11 +254,16 @@ void CocoaApplication::_StDisplayLinkCallback(void* userData) {
 	if (not app->IsRunning())
 		return;
 
-	const auto currentTime = Clock::now();
-	const auto deltaTime = std::chrono::duration<float>(currentTime - app->_lastFrameTime).count();
-	app->_lastFrameTime = currentTime;
+	app->Tick(app->GetDeltaTime());
+}
 
-	app->Tick(deltaTime);
+void CocoaApplication::_StAsyncTickCallback(void* userData) {
+	if (const auto app = static_cast<CocoaApplication*>(userData)) {
+		app->_tickPending.store(false);
+		if (app->_isRunning.load(std::memory_order_acquire)) {
+			app->Tick(app->GetDeltaTime());
+		}
+	}
 }
 
 void CocoaApplication::_SetWindowCallbacks() const {
