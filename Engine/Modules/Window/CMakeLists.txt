@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -44,10 +44,10 @@ target_link_libraries(CE_Window PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
-	CE_Glad
-	CE_Glfw
+	CE_Vendor_Glad
+	CE_Vendor_Glfw
 	CE_Native
-	CE_SpdLog
+	CE_Vendor_SpdLog
 	CE_Tools
 	CE_Types
 	CE_Utility
@@ -56,7 +56,7 @@ target_link_libraries(CE_Window PUBLIC
 # Platform-specific
 target_link_libraries(CE_Window PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
-		CE_MetalCpp
+		CE_Vendor_MetalCpp
 	>
 )
 

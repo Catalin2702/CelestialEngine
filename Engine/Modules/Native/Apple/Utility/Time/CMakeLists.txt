@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -22,6 +22,8 @@ add_library(CE_AppleUtility_Time SHARED
 
 set_target_properties(CE_AppleUtility_Time PROPERTIES
 	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
 )
 
 target_link_libraries(CE_AppleUtility_Time PUBLIC

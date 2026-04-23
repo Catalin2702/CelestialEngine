@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -42,8 +42,8 @@ set_target_properties(CE_Types PROPERTIES
 target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
-	CE_Glfw
-	CE_ImGui
+	CE_Vendor_Glfw
+	CE_Vendor_ImGui
 )
 
 target_include_directories(CE_Types PUBLIC

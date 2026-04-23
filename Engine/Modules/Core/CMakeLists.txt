@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-20
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -72,10 +72,10 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
-	CE_Glfw
-	CE_ImGui
+	CE_Vendor_Glfw
+	CE_Vendor_ImGui
 	CE_Render
-	CE_SpdLog
+	CE_Vendor_SpdLog
 	CE_Tools
 	CE_Types
 	CE_Window
@@ -86,7 +86,7 @@ target_link_libraries(CE_Core PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
 		CE_AppleUtility
 		CE_CoreAnimation
-		CE_MetalCpp
+		CE_Vendor_MetalCpp
 	>
 )
 

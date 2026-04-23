@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -50,7 +50,7 @@ target_link_libraries(CE_AppKit PUBLIC
 )
 
 target_link_libraries(CE_AppKit PUBLIC
-	CE_MetalCpp
+	CE_Vendor_MetalCpp
 )
 
 target_compile_options(CE_AppKit PUBLIC

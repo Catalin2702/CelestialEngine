@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-22
+# Updated: 2026-04-23
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -25,6 +25,8 @@ add_library(CE_AppleUtility SHARED
 # Set the linker language to C++
 set_target_properties(CE_AppleUtility PROPERTIES
 	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
 )
 
 add_subdirectory(Time)

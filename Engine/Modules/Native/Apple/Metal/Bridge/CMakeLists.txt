@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-26
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-04-23
 #
 
 set(HEADERS
@@ -31,12 +31,12 @@ set_target_properties(CE_Bridge PROPERTIES
 # Modules
 target_link_libraries(CE_Bridge PUBLIC
 	CE_Config
-	CE_ImGui
+	CE_Vendor_ImGui
 )
 
 # Third-party
 target_link_libraries(CE_Bridge PUBLIC
-	CE_MetalCpp
+	CE_Vendor_MetalCpp
 
 	"-framework GameController"
 )
