@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-04-27
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <atomic>
+#include <chrono>
 #include <memory>
 
 namespace CE {

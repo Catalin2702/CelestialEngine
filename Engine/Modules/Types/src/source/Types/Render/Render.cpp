@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-19
+// Updated: 2026-04-27
 //
 
 #include "Types/Render/Render.hpp"
@@ -25,6 +25,8 @@ bool IsGraphicsApiSupported(const GraphicsApi& api) {
 #elifdef CE_PLATFORM_WINDOWS
 	if (api == GraphicsApi::DirectX11 or api == GraphicsApi::DirectX12)
 		return true;
+#elifdef CE_PLATFORM_LINUX
+	// DirectX is not supported on Linux, and Metal is not supported on Linux
 #else
 		#error Unsupported platform for graphics API support check
 #endif

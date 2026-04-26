@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-04-27
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -102,7 +102,6 @@ void GlfwApplication::OnEvent(Events::I_Event& event) {
 void GlfwApplication::Init(const Types::Window::WindowProps& windowProps) {
 	_InitWindow(windowProps);
 	_InitRenderer(windowProps.graphicsApi);
-	InitImGuiLayer(windowProps.graphicsApi);
 
 	_window->GetReady();
 }

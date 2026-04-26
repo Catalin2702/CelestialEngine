@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-03-27
 //
 
 #include "Types/Window/WindowProps.hpp"
@@ -51,7 +51,7 @@ bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi
 	if (windowApi == WindowApi::Win32 and (graphicsApi == Render::GraphicsApi::DirectX11 or graphicsApi == Render::GraphicsApi::DirectX12 or graphicsApi == Render::GraphicsApi::Vulkan))
 		return true;
 #elifdef CE_PLATFORM_LINUX
-	if (windowApi == WindowApi::X11 and graphicsApi == GraphicsApi::Vulkan)
+	if (windowApi == WindowApi::X11 and graphicsApi == Render::GraphicsApi::Vulkan)
 		return true;
 #endif
 
