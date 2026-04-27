@@ -4,17 +4,18 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-23
+# Updated: 2026-04-27
 #
 
 set(SOURCES
-	src/Core/ApplicationTests.cpp
+	src/Core/GlfwApplicationTests.cpp
 	src/Input/Platforms/Glfw/GlfwInputTests.cpp
 	src/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayerTests.cpp
 	src/Layers/LayerStackTests.cpp
 	src/Layers/LayerTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/Core/CocoaApplicationTests.cpp
 		src/Input/Platforms/Metal/MetalInputTests.cpp
 		src/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayerTests.cpp
 	>
