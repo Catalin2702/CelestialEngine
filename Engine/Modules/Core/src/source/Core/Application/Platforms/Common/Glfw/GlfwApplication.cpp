@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-27
+// Updated: 2026-05-07
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -14,7 +14,9 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/Render/Shader.hpp"
 #include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #include <cassert>
@@ -35,6 +37,7 @@ GlfwApplication::~GlfwApplication() {
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
 
+	_shaderProgram.reset();
 	_context.reset();
 	_window.reset();
 }
@@ -56,6 +59,10 @@ void GlfwApplication::Quit() {
 void GlfwApplication::Tick(const float deltaTime) {
 	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
+	assert(_shaderProgram && "GlfwApplication::Tick: Vertex shader must be initialized before ticking application");
+
+	_shaderProgram->Bind();
+
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
@@ -126,6 +133,45 @@ void GlfwApplication::_InitRenderer(Types::Render::GraphicsApi) {
 
 	_context = std::make_unique<Render::Context::OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
 	_context->Init();
+
+	const auto vertexSrc = R"(
+		#version 330 core
+
+		layout(location = 0) in vec3 a_Position;
+
+		out vec3 v_Position;
+
+		void main()
+		{
+			v_Position = a_Position;
+			gl_Position = vec4(a_Position, 1.0);
+		}
+	)";
+
+	const auto fragmentSrc = R"(
+		#version 330 core
+
+		layout(location = 0) out vec4 color;
+
+		in vec3 v_Position;
+
+		void main()
+		{
+			color = vec4(v_Position * 0.5 + 0.5, 1.0);
+		}
+	)";
+
+	std::array<std::unique_ptr<Render::Shader::I_Shader>, 2> shaders{
+		std::make_unique<Render::Shader::OpenGlShader>(vertexSrc, Types::Render::ShaderType::Vertex),
+		std::make_unique<Render::Shader::OpenGlShader>(fragmentSrc, Types::Render::ShaderType::Fragment)
+	};
+
+	_shaderProgram = std::make_unique<Render::Shader::OpenGlShaderProgram>(
+		std::initializer_list{
+			shaders[0].release(),
+			shaders[1].release()
+		}
+	);
 }
 
 void GlfwApplication::InitImGuiLayer(Types::Render::GraphicsApi) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-05-07
 //
 
 #pragma once
@@ -25,9 +25,14 @@ class I_Layer;
 class ImGuiOpenGlLayer;
 }
 
-namespace Render::Context {
-class I_Context;
-class OpenGlContext;
+namespace Render {
+	namespace Context {
+		class I_Context;
+		class OpenGlContext;
+	}
+	namespace Shader {
+		class OpenGlShaderProgram;
+	}
 }
 
 namespace Window {
@@ -165,6 +170,7 @@ public:
 
 private:
 	std::unique_ptr<Render::Context::OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
+	std::unique_ptr<Render::Shader::OpenGlShaderProgram> _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
 	std::unique_ptr<Window::GlfwWindow> _window; ///< Pointer to the GLFW window
 
 	Layers::ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
