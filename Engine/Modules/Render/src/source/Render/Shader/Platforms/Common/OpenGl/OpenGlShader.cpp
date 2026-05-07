@@ -19,13 +19,15 @@ OpenGlShader::OpenGlShader(const char* shader, const Types::Render::ShaderType t
 	_shaderId = OpenGlShaderCompiler::Compile(shader, type);
 }
 
-OpenGlShader::OpenGlShader(const OpenGlShader& other) {
+OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept {
 	_shaderId = other._shaderId;
 	_type = other._type;
+	other._shaderId = 0;
 }
 
 OpenGlShader::~OpenGlShader() {
-	glDeleteShader(_shaderId);
+	if (_shaderId != 0)
+		glDeleteShader(_shaderId);
 }
 
 uint32_t OpenGlShader::GetShaderId() const {

@@ -39,12 +39,18 @@ public:
 	 */
 	OpenGlShader(const char* shader, Types::Render::ShaderType type);
 
+/**
+ * @brief Copy constructor (deleted)
+ * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
+ */
+	OpenGlShader(const OpenGlShader& other) = delete;
+
 	/**
-	 * @brief Copy constructor for OpenGlShader
-	 * @param other Reference to another OpenGlShader object to copy from
-	 * @details Creates a new OpenGlShader object by copying the shader ID, program ID, and shader type from another OpenGlShader instance. This allows for the creation of a new shader object that shares the same underlying OpenGL resources as the original.
+	 * @brief Move constructor for OpenGlShader
+	 * @param other Rvalue reference to another OpenGlShader object to move from
+	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing double-delete.
 	 */
-	OpenGlShader(const OpenGlShader& other);
+	OpenGlShader(OpenGlShader&& other) noexcept;
 
 	/**
 	 * @brief Destructor for OpenGlShader

@@ -18,7 +18,6 @@
 #include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
-#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 #include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
@@ -42,7 +41,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 	if (not _currentFrameStarted)
 		return;
 
-	ImGui::DockSpaceOverViewport();
+	// ImGui::DockSpaceOverViewport();
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
@@ -111,8 +110,6 @@ void ImGuiOpenGlLayer::End() {
 	const auto [width, height] = _window->get().GetFrameBufferSize();
 
 	Render::Context::OpenGlContext::SetViewport(0, 0, width, height);
-
-	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

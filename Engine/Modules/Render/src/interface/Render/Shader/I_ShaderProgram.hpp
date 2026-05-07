@@ -51,6 +51,13 @@ public:
 	virtual void Unbind() const = 0;
 
 	/**
+	 * @brief Links the shader program
+	 * @details Pure virtual method that links the shader program, combining the attached shaders into a complete program that can be used for rendering.
+	 *			Must be implemented by derived classes to ensure proper linking of the shader program and validation of the attached shaders.
+	 */
+	virtual void Link() = 0;
+
+	/**
 	 * @brief Adds a shader to the shader program
 	 * @param shader Pointer to the shader to add
 	 * @details Pure virtual method that adds a shader to the shader program. This allows the shader program to manage multiple shaders (e.g., vertex and fragment shaders) and link them together for rendering.

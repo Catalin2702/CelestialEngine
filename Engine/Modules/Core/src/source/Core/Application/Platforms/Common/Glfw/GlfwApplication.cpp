@@ -17,6 +17,7 @@
 #include "Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Shader.hpp"
+#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 #include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #include <cassert>
@@ -60,6 +61,8 @@ void GlfwApplication::Tick(const float deltaTime) {
 	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
 	assert(_shaderProgram && "GlfwApplication::Tick: Vertex shader must be initialized before ticking application");
+
+	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	_shaderProgram->Bind();
 
@@ -172,6 +175,7 @@ void GlfwApplication::_InitRenderer(Types::Render::GraphicsApi) {
 			shaders[1].release()
 		}
 	);
+	_shaderProgram->Link();
 }
 
 void GlfwApplication::InitImGuiLayer(Types::Render::GraphicsApi) {

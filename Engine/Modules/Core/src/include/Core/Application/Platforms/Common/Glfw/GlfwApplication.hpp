@@ -174,6 +174,8 @@ private:
 	std::unique_ptr<Window::GlfwWindow> _window; ///< Pointer to the GLFW window
 
 	Layers::ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
+
+	uint32_t _vertexArrayId = 0, _vertexBufferId = 0, _indexBufferId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
 };
 
 }
