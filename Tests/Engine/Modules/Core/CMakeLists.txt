@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-27
+# Updated: 2026-05-15
 #
 
 set(SOURCES
@@ -32,6 +32,7 @@ set_target_properties(CE_TestsCore PROPERTIES
 # Modules
 target_link_libraries(CE_TestsCore PRIVATE
 	CE_Config
+	CE_TestConfig
 	CE_Core
 	CE_Vendor_SpdLog
 )

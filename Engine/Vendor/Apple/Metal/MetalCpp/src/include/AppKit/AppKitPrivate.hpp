@@ -409,6 +409,9 @@ _APPKIT_PRIVATE_DEF_SEL( isSwipeTrackingFromScrollEventsEnabled,
 _APPKIT_PRIVATE_DEF_SEL(otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_,
 						"otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:");
 
+_APPKIT_PRIVATE_DEF_SEL(currentRenderPassDescriptor,
+						"currentRenderPassDescriptor");
+
 // Screen
 _APPKIT_PRIVATE_DEF_SEL(mainScreen, "mainScreen");
 

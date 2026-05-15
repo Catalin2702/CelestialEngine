@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-27
+# Updated: 2026-05-15
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -45,6 +45,9 @@ add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
 add_subdirectory(Modules/Window)
 
+# Shaders
+add_subdirectory(Shaders)
+
 add_library(CE_Engine INTERFACE
 	${HEADERS}
 )
@@ -66,6 +69,10 @@ target_link_libraries(CE_Engine INTERFACE
 	CE_Tools
 	CE_Types
 	CE_Window
+)
+
+target_link_libraries(CE_Engine INTERFACE
+	CE_Shaders
 )
 
 target_include_directories(CE_Engine INTERFACE

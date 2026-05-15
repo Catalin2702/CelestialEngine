@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-29
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-29
+# Updated: 2026-05-15
 #
 
 enable_testing()
@@ -27,6 +27,7 @@ set_target_properties(CE_TestsUtility PROPERTIES
 # Modules
 target_link_libraries(CE_TestsUtility PRIVATE
 	CE_Config
+	CE_TestConfig
 	CE_Utility
 )
 

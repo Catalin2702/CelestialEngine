@@ -78,6 +78,7 @@ public:
     class String*       resourcePath() const;
     class String*       executablePath() const;
     class String*       pathForAuxiliaryExecutable(const class String* pExecutableName) const;
+    String*             pathForResource(const String* name, const String* extension) const;
 
     class String*       privateFrameworksPath() const;
     class String*       sharedFrameworksPath() const;
@@ -306,6 +307,11 @@ _NS_INLINE NS::String* NS::Bundle::executablePath() const
 _NS_INLINE NS::String* NS::Bundle::pathForAuxiliaryExecutable(const String* pExecutableName) const
 {
     return Object::sendMessage<String*>(this, _NS_PRIVATE_SEL(pathForAuxiliaryExecutable_), pExecutableName);
+}
+
+_NS_INLINE NS::String* NS::Bundle::pathForResource(const String* name, const String* extension) const
+{
+    return Object::sendMessage<String*>(this, _NS_PRIVATE_SEL(pathForResource_ofType_), name, extension);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

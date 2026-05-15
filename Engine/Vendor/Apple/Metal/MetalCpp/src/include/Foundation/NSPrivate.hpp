@@ -424,6 +424,8 @@ namespace Private
             "operatingSystemVersionString");
         _NS_PRIVATE_DEF_SEL(pathForAuxiliaryExecutable_,
             "pathForAuxiliaryExecutable:");
+        _NS_PRIVATE_DEF_SEL(pathForResource_ofType_,
+            "pathForResource:ofType:");
         _NS_PRIVATE_DEF_SEL(performActivityWithOptions_reason_usingBlock_,
             "performActivityWithOptions:reason:usingBlock:");
         _NS_PRIVATE_DEF_SEL(performExpiringActivityWithReason_usingBlock_,

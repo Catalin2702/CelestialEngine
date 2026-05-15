@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-27
+# Updated: 2026-05-15
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -64,6 +64,13 @@ if(APPLE)
 			--app-icon AppIcon
 			--output-partial-info-plist "${CMAKE_CURRENT_BINARY_DIR}/AppIcon-Info.plist"
 		COMMENT "Compiling Asset Catalog"
+	)
+
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		${CE_METAL_SHADERS_LIB_PATH}
+		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/${CE_METAL_MAIN_LIB}"
+		COMMENT "Copying Metal shader library to bundle"
 	)
 
 	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)

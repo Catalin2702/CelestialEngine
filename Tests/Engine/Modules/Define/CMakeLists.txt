@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-09
+# Updated: 2026-05-15
 #
 
 set(SOURCES
@@ -16,6 +16,7 @@ add_executable(CE_TestsDefine ${SOURCES})
 # Modules
 target_link_libraries(CE_TestsDefine PRIVATE
 	CE_Config
+	CE_TestConfig
 	CE_Define
 	CE_Events
 )
