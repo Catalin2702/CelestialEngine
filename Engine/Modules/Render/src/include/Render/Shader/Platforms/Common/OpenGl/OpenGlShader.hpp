@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-16
 //
 
 #pragma once
@@ -15,10 +15,14 @@
 #include "Define/DynamicLinker.hpp"
 #include "Render/Shader/I_Shader.hpp"
 
-#include <cstdint>
+namespace CE {
+namespace Types::Render {
+enum class ShaderType: uint32_t;
+}
 
-namespace CE::Types::Render {
-	enum class ShaderType: uint32_t;
+namespace Utility::FileSystem {
+class File;
+}
 }
 
 namespace CE::Render::Shader {
@@ -38,6 +42,14 @@ public:
 	 * @details Compiles the provided shader source code and creates an OpenGL shader object. The shader is compiled based on the specified type, and any compilation errors are logged and result in an exception being thrown.
 	 */
 	OpenGlShader(const char* shader, Types::Render::ShaderType type);
+
+	/**
+	 * @brief Constructs an OpenGlShader from a file containing shader source code
+	 * @param file Reference to a File object representing the shader source code file
+	 * @param type Type of the shader (e.g., vertex, fragment) specified by the ShaderType enum
+	 * @details Loads the shader source code from the provided File object, compiles it, and creates an OpenGL shader object. The shader is compiled based on the specified type, and any compilation errors are logged and result in an exception being thrown. If the file cannot be read or loaded, an exception is also thrown.
+	 */
+	OpenGlShader(const Utility::FileSystem::File& file, Types::Render::ShaderType type);
 
 /**
  * @brief Copy constructor (deleted)
