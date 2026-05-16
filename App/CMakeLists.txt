@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-05-16
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -66,11 +66,20 @@ if(APPLE)
 		COMMENT "Compiling Asset Catalog"
 	)
 
+	# Copy the compiled Metal shader library to the bundle
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy
 		${CE_METAL_SHADERS_LIB_PATH}
-		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/${CE_METAL_MAIN_LIB}"
+		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/Shaders/Metal/${CE_METAL_MAIN_LIB}"
 		COMMENT "Copying Metal shader library to bundle"
+	)
+
+	# Copy the compiled OpenGL shader library to the bundle
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CE_OPENGL_SHADERS_LIB_PATH}
+		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/Shaders/OpenGL/"
+		COMMENT "Copying OpenGL shader library to bundle"
 	)
 
 	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)

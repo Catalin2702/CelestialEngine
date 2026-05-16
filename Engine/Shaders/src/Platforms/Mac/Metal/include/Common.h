@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Resources/Render/Shaders/Platforms/Mac
+// Module: CelestialEngine/Engine/Shaders/Platforms/Mac/Metal
 // File: Common.h
 // Created by: Catalin Chirosca
 // Created: 2026-05-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-15
+// Updated: 2026-05-16
 //
 
 #pragma once

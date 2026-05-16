@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-27
+// Updated: 2026-05-16
 //
 
 #pragma once
@@ -58,6 +58,8 @@
 
 // ---- Utility ----------------------------------
 #include <Utility/CMD/Window.hpp>
+#include <Utility/FileSystem/File.hpp>
+#include <Utility/FileSystem/FileSystem.hpp>
 #include <Utility/Time/Chronometer.hpp>
 // -----------------------------------------------
 
@@ -65,6 +67,7 @@
 namespace Application = CE::Core::Application;		///< Application framework
 namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
 namespace Events = CE::Events;						///< Event system
+namespace FS = CE::Utility::FileSystem;				///< FileSystem
 namespace Input = CE::Core::Input;					///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
 namespace Layers = CE::Core::Layers;						///< Layer management

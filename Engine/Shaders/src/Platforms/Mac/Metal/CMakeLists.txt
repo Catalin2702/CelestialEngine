@@ -1,10 +1,10 @@
 #
-# Module: CelestialEngine/Engine/Shaders/Platforms/Mac
+# Module: CelestialEngine/Engine/Shaders/Platforms/Mac/Metal
 # File: CMakeLists.txt
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-05-16
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -12,12 +12,12 @@ cmake_minimum_required(VERSION 3.21)
 set(BUILD_DIR  ${CMAKE_CURRENT_BINARY_DIR})
 set(SHADERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-set(VERTEX_SOURCES
+set(SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Fragment.metal"
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Vertex.metal"
 )
 
-set(VERTEX_AIRS "")
+set(AIRS "")
 
 set(MAIN_AIRS "")
 
@@ -26,7 +26,7 @@ set(MAIN_LIB "Main.metallib" CACHE INTERNAL "")
 set(MAIN_LIB_PATH "${BUILD_DIR}/${MAIN_LIB}")
 
 # Compile vertex shaders
-foreach (SOURCE IN LISTS VERTEX_SOURCES)
+foreach (SOURCE IN LISTS SOURCES)
 	get_filename_component(FILENAME ${SOURCE} NAME_WE)
 	set(AIR "${BUILD_DIR}/${FILENAME}.air")
 
@@ -36,9 +36,9 @@ foreach (SOURCE IN LISTS VERTEX_SOURCES)
 		DEPENDS ${SOURCE}
 		COMMENT "Compiling ${FILENAME}.metal"
 	)
-	list(APPEND VERTEX_AIRS ${AIR})
+	list(APPEND AIRS ${AIR})
 endforeach ()
-list(APPEND MAIN_AIRS ${VERTEX_AIRS})
+list(APPEND MAIN_AIRS ${AIRS})
 
 add_custom_command(
 	OUTPUT ${MAIN_LIB_PATH}

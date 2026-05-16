@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-05-16
 #
 
 set(HEADERS
@@ -13,6 +13,8 @@ set(HEADERS
 	src/include/Utility/Manipulation/String.hpp
 	src/include/Utility/Time/Chronometer.hpp
 	src/include/Utility/ImGui/ImGui.hpp
+	src/include/Utility/FileSystem/FileSystem.hpp
+	src/include/Utility/FileSystem/File.hpp
 )
 
 set(SOURCES
@@ -20,6 +22,8 @@ set(SOURCES
 	src/source/Utility/Manipulation/String.cpp
 	src/source/Utility/Time/Chronometer.cpp
 	src/source/Utility/ImGui/ImGui.cpp
+	src/source/Utility/FileSystem/FileSystem.cpp
+	src/source/Utility/FileSystem/File.cpp
 )
 
 add_library(CE_Utility SHARED

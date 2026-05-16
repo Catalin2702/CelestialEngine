@@ -1,17 +1,15 @@
 //
-// Module: CelestialEngine/Resources/Render/Shaders/Platforms/Mac
+// Module: CelestialEngine/Engine/Shaders/Platforms/Mac/Metal
 // File: Vertex.metal
 // Created by: Catalin Chirosca
 // Created: 2026-05-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-15
+// Updated: 2026-05-16
 //
 
 #include <metal_stdlib>
 #include "Common.h"
 using namespace metal;
-
-
 
 vertex VertexPayload vertexMain(uint _vertexId [[vertex_id]]) {
 	VertexPayload payload;
@@ -20,4 +18,3 @@ vertex VertexPayload vertexMain(uint _vertexId [[vertex_id]]) {
 
 	return payload;
 }
-

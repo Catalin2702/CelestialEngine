@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-05-16
 //
 
 #pragma once
@@ -40,7 +40,7 @@ int main(const int argc, const char* argv[]) {
 #ifdef CE_DEBUG
 			Time::Chronometer chronometer;
 #endif
-			// const auto windowProps = CMD::GetWindowProps(argc, argv);
+			FS::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
 			const auto app = Application::CreateApplication(argc, argv);
 			app->Run();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
