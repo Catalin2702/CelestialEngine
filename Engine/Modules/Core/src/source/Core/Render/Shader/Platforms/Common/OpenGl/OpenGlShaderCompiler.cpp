@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Shader.hpp"
 
@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 uint32_t OpenGlShaderCompiler::Compile(const char* shader, const Types::Render::ShaderType type) {
 	const uint32_t shaderId = glCreateShader(Types::Render::ToOpenGlShaderType(type));

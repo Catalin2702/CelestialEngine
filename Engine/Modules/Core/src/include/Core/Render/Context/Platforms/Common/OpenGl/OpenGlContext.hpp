@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -12,7 +12,7 @@
 #ifndef CE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
 #define CE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
 
-#include "Render/Context/I_Context.hpp"
+#include "Core/Render/Context/I_Context.hpp"
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
@@ -25,7 +25,7 @@ namespace CE::Types::Render {
 enum class BufferBit: uint32_t;
 }
 
-namespace CE::Render::Context {
+namespace CE::Core::Render::Context {
 
 /**
  * @class OpenGlContext

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <CoreGraphics/CGGeometry.h>
 #include <Foundation/NSObject.hpp>
+
 #include "AppKit/AppKitPrivate.hpp"
 
 #include "AppKit/View/RenderViewCallback.h"
@@ -23,6 +24,9 @@
 namespace CA {
 class MetalLayer;
 }
+namespace MTL {
+class RenderPassDescriptor;
+}
 
 namespace NS {
 
@@ -30,6 +34,9 @@ class RenderView: public Referencing<RenderView> {
 public:
 	static RenderView* alloc();
 	[[nodiscard]] RenderView* init(const CGRect& frame) const;
+
+public:
+	[[nodiscard]] MTL::RenderPassDescriptor* currentRenderPassDescriptor() const;
 
 public:
 	void setCallbacks(const RenderViewCallbacks& callbacks, void* userData) const;
@@ -49,6 +56,10 @@ _NS_INLINE RenderView* RenderView::alloc() {
 
 _NS_INLINE RenderView* RenderView::init(const CGRect& frame) const {
 	return sendMessage<RenderView*>(this, _APPKIT_PRIVATE_SEL(initWithFrame_), frame);
+}
+
+_NS_INLINE MTL::RenderPassDescriptor* RenderView::currentRenderPassDescriptor() const {
+	return sendMessage<MTL::RenderPassDescriptor*>(this, _APPKIT_PRIVATE_SEL(currentRenderPassDescriptor));
 }
 
 _NS_INLINE void RenderView::setCallbacks(const RenderViewCallbacks& callbacks, void* userData) const {

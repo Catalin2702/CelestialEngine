@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShader.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -13,11 +13,11 @@
 #define CE_RENDER_SHADER_OPENGLSHADER_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Render/Shader/I_Shader.hpp"
+#include "Core/Render/Shader/I_Shader.hpp"
 
 namespace CE {
 namespace Types::Render {
-enum class ShaderType: uint32_t;
+enum class ShaderType: uint8_t;
 }
 
 namespace Utility::FileSystem {
@@ -25,7 +25,7 @@ class File;
 }
 }
 
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 /**
  * @class OpenGlShader
@@ -51,11 +51,11 @@ public:
 	 */
 	OpenGlShader(const Utility::FileSystem::File& file, Types::Render::ShaderType type);
 
-/**
- * @brief Copy constructor (deleted)
- * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
- */
-	OpenGlShader(const OpenGlShader& other) = delete;
+	/**
+	 * @brief Copy constructor (deleted)
+	 * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
+	 */
+	OpenGlShader(const OpenGlShader&) = delete;
 
 	/**
 	 * @brief Move constructor for OpenGlShader
@@ -69,6 +69,21 @@ public:
 	 * @details Cleans up the OpenGL shader resources by detaching the shader from its program, deleting the shader object, and deleting the shader program. This ensures that all associated OpenGL resources are properly released when the OpenGlShader object is destroyed.
 	 */
 	~OpenGlShader() override;
+
+public:
+	/**
+	 * @brief Copy assignment operator (deleted)
+	 * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
+	 */
+	OpenGlShader& operator=(const OpenGlShader&) = delete;
+
+	/**
+	 * @brief Move assignment operator for OpenGlShader
+	 * @param other Rvalue reference to another OpenGlShader object to move from
+	 * @return OpenGlShader& A reference to the current OpenGlShader object after moving
+	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing double-delete. The current object's existing shader resources are cleaned up before taking ownership of the new shader ID.
+	 */
+	OpenGlShader& operator=(OpenGlShader&& other) noexcept;
 
 public:
 	[[nodiscard]] uint32_t GetShaderId() const override;

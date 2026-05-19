@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-27
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -24,13 +24,15 @@ namespace Events {
 class I_Event;
 }
 
+namespace Core {
 namespace Layers {
 class I_Layer;
 }
-
 namespace Render::Context {
 class I_Context;
 }
+}
+
 
 namespace Types {
 namespace Window {

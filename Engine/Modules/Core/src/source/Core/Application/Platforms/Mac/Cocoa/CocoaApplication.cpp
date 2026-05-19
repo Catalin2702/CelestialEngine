@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-05-19
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -15,7 +15,7 @@
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
@@ -240,6 +240,14 @@ void CocoaApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
 
 Window::I_Window& CocoaApplication::GetWindow() const {
 	return *_window;
+}
+
+Window::CocoaWindow& CocoaApplication::GetCocoaWindow() const {
+	return *_window;
+}
+
+Render::Context::MetalContext& CocoaApplication::GetMetalContext() const {
+	return *_context;
 }
 
 Render::Context::I_Context& CocoaApplication::GetRenderContext() const {

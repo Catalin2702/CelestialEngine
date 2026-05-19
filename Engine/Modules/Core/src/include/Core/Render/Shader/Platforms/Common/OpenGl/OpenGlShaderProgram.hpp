@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -13,14 +13,14 @@
 #define CE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Render/Shader/I_ShaderProgram.hpp"
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
+#include "Core/Render/Shader/I_ShaderProgram.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 
 #include <initializer_list>
 #include <memory>
 #include <vector>
 
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 /**
  * @class OpenGlShaderProgram

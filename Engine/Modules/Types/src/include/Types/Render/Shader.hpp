@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -25,26 +25,36 @@
  */
 namespace CE::Types::Render {
 
+enum class GraphicsApi: uint8_t;
+
 /**
  * @enum ShaderType
  * @brief Enumeration of shader types
  * @details Defines the types of shaders that can be used in the rendering pipeline, such as vertex and fragment shaders.
  *			These shader types are essential for defining the stages of the graphics pipeline and how vertices and fragments are processed.
  */
-enum class ShaderType: uint32_t {
+enum class ShaderType: uint8_t {
 	Vertex,
 	Fragment,
+	Compute,
+	Geometry,
+	TessellationControl,
+	TessellationEvaluation,
+	Mesh,
+	Amplification,
+	RayGeneration,
 	Unknown
 };
 
 /**
  * @brief Converts a ShaderType enum value to its string representation
- * @param type The ShaderType to convert to a string
+ * @param graphicsApi The GraphicsApi for which the shader type is being converted (used for context-specific string formatting if needed)
+ * @param shaderType The ShaderType to convert to a string
  * @return const char* A string representation of the ShaderType
  * @details Provides a human-readable string representation of the ShaderType enum value. This is useful for debugging, logging, or displaying shader type names in the user interface.
  *			The function uses a switch statement to map each ShaderType value to its corresponding string name. If the ShaderType does not match any known value, it returns "Unknown".
  */
-CE_API const char* ToString(ShaderType type);
+CE_API const char* ToString(GraphicsApi graphicsApi, ShaderType shaderType);
 
 /**
  * @brief Checks if the specified shader type is supported on the current platform

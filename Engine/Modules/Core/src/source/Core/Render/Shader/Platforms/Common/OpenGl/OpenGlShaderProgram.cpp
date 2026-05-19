@@ -4,18 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <glad/glad.h>
 
 #include <memory>
 
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 OpenGlShaderProgram::OpenGlShaderProgram() {
 	_programId = glCreateProgram();

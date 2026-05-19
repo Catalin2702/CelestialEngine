@@ -4,10 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-05-19
 //
 
-#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
@@ -17,7 +17,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace CE::Render::Context {
+namespace CE::Core::Render::Context {
 
 OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {}
 

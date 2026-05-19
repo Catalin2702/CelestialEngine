@@ -4,55 +4,137 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-23
+# Updated: 2026-05-19
 #
 
-set(HEADERS
+set(APPLICATION_HEADERS
 	src/include/Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp
-
-	src/include/Core/Input/Platforms/Common/Glfw/GlfwInput.hpp
-
-	src/include/Core/Layers/LayerStack.hpp
-	src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp
 		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp
+	>
+)
 
+set(INPUT_HEADERS
+	src/include/Core/Input/Platforms/Common/Glfw/GlfwInput.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp
+	>
+)
 
+set(LAYERS_HEADERS
+	src/include/Core/Layers/LayerStack.hpp
+	src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
 	>
 )
 
-set(INTERFACES
+set(RENDER_HEADERS
+	# Context
+	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
+	>
+
+	# Shader
+	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
+	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
+	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp
+)
+
+
+
+set(APPLICATION_INTERFACES
 	src/interface/Core/Application/I_Application.hpp
+)
 
+set(INPUT_INTERFACES
 	src/interface/Core/Input/I_Input.hpp
+)
 
+set(LAYERS_INTERFACES
 	src/interface/Core/Layers/I_Layer.hpp
 	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
 	src/interface/Core/Layers/Render/I_RenderLayer.hpp
 )
 
-set(SOURCES
+set(RENDER_INTERFACES
+	# Context
+	src/interface/Core/Render/Context/I_Context.hpp
+
+	# Shader
+	src/interface/Core/Render/Shader/I_Shader.hpp
+	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
+)
+
+set(APPLICATION_SOURCES
 	src/source/Core/Application/ApplicationImpl.cpp
+
 	src/source/Core/Application/Platforms/Common/Glfw/GlfwApplication.cpp
-
-	src/source/Core/Input/InputImpl.cpp
-	src/source/Core/Input/Platforms/Common/Glfw/GlfwInput.cpp
-
-	src/source/Core/Layers/LayerStack.cpp
-	src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.cpp
 		src/source/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.cpp
+	>
+)
 
+set(INPUT_SOURCES
+	src/source/Core/Input/InputImpl.cpp
+
+	src/source/Core/Input/Platforms/Common/Glfw/GlfwInput.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Input/Platforms/Mac/Cocoa/CocoaInput.cpp
+	>
+)
 
+set(LAYERS_SOURCES
+	src/source/Core/Layers/LayerStack.cpp
+	src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.cpp
 	>
+)
+
+set(RENDER_SOURCES
+	# Context
+	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
+	>
+
+	# Shader
+	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp
+	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
+	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.cpp
+)
+
+set(HEADERS
+	${APPLICATION_HEADERS}
+	${INPUT_HEADERS}
+	${LAYERS_HEADERS}
+	${RENDER_HEADERS}
+)
+
+set(INTERFACES
+	${APPLICATION_INTERFACES}
+	${INPUT_INTERFACES}
+	${LAYERS_INTERFACES}
+	${RENDER_INTERFACES}
+)
+
+set(SOURCES
+	${APPLICATION_SOURCES}
+	${INPUT_SOURCES}
+	${LAYERS_SOURCES}
+	${RENDER_SOURCES}
 )
 
 add_library(CE_Core SHARED
@@ -74,7 +156,6 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Events
 	CE_Vendor_Glfw
 	CE_Vendor_ImGui
-	CE_Render
 	CE_Vendor_SpdLog
 	CE_Tools
 	CE_Types

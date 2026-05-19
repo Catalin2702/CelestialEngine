@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 #include <utility>
 
 /**
- * @namespace CE::Render::Context
+ * @namespace CE::Core::Render::Context
  * @brief Graphics context management and interfaces
  * @details Contains the I_Context interface and related type definitions for graphics context management.
  *			This namespace defines the common interface for all graphics context implementations,
@@ -25,7 +25,7 @@
  *			Implementations include OpenGlContext for cross-platform OpenGL contexts and
  *			MetalContext for macOS Metal-based contexts.
  */
-namespace CE::Render::Context {
+namespace CE::Core::Render::Context {
 
 /**
  * @class I_Context

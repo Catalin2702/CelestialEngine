@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -18,7 +18,6 @@
 #include <Foundation/Foundation.hpp>
 
 #include <atomic>
-#include <chrono>
 #include <memory>
 #include <thread>
 
@@ -40,11 +39,10 @@ namespace Layers {
 class I_Layer;
 class ImGuiMetalLayer;
 }
-}
-
 namespace Render::Context {
 class I_Context;
 class MetalContext;
+}
 }
 
 namespace Window {
@@ -186,11 +184,25 @@ public:
 	[[nodiscard]] Window::I_Window& GetWindow() const override;
 
 	/**
+	 * @brief Gets the Cocoa-specific window
+	 * @return Window::CocoaWindow& Reference to the CocoaWindow
+	 * @details Provides access to the Cocoa-specific window for platform-specific operations. This method returns a reference to the CocoaWindow instance managed by the CocoaApplication, allowing other components to perform operations that are specific to the macOS platform.
+	 */
+	[[nodiscard]] Window::CocoaWindow& GetCocoaWindow() const;
+
+	/**
      * @brief Gets the rendering context
      * @return Render::Context::I_Context& Reference to the rendering context
      * @details Provides access to the rendering context for rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering using the Metal API.
      */
 	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override;
+
+	/**
+	 * @brief Gets the Metal-specific rendering context
+	 * @return Render::Context::MetalContext& Reference to the MetalContext
+	 * @details Provides access to the Metal-specific rendering context for platform-specific rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering operations that are specific to the Metal API on macOS.
+	 */
+	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const;
 
 private:
 	static void _StDisplayLinkCallback(void* userData);

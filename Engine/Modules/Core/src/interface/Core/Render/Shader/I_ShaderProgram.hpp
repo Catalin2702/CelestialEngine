@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -15,14 +15,14 @@
 #include <cstdint>
 
 /**
- * @namespace CE::Render::Shader
+ * @namespace CE::Core::Render::Shader
  * @brief Shader management and interfaces
  * @details Contains the I_ShaderProgram interface and related type definitions for shader program management.
  *			This namespace defines the common interface for all shader program implementations,
  *			allowing for platform-specific shader program handling while maintaining a consistent API.
  *			Implementations include OpenGlShaderProgram for OpenGL shader programs and MetalShaderProgram for Metal-based shader programs.
  */
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 class I_Shader;
 

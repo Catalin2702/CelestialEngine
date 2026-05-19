@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-19
 //
 
 #pragma once
@@ -17,10 +17,10 @@
 #include <cstdint>
 
 namespace CE::Types::Render {
-	enum class ShaderType: uint32_t;
+	enum class ShaderType: uint8_t;
 }
 
-namespace CE::Render::Shader {
+namespace CE::Core::Render::Shader {
 
 class CE_API OpenGlShaderCompiler {
 public:
