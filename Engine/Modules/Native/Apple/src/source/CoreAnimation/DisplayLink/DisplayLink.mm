@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #include "CoreAnimation/DisplayLink/DisplayLink.h"
@@ -49,8 +49,10 @@
 
 - (void)_tick:(CADisplayLink*)sender {
 	(void)sender;
+
 	if (not _eventHandler)
 		return;
+
     _eventHandler->DispatchTick();
 }
 
