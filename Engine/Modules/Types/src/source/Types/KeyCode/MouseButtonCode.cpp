@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-21
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -79,7 +79,7 @@ int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 	}
 }
 
-MouseButtonCode MouseButtonKeyCodeFromCocoa(const int buttonNumber) {
+MouseButtonCode MouseButtonKeyCodeFromCocoa(const long buttonNumber) {
 	switch (buttonNumber) {
 		case 0: return MouseButtonCode::Left;
 		case 1: return MouseButtonCode::Right;

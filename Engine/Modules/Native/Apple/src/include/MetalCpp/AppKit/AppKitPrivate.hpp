@@ -415,6 +415,9 @@ _APPKIT_PRIVATE_DEF_SEL(otherEventWithType_location_modifierFlags_timestamp_wind
 _APPKIT_PRIVATE_DEF_SEL(currentRenderPassDescriptor,
 						"currentRenderPassDescriptor");
 
+_APPKIT_PRIVATE_DEF_SEL(convertPoint_fromView_,
+						"convertPoint:fromView:");
+
 // Screen
 _APPKIT_PRIVATE_DEF_SEL(mainScreen, "mainScreen");
 

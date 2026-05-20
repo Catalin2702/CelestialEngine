@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -19,6 +19,7 @@
 #include "MetalCpp/AppKit/AppKit.hpp"
 #include "MetalCpp/QuartzCore/QuartzCore.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/EventHandlers/DisplayLinkEventHandler.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include <cassert>
@@ -151,7 +152,12 @@ void CocoaApplication::StartDisplayLink() {
 		assert(_displayLink && "CocoaApplication::StartDisplayLink: Display link is already running!");
 
 		_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
-		_displayLink->setCallback(&CocoaApplication::_StDisplayLinkCallback, this);
+		_displayLinkEventHandler = std::make_unique<Apple::Types::DisplayLinkEventHandler>();
+		_displayLinkEventHandler->OnTick([this]() {
+			if (not IsRunning())
+				return;
+			Tick(GetDeltaTime());
+		});
 
 		_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
 		_displayLink->start();
@@ -252,17 +258,6 @@ Render::Context::MetalContext& CocoaApplication::GetMetalContext() const {
 
 Render::Context::I_Context& CocoaApplication::GetRenderContext() const {
 	return *_context;
-}
-
-void CocoaApplication::_StDisplayLinkCallback(void* userData) {
-	if (not userData)
-		return;
-
-	const auto app = static_cast<CocoaApplication*>(userData);
-	if (not app->IsRunning())
-		return;
-
-	app->Tick(app->GetDeltaTime());
 }
 
 void CocoaApplication::_StAsyncTickCallback(void* userData) {

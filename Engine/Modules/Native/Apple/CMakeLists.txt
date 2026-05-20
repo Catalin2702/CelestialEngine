@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-20
+# Updated: 2026-05-21
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -209,6 +209,11 @@ set(METALCPP_HEADERS
 
 set(TYPES_HEADERS
 	${INCLUDE}/Types/Types.hpp
+
+	# EventHandlers
+	${INCLUDE}/Types/EventHandlers/DisplayLinkEventHandler.hpp
+	${INCLUDE}/Types/EventHandlers/WindowDelegateEventHandler.hpp
+	${INCLUDE}/Types/EventHandlers/ViewEventHandler.hpp
 )
 
 set(TYPES_INTERFACES
@@ -243,6 +248,13 @@ set(METALCPP_SOURCES
 	${SOURCE}/MetalCpp/Define/MetalCppDefine.cpp
 )
 
+set(TYPES_SOURCES
+	# EventHandlers
+	${SOURCE}/Types/EventHandlers/DisplayLinkEventHandler.cpp
+	${SOURCE}/Types/EventHandlers/WindowDelegateEventHandler.cpp
+	${SOURCE}/Types/EventHandlers/ViewEventHandler.cpp
+)
+
 set(HEADERS
 	${APPKIT_HEADERS}
 	${BRIDGE_HEADERS}
@@ -260,6 +272,7 @@ set(SOURCES
 	${BRIDGE_SOURCES}
 	${COREANIMATION_SOURCES}
 	${METALCPP_SOURCES}
+	${TYPES_SOURCES}
 )
 
 # Create the CE_Apple library (interface library since it aggregates platform-specific APIs)

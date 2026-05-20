@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #pragma once
@@ -30,6 +30,10 @@ class Application;
 }
 
 namespace CE {
+namespace Apple::Types {
+class DisplayLinkEventHandler;
+}
+
 namespace Core {
 namespace Application {
 class CocoaApplicationDelegate;
@@ -204,7 +208,6 @@ public:
 	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const;
 
 private:
-	static void _StDisplayLinkCallback(void* userData);
 	static void _StAsyncTickCallback(void* userData);
 	void _SetWindowCallbacks() const;
 
@@ -220,6 +223,8 @@ private:
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
+
+	std::unique_ptr<Apple::Types::DisplayLinkEventHandler> _displayLinkEventHandler; ///< Handler for display link events
 };
 
 }

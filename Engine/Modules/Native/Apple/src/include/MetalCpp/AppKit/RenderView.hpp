@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #pragma once
@@ -35,6 +35,10 @@ public:
 	[[nodiscard]] MTL::RenderPassDescriptor* currentRenderPassDescriptor() const;
 
 public:
+	[[nodiscard]] CGPoint convertPointFromView(const CGPoint& point) const;
+	[[nodiscard]] CGPoint convertPointFromView(const CGPoint& point, const RenderView* view) const;
+
+public:
 	void SetEventHandler(I_ViewEventHandler* handler) const;
 	void setLayer(CA::MetalLayer* layer) const;
 	void setOpaque(bool opaque) const;
@@ -56,6 +60,14 @@ _NS_INLINE RenderView* RenderView::init(const CGRect& frame) const {
 
 _NS_INLINE MTL::RenderPassDescriptor* RenderView::currentRenderPassDescriptor() const {
 	return sendMessage<MTL::RenderPassDescriptor*>(this, _APPKIT_PRIVATE_SEL(currentRenderPassDescriptor));
+}
+
+_NS_INLINE CGPoint RenderView::convertPointFromView(const CGPoint& point) const {
+	return sendMessage<CGPoint>(this, _APPKIT_PRIVATE_SEL(convertPoint_fromView_), point, this);
+}
+
+_NS_INLINE CGPoint RenderView::convertPointFromView(const CGPoint& point, const RenderView* view) const {
+	return sendMessage<CGPoint>(this, _APPKIT_PRIVATE_SEL(convertPoint_fromView_), point, view);
 }
 
 _NS_INLINE void RenderView::SetEventHandler(I_ViewEventHandler* handler) const {

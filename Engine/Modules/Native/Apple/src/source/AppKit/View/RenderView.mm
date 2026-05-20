@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-21
 //
 
 #include "AppKit/View/RenderView.h"
@@ -99,21 +99,28 @@
 	if (self.window.firstResponder != self) {
 		[self.window makeFirstResponder:self];
 	}
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
+
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
 }
 
 - (void)mouseUp:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
 }
 
 - (void)mouseDragged:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
@@ -121,21 +128,28 @@
 	if (self.window.firstResponder != self) {
 		[self.window makeFirstResponder:self];
 	}
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
+
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
 }
 
 - (void)rightMouseDragged:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
@@ -143,50 +157,65 @@
 	if (self.window.firstResponder != self) {
 		[self.window makeFirstResponder:self];
 	}
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
+
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonPressed((__bridge NS::Event*)event);
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseButtonReleased((__bridge NS::Event*)event);
 }
 
 - (void)otherMouseDragged:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseDragged((__bridge NS::Event*)event);
 }
 
 - (void)mouseMoved:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseMoved((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseMoved((__bridge NS::Event*)event);
 }
 
 - (void)scrollWheel:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchMouseScrolled((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchMouseScrolled((__bridge NS::Event*)event);
 }
 
 - (void)keyDown:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchKeyPressed((__bridge NS::Event*)event);
-		if (const auto* chars = [event characters]) {
-			if (const char* utf8Chars = [chars UTF8String]; utf8Chars && utf8Chars[0] != '\0') {
-				_eventHandler->DispatchKeyTyped((__bridge NS::Event*)event);
-			}
+	if (not (_eventHandler and event)) {
+		return;
+	}
+
+	_eventHandler->DispatchKeyPressed((__bridge NS::Event*)event);
+	if (const auto* chars = [event characters]) {
+		if (const char* utf8Chars = [chars UTF8String]; utf8Chars && utf8Chars[0] != '\0') {
+			_eventHandler->DispatchKeyTyped((__bridge NS::Event*)event);
 		}
 	}
 }
 
 - (void)keyUp:(NSEvent*)event {
-	if (_eventHandler) {
-		_eventHandler->DispatchKeyReleased((__bridge NS::Event*)event);
+	if (not (_eventHandler and event)) {
+		return;
 	}
+
+	_eventHandler->DispatchKeyReleased((__bridge NS::Event*)event);
 }
 
 @end

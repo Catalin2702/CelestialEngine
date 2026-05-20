@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-21
 //
 
 #pragma once
@@ -115,7 +115,7 @@ CE_API int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
  * @brief Converts NSEvent button numbers to CE::KeyCode::MouseButtonCode
  * @details Maps the NSEvent buttonNumber to the engine's mouse button key codes
  */
-CE_API MouseButtonCode MouseButtonKeyCodeFromCocoa(int buttonNumber);
+CE_API MouseButtonCode MouseButtonKeyCodeFromCocoa(long buttonNumber);
 
 /**
  * @brief Converts CE::KeyCode::MouseButtonCode to NSEvent button numbers

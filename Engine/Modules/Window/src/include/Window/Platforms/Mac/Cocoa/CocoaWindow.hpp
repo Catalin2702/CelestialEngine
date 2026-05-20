@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 #include "MetalCpp/Foundation/Foundation.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <memory>
 #include <utility>
 
 namespace CA {
@@ -34,6 +35,11 @@ class RenderView;
 class View;
 class Window;
 class WindowDelegate;
+}
+
+namespace CE::Apple::Types {
+class ViewEventHandler;
+class WindowDelegateEventHandler;
 }
 
 
@@ -282,6 +288,9 @@ private:
 	NS::SharedPtr<NS::RenderView> _view;					///< Content view of the window
 	NS::SharedPtr<NS::Window> _window;						///< Native macOS window
 	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;		///< Delegate for handling window events
+
+	std::unique_ptr<Apple::Types::ViewEventHandler> _viewEventHandler;	///< Handler for view-related events (e.g., input events)
+	std::unique_ptr<Apple::Types::WindowDelegateEventHandler> _windowDelegateEventHandler;	///< Handler for window delegate events (e.g., resize, close)
 };
 
 }

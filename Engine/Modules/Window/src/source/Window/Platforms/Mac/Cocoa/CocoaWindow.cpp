@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-21
 //
 
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -18,6 +18,8 @@
 #include "MetalCpp/Foundation/Foundation.hpp"
 #include "MetalCpp/QuartzCore/CAMetalLayer.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Types/EventHandlers/ViewEventHandler.hpp"
+#include "Types/EventHandlers/WindowDelegateEventHandler.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
@@ -169,89 +171,110 @@ void CocoaWindow::_SetIOEventCallbacks() {
 	if (not _view)
 		return;
 
-	RenderViewCallbacks callbacks{};
+	_viewEventHandler = std::make_unique<Apple::Types::ViewEventHandler>();
 
-	callbacks.KeyPressedEventCallback = [](void* userData, const int keyCode, const bool isRepeat) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::KeyPressedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode), isRepeat ? 1 : 0};
-			windowCallbacks->EventCallback(event);
+	_viewEventHandler->OnKeyPressed([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		Events::KeyPressedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(e->keyCode()), 0};
+		_callbacks.EventCallback(event);
+	});
+
+	_viewEventHandler->OnKeyReleased([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		Events::KeyReleasedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(e->keyCode())};
+		_callbacks.EventCallback(event);
+	});
+
+	_viewEventHandler->OnKeyTyped([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		if (const auto* characters = e->characters()) {
+			if (const auto* utf8String = characters->utf8String(); utf8String and utf8String[0] != '\0') {
+				Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(static_cast<char>(utf8String[0]))};
+				_callbacks.EventCallback(event);
+			}
 		}
-	};
+	});
 
-	callbacks.KeyReleasedEventCallback = [](void* userData, const int keyCode) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::KeyReleasedEvent event{KeyCode::KeyboardKeyCodeFromCocoa(keyCode)};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+	_viewEventHandler->OnMouseMoved([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e and _view))
+			return;
 
-	callbacks.KeyTypedEventCallback = [](void* userData, const char character) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(character)};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+		const auto [x, y] = _view->convertPointFromView(e->locationInWindow(), nullptr);
 
-	callbacks.MouseMovedEventCallback = [](void* userData, const float x, const float y) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseMovedEvent event{x, y};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+		Events::MouseMovedEvent event{static_cast<float>(x), static_cast<float>(y)};
+		_callbacks.EventCallback(event);
+	});
 
-	callbacks.MouseScrolledEventCallback = [](void* userData, const float xOffset, const float yOffset) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseScrolledEvent event{xOffset, yOffset};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+	_viewEventHandler->OnMouseScrolled([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
 
-	callbacks.MouseButtonPressedEventCallback = [](void* userData, const int buttonCode) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseButtonPressedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(buttonCode)};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+		const auto xOffset = e->scrollingDeltaX();
+		const auto yOffset = e->scrollingDeltaY();
+		Events::MouseScrolledEvent event{static_cast<float>(xOffset), static_cast<float>(yOffset)};
+		_callbacks.EventCallback(event);
+	});
 
-	callbacks.MouseButtonReleasedEventCallback = [](void* userData, const int buttonCode) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseButtonReleasedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(buttonCode)};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+	_viewEventHandler->OnMouseButtonPressed([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
 
-	callbacks.MouseDraggedEventCallback = [](void* userData, const int buttonCode, const float x, const float y) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::MouseDraggedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode), x, y};
-			windowCallbacks->EventCallback(event);
-		}
-	};
+		Events::MouseButtonPressedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(e->buttonNumber())};
+		_callbacks.EventCallback(event);
+	});
 
-	_view->setCallbacks(callbacks, &_callbacks);
+	_viewEventHandler->OnMouseButtonReleased([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		Events::MouseButtonReleasedEvent event{KeyCode::MouseButtonKeyCodeFromCocoa(e->buttonNumber())};
+		_callbacks.EventCallback(event);
+	});
+
+	_viewEventHandler->OnMouseDragged([this](const NS::Event* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		const auto buttonCode = e->buttonNumber();
+		const auto [x, y] = e->locationInWindow();
+		Events::MouseDraggedEvent event{static_cast<KeyCode::MouseButtonCode>(buttonCode), static_cast<float>(x), static_cast<float>(y)};
+		_callbacks.EventCallback(event);
+	});
+
+	_view->SetEventHandler(_viewEventHandler.get());
 }
 
 void CocoaWindow::_SetWindowEventCallbacks() {
 	if (not _windowDelegate)
 		return;
 
-	WindowDelegateCallbacks callbacks{};
+	_windowDelegateEventHandler = std::make_unique<Apple::Types::WindowDelegateEventHandler>();
 
-	callbacks.WindowDidResizeEventCallback = [](void* userData, const unsigned int width, const unsigned int height) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::WindowResizeEvent event{width, height};
-			windowCallbacks->EventCallback(event);
-			windowCallbacks->_internalCallbacks.ResizeEventCallback(event);
-		}
-	};
+	_windowDelegateEventHandler->OnWindowDidResize([this](const NS::Notification* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
 
-	callbacks.WindowWillCloseEventCallback = [](void* userData) {
-		if (const auto windowCallbacks = static_cast<WindowCallbacks*>(userData); windowCallbacks and windowCallbacks->EventCallback) {
-			Events::WindowCloseEvent event;
-			windowCallbacks->EventCallback(event);
-		}
-	};
+		const auto* window = reinterpret_cast<NS::Window*>(e->object());
+		const auto [origin, size] = window->frame();
+		Events::WindowResizeEvent event{static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height)};
+		_callbacks.EventCallback(event);
+	});
 
-	_windowDelegate->setCallbacks(callbacks, &_callbacks);
+	_windowDelegateEventHandler->OnWindowWillClose([this](const NS::Notification* e) {
+		if (not (_callbacks.EventCallback and e))
+			return;
+
+		Events::WindowCloseEvent event;
+		_callbacks.EventCallback(event);
+	});
+
+	_windowDelegate->SetEventHandler(_windowDelegateEventHandler.get());
 }
 
 void CocoaWindow::_SetInternalCallbacks() {
