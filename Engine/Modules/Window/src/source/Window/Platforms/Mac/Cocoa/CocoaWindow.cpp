@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-20
 //
 
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -14,13 +14,13 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
+#include "MetalCpp/AppKit/AppKit.hpp"
+#include "MetalCpp/Foundation/Foundation.hpp"
+#include "MetalCpp/QuartzCore/CAMetalLayer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
-#include <AppKit/AppKit.hpp>
-#include <Foundation/Foundation.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
 
 #include <stdexcept>
 #include <utility>

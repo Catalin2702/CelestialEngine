@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-19
+// Updated: 2026-05-20
 //
 
 #pragma once
 
 #include "Define/DynamicLinker.hpp"
 
-#include <AppKit/AppKit.hpp>
+#include "MetalCpp/AppKit/AppKit.hpp"
 
 #ifndef CE_CORE_APPLICATION_PLATFORMS_MAC_COCOA_COCOAAPPLICATIONDELEGATE_HPP
 #define CE_CORE_APPLICATION_PLATFORMS_MAC_COCOA_COCOAAPPLICATIONDELEGATE_HPP

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-30
+// Updated: 2026-05-20
 //
 
 #pragma once
@@ -16,11 +16,11 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
+#include "MetalCpp/AppKit/AppKit.hpp"
+#include "MetalCpp/Foundation/Foundation.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #include <utility>
-#include <AppKit/AppKit.hpp>
-#include <Foundation/Foundation.hpp>
 
 namespace CA {
 class MetalLayer;

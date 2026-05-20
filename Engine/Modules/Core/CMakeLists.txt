@@ -154,21 +154,17 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
-	CE_Vendor_Glfw
-	CE_Vendor_ImGui
-	CE_Vendor_SpdLog
+	CE_Native
 	CE_Tools
 	CE_Types
 	CE_Window
 )
 
-# Platform-specific
+# Vendor libraries
 target_link_libraries(CE_Core PUBLIC
-	$<$<PLATFORM_ID:Darwin>:
-		CE_AppleUtility
-		CE_CoreAnimation
-		CE_Vendor_MetalCpp
-	>
+	CE_Vendor_Glfw
+	CE_Vendor_ImGui
+	CE_Vendor_SpdLog
 )
 
 target_compile_options(CE_Core PUBLIC

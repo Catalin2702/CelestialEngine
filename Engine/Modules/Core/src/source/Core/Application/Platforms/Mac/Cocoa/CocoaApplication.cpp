@@ -4,22 +4,22 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-05-20
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
+#include "Define/Bind.hpp"
+
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
-#include "CoreAnimation/DisplayLink/DisplayLink.hpp"
-#include "Define/Bind.hpp"
+#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "MetalCpp/AppKit/AppKit.hpp"
+#include "MetalCpp/QuartzCore/QuartzCore.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-
-#include <AppKit/AppKit.hpp>
 
 #include <cassert>
 #include <stdexcept>

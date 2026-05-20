@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-05-20
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -16,14 +16,12 @@
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
+#include "MetalCpp/Metal/Metal.hpp"
+#include "MetalCpp/QuartzCore/CAMetalLayer.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 
 #include <imgui.h>
-
-#include <Metal/Metal.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
-
 
 namespace CE::Core::Layers {
 

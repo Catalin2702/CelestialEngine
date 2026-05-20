@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-05-20
 //
 
 #pragma once
@@ -14,8 +14,7 @@
 
 #include "Core/Application/I_Application.hpp"
 #include "Define/DynamicLinker.hpp"
-
-#include <Foundation/Foundation.hpp>
+#include "MetalCpp/Foundation/Foundation.hpp"
 
 #include <atomic>
 #include <memory>

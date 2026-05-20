@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-23
+# Updated: 2026-05-20
 #
 
 set(HEADERS
@@ -51,13 +51,6 @@ target_link_libraries(CE_Window PUBLIC
 	CE_Tools
 	CE_Types
 	CE_Utility
-)
-
-# Platform-specific
-target_link_libraries(CE_Window PUBLIC
-	$<$<PLATFORM_ID:Darwin>:
-		CE_Vendor_MetalCpp
-	>
 )
 
 target_include_directories(CE_Window PUBLIC

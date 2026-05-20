@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-19
+# Updated: 2026-05-20
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -28,11 +28,6 @@ add_subdirectory(Vendor/Glfw)
 add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
 add_subdirectory(Vendor/SpdLog)
-
-# Platform-specific vendor libraries
-if(APPLE)
-	add_subdirectory(Vendor/Apple/Metal/MetalCpp)
-endif()
 
 # Modules libraries
 add_subdirectory(Modules/Core)

@@ -14,14 +14,14 @@
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
+#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "MetalCpp/Foundation/Foundation.hpp"
 #include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include <functional>
 #include <optional>
 #include <semaphore>
-#include <Foundation/Foundation.hpp>
 
 namespace CA {
 
