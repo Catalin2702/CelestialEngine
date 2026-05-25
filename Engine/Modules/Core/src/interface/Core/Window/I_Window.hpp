@@ -16,7 +16,6 @@
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Callback/Callback.hpp"
 
-#include <memory>
 #include <utility>
 
 namespace CE::Events {
@@ -80,19 +79,16 @@ public:
 	 */
 	virtual void OnUpdate() const = 0;
 
+	/**
+	 * @brief Prepares the window for rendering
+	 * @param VSync True to enable VSync, false to disable
+	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
+	 *			For example, it can be used to set the callbacks to their initial states, ensure that the window is properly configured, or perform any other necessary initialization before rendering begins.
+	 *			Derived classes can override this method to implement any specific setup required for their window implementation before the rendering loop starts.
+	 */
+	virtual void GetReady(bool VSync) = 0;
+
 public:
-	/**
-	 * @brief Gets the current width of the window
-	 * @return unsigned int Width in pixels
-	 */
-	[[nodiscard]] virtual float GetWindowWidth() const = 0;
-
-	/**
-	 * @brief Gets the current height of the window
-	 * @return unsigned int Height in pixels
-	 */
-	[[nodiscard]] virtual float GetWindowHeight() const = 0;
-
 	/**
 	 * @brief Gets the current size of the window
 	 * @return std::pair<float, float> Pair of width and height in pixels
@@ -103,67 +99,13 @@ public:
 	[[nodiscard]] virtual std::pair<float, float> GetWindowSize() const = 0;
 
 	/**
-	 * @brief Gets the current width of the view (content area) of the window
-	 * @return float Current width in pixels
-	 * @details Returns the width of the view or content area of the window, which may differ from the overall window dimensions due to platform-specific behavior. This is the actual drawable area for rendering.
+	 * @brief Gets the current size of the frame
+	 * @return std::pair<float, float> Pair of frame width and height in pixels
+	 * @details Returns the current width and height of the frame in pixels.
+	 *			The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior.
+	 *			This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
-	[[nodiscard]] virtual float GetViewWidth() const = 0;
-
-	/**
-	 * @brief Gets the current height of the view (content area) of the window
-	 * @return float Current height in pixels
-	 * @details Returns the height of the view or content area of the window, which may differ from the overall window dimensions due to platform-specific behavior. This is the actual drawable area for rendering.
-	 */
-	[[nodiscard]] virtual float GetViewHeight() const = 0;
-
-	/**
-	 * @brief Gets the current size of the view (content area) of the window
-	 * @return std::pair<float, float> Pair of width and height in pixels
-	 * @details Returns the current width and height of the view or content area of the window, which may differ from the overall window dimensions due to platform-specific behavior. This is the actual drawable area for rendering.
-	 */
-	[[nodiscard]] virtual std::pair<float, float> GetViewSize() const = 0;
-
-	/**
-	 * @brief Gets the current width of the monitor
-	 * @return float Current monitor width in pixels
-	 * @details Returns the width of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] virtual float GetMonitorWidth() const = 0;
-
-	/**
-	 * @brief Gets the current height of the monitor
-	 * @return float Current monitor height in pixels
-	 * @details Returns the height of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] virtual float GetMonitorHeight() const = 0;
-
-	/**
-	 * @brief Gets the current size of the monitor
-	 * @return std::pair<float, float> Pair of monitor width and height in pixels
-	 * @details Returns the width and height of the monitor that the window is currently on. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] virtual std::pair<float, float> GetMonitorSize() const = 0;
-
-	/**
-	 * @brief Gets the window API type
-	 * @return Types::Window::WindowApi Enum value representing the window API
-	 * @details Returns the specific window API type used by this window implementation (e.g., OpenGL, Metal, Cocoa). This can be used for platform-specific handling or optimizations.
-	 */
-	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
-
-	/**
-	 * @brief Gets the content scale of the window
-	 * @return std::pair<float, float> Pair of content scale factors for x and y axes
-	 * @details The content scale represents the scaling factor applied to the window's content, which is important for rendering at the correct resolution on high-DPI displays. This method returns the current content scale factors for both axes.
-	 */
-	[[nodiscard]] virtual std::pair<float, float> GetContentScale() const = 0;
-
-	/**
-	 * @brief Gets the content size of the window
-	 * @return std::pair<float, float> Pair of content width and height in pixels
-	 * @details The content size represents the actual drawable area of the window, which may differ from the window's logical size due to scaling. This method returns the current content width and height in pixels, which is important for rendering at the correct resolution.
-	 */
-	[[nodiscard]] virtual std::pair<float, float> GetContentSize() const = 0;
+	[[nodiscard]] virtual std::pair<float, float> GetFrameSize() const = 0;
 
 	/**
 	 * @brief Checks if VSync is enabled
@@ -179,17 +121,13 @@ public:
 	[[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
 	/**
-	 * @brief Sets the window width
-	 * @param width New width in pixels
+	 * @brief Gets the window API type
+	 * @return Types::Window::WindowApi Enum value representing the window API
+	 * @details Returns the specific window API type used by this window implementation (e.g., OpenGL, Metal, Cocoa). This can be used for platform-specific handling or optimizations.
 	 */
-	virtual void SetWidth(unsigned int width) = 0;
+	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
 
-	/**
-	 * @brief Sets the window height
-	 * @param height New height in pixels
-	 */
-	virtual void SetHeight(unsigned int height) = 0;
-
+public:
 	/**
 	 * @brief Sets the window size
 	 * @param width New width in pixels
@@ -205,20 +143,6 @@ public:
 	 * @details VSync synchronizes rendering with the monitor's refresh rate
 	 */
 	virtual void SetVSync(bool enabled) = 0;
-
-	/**
-	 * @brief Factory method to create a window of a specific type
-	 * @tparam T Concrete window type (must derive from I_Window)
-	 * @param windowProps Window configuration properties
-	 * @return I_Window* Pointer to the created window
-	 * @details Template factory method that creates and returns a window
-	 *			of the specified type with the given properties
-	 */
-	template<std::derived_from<I_Window> T>
-	static I_Window* NewWindow(const Types::Window::WindowProps& windowProps) {
-		auto window = std::make_unique<T>(windowProps);
-		return window.release();
-	}
 
 public:
 	/**
@@ -241,14 +165,6 @@ public:
 	 * @details The callback will be invoked with the new VSync state when it is changed
 	 */
 	virtual void SetVSyncCallback(const VSyncCallbackFn& callback) = 0;
-
-	/**
-	 * @brief Prepares the window for rendering
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to set the callbacks to their initial states, ensure that the window is properly configured, or perform any other necessary initialization before rendering begins.
-	 *			Derived classes can override this method to implement any specific setup required for their window implementation before the rendering loop starts.
-	 */
-	virtual void GetReady() = 0;
 
 protected:
 	/**
@@ -276,10 +192,29 @@ protected:
 	virtual void _SetInternalCallbacks() = 0;
 
 protected:
+	/**
+	 * @brief Initializes the window
+	 * @details This method is responsible for initializing the window, including creating the native window,
+	 *			setting up any necessary resources, and configuring the initial state of the window.
+	 *			It should be called before using the window for rendering or event handling.
+	 */
 	virtual void _Init() = 0;
+
+	/**
+	 * @brief Initializes the native window
+	 * @details This method is responsible for creating the native window using the appropriate platform-specific API (e.g., GLFW, Cocoa, etc.).
+	 *			It should set up the window with the initial properties defined in the _data structure and prepare it for rendering and event handling.
+	 */
 	virtual void _InitWindow() = 0;
+
+	/**
+	 * @brief Shuts down the window and releases resources
+	 * @details This method is responsible for properly shutting down the window, releasing any allocated resources, and performing any necessary cleanup.
+	 *			It should be called when the window is no longer needed or when the application is closing to ensure that all resources are released correctly.
+	 */
 	virtual void _Shutdown() = 0;
 
+protected:
 	WindowCallbacks _callbacks;
 };
 

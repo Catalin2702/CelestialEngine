@@ -107,9 +107,9 @@ void ImGuiOpenGlLayer::End() {
 
 	ImGui::Render();
 
-	const auto [width, height] = _window->get().GetFrameBufferSize();
+	const auto [width, height] = _window->get().GetFrameSize();
 
-	Render::Context::OpenGlContext::SetViewport(0, 0, width, height);
+	Render::Context::OpenGlContext::SetViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -147,7 +147,9 @@ void ImGuiOpenGlLayer::_Init() {
 		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
 	}
 
-	io.DisplaySize = ImVec2(_window->get().GetWindowWidth(),_window->get().GetWindowHeight());
+	const auto [width, height] = _window->get().GetFrameSize();
+
+	io.DisplaySize = ImVec2(width,height);
 
 	assert(_window->get().GetGlfwWindow() != nullptr);
 

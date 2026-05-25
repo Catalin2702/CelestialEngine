@@ -74,6 +74,7 @@ _APPKIT_PRIVATE_DEF_CLS( NSMenu );
 _APPKIT_PRIVATE_DEF_CLS( NSMenuItem );
 _APPKIT_PRIVATE_DEF_CLS( NSEvent );
 _APPKIT_PRIVATE_DEF_CLS( RenderView );
+_APPKIT_PRIVATE_DEF_CLS( RenderViewController );
 _APPKIT_PRIVATE_DEF_CLS( Screen );
 _APPKIT_PRIVATE_DEF_CLS( WindowDelegate );
 
@@ -104,6 +105,9 @@ _APPKIT_PRIVATE_DEF_SEL( close,
 
 _APPKIT_PRIVATE_DEF_SEL( backingScaleFactor,
 						"backingScaleFactor" );
+
+_APPKIT_PRIVATE_DEF_SEL(contentRectForFrameRect_,
+						"contentRectForFrameRect:");
 
 _APPKIT_PRIVATE_DEF_SEL( currentApplication,
 						"currentApplication" );
@@ -417,6 +421,10 @@ _APPKIT_PRIVATE_DEF_SEL(currentRenderPassDescriptor,
 
 _APPKIT_PRIVATE_DEF_SEL(convertPoint_fromView_,
 						"convertPoint:fromView:");
+
+// RenderViewController
+_APPKIT_PRIVATE_DEF_SEL(view,
+						"view");
 
 // Screen
 _APPKIT_PRIVATE_DEF_SEL(mainScreen, "mainScreen");

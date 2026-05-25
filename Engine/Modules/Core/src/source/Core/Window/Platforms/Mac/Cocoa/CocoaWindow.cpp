@@ -38,28 +38,6 @@ CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
 
-void CocoaWindow::OnUpdate() const {}
-
-float CocoaWindow::GetWindowWidth() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetWidth: Could not get width because window is not initialized.");
-		return 0;
-	}
-
-	const auto [origin, size] = _window->frame();
-	return static_cast<float>(size.width);
-}
-
-float CocoaWindow::GetWindowHeight() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetHeight: Could not get height because window is not initialized.");
-		return 0;
-	}
-
-	const auto [origin, size] = _window->frame();
-	return static_cast<float>(size.height);
-}
-
 std::pair<float, float> CocoaWindow::GetWindowSize() const {
 	if (not _window) {
 		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
@@ -70,86 +48,18 @@ std::pair<float, float> CocoaWindow::GetWindowSize() const {
 	return {static_cast<float>(size.width), static_cast<float>(size.height)};
 }
 
-float CocoaWindow::GetViewWidth() const {
-	if (not _view) {
-		CE_CORE_WARN("CocoaWindow::GetWidth: Could not get width because window is not initialized.");
-		return 0;
-	}
-
-	const auto [origin, size] = _view->frame();
-	return static_cast<float>(size.width);
-}
-
-float CocoaWindow::GetViewHeight() const {
-	if (not _view) {
-		CE_CORE_WARN("CocoaWindow::GetHeight: Could not get height because window is not initialized.");
-		return 0;
-	}
-
-	const auto [origin, size] = _view->frame();
-	return static_cast<float>(size.height);
-}
-
-std::pair<float, float> CocoaWindow::GetViewSize() const {
-	if (not _view) {
-		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
+std::pair<float, float> CocoaWindow::GetFrameSize() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::GetFrameSize: Could not get frame size because window is not initialized.");
 		return {0, 0};
 	}
 
-	const auto [origin, size] = _view->frame();
+	const auto [origin, size] = _window->contentRectForFrameRect();
 	return {static_cast<float>(size.width), static_cast<float>(size.height)};
 }
 
-float CocoaWindow::GetMonitorWidth() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetMonitorWidth: Could not get monitor width because window is not initialized.");
-		return 0;
-	}
-
-	return 0.f;
-}
-
-float CocoaWindow::GetMonitorHeight() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetMonitorHeight: Could not get monitor height because window is not initialized.");
-		return 0;
-	}
-
-	return 0.f;
-}
-
-std::pair<float, float> CocoaWindow::GetMonitorSize() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetMonitorSize: Could not get monitor size because window is not initialized.");
-		return {0, 0};
-	}
-
-	return {0.f, 0.f};
-}
-
 bool CocoaWindow::IsVSync() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::IsVSync: Could not get VSync state because window is not initialized.");
-		return false;
-	}
-
-	return _data.VSync;
-}
-
-std::pair<float, float> CocoaWindow::GetContentScale() const {
-	if (not _window) {
-		CE_CORE_WARN("CocoaWindow::GetContentScale: Could not get content scale because window is not initialized.");
-		return {1.0f, 1.0f};
-	}
-
-	const auto scale = _window->backingScaleFactor();
-	return {scale, scale};
-}
-
-std::pair<float, float> CocoaWindow::GetContentSize() const {
-	const auto [fst, snd] = GetContentScale();
-	const auto [width, height] = GetViewSize();
-	return {width * fst, height * snd};
+	return false;
 }
 
 void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
@@ -164,8 +74,28 @@ void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
 	_callbacks.VSyncCallback = callback;
 }
 
+void CocoaWindow::InitViewController(const MTL::Device* device) {
+	NS::RenderViewController* rawViewController;
+	try {
+		rawViewController = NS::RenderViewController::alloc()->init(_window->contentRectForFrameRect(), device);
+		if (not rawViewController) {
+			CE_CORE_ERROR("CocoaWindow::InitViewController: Could not create RenderViewController.");
+			throw std::runtime_error("CocoaWindow::InitViewController: Could not create RenderViewController.");
+		}
+	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("CocoaWindow::InitViewController: Exception occurred while creating RenderViewController: {}", e.what());
+		throw;
+	}
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::InitViewController: Unknown exception occurred while creating RenderViewController.");
+		throw;
+	}
+	_viewController = NS::RetainPtr(rawViewController);
+}
+
 void CocoaWindow::_SetIOEventCallbacks() {
-	if (not _view)
+	if (not _viewController)
 		return;
 
 	_viewEventHandler = std::make_unique<Apple::Types::ViewEventHandler>();
@@ -192,17 +122,17 @@ void CocoaWindow::_SetIOEventCallbacks() {
 
 		if (const auto* characters = e->characters()) {
 			if (const auto* utf8String = characters->utf8String(); utf8String and utf8String[0] != '\0') {
-				Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(static_cast<char>(utf8String[0]))};
+				Events::KeyTypedEvent event{KeyCode::KeyboardCharsCodeFromChar(utf8String[0])};
 				_callbacks.EventCallback(event);
 			}
 		}
 	});
 
 	_viewEventHandler->OnMouseMoved([this](const NS::Event* e) {
-		if (not (_callbacks.EventCallback and e and _view))
+		if (not (_callbacks.EventCallback and e and _viewController->view()))
 			return;
 
-		const auto [x, y] = _view->convertPointFromView(e->locationInWindow(), nullptr);
+		const auto [x, y] = _viewController->view()->convertPointFromView(e->locationInWindow(), nullptr);
 
 		Events::MouseMovedEvent event{static_cast<float>(x), static_cast<float>(y)};
 		_callbacks.EventCallback(event);
@@ -244,7 +174,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_view->SetEventHandler(_viewEventHandler.get());
+	_viewController->view()->SetEventHandler(_viewEventHandler.get());
 }
 
 void CocoaWindow::_SetWindowEventCallbacks() {
@@ -261,7 +191,6 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 		const auto [origin, size] = window->frame();
 		Events::WindowResizeEvent event{static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height)};
 		_callbacks.EventCallback(event);
-		_callbacks._internalCallbacks.ResizeEventCallback(event);
 	});
 
 	_windowDelegateEventHandler->OnWindowWillClose([this](const NS::Notification* e) {
@@ -273,50 +202,6 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 	});
 
 	_windowDelegate->SetEventHandler(_windowDelegateEventHandler.get());
-}
-
-void CocoaWindow::_SetInternalCallbacks() {
-	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
-
-	// The OS already resized the window — just sync internal state and update the layer,
-	// do NOT call setFrame again or the window will jump to (0, 0).
-	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
-		_data.width = event.GetWidth();
-		_data.height = event.GetHeight();
-		_UpdateLayerSize();
-	};
-}
-
-void CocoaWindow::SetWidth(const unsigned int width) {
-	if (not _window)
-		return;
-
-	_data.width = width;
-
-	const auto [currentOrigin, currentSize] = _window->frame();
-	const CGRect frame = {
-		currentOrigin,
-		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
-	};
-	_window->setFrame(frame, true, true);
-
-	_UpdateLayerSize();
-}
-
-void CocoaWindow::SetHeight(const unsigned int height) {
-	if (not _window)
-		return;
-
-	_data.height = height;
-
-	const auto [currentOrigin, currentSize] = _window->frame();
-	const CGRect frame = {
-		currentOrigin,
-		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
-	};
-	_window->setFrame(frame, true, true);
-
-	_UpdateLayerSize();
 }
 
 void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
@@ -332,8 +217,6 @@ void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
 	};
 	_window->setFrame(frame, true, true);
-
-	_UpdateLayerSize();
 }
 
 void CocoaWindow::SetVSync(const bool enabled) {
@@ -342,9 +225,8 @@ void CocoaWindow::SetVSync(const bool enabled) {
 	}
 }
 
-void CocoaWindow::GetReady() {
-	SetVSync(_data.VSync);
-	_UpdateLayerSize();
+void CocoaWindow::GetReady(const bool VSync) {
+	SetVSync(VSync);
 }
 
 void CocoaWindow::_Init() {
@@ -352,7 +234,6 @@ void CocoaWindow::_Init() {
 
 	_SetIOEventCallbacks();
 	_SetWindowEventCallbacks();
-	_SetInternalCallbacks();
 
 	_st_CocoaWindowCount++;
 }
@@ -385,25 +266,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window");
 		throw;
 	}
-	_window = NS::TransferPtr(rawWindow);
-
-	NS::RenderView* rawCocoaView;
-	try {
-		rawCocoaView = NS::RenderView::alloc()->init(frame);
-		if (not rawCocoaView) {
-			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa view!");
-			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa view!");
-		}
-	}
-	catch (const std::exception& e) {
-		CE_CORE_ERROR("CocoaWindow::_InitWindow: Exception while creating Cocoa view: {0}", e.what());
-		throw;
-	}
-	catch (...) {
-		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa view");
-		throw;
-	}
-	_view = NS::TransferPtr(rawCocoaView);
+	_window = NS::RetainPtr(rawWindow);
 
 	NS::WindowDelegate* rawDelegate;
 	try {
@@ -421,12 +284,12 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window delegate");
 		throw;
 	}
-	_windowDelegate = NS::TransferPtr(rawDelegate);
+	_windowDelegate = NS::RetainPtr(rawDelegate);
 
 	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
+
 	// Make the window visible
 	_window->makeKeyAndOrderFront(nullptr);
-	_window->setContentView(reinterpret_cast<NS::View*>(_view.get()));
 
 	_window->setDelegate(_windowDelegate.get());
 
@@ -441,15 +304,6 @@ void CocoaWindow::_Shutdown() {
 	}
 
 	_st_CocoaWindowCount--;
-}
-
-void CocoaWindow::_UpdateLayerSize() const {
-	if (not _window)
-		return;
-
-	if (_callbacks.ContentSizeCallback) {
-		_callbacks.ContentSizeCallback(GetContentSize());
-	}
 }
 
 }

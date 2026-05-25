@@ -37,7 +37,11 @@ static bool _st_GLFWInitialized = false;
  */
 static int _st_GLFWWindowCount = 0;
 
-GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps): _data(std::move(windowProps)){
+bool _VSync = false;
+TypeWindow::WindowProps _initData;
+
+GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps) {
+	_initData = std::move(windowProps);
 	_Init();
 }
 
@@ -49,16 +53,12 @@ void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 }
 
-float GlfwWindow::GetWindowWidth() const {
-	int width = 0, height = 0;
-	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
-	return static_cast<float>(width);
-}
-
-float GlfwWindow::GetWindowHeight() const {
-	int width = 0, height = 0;
-	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
-	return static_cast<float>(height);
+void GlfwWindow::GetReady(const bool VSync) {
+	if (not _st_GLFWInitialized) {
+		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
+		return;
+	}
+	SetVSync(VSync);
 }
 
 std::pair<float, float> GlfwWindow::GetWindowSize() const {
@@ -67,68 +67,45 @@ std::pair<float, float> GlfwWindow::GetWindowSize() const {
 	return {static_cast<float>(width), static_cast<float>(height)};
 }
 
-float GlfwWindow::GetMonitorWidth() const {
-	if (const auto monitor = glfwGetPrimaryMonitor()) {
-		if (const auto videoMode = glfwGetVideoMode(monitor)) {
-			return static_cast<float>(videoMode->width);
-		}
-	}
-	return 0.f;
-}
-
-float GlfwWindow::GetMonitorHeight() const {
-	if (const auto monitor = glfwGetPrimaryMonitor()) {
-		if (const auto videoMode = glfwGetVideoMode(monitor)) {
-			return static_cast<float>(videoMode->height);
-		}
-	}
-	return 0.f;
-}
-
-std::pair<float, float> GlfwWindow::GetMonitorSize() const {
-	if (const auto monitor = glfwGetPrimaryMonitor()) {
-		if (const auto videoMode = glfwGetVideoMode(monitor)) {
-			return {static_cast<float>(videoMode->width), static_cast<float>(videoMode->height)};
-		}
-	}
-	return {0.f, 0.f};
-}
-
-std::pair<float, float> GlfwWindow::GetContentScale() const {
+std::pair<float, float> GlfwWindow::GetFrameSize() const {
 	if (not _glfwWindow) {
-		CE_CORE_WARN("Could not get content scale because window is not initialized.");
-		return {1.0f, 1.0f};
-	}
-	float xScale = 1.0f, yScale = 1.0f;
-	glfwGetWindowContentScale(_glfwWindow.get(), &xScale, &yScale);
-	return {xScale, yScale};
-}
-
-std::pair<float, float> GlfwWindow::GetContentSize() const {
-	if (not _glfwWindow) {
-		CE_CORE_WARN("Could not get content size because window is not initialized.");
-		return {static_cast<float>(_data.width), static_cast<float>(_data.height)};
-	}
-	const auto [xScale, yScale] = GetContentScale();
-	return {static_cast<float>(_data.width) * xScale, static_cast<float>(_data.height) * yScale};
-}
-
-std::pair<int, int> GlfwWindow::GetFrameBufferSize() const {
-	if (not _glfwWindow) {
-		CE_CORE_WARN("Could not get framebuffer size because window is not initialized.");
-		return {static_cast<int>(_data.width), static_cast<int>(_data.height)};
+		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
+		return {0, 0};
 	}
 	int width = 0, height = 0;
 	glfwGetFramebufferSize(_glfwWindow.get(), &width, &height);
 	return {width, height};
 }
 
-double GlfwWindow::GetTime() {
-	return glfwGetTime();
+bool GlfwWindow::IsVSync() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("GlfwWindow::IsVSync: Could not get VSync state because window is not initialized.");
+		return false;
+	}
+
+	return _VSync;
 }
 
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
 	_callbacks.EventCallback = callback;
+}
+
+void GlfwWindow::SetSize(const unsigned int width, const unsigned int height) {
+	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(width), static_cast<int>(height));
+}
+
+void GlfwWindow::SetVSync(const bool enabled) {
+	if (not _st_GLFWInitialized) {
+		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
+		return;
+	}
+	_VSync = enabled;
+	glfwSwapInterval(_VSync ? 1 : 0);
+}
+
+void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
+	const auto ptr = window ? window : _glfwWindow.get();
+	glfwMakeContextCurrent(ptr);
 }
 
 void GlfwWindow::_SetIOEventCallbacks() {
@@ -221,49 +198,9 @@ void GlfwWindow::_SetWindowEventCallbacks() {
 }
 
 void GlfwWindow::_SetInternalCallbacks() {
-	auto& [ResizeEventCallback] = _callbacks._internalCallbacks;
-
-	ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
+	_callbacks._internalCallbacks.ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
 		SetSize(event.GetWidth(), event.GetHeight());
 	};
-}
-
-void GlfwWindow::SetWidth(const unsigned int width) {
-	_data.width = width;
-	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(_data.width), static_cast<int>(_data.height));
-}
-
-void GlfwWindow::SetHeight(const unsigned int height) {
-	_data.height = height;
-	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(_data.width), static_cast<int>(_data.height));
-}
-
-void GlfwWindow::SetSize(const unsigned int width, const unsigned int height) {
-	_data.width = width;
-	_data.height = height;
-	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(_data.width), static_cast<int>(_data.height));
-}
-
-void GlfwWindow::SetVSync(const bool enabled) {
-	if (not _st_GLFWInitialized) {
-		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
-		return;
-	}
-	_data.VSync = enabled;
-	glfwSwapInterval(enabled ? 1 : 0);
-}
-
-void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
-	const auto ptr = window ? window : _glfwWindow.get();
-	glfwMakeContextCurrent(ptr);
-}
-
-void GlfwWindow::GetReady() {
-	if (not _st_GLFWInitialized) {
-		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
-		return;
-	}
-	SetVSync(_data.VSync);
 }
 
 void GlfwWindow::_Init() {
@@ -294,9 +231,9 @@ void GlfwWindow::_InitWindow() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	_glfwWindow.reset(glfwCreateWindow(
-		static_cast<int>(_data.width),
-		static_cast<int>(_data.height),
-		_data.title.c_str(),
+		static_cast<int>(_initData.width),
+		static_cast<int>(_initData.height),
+		_initData.title.c_str(),
 		nullptr,
 		nullptr
 	));

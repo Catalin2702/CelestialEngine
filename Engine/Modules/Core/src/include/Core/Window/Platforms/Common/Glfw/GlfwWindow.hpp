@@ -33,6 +33,7 @@ namespace TypeWindow = CE::Types::Window;
  *			while the MetalWindow class provides a macOS-specific implementation using Metal.
  */
 namespace CE::Core::Window {
+
 /**
  * @class GlfwWindow
  * @brief Cross-platform window implementation using GLFW
@@ -65,21 +66,16 @@ public:
 	 */
 	void OnUpdate() const override;
 
+	/**
+	 * @brief Prepares the window for rendering
+	 * @param VSync True to enable VSync, false to disable
+	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
+	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
+	 *			In this implementation, it sets the VSync state according to the configuration in _data.
+	 */
+	void GetReady(bool VSync) override;
+
 public:
-	/**
-	 * @brief Gets the current width of the window
-	 * @return unsigned int Width in pixels
-	 * @details Inline getter that returns the cached width value from _data
-	 */
-	[[nodiscard]] float GetWindowWidth() const override;
-
-	/**
-	 * @brief Gets the current height of the window
-	 * @return unsigned int Height in pixels
-	 * @details Inline getter that returns the cached height value from _data
-	 */
-	[[nodiscard]] float GetWindowHeight() const override;
-
 	/**
 	 * @brief Gets the current size of the window
 	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
@@ -87,53 +83,18 @@ public:
 	[[nodiscard]] std::pair<float, float> GetWindowSize() const override;
 
 	/**
-	 * @brief Gets the current width of the view (content area) of the window
-	 * @return float Current width in pixels
-	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same value as GetWindowWidth(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
+	 * @brief Gets the current size of the frame
+	 * @return std::pair<float, float> Pair of frame width and height in pixels
+	 * @details The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior. This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
-	[[nodiscard]] float GetViewWidth() const override { return GetWindowWidth(); }
-
-	/**
-	 * @brief Gets the current height of the view (content area) of the window
-	 * @return float Current height in pixels
-	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same value as GetWindowHeight(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
-	 */
-	[[nodiscard]] float GetViewHeight() const override { return GetWindowHeight(); }
-
-	/**
-	 * @brief Gets the current size of the view (content area) of the window
-	 * @return std::pair<float, float> Pair of width and height in pixels
-	 * @details For GLFW, the view size is typically the same as the window size, so this method returns the same values as GetWindowSize(). This is provided for consistency with the I_Window interface and to allow for platform-specific differences in how view sizes are handled.
-	 */
-	[[nodiscard]] std::pair<float, float> GetViewSize() const override { return GetWindowSize(); }
-
-	/**
-	 * @brief Gets the current width of the monitor
-	 * @return float Current monitor width in pixels
-	 * @details Retrieves the width of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] float GetMonitorWidth() const override;
-
-	/**
-	 * @brief Gets the current height of the monitor
-	 * @return float Current monitor height in pixels
-	 * @details Retrieves the height of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] float GetMonitorHeight() const override;
-
-	/**
-	 * @brief Gets the current size of the monitor
-	 * @return std::pair<float, float> Pair of monitor width and height in pixels
-	 * @details Retrieves the width and height of the primary monitor using GLFW functions. This can be used for fullscreen mode or for scaling calculations.
-	 */
-	[[nodiscard]] std::pair<float, float> GetMonitorSize() const override;
+	[[nodiscard]] std::pair<float, float> GetFrameSize() const override;
 
 	/**
 	 * @brief Checks if VSync is enabled
 	 * @return bool True if VSync is enabled, false otherwise
 	 * @details Inline getter that returns the VSync state from _data
 	 */
-	[[nodiscard]] bool IsVSync() const override { return _data.VSync; }
+	[[nodiscard]] bool IsVSync() const override;
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
@@ -151,32 +112,7 @@ public:
 	 */
 	[[nodiscard]] GLFWwindow* GetGlfwWindow() const { return _glfwWindow.get(); }
 
-	/**
-	 * @brief Gets the content scale factors for the window
-	 * @return std::pair<float, float> Content scale factors for X and Y axes
-	 */
-	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
-
-	/**
-	 * @brief Gets the content size of the window
-	 * @return std::pair<float, float> Content size in pixels for width and height
-	 * @details This method retrieves the current content scale factors and multiplies them by the window's width and height to calculate the actual content size in pixels. This is useful for rendering and UI layout calculations that need to account for high-DPI displays.
-	 */
-	[[nodiscard]] std::pair<float, float> GetContentSize() const override;
-
-	/**
-	 * @brief Gets the framebuffer size of the window
-	 * @return std::pair<int, int> Framebuffer width and height in pixels
-	 * @details Retrieves the actual size of the framebuffer, which may differ from the window size due to scaling. This is important for rendering at the correct resolution, especially on high-DPI displays.
-	 */
-	[[nodiscard]] std::pair<int, int> GetFrameBufferSize() const;
-
-	/**
-	 * @brief Gets the current time since GLFW was initialized
-	 * @return double Time
-	 */
-	[[nodiscard]] static double GetTime() ;
-
+public:
 	/**
 	 * @brief Sets the event callback function
 	 * @param callback Function to be called when events occur
@@ -198,22 +134,6 @@ public:
 	 *			Note: VSync changes are typically handled directly in the SetVSync method, so this function may not be used in this implementation.
 	 */
 	void SetVSyncCallback(const VSyncCallbackFn&) override {};
-
-	/**
-	 * @brief Sets the window width
-	 * @param width New width in pixels
-	 * @details Updates the cached width value in _data. Note: this only updates
-	 *			the stored value, the actual window resize is handled by GLFW events
-	 */
-	void SetWidth(unsigned int width) override;
-
-	/**
-	 * @brief Sets the window height
-	 * @param height New height in pixels
-	 * @details Updates the cached height value in _data. Note: this only updates
-	 *			the stored value, the actual window resize is handled by GLFW events
-	 */
-	void SetHeight(unsigned int height) override;
 
 	/**
 	 * @brief Sets the window size
@@ -242,14 +162,6 @@ public:
 	 */
 	void SetCurrentContext(GLFWwindow* window = nullptr) const;
 
-	/**
-	 * @brief Prepares the window for rendering
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
-	 *			In this implementation, it sets the VSync state according to the configuration in _data.
-	 */
-	void GetReady() override;
-
 protected:
 	/**
 	 * @brief Sets internal callbacks for I/O events
@@ -271,20 +183,9 @@ protected:
 	 */
 	void _SetInternalCallbacks() override;
 
-private:
+protected:
 	/**
 	 * @brief Initializes the OpenGL window
-	 * @details Performs complete window initialization:
-	 *			1. Logs window creation information
-	 *			2. Initializes GLFW if not already initialized (with error callback)
-	 *			3. Configures OpenGL context (version 4.1 Core Profile, forward compatible)
-	 *			4. Creates the GLFW window with specified dimensions
-	 *			5. Makes the OpenGL context current
-	 *			6. Initializes GLAD to load OpenGL function pointers
-	 *			7. Associates window data with GLFW user pointer
-	 *			8. Sets VSync according to configuration
-	 *			9. Registers all event callbacks
-	 *			Exits with EXIT_FAILURE if GLAD initialization fails
 	 */
 	void _Init() override;
 
@@ -306,7 +207,6 @@ public:
 
 private:
 	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
-	Types::Window::WindowProps _data;								///< Window data including dimensions, VSync state, and event callback
 };
 
 }

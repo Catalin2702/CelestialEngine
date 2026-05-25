@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-05-25
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -139,7 +139,7 @@ void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
 
 	_SetWindowCallbacks();
 
-	_window->GetReady();
+	_window->GetReady(windowProps.VSync);
 }
 
 void CocoaApplication::StartDisplayLink() {
@@ -227,10 +227,8 @@ void CocoaApplication::_InitRenderer(Types::Render::GraphicsApi) {
 	assert(not _context && "CocoaApplication::InitRenderer: Renderer is already initialized!");
 	assert(_window && "CocoaApplication::InitRenderer: Window must be initialized before initializing renderer");
 
-	_context = std::make_unique<Render::Context::MetalContext>(Render::Context::MetalContextProps{
-		.window = _window.get(),
-		.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm
-	});
+	_context = std::make_unique<Render::Context::MetalContext>();
+	_context->props.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 	_context->Init();
 }
 

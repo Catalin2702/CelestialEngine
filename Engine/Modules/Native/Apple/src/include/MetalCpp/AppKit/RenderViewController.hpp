@@ -54,6 +54,9 @@ public:
 	[[nodiscard]] RenderViewController* init(const Coder* coder) const;
 
 	[[nodiscard]] RenderViewController* init(const CGRect& frame, const MTL::Device* device) const;
+
+public:
+	[[nodiscard]] MTK::View* view() const;
 };
 
 _NS_INLINE RenderViewController* RenderViewController::alloc() {
@@ -70,6 +73,10 @@ _NS_INLINE RenderViewController* RenderViewController::init(const Coder* coder) 
 
 _NS_INLINE RenderViewController* RenderViewController::init(const CGRect& frame, const MTL::Device* device) const {
 	return sendMessage<RenderViewController*>(this, _APPKIT_PRIVATE_SEL(initWithFrame_device_), frame, device);
+}
+
+_NS_INLINE MTK::View* RenderViewController::view() const {
+	return sendMessage<MTK::View*>(this, _APPKIT_PRIVATE_SEL(view));
 }
 
 }

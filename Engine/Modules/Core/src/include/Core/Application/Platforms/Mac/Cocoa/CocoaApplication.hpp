@@ -69,6 +69,8 @@ namespace CE::Core::Application {
  *			Manages the application lifecycle and event handling for a native macOS application.
  */
 class CE_API CocoaApplication: public I_Application {
+	friend class CocoaApplicationDelegate;
+
 public:
 	/**
 	 * @brief Default constructor

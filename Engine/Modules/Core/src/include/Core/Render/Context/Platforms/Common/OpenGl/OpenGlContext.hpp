@@ -58,10 +58,6 @@ public:
 	~OpenGlContext() override;
 
 public:
-	void HandleContentSizeChange(const std::pair<float, float>&) override {}
-	void HandleVSyncChange(const bool) override {}
-
-public:
 	/**
 	 * @brief Initializes the OpenGL context
 	 * @details Pure virtual method that initializes the OpenGL context, sets up necessary resources,
@@ -74,7 +70,7 @@ public:
 	 * @details Pure virtual method that handles buffer swapping to present the rendered frame on the screen.
 	 *			Must be implemented by derived classes to ensure proper presentation of rendered content.
 	 */
-	void SwapBuffers() override;
+	void SwapBuffers();
 
 	static void SetViewport(int x, int y, int width, int height);
 
@@ -87,11 +83,6 @@ public:
 	 * @details Returns the current state of VSync in the OpenGL context. This method can be implemented to query the current VSync state based on the context's settings or platform-specific APIs.
 	 */
 	[[nodiscard]] bool IsVSyncEnabled() const override;
-
-public:
-	[[nodiscard]] void* GetNativeDevice() const override { return nullptr; }
-	[[nodiscard]] void* GetNativeLayer() const override { return nullptr; }
-	[[nodiscard]] void* GetNativeCommandQueue() const override { return nullptr; }
 
 RENDER_API_TYPE(OpenGL)
 

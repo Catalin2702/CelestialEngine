@@ -34,6 +34,7 @@
 #include "NSRunningApplication.hpp"
 #include "NSWindow.hpp"
 #include "RenderView.hpp"
-#include "MetalCpp/Foundation/Foundation.hpp"
+#include "RenderViewController.hpp"
+#include "WindowDelegate.hpp"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

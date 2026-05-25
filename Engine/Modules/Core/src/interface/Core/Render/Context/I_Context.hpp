@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -47,29 +47,6 @@ public:
 	 *			and prepares it for rendering. Must be implemented by derived classes.
 	 */
 	virtual void Init() = 0;
-	/**
-	 * @brief Swaps the front and back buffers
-	 * @details Pure virtual method that handles buffer swapping to present the rendered frame on the screen.
-	 *			Must be implemented by derived classes to ensure proper presentation of rendered content.
-	 */
-	virtual void SwapBuffers() = 0;
-
-public:
-	/**
-	 * @brief Handles changes in content size (e.g., when the window is resized)
-	 * @param size New content size as a pair of floats (width, height)
-	 * @details Pure virtual method that updates the graphics context's settings when the content size changes, such as during window resizing.
-	 *			This ensures that rendering remains correct at different sizes and that the viewport and related settings are updated accordingly.
-	 */
-	virtual void HandleContentSizeChange(const std::pair<float, float>& size) = 0;
-
-	/**
-	 * @brief Handles changes in VSync state
-	 * @param enabled True if VSync is enabled, false if disabled
-	 * @details Pure virtual method that updates the graphics context's settings when the VSync state changes.
-	 *			This allows the context to enable or disable synchronization with the monitor's refresh rate as needed.
-	 */
-	virtual void HandleVSyncChange(bool enabled) = 0;
 
 public:
 	/**
@@ -78,31 +55,6 @@ public:
 	 * @details Pure virtual method that returns the current state of VSync in the graphics context. This allows the application to query whether VSync is active and adjust rendering behavior accordingly.
 	 */
 	[[nodiscard]] virtual bool IsVSyncEnabled() const = 0;
-
-public:
-	/**
-	 * @brief Gets the native graphics device or context handle
-	 * @return void* Pointer to the native graphics device or context (e.g., OpenGL context, Metal device)
-	 * @details Pure virtual method that returns a pointer to the underlying native graphics device or context.
-	 *			This allows the application to access platform-specific features or perform operations that require direct access to the native context.
-	 */
-	[[nodiscard]] virtual void* GetNativeDevice() const = 0;
-
-	/**
-	 * @brief Gets the native rendering layer or surface handle
-	 * @return void* Pointer to the native rendering layer or surface (e.g., Metal layer, OpenGL framebuffer)
-	 * @details Pure virtual method that returns a pointer to the underlying native rendering layer or surface.
-	 *			This allows the application to access platform-specific features or perform operations that require direct access to the rendering target.
-	 */
-	[[nodiscard]] virtual void* GetNativeLayer() const = 0;
-
-	/**
-	 * @brief Gets the native command queue or command list handle
-	 * @return void* Pointer to the native command queue or command list (e.g., Metal command queue, OpenGL command list)
-	 * @details Pure virtual method that returns a pointer to the underlying native command queue or command list used for issuing rendering commands.
-	 *			This allows the application to access platform-specific features or perform operations that require direct access to the command submission mechanism.
-	 */
-	[[nodiscard]] virtual void* GetNativeCommandQueue() const = 0;
 
 public:
 	/**

@@ -57,6 +57,8 @@ public:
 
 public:
 	[[nodiscard]] CGFloat backingScaleFactor() const;
+	[[nodiscard]] CGRect contentRectForFrameRect(const CGRect& frameRect) const;
+	[[nodiscard]] CGRect contentRectForFrameRect() const;
 	[[nodiscard]] View* contentView() const;
 	[[nodiscard]] Object* delegate() const;
 	[[nodiscard]] CGRect frame() const;
@@ -113,6 +115,14 @@ _NS_INLINE void NS::Window::setTitle(const String* pTitle) const {
 
 _NS_INLINE CGFloat NS::Window::backingScaleFactor() const {
 	return sendMessage<CGFloat>(this, _APPKIT_PRIVATE_SEL(backingScaleFactor));
+}
+
+_NS_INLINE CGRect NS::Window::contentRectForFrameRect(const CGRect& frameRect) const {
+	return sendMessage<CGRect>(this, _APPKIT_PRIVATE_SEL(contentRectForFrameRect_), frameRect);
+}
+
+_NS_INLINE CGRect NS::Window::contentRectForFrameRect() const {
+	return contentRectForFrameRect(frame());
 }
 
 _NS_INLINE NS::View* NS::Window::contentView() const {
