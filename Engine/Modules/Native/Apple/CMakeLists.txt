@@ -316,7 +316,7 @@ target_compile_definitions(CE_Apple PRIVATE
 
 target_compile_options(CE_Apple PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
-	-ObjC++ -fno-objc-arc
+		-ObjC++ -fno-objc-arc
 	>
 )
 
