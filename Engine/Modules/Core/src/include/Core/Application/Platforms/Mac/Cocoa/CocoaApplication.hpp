@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -30,27 +30,32 @@ class Application;
 }
 
 namespace CE {
+
 namespace Apple::Types {
 class DisplayLinkEventHandler;
 }
 
 namespace Core {
+
 namespace Application {
 class CocoaApplicationDelegate;
 }
+
 namespace Layers {
 class I_Layer;
 class ImGuiMetalLayer;
 }
+
 namespace Render::Context {
 class I_Context;
 class MetalContext;
-}
 }
 
 namespace Window {
 class I_Window;
 class CocoaWindow;
+}
+
 }
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Updated: 2026-05-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -31,7 +31,7 @@ public:
 	void OnWindowDidMove(NativeNotificationCallback callback) override;
 	void OnWindowDidBecomeKey(NativeNotificationCallback callback) override;
 	void OnWindowDidResignKey(NativeNotificationCallback callback) override;
-	
+
 public:
 	void DispatchWindowWillClose(NS::Notification* event) override;
 	void DispatchWindowWillEnterFullScreen(NS::Notification* event) override;

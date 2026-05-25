@@ -4,25 +4,48 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-05-25
 #
 
-set(SOURCES
-	src/Core/GlfwApplicationTests.cpp
-	src/Input/Platforms/Glfw/GlfwInputTests.cpp
-	src/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayerTests.cpp
-	src/Layers/LayerStackTests.cpp
-	src/Layers/LayerTests.cpp
+set(APPLICATION_SOURCES
+	src/Core/Application/Platforms/Common/Glfw/GlfwApplicationTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Core/CocoaApplicationTests.cpp
-		src/Input/Platforms/Metal/MetalInputTests.cpp
-		src/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayerTests.cpp
+		src/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationTests.cpp
+	>
+)
+
+set(INPUT_SOURCES
+	src/Core/Input/Platforms/Common/Glfw/GlfwInputTests.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/Core/Input/Platforms/Mac/Metal/MetalInputTests.cpp
+	>
+)
+
+set(LAYERS_SOURCES
+	src/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayerTests.cpp
+	src/Core/Layers/LayerStackTests.cpp
+	src/Core/Layers/LayerTests.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayerTests.cpp
+	>
+)
+
+set(WINDOW_SOURCES
+	src/Core/Window/Platforms/Common/Glfw/GlfwWindowTests.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/Core/Window/Platforms/Mac/Cocoa/CocoaWindowTests.cpp
 	>
 )
 
 add_executable(CE_TestsCore
-	${SOURCES}
+	${APPLICATION_SOURCES}
+	${INPUT_SOURCES}
+	${LAYERS_SOURCES}
+	${WINDOW_SOURCES}
 )
 
 set_target_properties(CE_TestsCore PROPERTIES

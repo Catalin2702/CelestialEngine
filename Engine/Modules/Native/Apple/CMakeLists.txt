@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-21
+# Updated: 2026-05-25
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -22,6 +22,7 @@ set(APPKIT_HEADERS
 
 	# View
 	${INCLUDE}/AppKit/View/RenderView.h
+	${INCLUDE}/AppKit/View/RenderViewController.h
 
 	# Window
 	${INCLUDE}/AppKit/Window/WindowDelegate.h
@@ -53,6 +54,7 @@ set(METALCPP_HEADERS
 	${INCLUDE}/MetalCpp/AppKit/NSView.hpp
 	${INCLUDE}/MetalCpp/AppKit/NSWindow.hpp
 	${INCLUDE}/MetalCpp/AppKit/RenderView.hpp
+	${INCLUDE}/MetalCpp/AppKit/RenderViewController.hpp
 	${INCLUDE}/MetalCpp/AppKit/WindowDelegate.hpp
 
 	# Foundation
@@ -225,6 +227,7 @@ set(TYPES_INTERFACES
 set(APPKIT_SOURCES
 	# View
 	${SOURCE}/AppKit/View/RenderView.mm
+	${SOURCE}/AppKit/View/RenderViewController.mm
 
 	# Window
 	${SOURCE}/AppKit/Window/WindowDelegate.mm

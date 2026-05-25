@@ -4,25 +4,31 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-25
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
 #include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
+#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
+#include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
-#include "Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Shader.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
-#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
+#include "Utility/FileSystem/File.hpp"
+#include "Utility/FileSystem/FileSystem.hpp"
+
+#include <glad/glad.h>
 
 #include <cassert>
 
 namespace CE::Core::Application {
+
+namespace FS = Utility::FileSystem;
 
 GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");

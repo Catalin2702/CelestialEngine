@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Native/Apple/Metal/AppKit/View
+// Module: CelestialEngine/Engine/Modules/Native/Apple/AppKit/View
 // File: RenderView.mm
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-05-25
 //
 
 #include "AppKit/View/RenderView.h"

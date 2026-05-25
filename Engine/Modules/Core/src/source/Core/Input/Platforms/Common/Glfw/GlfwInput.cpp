@@ -4,15 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-25
 //
 
 #include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
+#include "Core/Window/I_Window.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
-#include "Window/I_Window.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -62,7 +62,7 @@ std::pair<float, float> GlfwInput::_GetMouseXYImpl() {
 }
 
 void GlfwInput::_InitGLFWWindow() {
-	const auto& window = Core::Application::GlfwApplication::StGet().GetWindow();
+	const auto& window = Application::GlfwApplication::StGet().GetWindow();
 	_glfWwindow = static_cast<GLFWwindow*>(window.GetNativeWindow());
 }
 

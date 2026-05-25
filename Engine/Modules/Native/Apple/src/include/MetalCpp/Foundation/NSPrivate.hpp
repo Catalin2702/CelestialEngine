@@ -278,6 +278,8 @@ namespace Private
             "initWithChar:");
         _NS_PRIVATE_DEF_SEL(initWithCoder_,
             "initWithCoder:");
+        _NS_PRIVATE_DEF_SEL(initWithFrame_device_,
+            "initWithFrame:device:");
         _NS_PRIVATE_DEF_SEL(initWithCString_encoding_,
             "initWithCString:encoding:");
         _NS_PRIVATE_DEF_SEL(initWithDomain_code_userInfo_,

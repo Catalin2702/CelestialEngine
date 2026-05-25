@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-07
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -19,27 +19,26 @@
 #include <memory>
 
 
-namespace CE {
-namespace Core::Layers {
+namespace CE::Core {
+namespace Render {
+namespace Context {
+class I_Context;
+class OpenGlContext;
+}
+namespace Shader {
+class OpenGlShaderProgram;
+}
+}
+namespace Layers {
 class I_Layer;
 class ImGuiOpenGlLayer;
 }
-
-namespace Render {
-	namespace Context {
-		class I_Context;
-		class OpenGlContext;
-	}
-	namespace Shader {
-		class OpenGlShaderProgram;
-	}
-}
-
 namespace Window {
 class I_Window;
 class GlfwWindow;
 }
 }
+
 
 namespace CE::Core::Application {
 

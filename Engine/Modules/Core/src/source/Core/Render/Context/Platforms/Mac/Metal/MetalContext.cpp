@@ -4,15 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-25
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "MetalCpp/AppKit/AppKit.hpp"
 #include "MetalCpp/Metal/Metal.hpp"
 #include "MetalCpp/QuartzCore/CAMetalLayer.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include <cassert>
 

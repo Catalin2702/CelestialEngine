@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-20
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -19,11 +19,17 @@
 #include <functional>
 #include <optional>
 
-namespace CE::Core::Render::Context {
+
+namespace CE::Core {
+
+namespace Render::Context {
 class OpenGlContext;
 }
-namespace CE::Window {
+
+namespace Window {
 class GlfwWindow;
+}
+
 }
 
 

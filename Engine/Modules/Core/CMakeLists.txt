@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-19
+# Updated: 2026-05-25
 #
 
 set(APPLICATION_HEADERS
@@ -47,7 +47,13 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp
 )
 
+set(WINDOW_HEADERS
+	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp
+	>
+)
 
 set(APPLICATION_INTERFACES
 	src/interface/Core/Application/I_Application.hpp
@@ -70,6 +76,10 @@ set(RENDER_INTERFACES
 	# Shader
 	src/interface/Core/Render/Shader/I_Shader.hpp
 	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
+)
+
+set(WINDOW_INTERFACES
+	src/interface/Core/Window/I_Window.hpp
 )
 
 set(APPLICATION_SOURCES
@@ -116,11 +126,20 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.cpp
 )
 
+set(WINDOW_SOURCES
+	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.cpp
+	>
+)
+
 set(HEADERS
 	${APPLICATION_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
 	${RENDER_HEADERS}
+	${WINDOW_HEADERS}
 )
 
 set(INTERFACES
@@ -128,6 +147,7 @@ set(INTERFACES
 	${INPUT_INTERFACES}
 	${LAYERS_INTERFACES}
 	${RENDER_INTERFACES}
+	${WINDOW_INTERFACES}
 )
 
 set(SOURCES
@@ -135,6 +155,7 @@ set(SOURCES
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
 	${RENDER_SOURCES}
+	${WINDOW_SOURCES}
 )
 
 add_library(CE_Core SHARED
@@ -157,7 +178,7 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Native
 	CE_Tools
 	CE_Types
-	CE_Window
+	CE_Utility
 )
 
 # Vendor libraries

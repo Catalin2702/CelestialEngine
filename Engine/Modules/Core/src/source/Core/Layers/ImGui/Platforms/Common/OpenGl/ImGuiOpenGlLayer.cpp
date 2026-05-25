@@ -4,21 +4,21 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-05-25
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
+#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
-#include "Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>

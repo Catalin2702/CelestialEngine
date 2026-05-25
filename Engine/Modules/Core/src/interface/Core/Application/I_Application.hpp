@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-05-25
 //
 
 #pragma once
@@ -31,6 +31,9 @@ class I_Layer;
 namespace Render::Context {
 class I_Context;
 }
+namespace Window {
+class I_Window;
+}
 }
 
 
@@ -41,10 +44,6 @@ struct WindowProps;
 namespace Render {
 enum class GraphicsApi: uint8_t;
 }
-}
-
-namespace Window {
-class I_Window;
 }
 
 

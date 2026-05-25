@@ -34,11 +34,11 @@ namespace NS {
 class Window;
 }
 
-namespace CE::Window {
+namespace CE::Core::Window {
 class CocoaWindow;
 }
 
-namespace CE::Render::Context {
+namespace CE::Core::Render::Context {
 
 struct CE_API MetalContextProps {
 	Window::CocoaWindow* window = nullptr;

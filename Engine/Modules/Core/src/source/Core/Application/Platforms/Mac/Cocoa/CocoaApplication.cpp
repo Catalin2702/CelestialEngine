@@ -14,13 +14,13 @@
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "MetalCpp/AppKit/AppKit.hpp"
 #include "MetalCpp/QuartzCore/QuartzCore.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/EventHandlers/DisplayLinkEventHandler.hpp"
-#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include <cassert>
 #include <stdexcept>

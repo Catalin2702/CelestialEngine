@@ -4,16 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-25
 //
 
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 
 #include "Bridge/AppKit/Window/WindowBridge.h"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
+#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
-#include "Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 
 namespace CE::Core::Input {
