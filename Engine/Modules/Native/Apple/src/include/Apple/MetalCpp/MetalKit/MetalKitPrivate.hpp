@@ -66,6 +66,7 @@ namespace MTK::Private::Class {
 
 _MTK_PRIVATE_DEF_CLS( MTKView );
 _MTK_PRIVATE_DEF_CLS( MTKTextureLoader );
+_MTK_PRIVATE_DEF_CLS( RenderView );
 
 } // Class
 
@@ -215,11 +216,26 @@ _MTK_PRIVATE_DEF_SEL( setSampleCount_,
 _MTK_PRIVATE_DEF_SEL( releaseDrawables,
 					 "releaseDrawables" );
 
-	_MTK_PRIVATE_DEF_SEL( initWithDevice_,
-		"initWithDevice:");
+_MTK_PRIVATE_DEF_SEL( initWithDevice_,
+					"initWithDevice:");
 
-	_MTK_PRIVATE_DEF_SEL( newTextureWithData_options_error_,
-		"newTextureWithData:options:error:");
+_MTK_PRIVATE_DEF_SEL( newTextureWithData_options_error_,
+					"newTextureWithData:options:error:");
+
+// RenderView
+_MTK_PRIVATE_DEF_SEL(convertPoint_fromView_, "convertPoint:fromView:");
+
+_MTK_PRIVATE_DEF_SEL(setEventHandler_, "setEventHandler:");
+
+_MTK_PRIVATE_DEF_SEL(setLayer_, "setLayer:");
+
+_MTK_PRIVATE_DEF_SEL(setOpaque_, "setOpaque:");
+
+_MTK_PRIVATE_DEF_SEL(setWantsLayer_, "setWantsLayer:");
+
+_MTK_PRIVATE_DEF_SEL(frame, "frame");
+
+_MTK_PRIVATE_DEF_SEL(layer, "layer");
 
 }
 

@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Native/Apple/AppKit/View
+// Module: CelestialEngine/Engine/Modules/Native/Apple/MetalKit/View
 // File: RenderView.mm
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
@@ -7,7 +7,8 @@
 // Updated: 2026-05-26
 //
 
-#include "Apple/AppKit/View/RenderView.h"
+#include "Apple/MetalKit/View/RenderView.h"
+
 #include "Apple/MetalCpp/AppKit/NSEvent.hpp"
 
 #import <QuartzCore/QuartzCore.h>

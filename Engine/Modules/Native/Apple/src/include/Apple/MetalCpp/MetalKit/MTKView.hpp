@@ -45,7 +45,7 @@ namespace MTK
 			virtual void				drawableSizeWillChange( [[maybe_unused]] class View* pView, [[maybe_unused]] CGSize size ) { }
 	};
 
-	class View : public NS::Referencing< MTK::View, NS::RenderView >
+	class View : public NS::Referencing< MTK::View, NS::View >
 	{
 		public:
 			static View*				alloc();

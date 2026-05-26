@@ -31,14 +31,6 @@ class RenderPassDescriptor;
 class RenderPipelineState;
 }
 
-namespace MTK {
-class View;
-}
-
-namespace NS {
-class Window;
-}
-
 namespace CE::Core::Window {
 class CocoaWindow;
 }
@@ -100,19 +92,19 @@ public:
 	 * @return MTL::Device* Pointer to the MTL::Device representing the Metal device (GPU)
 	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
 	 */
-	[[nodiscard]] MTL::Device* GetMetalDevice() const { return _device.get(); }
+	[[nodiscard]] MTL::Device* GetDevice() const { return _device.get(); }
 
 	/** @brief Gets the Metal command queue
 	 * @return MTL::CommandQueue* Pointer to the MTL::CommandQueue used for issuing rendering commands
 	 * @details Returns a pointer to the underlying MTL::CommandQueue used for issuing rendering commands. This allows the application to access platform-specific features or perform operations that require direct access to the Metal command queue.
 	 */
-	[[nodiscard]] MTL::CommandQueue* GetMetalCommandQueue() const { return _commandQueue.get(); }
+	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _commandQueue.get(); }
 
 	[[nodiscard]] const MetalContextProps& GetProps() const { return props; }
 
 public:
-	void SetView(MTK::View* view);
-	[[nodiscard]] MTK::View* GetView() const { return _view.get(); }
+	void SetView(MTK::RenderView* view);
+	[[nodiscard]] MTK::RenderView* GetView() const { return _view.get(); }
 
 	RENDER_API_TYPE(Metal)
 
@@ -122,7 +114,7 @@ public:
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
-	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
+	NS::SharedPtr<MTK::RenderView> _view = nullptr;					///< MetalKit view used for rendering
 
 public:
 	MTL::RenderPipelineState* _defaultRenderPipelineState = nullptr; ///< Default render pipeline state for basic rendering operations

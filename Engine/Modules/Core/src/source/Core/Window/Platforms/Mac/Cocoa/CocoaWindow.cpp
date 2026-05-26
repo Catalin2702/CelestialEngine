@@ -28,11 +28,6 @@
 
 namespace CE::Core::Window {
 
-
-CocoaWindow::CocoaWindow(): _window(nullptr) {
-	_Init();
-}
-
 CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
@@ -71,26 +66,6 @@ void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentSizeCall
 
 void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
 	_callbacks.VSyncCallback = callback;
-}
-
-void CocoaWindow::InitViewController(const MTL::Device* device) {
-	NS::RenderViewController* rawViewController;
-	try {
-		rawViewController = NS::RenderViewController::alloc()->init(_window->contentRectForFrameRect(), device);
-		if (not rawViewController) {
-			CE_CORE_ERROR("CocoaWindow::InitViewController: Could not create RenderViewController.");
-			throw std::runtime_error("CocoaWindow::InitViewController: Could not create RenderViewController.");
-		}
-	}
-	catch (const std::exception& e) {
-		CE_CORE_ERROR("CocoaWindow::InitViewController: Exception occurred while creating RenderViewController: {}", e.what());
-		throw;
-	}
-	catch (...) {
-		CE_CORE_ERROR("CocoaWindow::InitViewController: Unknown exception occurred while creating RenderViewController.");
-		throw;
-	}
-	_viewController = NS::RetainPtr(rawViewController);
 }
 
 void CocoaWindow::_SetIOEventCallbacks() {
@@ -225,8 +200,9 @@ void CocoaWindow::GetReady(const bool VSync) {
 	SetVSync(VSync);
 }
 
-void CocoaWindow::_Init() {
+void CocoaWindow::Init(const MTL::Device* device) {
 	_InitWindow();
+	_InitViewController(device);
 
 	_SetIOEventCallbacks();
 	_SetWindowEventCallbacks();
@@ -261,7 +237,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window");
 		throw;
 	}
-	_window = NS::RetainPtr(rawWindow);
+	_window = NS::TransferPtr(rawWindow);
 
 	NS::WindowDelegate* rawDelegate;
 	try {
@@ -279,7 +255,7 @@ void CocoaWindow::_InitWindow() {
 		CE_CORE_ERROR("CocoaWindow::_InitWindow: Unknown exception while creating Cocoa window delegate");
 		throw;
 	}
-	_windowDelegate = NS::RetainPtr(rawDelegate);
+	_windowDelegate = NS::TransferPtr(rawDelegate);
 
 	// Moves the window to the front of the screen list and makes it the key window, which means it will receive keyboard events and be the main focus for user interaction.
 	_window->makeKeyAndOrderFront(nullptr);
@@ -289,6 +265,26 @@ void CocoaWindow::_InitWindow() {
 	_window->setMinSize(CGSizeMake(640, 360));
 	_window->setOpaque(false);
 	_window->setTitle(NS::String::string(windowProps.title.c_str(), NS::UTF8StringEncoding));
+}
+
+void CocoaWindow::_InitViewController(const MTL::Device* device) {
+	NS::RenderViewController* rawViewController;
+	try {
+		rawViewController = NS::RenderViewController::alloc()->init(_window->contentRectForFrameRect(), device);
+		if (not rawViewController) {
+			CE_CORE_ERROR("CocoaWindow::InitViewController: Could not create RenderViewController.");
+			throw std::runtime_error("CocoaWindow::InitViewController: Could not create RenderViewController.");
+		}
+	}
+	catch (const std::exception& e) {
+		CE_CORE_ERROR("CocoaWindow::InitViewController: Exception occurred while creating RenderViewController: {}", e.what());
+		throw;
+	}
+	catch (...) {
+		CE_CORE_ERROR("CocoaWindow::InitViewController: Unknown exception occurred while creating RenderViewController.");
+		throw;
+	}
+	_viewController = NS::TransferPtr(rawViewController);
 }
 
 void CocoaWindow::_Shutdown() {

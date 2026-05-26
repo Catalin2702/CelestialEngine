@@ -12,6 +12,8 @@
 #ifndef CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCONTROLLER_H
 #define CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCONTROLLER_H
 
+#include "Apple/Types/EventHandlers/I_ViewControllerEventHandler.hpp"
+
 #import <AppKit/AppKit.h>
 #include <MetalKit/MetalKit.h>
 
@@ -20,9 +22,8 @@
 namespace NS {
 class RenderViewController;
 }
-namespace MTL {
-class Device;
-}
+
+class MTLDevice;
 
 /**
  * @class RenderViewController
@@ -39,7 +40,9 @@ class Device;
  * @return An initialized instance of RenderViewController configured with the specified frame and Metal device.
  * @details This initializer allows clients to create a RenderViewController instance with a specific frame and Metal device. The provided frame will determine the size and position of the view controller's view, while the Metal device will be used for rendering operations. Clients should use this initializer when they need to set up a RenderViewController with specific rendering configurations from the outset.
  */
-- (instancetype) initWithFrame:(NSRect)frame device:(MTL::Device*)device;
+- (instancetype) initWithFrame:(NSRect)frame device:(id<MTLDevice>)device;
+
+- (void)setEventHandler:(I_ViewControllerEventHandler*)handler;
 @end
 
 #endif //CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEWCONTROLLER_H

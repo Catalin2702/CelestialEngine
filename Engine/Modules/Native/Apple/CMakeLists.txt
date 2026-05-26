@@ -21,7 +21,6 @@ set(APPKIT_HEADERS
 	${INCLUDE}/AppKit/Utility/AppKit.hpp
 
 	# View
-	${INCLUDE}/AppKit/View/RenderView.h
 	${INCLUDE}/AppKit/View/RenderViewController.h
 
 	# Window
@@ -53,7 +52,6 @@ set(METALCPP_HEADERS
 	${INCLUDE}/MetalCpp/AppKit/NSRunningApplication.hpp
 	${INCLUDE}/MetalCpp/AppKit/NSView.hpp
 	${INCLUDE}/MetalCpp/AppKit/NSWindow.hpp
-	${INCLUDE}/MetalCpp/AppKit/RenderView.hpp
 	${INCLUDE}/MetalCpp/AppKit/RenderViewController.hpp
 	${INCLUDE}/MetalCpp/AppKit/WindowDelegate.hpp
 
@@ -199,6 +197,7 @@ set(METALCPP_HEADERS
 	${INCLUDE}/MetalCpp/MetalKit/MetalKitPrivate.hpp
 	${INCLUDE}/MetalCpp/MetalKit/MTKTextureLoader.hpp
 	${INCLUDE}/MetalCpp/MetalKit/MTKView.hpp
+	${INCLUDE}/MetalCpp/MetalKit/RenderView.hpp
 
 	# QuartzCore
 	${INCLUDE}/MetalCpp/QuartzCore/CADefines.hpp
@@ -209,6 +208,11 @@ set(METALCPP_HEADERS
 	${INCLUDE}/MetalCpp/QuartzCore/QuartzCore.hpp
 )
 
+set(METALKIT_HEADERS
+	# View
+	${INCLUDE}/MetalKit/View/RenderView.h
+)
+
 set(TYPES_HEADERS
 	${INCLUDE}/Types/Types.hpp
 
@@ -216,17 +220,18 @@ set(TYPES_HEADERS
 	${INCLUDE}/Types/EventHandlers/DisplayLinkEventHandler.hpp
 	${INCLUDE}/Types/EventHandlers/WindowDelegateEventHandler.hpp
 	${INCLUDE}/Types/EventHandlers/ViewEventHandler.hpp
+	${INCLUDE}/Types/EventHandlers/ViewControllerEventHandler.hpp
 )
 
 set(TYPES_INTERFACES
 	${INTERFACE}/Types/EventHandlers/I_DisplayLinkEventHandler.hpp
 	${INTERFACE}/Types/EventHandlers/I_WindowDelegateEventHandler.hpp
 	${INTERFACE}/Types/EventHandlers/I_ViewEventHandler.hpp
+	${INTERFACE}/Types/EventHandlers/I_ViewControllerEventHandler.hpp
 )
 
 set(APPKIT_SOURCES
 	# View
-	${SOURCE}/AppKit/View/RenderView.mm
 	${SOURCE}/AppKit/View/RenderViewController.mm
 
 	# Window
@@ -251,11 +256,17 @@ set(METALCPP_SOURCES
 	${SOURCE}/MetalCpp/Define/MetalCppDefine.cpp
 )
 
+set(METALKIT_SOURCES
+	# View
+	${SOURCE}/MetalKit/View/RenderView.mm
+)
+
 set(TYPES_SOURCES
 	# EventHandlers
 	${SOURCE}/Types/EventHandlers/DisplayLinkEventHandler.cpp
 	${SOURCE}/Types/EventHandlers/WindowDelegateEventHandler.cpp
 	${SOURCE}/Types/EventHandlers/ViewEventHandler.cpp
+	${SOURCE}/Types/EventHandlers/ViewControllerEventHandler.cpp
 )
 
 set(HEADERS
@@ -263,6 +274,7 @@ set(HEADERS
 	${BRIDGE_HEADERS}
 	${COREANIMATION_HEADERS}
 	${METALCPP_HEADERS}
+	${METALKIT_HEADERS}
 	${TYPES_HEADERS}
 )
 
@@ -275,6 +287,7 @@ set(SOURCES
 	${BRIDGE_SOURCES}
 	${COREANIMATION_SOURCES}
 	${METALCPP_SOURCES}
+	${METALKIT_SOURCES}
 	${TYPES_SOURCES}
 )
 

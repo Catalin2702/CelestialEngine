@@ -68,7 +68,7 @@ public:
 	 * @brief Constructor
 	 * @details Creates and initializes a Cocoa window
 	 */
-	CocoaWindow();
+	CocoaWindow() = default;
 
 	/**
 	 * @brief Destructor
@@ -169,11 +169,13 @@ public:
 
 public:
 	/**
-	 * @brief Initializes the view controller with the Metal device
-	 * @param device Pointer to the Metal device to be used for rendering
-	 * @details Initializes the view controller by creating a new instance of NS::RenderViewController and setting it up with the provided Metal device. This prepares the view controller for managing the content view and handling rendering operations using Metal.
+	 * @brief Initializes the window with the provided Metal device
+	 * @param device Pointer to the Metal device to be used for view controller initialization
+	 * @details Initializes the window by first initializing the view controller with the provided Metal device and then setting up the Cocoa window and Metal layer.
+	 *			This method is called by the CocoaApplication during its initialization process to prepare the window for rendering with Metal.
+	 *			It ensures that the view controller is properly set up with the Metal device before initializing the window and its associated resources.
 	 */
-	void InitViewController(const MTL::Device* device);
+	void Init(const MTL::Device* device);
 
 protected:
 	/**
@@ -198,16 +200,20 @@ protected:
 	void _SetInternalCallbacks() override {};
 
 protected:
-	/** @brief Initializes the window and Metal resources
-	 * @details This method is called by the constructor to set up the Metal device, create the window, and configure the Metal layer for rendering.
-	 */
-	void _Init() override;
+	void _Init() override {}
 
 	/** @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering.
 	 *			This includes configuring the layer's properties and attaching it to the window's content view.
 	 */
 	void _InitWindow() override;
+
+	/**
+	 * @brief Initializes the view controller with the Metal device
+	 * @param device Pointer to the Metal device to be used for rendering
+	 * @details Initializes the view controller by creating a new instance of NS::RenderViewController and setting it up with the provided Metal device. This prepares the view controller for managing the content view and handling rendering operations using Metal.
+	 */
+	void _InitViewController(const MTL::Device* device);
 
 	/** @brief Shuts down the window and cleans up resources
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.

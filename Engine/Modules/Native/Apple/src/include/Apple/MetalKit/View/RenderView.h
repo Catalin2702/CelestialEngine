@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Native/Apple/AppKit/View
+// Module: CelestialEngine/Engine/Modules/Native/Apple/MetalKit/View
 // File: RenderView.h
 // Created by: Catalin Chirosca
 // Created: 2026-03-21

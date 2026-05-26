@@ -9,17 +9,21 @@
 
 #include "Apple/AppKit/View/RenderViewController.h"
 #include "Apple/MetalCpp/MetalKit/MTKView.hpp"
+#include "Apple/MetalKit/View/RenderView.h"
+
+#import <Metal/Metal.h>
 
 @interface RenderViewController()
 {
-	MTL::Device* _device;
+	id<MTLDevice> _device;
 	NSRect _initialFrame;
+	I_ViewControllerEventHandler* _eventHandler;
 }
 @end
 
 @implementation RenderViewController
 
-- (instancetype) initWithFrame:(NSRect)frame device:(MTL::Device*)device {
+- (instancetype) initWithFrame:(NSRect)frame device:(id<MTLDevice>)device {
 	self = [super initWithNibName:nil bundle:nil];
 	if (self) {
 		_initialFrame = frame;
@@ -28,13 +32,22 @@
 	return self;
 }
 
+- (void)setEventHandler:(I_ViewControllerEventHandler*)handler {
+	_eventHandler = handler;
+}
+
 -(void) loadView {
-	MTK::View* mtkView = MTK::View::alloc()->init(_initialFrame, _device);
-	self.view = (__bridge NSView*)mtkView;
+	RenderView* renderView = [[RenderView alloc] initWithFrame:_initialFrame device:_device];
+	self.view = renderView;
 }
 
 -(void) viewDidLoad {
 	[super viewDidLoad];
+
+	if (not _eventHandler)
+		return;
+
+	_eventHandler->DispatchViewDidLoad();
 }
 
 @end

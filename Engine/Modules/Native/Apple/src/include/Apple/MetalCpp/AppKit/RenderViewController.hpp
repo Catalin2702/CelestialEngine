@@ -15,9 +15,10 @@
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
 
 #include "Apple/MetalCpp/AppKit/AppKitPrivate.hpp"
+#include "Apple/Types/EventHandlers/ViewControllerEventHandler.hpp"
 
 namespace MTK {
-	class View;
+class RenderView;
 }
 
 namespace NS {
@@ -53,10 +54,30 @@ public:
 	 */
 	[[nodiscard]] RenderViewController* init(const Coder* coder) const;
 
+	/**
+	 * @brief Initializes the RenderViewController instance with a frame and Metal device
+	 * @param frame The frame rectangle for the view controller's view, measured in points. The origin of the frame is relative to the superview's coordinate system.
+	 * @param device A pointer to the MTLDevice that will be used for rendering. This device will be associated with the MTKView managed by this view controller.
+	 * @return RenderViewController* Pointer to the initialized RenderViewController instance
+	 * @details This initializer allows clients to create a RenderViewController instance with a specific frame and Metal device. The provided frame will determine the size and position of the view controller's view, while the Metal device will be used for rendering operations. Clients should use this initializer when they need to set up a RenderViewController with specific rendering configurations from the outset.
+	 */
 	[[nodiscard]] RenderViewController* init(const CGRect& frame, const MTL::Device* device) const;
 
 public:
-	[[nodiscard]] MTK::View* view() const;
+	/**
+	 * @brief Sets the event handler for the RenderViewController
+	 * @param handler A pointer to an object that implements the I_ViewControllerEventHandler interface
+	 * @details This method allows clients to set a custom event handler for the RenderViewController. The event handler will receive callbacks for various view-related events, such as view loading and setup. Clients should implement the I_ViewControllerEventHandler interface and pass an instance of their event handler to this method to receive event notifications from the view controller.
+	 */
+	void setEventHandler(I_ViewControllerEventHandler* handler) const;
+
+public:
+	/**
+	 * @brief Retrieves the Metal rendering view (MTKView) managed by this RenderViewController
+	 * @return MTK::View* Pointer to the MTKView instance managed by this view controller
+	 * @details This method allows clients to access the MTKView instance that is managed by this RenderViewController. The MTKView is the primary view used for rendering Metal content, and clients may need to access it directly for certain configurations or operations. Clients should call this method to retrieve the MTKView instance after the view controller has been initialized and set up.
+	 */
+	[[nodiscard]] MTK::RenderView* view() const;
 };
 
 _NS_INLINE RenderViewController* RenderViewController::alloc() {
@@ -75,8 +96,12 @@ _NS_INLINE RenderViewController* RenderViewController::init(const CGRect& frame,
 	return sendMessage<RenderViewController*>(this, _APPKIT_PRIVATE_SEL(initWithFrame_device_), frame, device);
 }
 
-_NS_INLINE MTK::View* RenderViewController::view() const {
-	return sendMessage<MTK::View*>(this, _APPKIT_PRIVATE_SEL(view));
+_NS_INLINE void RenderViewController::setEventHandler(I_ViewControllerEventHandler* handler) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setEventHandler_), handler);
+}
+
+_NS_INLINE MTK::RenderView* RenderViewController::view() const {
+	return sendMessage<MTK::RenderView*>(this, _APPKIT_PRIVATE_SEL(view));
 }
 
 }

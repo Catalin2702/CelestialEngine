@@ -33,7 +33,6 @@
 #include "NSOpenPanel.hpp"
 #include "NSRunningApplication.hpp"
 #include "NSWindow.hpp"
-#include "RenderView.hpp"
 #include "RenderViewController.hpp"
 #include "WindowDelegate.hpp"
 
