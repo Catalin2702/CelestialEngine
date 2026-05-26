@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -27,10 +27,15 @@
 
 namespace CE::Core::Window {
 
-static int _st_CocoaWindowCount = 0;
+/**
+ * @brief Temporary storage for window properties during initialization
+ * @details Used to pass window properties from the constructor to the _Init() method
+ */
+Types::Window::WindowProps _cocoaInitData;
 
 CocoaWindow::CocoaWindow(TypeWindow::WindowProps windowProps):
-	_data(std::move(windowProps)), _window(nullptr) {
+	_window(nullptr) {
+	_cocoaInitData = std::move(windowProps);
 	_Init();
 }
 
@@ -208,13 +213,10 @@ void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 	if (not _window)
 		return;
 
-	_data.width = width;
-	_data.height = height;
-
 	const auto [currentOrigin, currentSize] = _window->frame();
 	const CGRect frame = {
 		currentOrigin,
-		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
+		{static_cast<CGFloat>(width), static_cast<CGFloat>(height)}
 	};
 	_window->setFrame(frame, true, true);
 }
@@ -234,14 +236,12 @@ void CocoaWindow::_Init() {
 
 	_SetIOEventCallbacks();
 	_SetWindowEventCallbacks();
-
-	_st_CocoaWindowCount++;
 }
 
 void CocoaWindow::_InitWindow() {
 	const CGRect frame = {
 		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
-		{static_cast<CGFloat>(_data.width), static_cast<CGFloat>(_data.height)}
+		{static_cast<CGFloat>(_cocoaInitData.width), static_cast<CGFloat>(_cocoaInitData.height)}
 	};
 
 	NS::Window* rawWindow;
@@ -286,15 +286,14 @@ void CocoaWindow::_InitWindow() {
 	}
 	_windowDelegate = NS::RetainPtr(rawDelegate);
 
-	_window->setTitle(NS::String::string(_data.title.c_str(), NS::UTF8StringEncoding));
-
-	// Make the window visible
+	// Moves the window to the front of the screen list and makes it the key window, which means it will receive keyboard events and be the main focus for user interaction.
 	_window->makeKeyAndOrderFront(nullptr);
-
-	_window->setDelegate(_windowDelegate.get());
-
 	// Set frame autosave name to remember window position between launches
 	_window->setFrameAutosaveName(_window->title());
+	_window->setDelegate(_windowDelegate.get());
+	_window->setMinSize(CGSizeMake(640, 360));
+	_window->setOpaque(false);
+	_window->setTitle(NS::String::string(_cocoaInitData.title.c_str(), NS::UTF8StringEncoding));
 }
 
 void CocoaWindow::_Shutdown() {
@@ -302,8 +301,6 @@ void CocoaWindow::_Shutdown() {
 		_window->close();
 		_window = nullptr;
 	}
-
-	_st_CocoaWindowCount--;
 }
 
 }

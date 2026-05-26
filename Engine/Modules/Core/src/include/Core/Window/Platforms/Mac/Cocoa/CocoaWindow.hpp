@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -221,8 +221,6 @@ public:
 	WINDOW_API_TYPE(Cocoa)
 
 private:
-	Types::Window::WindowProps _data;						///< Window data including event callback
-
 	NS::SharedPtr<NS::RenderViewController> _viewController; ///< View controller for managing the content view
 	NS::SharedPtr<NS::Window> _window;						///< Native macOS window
 	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;		///< Delegate for handling window events

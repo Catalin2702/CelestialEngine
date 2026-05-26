@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -37,11 +37,20 @@ static bool _st_GLFWInitialized = false;
  */
 static int _st_GLFWWindowCount = 0;
 
-bool _VSync = false;
-TypeWindow::WindowProps _initData;
+/**
+ * @brief Flag to track the current VSync state
+ * @details Updated by SetVSync() and returned by IsVSync()
+ */
+bool _glfwVSync = false;
+
+/**
+ * @brief Temporary storage for window properties during initialization
+ * @details Used to pass window properties from the constructor to the _Init() method
+ */
+TypeWindow::WindowProps _glfwInitData;
 
 GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps) {
-	_initData = std::move(windowProps);
+	_glfwInitData = std::move(windowProps);
 	_Init();
 }
 
@@ -83,7 +92,7 @@ bool GlfwWindow::IsVSync() const {
 		return false;
 	}
 
-	return _VSync;
+	return _glfwVSync;
 }
 
 void GlfwWindow::SetEventCallback(const EventCallbackFn& callback) {
@@ -99,8 +108,8 @@ void GlfwWindow::SetVSync(const bool enabled) {
 		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
 		return;
 	}
-	_VSync = enabled;
-	glfwSwapInterval(_VSync ? 1 : 0);
+	_glfwVSync = enabled;
+	glfwSwapInterval(_glfwVSync ? 1 : 0);
 }
 
 void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
@@ -231,9 +240,9 @@ void GlfwWindow::_InitWindow() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	_glfwWindow.reset(glfwCreateWindow(
-		static_cast<int>(_initData.width),
-		static_cast<int>(_initData.height),
-		_initData.title.c_str(),
+		static_cast<int>(_glfwInitData.width),
+		static_cast<int>(_glfwInitData.height),
+		_glfwInitData.title.c_str(),
 		nullptr,
 		nullptr
 	));
