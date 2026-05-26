@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -17,30 +17,7 @@
 
 namespace CE::Core::Render::Context {
 
-
-namespace CE::Render::Context {
-
-MetalContext::MetalContext(const MetalContextProps& props): _props(props) {}
-
-MetalContext::MetalContext(void* window) {
-	if (not window) {
-		CE_CORE_ERROR("MetalContext constructor: Invalid window pointer provided.");
-		throw std::invalid_argument("MetalContext constructor: Invalid window pointer provided.");
-	}
-
-	_props = MetalContextProps {
-		.window = static_cast<Window::CocoaWindow*>(window),
-		.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm
-	};
-}
-
-MetalContext::~MetalContext() = default;
-
 void MetalContext::Init() {
-	assert(_props.window && "MetalContext requires a valid NS::Window pointer");
-	assert(_props.window->GetCocoaWindow() && "MetalContext requires a valid NS::Window pointer from CocoaWindow");
-	assert(_props.window->GetCocoaView() && "MetalContext requires a valid NS::View pointer from CocoaWindow");
-	const auto window = _props.window;
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 	if (not _device) {
 		CE_CORE_ERROR("MetalContext::Init: Could not create MetalDevice!");
@@ -53,57 +30,45 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
 
-	_layer = NS::RetainPtr(CA::MetalLayer::layer());
-	if (not _layer) {
-		CE_CORE_ERROR("MetalContext::Init: Could not create CAMetalLayer!");
-		throw std::runtime_error("MetalContext::Init: Could not create CAMetalLayer!");
-	}
-
-	// ReSharper disable All
-	const auto metalView = window->GetCocoaView();
-	metalView->setLayer(_layer.get());
-	metalView->setWantsLayer(true);
-
-	const auto scaleFactor = window->GetContentScale();
-	const auto [width, height] = window->GetContentSize();
-
-	_layer->setDevice(_device.get());
-	_layer->setPixelFormat(_props.pixelFormat);
-	_layer->setContentsScale(scaleFactor.first);
-	_layer->setMaximumDrawableCount(3);
-	_layer->setAllowsNextDrawableTimeout(false);
-	_layer->setDrawableSize(CGSizeMake(width, height));
-	// ReSharper restore All
 }
 
-void MetalContext::SwapBuffers() {}
-
-void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) {
-	if (not _layer) {
-		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content scale change because Metal layer is not initialized.");
-		return;
-	}
-
-	const auto [width, height] = size;
-	_layer->setDrawableSize(CGSizeMake(width, height));
+void MetalContext::HandleContentSizeChange(const std::pair<float, float>&) const {
+	// if (not _layer) {
+	// 	CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content scale change because Metal layer is not initialized.");
+	// 	return;
+	// }
+	//
+	// const auto [width, height] = size;
+	// _layer->setDrawableSize(CGSizeMake(width, height));
 }
 
-void MetalContext::HandleVSyncChange(const bool enabled) {
-	if (not _layer) {
-		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because Metal layer is not initialized.");
+void MetalContext::HandleVSyncChange(const bool enabled) const {
+	if (not (_view and _view->layer())) {
+		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because RenderView is not initialized or does not have a layer.");
 		return;
 	}
-
-	_layer->setDisplaySyncEnabled(enabled);
+	CE_CORE_ERROR("MetalContext::HandleVSyncChange setting VSync to {0}", enabled);
+	const auto layer = _view->layer();
+	layer->setDisplaySyncEnabled(enabled);
 }
 
 bool MetalContext::IsVSyncEnabled() const {
-	if (not _layer) {
-		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get VSync state because Metal layer is not initialized.");
+	if (not (_view and _view->layer())) {
+		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get VSync state because RenderView is not initialized or does not have a layer.");
 		return false;
 	}
+	const auto layer = _view->layer();
+	return layer->displaySyncEnabled();
+}
 
-	return _layer->displaySyncEnabled();
+void MetalContext::SetView(MTK::RenderView* view) {
+	if (not view) {
+		CE_CORE_ERROR("MetalContext::SetView: Cannot set null view!");
+		throw std::runtime_error("MetalContext::SetView: Cannot set null view!");
+	}
+
+	// The release of the previous view (if any) will be handled by the assign operator of NS::SharedPtr
+	_view = NS::TransferPtr(view);
 }
 
 }

@@ -30,6 +30,7 @@ class RenderPassDescriptor;
 }
 
 namespace MTK {
+class RenderViewDelegate;
 
 /**
  * @class RenderView
@@ -88,7 +89,7 @@ public:
 
 	void setColorSpace(CGColorSpaceRef colorSpace);
 
-	void SetDelegate(const ViewDelegate* delegate);
+	void setDelegate(const ViewDelegate* delegate);
 
 	void setDepthStencilAttachmentTextureUsage(MTL::TextureUsage textureUsage);
 
@@ -156,6 +157,8 @@ public:
 	[[nodiscard]] CGRect frame() const;
 
 	[[nodiscard]] bool isPaused() const;
+
+	[[nodiscard]] CA::MetalLayer* layer() const;
 
 	[[nodiscard]] MTL::TextureUsage multisampleColorAttachmentTextureUsage() const;
 
@@ -237,8 +240,48 @@ _NS_INLINE void RenderView::setColorSpace(CGColorSpaceRef colorSpace) {
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-_NS_INLINE void RenderView::SetDelegate(const ViewDelegate* delegate) {
-	sendMessage<void>(this, _MTK_PRIVATE_SEL(setDelegate_), delegate);
+_NS_INLINE void RenderView::setDelegate(const ViewDelegate* delegate) {
+	// Requires a similar soution
+	NS::Value* pWrapper = NS::Value::value( delegate );
+
+	// drawInMTKView:
+
+	void (*drawDispatch)( NS::Value*, SEL, id ) = []( NS::Value* pSelf, [[maybe_unused]] SEL _cmd, id pMTKView ){
+		auto pDel = reinterpret_cast< MTK::ViewDelegate* >( pSelf->pointerValue() );
+#ifdef __OBJC__
+		pDel->drawInMTKView( (__bridge MTK::View *)pMTKView );
+
+#else
+		pDel->drawInMTKView( (MTK::View *)pMTKView );
+#endif
+	};
+
+	class_addMethod( (Class)objc_lookUpClass( "NSValue" ), sel_registerName( "drawInMTKView:" ), (IMP)drawDispatch, "v@:@" );
+
+	// mtkView:drawableSizeWillChange:
+
+	void (*drawableSizeWillChange)( NS::Value*, SEL, View*, CGSize ) = []( NS::Value* pSelf, SEL, View* pMTKView, CGSize size){
+		auto pDel = reinterpret_cast< MTK::ViewDelegate* >( pSelf->pointerValue() );
+		pDel->drawableSizeWillChange( pMTKView, size );
+	};
+
+	#if CGFLOAT_IS_DOUBLE
+	const char* cbparams = "v@:@{CGSize=dd}";
+	#else
+	const char* cbparams = "v@:@{CGSize=ff}";
+	#endif // CGFLOAT_IS_DOUBLE
+
+	class_addMethod( (Class)objc_lookUpClass( "NSValue" ), sel_registerName( "mtkView:drawableSizeWillChange:"), (IMP)drawableSizeWillChange, cbparams );
+
+	// This circular reference leaks the wrapper object to keep it around for the dispatch to work.
+	// It may be better to hoist it to the MTK::View as a member.
+#ifdef __OBJC__
+	objc_setAssociatedObject( (__bridge id)pWrapper, "mtkviewdelegate_cpp", (__bridge id)pWrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC );
+#else
+	objc_setAssociatedObject( (id)pWrapper, "mtkviewdelegate_cpp", (id)pWrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC );
+#endif
+
+	NS::Object::sendMessage< void >( this, sel_registerName( "setDelegate:" ), pWrapper );
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -386,6 +429,10 @@ _NS_INLINE CGRect RenderView::frame() const {
 
 _NS_INLINE bool RenderView::isPaused() const {
 	return sendMessage<bool>(this, _MTK_PRIVATE_SEL(isPaused));
+}
+
+_NS_INLINE CA::MetalLayer* RenderView::layer() const {
+	return sendMessage<CA::MetalLayer*>(this, _MTK_PRIVATE_SEL(layer));
 }
 
 _NS_INLINE MTL::TextureUsage RenderView::multisampleColorAttachmentTextureUsage() const {

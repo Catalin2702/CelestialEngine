@@ -441,6 +441,10 @@ _APPKIT_PRIVATE_DEF_SEL(minSize, "minSize");
 
 _APPKIT_PRIVATE_DEF_SEL(setMinSize_, "setMinSize:");
 
+_APPKIT_PRIVATE_DEF_SEL(setContentViewController_, "setContentViewController:");
+
+_APPKIT_PRIVATE_DEF_SEL(contentViewController, "contentViewController");
+
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -185,7 +185,7 @@ void CocoaWindow::_SetViewControllerEventCallbacks() {
 
 	_handlers.ViewControllerEventHandler = std::make_unique<Apple::Types::ViewControllerEventHandler>();
 
-	_handlers.ViewControllerEventHandler->OnViewDidLoad([this]() {
+	_handlers.ViewControllerEventHandler->OnViewDidLoad([this] {
 		_SetIOEventCallbacks();
 	});
 
@@ -218,7 +218,6 @@ void CocoaWindow::Init(const MTL::Device* device) {
 	_InitWindow();
 	_InitViewController(device);
 
-	_SetViewControllerEventCallbacks();
 	_SetWindowEventCallbacks();
 }
 
@@ -299,6 +298,10 @@ void CocoaWindow::_InitViewController(const MTL::Device* device) {
 		throw;
 	}
 	_viewController = NS::TransferPtr(rawViewController);
+	_SetViewControllerEventCallbacks();
+
+	// Assign the view controller to the window: this triggers loadView → viewDidLoad
+	_window->setContentViewController(_viewController.get());
 }
 
 void CocoaWindow::_Shutdown() {

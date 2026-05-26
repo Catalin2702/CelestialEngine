@@ -33,7 +33,6 @@ class Device;
 }
 
 namespace NS {
-class RenderView;
 class RenderViewController;
 class Window;
 class WindowDelegate;
@@ -234,10 +233,10 @@ public:
 
 private:
 	NS::SharedPtr<NS::RenderViewController> _viewController; ///< View controller for managing the content view
-	NS::SharedPtr<NS::Window> _window;						///< Native macOS window
-	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;		///< Delegate for handling window events
+	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
+	NS::SharedPtr<NS::WindowDelegate> _windowDelegate; ///< Delegate for handling window events
 
-	EventHandlers _handlers;									///< Struct containing event handlers for view and window events
+	EventHandlers _handlers; ///< Struct containing event handlers for view and window events
 };
 
 }

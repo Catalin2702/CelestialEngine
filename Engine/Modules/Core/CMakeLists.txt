@@ -41,6 +41,11 @@ set(RENDER_HEADERS
 		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
 
+	# Delegates
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.hpp
+	>
+
 	# Shader
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
@@ -118,6 +123,11 @@ set(RENDER_SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
+	>
+
+	# Delegates
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.cpp
 	>
 
 	# Shader

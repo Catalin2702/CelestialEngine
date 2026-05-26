@@ -182,7 +182,7 @@ public:
 
 	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
 
-	void SetRunning(const bool running) { _isRunning.store(running); }
+	virtual void SetRunning(const bool running) { _isRunning.store(running); }
 
 	/**
 	 * @brief Sets the ImGui layer for the application

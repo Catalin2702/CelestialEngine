@@ -37,6 +37,10 @@ class Screen;
 
 
 namespace NS {
+class RenderViewController;
+}
+
+namespace NS {
 
 class Window : public Referencing<Window> {
 public:
@@ -48,6 +52,7 @@ public:
 
 public:
 	void setContentView(const View* pContentView) const;
+	void setContentViewController(const RenderViewController* pViewController) const;
 	void setDelegate(const Object* pDelegate) const;
 	void setFrameAutosaveName(const String* pName) const;
 	void setFrame(const CGRect& frame, bool display = true) const;
@@ -61,6 +66,7 @@ public:
 	[[nodiscard]] CGRect contentRectForFrameRect(const CGRect& frameRect) const;
 	[[nodiscard]] CGRect contentRectForFrameRect() const;
 	[[nodiscard]] View* contentView() const;
+	[[nodiscard]] RenderViewController* contentViewController() const;
 	[[nodiscard]] Object* delegate() const;
 	[[nodiscard]] CGRect frame() const;
 	[[nodiscard]] CGSize minSize() const;
@@ -89,6 +95,10 @@ _NS_INLINE void NS::Window::makeKeyAndOrderFront(const Object* pSender) const {
 
 _NS_INLINE void NS::Window::setContentView(const View* pContentView) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setContentView_), pContentView);
+}
+
+_NS_INLINE void NS::Window::setContentViewController(const RenderViewController* pViewController) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setContentViewController_), pViewController);
 }
 
 _NS_INLINE void NS::Window::setDelegate(const Object* pDelegate) const {
@@ -133,6 +143,10 @@ _NS_INLINE CGRect NS::Window::contentRectForFrameRect() const {
 
 _NS_INLINE NS::View* NS::Window::contentView() const {
 	return sendMessage<View*>(this, _APPKIT_PRIVATE_SEL(contentView));
+}
+
+_NS_INLINE NS::RenderViewController* NS::Window::contentViewController() const {
+	return sendMessage<RenderViewController*>(this, _APPKIT_PRIVATE_SEL(contentViewController));
 }
 
 _NS_INLINE NS::Object* NS::Window::delegate() const {

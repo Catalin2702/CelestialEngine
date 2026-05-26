@@ -16,7 +16,6 @@ namespace CE::Core::Application {
 void CocoaApplicationDelegate::applicationDidFinishLaunching(NS::Notification*) {
 	auto& app = dynamic_cast<CocoaApplication&>(I_Application::StGet());
 	app.SetRunning(true);
-	app.StartDisplayLink();
 }
 
 bool CocoaApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application*) {

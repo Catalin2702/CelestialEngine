@@ -15,7 +15,9 @@
 #include "Core/Application/I_Application.hpp"
 
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
 
@@ -38,27 +40,9 @@ namespace Apple::Types {
 class DisplayLinkEventHandler;
 }
 
-namespace Core {
-
-namespace Application {
-class CocoaApplicationDelegate;
-}
-
-namespace Layers {
+namespace Core::Layers {
 class I_Layer;
 class ImGuiMetalLayer;
-}
-
-namespace Render::Context {
-class I_Context;
-class MetalContext;
-}
-
-namespace Window {
-class I_Window;
-class CocoaWindow;
-}
-
 }
 
 }
@@ -145,18 +129,6 @@ public:
 	 */
 	void InitImGuiLayer() override;
 
-	/**
-	 * @brief Starts the display link for rendering
-	 * @details Initializes and starts the display link, which synchronizes the rendering loop with the display's refresh rate. This ensures smooth rendering and optimal performance on macOS.
-	 */
-	void StartDisplayLink();
-
-	/**
-	 * @brief Stops the display link for rendering
-	 * @details Stops and cleans up the display link, which is used to synchronize the rendering loop with the display's refresh rate. This should be called when the application is quitting or when rendering is no longer needed to free up system resources.
-	 */
-	void StopDisplayLink();
-
 public:
 	/**
 	 * @brief Sets the ImGui layer for the application
@@ -172,10 +144,14 @@ public:
 	 */
 	void RemoveImGuiLayer() override;
 
-protected:
-	void _InitWindow() override {}
+	void SetRunning(bool running) override;
 
-	void _InitRenderer() override {}
+protected:
+	void _InitWindow() override {
+	}
+
+	void _InitRenderer() override {
+	}
 
 public:
 	/**
@@ -207,23 +183,21 @@ public:
 	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const { return *_context; }
 
 private:
-	static void _StAsyncTickCallback(void* userData);
 	void _SetWindowCallbacks() const;
 
 private:
-	NS::SharedPtr<NS::Application> _appCocoa; ///< Pointer to the Cocoa application instance
-	NS::SharedPtr<CA::DisplayLink> _displayLink; ///< Pointer to the display link for synchronizing rendering
-	std::unique_ptr<CocoaApplicationDelegate> _appDelegate; ///< Delegate for handling Cocoa application events
+	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance
 
-	std::unique_ptr<Render::Context::MetalContext> _context; ///< Pointer to the Metal rendering context
-	std::unique_ptr<Window::CocoaWindow> _window; ///< Pointer to the application window
+	std::unique_ptr<Render::Context::MetalContext> _context = nullptr; ///< Pointer to the Metal rendering context
+	std::unique_ptr<Window::CocoaWindow> _window = nullptr; ///< Pointer to the application window
 
-	Layers::ImGuiMetalLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
+	Layers::ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
+
+	CocoaApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
+	MTK::RenderViewDelegate _renderViewDelegate; ///< Delegate for handling Metal render view events
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
-
-	std::unique_ptr<Apple::Types::DisplayLinkEventHandler> _displayLinkEventHandler; ///< Handler for display link events
 };
 
 }

@@ -15,7 +15,6 @@
 #include "Apple/Types/EventHandlers/DisplayLinkEventHandler.hpp"
 #include "Apple/Types/EventHandlers/ViewEventHandler.hpp"
 #include "Apple/Types/EventHandlers/WindowDelegateEventHandler.hpp"
-#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -31,15 +30,16 @@
 
 namespace CE::Core::Application {
 
-CocoaApplication::CocoaApplication(): _displayLink(nullptr), _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
+static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
+dispatch_semaphore_t _inFlightSemaphore = dispatch_semaphore_create(MAX_FRAMES_IN_FLIGHT);
+
+CocoaApplication::CocoaApplication() {
 	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
 
-	SetRunning(false);
+	I_Application::SetRunning(false);
 
 	_appCocoa = NS::RetainPtr(NS::Application::sharedApplication());
-
-	_appDelegate = std::make_unique<CocoaApplicationDelegate>();
 }
 
 CocoaApplication::~CocoaApplication() {
@@ -58,12 +58,11 @@ CocoaApplication::~CocoaApplication() {
 	_context.reset();
 	_window.reset();
 
-	_appDelegate.reset();
 	_appCocoa.reset();
 }
 
 void CocoaApplication::Run() {
-	_appCocoa->setDelegate(_appDelegate.get());
+	_appCocoa->setDelegate(&_appDelegate);
 
 	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
 		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
@@ -78,8 +77,6 @@ void CocoaApplication::Run() {
 }
 
 void CocoaApplication::Quit() {
-	StopDisplayLink();
-
 	_appCocoa->stop(nullptr);
 
 	const auto dummyEvent = NS::Event::otherEventWithType(
@@ -101,13 +98,15 @@ void CocoaApplication::Tick(const float deltaTime) {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
-	_imguiLayer->Begin(deltaTime);
+	CE_CORE_INFO("Tick: {0}", deltaTime);
 
-	for (const auto layer: _layerStack)
-		if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
-			renderLayer->OnRender();
-
-	_imguiLayer->End();
+	// _imguiLayer->Begin(deltaTime);
+	//
+	// for (const auto layer: _layerStack)
+	// 	if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
+	// 		renderLayer->OnRender();
+	//
+	// _imguiLayer->End();
 }
 
 void CocoaApplication::OnEvent(Events::I_Event& event) {
@@ -154,51 +153,18 @@ void CocoaApplication::Init() {
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(CocoaApplication::OnEvent));
 	_window->Init(_context->GetDevice());
 
-	_context->SetView(_window->GetViewController()->view());
+	if (const auto view = _window->GetViewController()->view()) {
+		_context->SetView(view);
+		view->setPaused(true);
+		view->setEnableSetNeedsDisplay(false);
+		view->setDelegate(&_renderViewDelegate);
+	}
 
 	Input::InitInput(windowProps.windowApi);
 
 	_SetWindowCallbacks();
 
 	_window->GetReady(windowProps.VSync);
-}
-
-void CocoaApplication::StartDisplayLink() {
-	assert(IsRunning() && "CocoaApplication::StartDisplayLink: Application must be running to start display link");
-	assert(_window && "CocoaApplication::StartDisplayLink: Window must be initialized before starting display link");
-	assert(_context && "CocoaApplication::StartDisplayLink: Renderer must be initialized before starting display link");
-	assert(_imguiLayer && "CocoaApplication::StartDisplayLink: ImGui layer must be initialized before starting display link");
-
-	if (_window->IsVSync()) {
-		assert(_displayLink && "CocoaApplication::StartDisplayLink: Display link is already running!");
-
-		_displayLink = NS::TransferPtr(CA::DisplayLink::alloc()->init());
-		_displayLinkEventHandler = std::make_unique<Apple::Types::DisplayLinkEventHandler>();
-		_displayLinkEventHandler->OnTick([this]() {
-			if (not IsRunning())
-				return;
-			Tick(GetDeltaTime());
-		});
-
-		_lastFrameTime = Clock::now(); // Reset to avoid a large deltaTime on the first frame
-		_displayLink->start();
-	}
-	else {
-		_loopThread = std::thread([this] {
-			while (_isRunning.load(std::memory_order_acquire)) {
-				if (not _tickPending.exchange(true)) {
-					dispatch_async_f(dispatch_get_main_queue(), this, &CocoaApplication::_StAsyncTickCallback);
-				}
-			}
-		});
-	}
-}
-
-void CocoaApplication::StopDisplayLink() {
-	if (not _displayLink)
-		return;
-
-	_displayLink.reset();
 }
 
 void CocoaApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
@@ -230,6 +196,36 @@ void CocoaApplication::RemoveImGuiLayer() {
 	_imguiLayer = nullptr;
 }
 
+void CocoaApplication::SetRunning(const bool running) {
+	I_Application::SetRunning(running);
+
+	CE_CORE_INFO("CocoaApplication::SetRunning: Setting running state to {0}", running);
+
+	if (not Utility::Config::Config::StGetWindowProps().VSync) {
+		if (running && not _loopThread.joinable()) {
+			_loopThread = std::thread([this] {
+				while (_isRunning.load(std::memory_order_acquire)) {
+					if (not _tickPending.exchange(true)) {
+						dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
+							if (const auto app = static_cast<CocoaApplication*>(context)) {
+								app->_tickPending.store(false, std::memory_order_release);
+								if (app->IsRunning()) {
+									app->Tick(app->GetDeltaTime());
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+	}
+	else {
+		if (const auto view = _context->GetView()) {
+			view->setPaused(not running);
+		}
+	}
+}
+
 void CocoaApplication::InitImGuiLayer() {
 	assert(_window && "CocoaApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
 	assert(_context && "CocoaApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
@@ -238,15 +234,6 @@ void CocoaApplication::InitImGuiLayer() {
 	auto overlay = std::make_unique<Layers::ImGuiMetalLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
-}
-
-void CocoaApplication::_StAsyncTickCallback(void* userData) {
-	if (const auto app = static_cast<CocoaApplication*>(userData)) {
-		app->_tickPending.store(false);
-		if (app->_isRunning.load(std::memory_order_acquire)) {
-			app->Tick(app->GetDeltaTime());
-		}
-	}
 }
 
 void CocoaApplication::_SetWindowCallbacks() const {
