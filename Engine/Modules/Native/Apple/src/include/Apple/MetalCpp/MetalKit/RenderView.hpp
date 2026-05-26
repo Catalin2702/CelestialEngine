@@ -13,6 +13,7 @@
 #define CE_NATIVE_APPLE_METAL_APPKIT_VIEW_RENDERVIEW_HPP
 
 #include "MetalKitPrivate.hpp"
+#include "MTKView.hpp"
 
 #include "Apple/MetalCpp/Foundation/NSObject.hpp"
 #include "Apple/Types/EventHandlers/I_ViewEventHandler.hpp"
@@ -87,7 +88,7 @@ public:
 
 	void setColorSpace(CGColorSpaceRef colorSpace);
 
-	void SetDelegate(const void* delegate);
+	void SetDelegate(const ViewDelegate* delegate);
 
 	void setDepthStencilAttachmentTextureUsage(MTL::TextureUsage textureUsage);
 
@@ -142,7 +143,7 @@ public:
 
 	[[nodiscard]] MTL::Texture* depthStencilTexture() const;
 
-	[[nodiscard]] void* delegate() const;
+	[[nodiscard]] ViewDelegate* delegate() const;
 
 	[[nodiscard]] MTL::Device* device() const;
 
@@ -236,7 +237,7 @@ _NS_INLINE void RenderView::setColorSpace(CGColorSpaceRef colorSpace) {
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-_NS_INLINE void RenderView::SetDelegate(const void* delegate) {
+_NS_INLINE void RenderView::SetDelegate(const ViewDelegate* delegate) {
 	sendMessage<void>(this, _MTK_PRIVATE_SEL(setDelegate_), delegate);
 }
 
@@ -359,8 +360,8 @@ _NS_INLINE MTL::Texture* RenderView::depthStencilTexture() const {
 	return sendMessage<MTL::Texture*>(this, _MTK_PRIVATE_SEL(depthStencilTexture));
 }
 
-_NS_INLINE void* RenderView::delegate() const {
-	return sendMessage<void*>(this, _MTK_PRIVATE_SEL(delegate));
+_NS_INLINE ViewDelegate* RenderView::delegate() const {
+	return sendMessage<ViewDelegate*>(this, _MTK_PRIVATE_SEL(delegate));
 }
 
 _NS_INLINE MTL::Device* RenderView::device() const {
