@@ -437,6 +437,11 @@ _APPKIT_PRIVATE_DEF_SEL(screens, "screens");
 
 _APPKIT_PRIVATE_DEF_SEL(visibleFrame, "visibleFrame");
 
+// Window
+_APPKIT_PRIVATE_DEF_SEL(minSize, "minSize");
+
+_APPKIT_PRIVATE_DEF_SEL(setMinSize_, "setMinSize:");
+
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -52,6 +52,7 @@ public:
 	void setFrameAutosaveName(const String* pName) const;
 	void setFrame(const CGRect& frame, bool display = true) const;
 	void setFrame(const CGRect& frame, bool display, bool animate) const;
+	void setMinSize(const CGSize& minSize) const;
 	void setOpaque(bool flag) const;
 	void setTitle(const String* pTitle) const;
 
@@ -62,6 +63,7 @@ public:
 	[[nodiscard]] View* contentView() const;
 	[[nodiscard]] Object* delegate() const;
 	[[nodiscard]] CGRect frame() const;
+	[[nodiscard]] CGSize minSize() const;
 	[[nodiscard]] Screen* screen() const;
 	[[nodiscard]] String* title() const;
 };
@@ -105,6 +107,10 @@ _NS_INLINE void NS::Window::setFrame(const CGRect& frame, const bool display, co
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setFrame_display_animate_), frame, display, animate);
 }
 
+_NS_INLINE void NS::Window::setMinSize(const CGSize& minSize) const {
+	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setMinSize_), minSize);
+}
+
 _NS_INLINE void NS::Window::setOpaque(const bool flag) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setOpaque_), flag);
 }
@@ -135,6 +141,10 @@ _NS_INLINE NS::Object* NS::Window::delegate() const {
 
 _NS_INLINE CGRect NS::Window::frame() const {
 	return sendMessage<CGRect>(this, _APPKIT_PRIVATE_SEL(frame));
+}
+
+_NS_INLINE CGSize NS::Window::minSize() const {
+	return sendMessage<CGSize>(this, _APPKIT_PRIVATE_SEL(minSize));
 }
 
 _NS_INLINE NS::Screen* NS::Window::screen() const {
