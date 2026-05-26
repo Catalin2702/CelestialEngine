@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -98,15 +98,13 @@ public:
 
 	/**
      * @brief Virtual method to initialize the application with window properties
-     * @param windowProps Window configuration properties
      */
-	virtual void Init(const Types::Window::WindowProps& windowProps) = 0;
+	virtual void Init() = 0;
 
 	/**
 	 * @brief Initializes the ImGui layer with the specified graphics API
-	 * @param graphicsApi Graphics API to use for the ImGui layer
 	 */
-	void virtual InitImGuiLayer(Types::Render::GraphicsApi graphicsApi) = 0;
+	void virtual InitImGuiLayer() = 0;
 
 	/**
 	 * @brief Adds a layer to the layer stack
@@ -142,15 +140,13 @@ public:
 protected:
 	/**
 	 * @brief Initializes the application with the specified window properties
-	 * @param windowProps Window configuration properties
 	 */
-	void virtual _InitWindow(const Types::Window::WindowProps& windowProps) = 0;
+	void virtual _InitWindow() = 0;
 
 	/**
 	 * @brief Initializes the renderer with the specified graphics API
-	 * @param graphicsApi Graphics API to use for rendering
 	 */
-	void virtual _InitRenderer(Types::Render::GraphicsApi graphicsApi) = 0;
+	void virtual _InitRenderer() = 0;
 
 public:
 	/**

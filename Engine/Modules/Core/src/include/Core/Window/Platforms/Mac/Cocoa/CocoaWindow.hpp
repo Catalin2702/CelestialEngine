@@ -16,8 +16,8 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
-#include "MetalCpp/AppKit/AppKit.hpp"
-#include "MetalCpp/Foundation/Foundation.hpp"
+#include "Apple/MetalCpp/AppKit/AppKit.hpp"
+#include "Apple/MetalCpp/Foundation/Foundation.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #include <memory>
@@ -44,8 +44,6 @@ class ViewEventHandler;
 class WindowDelegateEventHandler;
 }
 
-namespace TypeWindow = CE::Types::Window;
-
 /**
  * @namespace CE::Core::Window
  * @brief Window management and window interfaces
@@ -68,10 +66,9 @@ class CE_API CocoaWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
-	 * @param windowProps Window configuration properties (title, dimensions, VSync)
-	 * @details Creates and initializes a Metal-based window with the specified properties using Cocoa APIs
+	 * @details Creates and initializes a Cocoa window
 	 */
-	CocoaWindow(TypeWindow::WindowProps windowProps);
+	CocoaWindow();
 
 	/**
 	 * @brief Destructor

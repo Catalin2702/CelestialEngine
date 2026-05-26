@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -34,10 +34,10 @@ protected:
 	[[nodiscard]] std::pair<float, float> _GetMouseXYImpl() override;
 
 private:
-	void _InitCocoaWindow();
+	void _InitWindow();
 
 private:
-	NS::Window* _cocoaWindow = nullptr;				///< Cached pointer to the Cocoa window for input state queries
+	NS::Window* _window = nullptr;				///< Cached pointer to the Cocoa window for input state queries
 };
 
 }

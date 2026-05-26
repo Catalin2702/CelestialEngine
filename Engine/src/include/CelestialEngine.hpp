@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -53,24 +53,22 @@
 // -----------------------------------------------
 
 // ---- Types ------------------------------------
-#include <Types/Window/WindowProps.hpp>
+#include <Types/Types.hpp>
 // -----------------------------------------------
 
 // ---- Utility ----------------------------------
-#include <Utility/CMD/Window.hpp>
-#include <Utility/FileSystem/File.hpp>
-#include <Utility/FileSystem/FileSystem.hpp>
-#include <Utility/Time/Chronometer.hpp>
+#include <Utility/Utility.hpp>
 // -----------------------------------------------
 
 // ---- Convenient namespace aliases -------------
 namespace Application = CE::Core::Application;		///< Application framework
 namespace CMD = CE::Utility::CMD;					///< Command-line parsing utilities
+namespace Config = CE::Utility::Config;				///< Configuration management
 namespace Events = CE::Events;						///< Event system
 namespace FS = CE::Utility::FileSystem;				///< FileSystem
 namespace Input = CE::Core::Input;					///< Input handling
 namespace Log = CE::Tools::Log;						///< Logging system
-namespace Layers = CE::Core::Layers;						///< Layer management
+namespace Layers = CE::Core::Layers;				///< Layer management
 namespace Time = CE::Utility::Time;					///< Time utilities
 namespace TypeWindow = CE::Types::Window;			///< Window-related types
 // -----------------------------------------------

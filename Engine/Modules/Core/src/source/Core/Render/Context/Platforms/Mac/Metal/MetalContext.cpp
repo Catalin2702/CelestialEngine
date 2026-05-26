@@ -9,9 +9,8 @@
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-#include "MetalCpp/AppKit/AppKit.hpp"
-#include "MetalCpp/Metal/Metal.hpp"
-#include "MetalCpp/QuartzCore/CAMetalLayer.hpp"
+#include "Apple/MetalCpp/Metal/Metal.hpp"
+#include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <cassert>

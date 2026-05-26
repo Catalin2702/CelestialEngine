@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-16
+# Updated: 2026-05-26
 #
 
 set(HEADERS
@@ -24,6 +24,9 @@ set(HEADERS
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/WindowDestructor.hpp
 	src/include/Types/FileSystem/File.hpp
+
+	# Main
+	src/include/Types/Types.hpp
 )
 
 set(SOURCES

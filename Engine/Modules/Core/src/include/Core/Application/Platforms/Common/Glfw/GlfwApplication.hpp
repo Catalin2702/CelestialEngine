@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -110,17 +110,17 @@ public:
 
 	/**
 	 * @brief Initializes the application window
-	 * @param windowProps Window configuration properties
-	 * @details Creates the application window and sets up event callbacks based on the provided window properties.
+	 * @details Creates the application window and sets up event callbacks based on the window properties set in Config::Config.
 	 *			Initializes the appropriate input system based on the window API.
 	 */
-	void Init(const Types::Window::WindowProps& windowProps) override;
+	void Init() override;
 
 	/**
 	 * @brief Initializes the ImGui layer
-	 * @details Initializes the ImGui layer for rendering UI based on the specified graphics API. For GLFW with OpenGL, this will involve creating an ImGuiOpenGLLayer instance and pushing it as an overlay.
+	 * @details Initializes the ImGui layer for rendering UI based on the specified graphics API set in Config::Config.
+	 *			For GLFW with OpenGL, this will involve creating an ImGuiOpenGLLayer instance and pushing it as an overlay.
 	 */
-	void InitImGuiLayer(Types::Render::GraphicsApi) override;
+	void InitImGuiLayer() override;
 
 public:
 	/**
@@ -140,17 +140,17 @@ public:
 protected:
 	/**
 	 * @brief Initializes the application window
-	 * @param windowProps Window configuration properties
-	 * @details Creates the application window and sets up event callbacks based on the provided window properties.
+	 * @details Creates the application window and sets up event callbacks.
 	 *			Initializes the appropriate input system based on the window API.
 	 */
-	void _InitWindow(const Types::Window::WindowProps& windowProps) override;
+	void _InitWindow() override;
 
 	/**
 	 * @brief Initializes the renderer
-	 * @details Initializes the rendering context based on the specified graphics API. For GLFW, this will typically involve setting up an OpenGL or Vulkan rendering context.
+	 * @details Initializes the rendering context based on the specified graphics API.
+	 *			For GLFW, this will typically involve setting up an OpenGL or Vulkan rendering context.
 	 */
-	void _InitRenderer(Types::Render::GraphicsApi) override;
+	void _InitRenderer() override;
 
 public:
 	/**

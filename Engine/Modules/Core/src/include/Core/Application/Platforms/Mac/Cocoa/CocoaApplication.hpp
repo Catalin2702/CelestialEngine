@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -13,8 +13,11 @@
 #define CE_CORE_APPLICATION_PLATFORMS_MAC_COCOA_COCOAAPPLICATION_HPP
 
 #include "Core/Application/I_Application.hpp"
+
+#include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "MetalCpp/Foundation/Foundation.hpp"
 
 #include <atomic>
 #include <memory>
@@ -132,16 +135,15 @@ public:
 
 	/**
      * @brief Initializes the application with window properties
-     * @param windowProps Window configuration properties
      * @details Initializes the application by creating the window and setting up the rendering context based on the provided window properties. This method should be called before running the application to ensure that all necessary components are properly initialized.
      */
-	void Init(const Types::Window::WindowProps& windowProps) override;
+	void Init() override;
 
 	/**
 	 * @brief Initializes the ImGui layer
 	 * @details Initializes the ImGui layer for rendering UI based on the specified graphics API. For macOS with Metal, this will involve creating an ImGuiMetalLayer instance and pushing it as an overlay.
 	 */
-	void InitImGuiLayer(Types::Render::GraphicsApi) override;
+	void InitImGuiLayer() override;
 
 	/**
 	 * @brief Starts the display link for rendering
@@ -173,17 +175,16 @@ public:
 protected:
 	/**
      * @brief Initializes the application window
-     * @param windowProps Window configuration properties
      * @details Creates the application window and sets up event callbacks based on the provided window properties.
      *			Initializes the appropriate input system based on the window API.
      */
-	void _InitWindow(const Types::Window::WindowProps& windowProps) override;
+	void _InitWindow() override;
 
 	/**
      * @brief Initializes the renderer
      * @details Initializes the rendering context based on the specified graphics API. For macOS, this will typically involve setting up a Metal rendering context.
      */
-	void _InitRenderer(Types::Render::GraphicsApi) override;
+	void _InitRenderer() override;
 
 public:
 	/**
@@ -191,28 +192,28 @@ public:
      * @return Window::I_Window& Reference to the window
      * @details Provides access to the window for rendering operations. This method returns a reference to the window instance managed by the CocoaApplication, allowing other components to interact with the window as needed.
      */
-	[[nodiscard]] Window::I_Window& GetWindow() const override;
+	[[nodiscard]] Window::I_Window& GetWindow() const override { return *_window; }
 
 	/**
 	 * @brief Gets the Cocoa-specific window
 	 * @return Window::CocoaWindow& Reference to the CocoaWindow
 	 * @details Provides access to the Cocoa-specific window for platform-specific operations. This method returns a reference to the CocoaWindow instance managed by the CocoaApplication, allowing other components to perform operations that are specific to the macOS platform.
 	 */
-	[[nodiscard]] Window::CocoaWindow& GetCocoaWindow() const;
+	[[nodiscard]] Window::CocoaWindow& GetCocoaWindow() const { return *_window; }
 
 	/**
      * @brief Gets the rendering context
      * @return Render::Context::I_Context& Reference to the rendering context
      * @details Provides access to the rendering context for rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering using the Metal API.
      */
-	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override;
+	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override { return *_context; }
 
 	/**
 	 * @brief Gets the Metal-specific rendering context
 	 * @return Render::Context::MetalContext& Reference to the MetalContext
 	 * @details Provides access to the Metal-specific rendering context for platform-specific rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering operations that are specific to the Metal API on macOS.
 	 */
-	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const;
+	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const { return *_context; }
 
 private:
 	static void _StAsyncTickCallback(void* userData);

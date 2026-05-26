@@ -4,14 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-26
 //
 
 #include <CelestialEngine.hpp>
 #include <memory>
 
 std::unique_ptr<Application::I_Application> Application::CreateApplication(const int argc, const char* argv[]) {
-	const auto windowProps = CMD::GetWindowProps(argc, argv);
+	Config::Config::StSetWindowProps(CMD::GetWindowProps(argc, argv));
+	const auto& windowProps = Config::Config::StGetWindowProps();
 	std::unique_ptr<I_Application> app;
 	switch (windowProps.windowApi) {
 		case Types::Window::WindowApi::GLFW: {
@@ -29,7 +30,7 @@ std::unique_ptr<Application::I_Application> Application::CreateApplication(const
 			throw std::runtime_error("Unsupported window API specified in window properties");
 		}
 	}
-	app->Init(windowProps);
-	app->InitImGuiLayer(windowProps.graphicsApi);
+	app->Init();
+	app->InitImGuiLayer();
 	return app;
 }

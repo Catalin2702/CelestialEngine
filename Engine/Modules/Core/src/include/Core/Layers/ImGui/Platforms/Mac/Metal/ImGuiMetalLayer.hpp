@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -14,10 +14,10 @@
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
+#include "Apple/MetalCpp/Foundation/Foundation.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "MetalCpp/Foundation/Foundation.hpp"
 
 #include <functional>
 #include <optional>

@@ -19,6 +19,7 @@
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Shader.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
+#include "Utility/Config/Config.hpp"
 #include "Utility/FileSystem/File.hpp"
 #include "Utility/FileSystem/FileSystem.hpp"
 
@@ -115,28 +116,39 @@ void GlfwApplication::OnEvent(Events::I_Event& event) {
 	}
 }
 
-void GlfwApplication::Init(const Types::Window::WindowProps& windowProps) {
-	_InitWindow(windowProps);
-	_InitRenderer(windowProps.graphicsApi);
+void GlfwApplication::Init() {
+	_InitWindow();
+	_InitRenderer();
 
-	_window->GetReady();
+	_window->GetReady(Utility::Config::Config::StGetWindowProps().VSync);
 }
 
-void GlfwApplication::_InitWindow(const Types::Window::WindowProps& windowProps) {
-	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
+void GlfwApplication::InitImGuiLayer() {
+	assert(_window && "GlfwApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
+	assert(_context && "GlfwApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
+	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
-	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+	_imguiLayer = overlay.release();
+	PushOverlay(_imguiLayer);
+}
+
+void GlfwApplication::_InitWindow() {
+	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
+	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+
+	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
 		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
 	}
 
-	_window = std::make_unique<Window::GlfwWindow>(windowProps);
+	_window = std::make_unique<Window::GlfwWindow>();
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(GlfwApplication::OnEvent));
 
 	Input::InitInput(windowProps.windowApi);
 }
 
-void GlfwApplication::_InitRenderer(Types::Render::GraphicsApi) {
+void GlfwApplication::_InitRenderer() {
 	assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
 	assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
 
@@ -182,16 +194,6 @@ void GlfwApplication::_InitRenderer(Types::Render::GraphicsApi) {
 		}
 	);
 	_shaderProgram->Link();
-}
-
-void GlfwApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
-	assert(_window && "GlfwApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
-	assert(_context && "GlfwApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
-	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
-
-	auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
-	_imguiLayer = overlay.release();
-	PushOverlay(_imguiLayer);
 }
 
 void GlfwApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {

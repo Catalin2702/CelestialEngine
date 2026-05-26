@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -22,8 +22,6 @@
 #include <utility>
 
 struct GLFWwindow;
-
-namespace TypeWindow = CE::Types::Window;
 
 /**
  * @namespace CE::Core::Window
@@ -46,11 +44,9 @@ class CE_API GlfwWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor
-	 * @param windowProps Window configuration properties (title, width, height, VSync)
-	 * @details Creates and initializes an OpenGL-based window with the specified properties.
-	 *			Calls _Init() to set up GLFW, create the window, and initialize OpenGL context.
+	 * @details Creates and initializes a GLFW window using the properties specified in Config::Config
 	 */
-	explicit GlfwWindow(TypeWindow::WindowProps windowProps);
+	explicit GlfwWindow();
 
 	/**
 	 * @brief Destructor
@@ -206,7 +202,7 @@ public:
 	WINDOW_API_TYPE(GLFW)
 
 private:
-	TypeWindow::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
+	Types::Window::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
 };
 
 }

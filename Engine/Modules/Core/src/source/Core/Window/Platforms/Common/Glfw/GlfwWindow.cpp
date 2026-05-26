@@ -16,6 +16,7 @@
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Types/Window/WindowProps.hpp"
+#include "Utility/Utility.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -43,14 +44,7 @@ static int _st_GLFWWindowCount = 0;
  */
 bool _glfwVSync = false;
 
-/**
- * @brief Temporary storage for window properties during initialization
- * @details Used to pass window properties from the constructor to the _Init() method
- */
-TypeWindow::WindowProps _glfwInitData;
-
-GlfwWindow::GlfwWindow(TypeWindow::WindowProps windowProps) {
-	_glfwInitData = std::move(windowProps);
+GlfwWindow::GlfwWindow() {
 	_Init();
 }
 
@@ -239,10 +233,12 @@ void GlfwWindow::_InitWindow() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+
 	_glfwWindow.reset(glfwCreateWindow(
-		static_cast<int>(_glfwInitData.width),
-		static_cast<int>(_glfwInitData.height),
-		_glfwInitData.title.c_str(),
+		static_cast<int>(windowProps.width),
+		static_cast<int>(windowProps.height),
+		windowProps.title.c_str(),
 		nullptr,
 		nullptr
 	));

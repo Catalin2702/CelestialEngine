@@ -9,17 +9,18 @@
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
+#include "Apple/MetalCpp/AppKit/AppKit.hpp"
+#include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
+#include "Apple/Types/EventHandlers/ViewEventHandler.hpp"
+#include "Apple/Types/EventHandlers/WindowDelegateEventHandler.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "MetalCpp/AppKit/AppKit.hpp"
-#include "MetalCpp/Foundation/Foundation.hpp"
-#include "MetalCpp/MetalKit/MetalKit.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Types/EventHandlers/ViewEventHandler.hpp"
-#include "Types/EventHandlers/WindowDelegateEventHandler.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Utility/Utility.hpp"
 
 #include <stdexcept>
 #include <utility>
@@ -27,15 +28,8 @@
 
 namespace CE::Core::Window {
 
-/**
- * @brief Temporary storage for window properties during initialization
- * @details Used to pass window properties from the constructor to the _Init() method
- */
-Types::Window::WindowProps _cocoaInitData;
 
-CocoaWindow::CocoaWindow(TypeWindow::WindowProps windowProps):
-	_window(nullptr) {
-	_cocoaInitData = std::move(windowProps);
+CocoaWindow::CocoaWindow(): _window(nullptr) {
 	_Init();
 }
 
@@ -239,9 +233,10 @@ void CocoaWindow::_Init() {
 }
 
 void CocoaWindow::_InitWindow() {
+	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 	const CGRect frame = {
 		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
-		{static_cast<CGFloat>(_cocoaInitData.width), static_cast<CGFloat>(_cocoaInitData.height)}
+		{static_cast<CGFloat>(windowProps.width), static_cast<CGFloat>(windowProps.height)}
 	};
 
 	NS::Window* rawWindow;
@@ -293,7 +288,7 @@ void CocoaWindow::_InitWindow() {
 	_window->setDelegate(_windowDelegate.get());
 	_window->setMinSize(CGSizeMake(640, 360));
 	_window->setOpaque(false);
-	_window->setTitle(NS::String::string(_cocoaInitData.title.c_str(), NS::UTF8StringEncoding));
+	_window->setTitle(NS::String::string(windowProps.title.c_str(), NS::UTF8StringEncoding));
 }
 
 void CocoaWindow::_Shutdown() {

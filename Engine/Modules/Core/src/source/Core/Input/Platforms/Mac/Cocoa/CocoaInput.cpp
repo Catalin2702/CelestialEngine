@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 
-#include "Bridge/AppKit/Window/WindowBridge.h"
+#include "Apple/Bridge/AppKit/Window/WindowBridge.h"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -31,39 +31,39 @@ bool CocoaInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode button
 }
 
 float CocoaInput::_GetMouseXImpl() {
-	if (not _cocoaWindow) {
-		_InitCocoaWindow();
+	if (not _window) {
+		_InitWindow();
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	Apple::Bridge::GetMousePosition(_window, &x, &y);
 	return x;
 }
 
 float CocoaInput::_GetMouseYImpl() {
-	if (not _cocoaWindow) {
-		_InitCocoaWindow();
+	if (not _window) {
+		_InitWindow();
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	Apple::Bridge::GetMousePosition(_window, &x, &y);
 	return y;
 }
 
 std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
-	if (not _cocoaWindow) {
-		_InitCocoaWindow();
+	if (not _window) {
+		_InitWindow();
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_cocoaWindow, &x, &y);
+	Apple::Bridge::GetMousePosition(_window, &x, &y);
 	return {x, y};
 }
 
-void CocoaInput::_InitCocoaWindow() {
-	const auto& window = Core::Application::CocoaApplication::StGet().GetWindow();
+void CocoaInput::_InitWindow() {
+	const auto& window = Application::CocoaApplication::StGet().GetWindow();
 	const auto& cocoaWindow = dynamic_cast<const Window::CocoaWindow&>(window);
-	_cocoaWindow = cocoaWindow.GetCocoaWindow();
+	_window = cocoaWindow.GetWindow();
 }
 
 }

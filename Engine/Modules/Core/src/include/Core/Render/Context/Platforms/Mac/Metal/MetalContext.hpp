@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -17,8 +17,9 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
 
-#include "MetalCpp/Foundation/Foundation.hpp"
-#include "MetalCpp/Metal/Metal.hpp"
+#include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Apple/MetalCpp/Metal/Metal.hpp"
+#include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
 
 #include <utility>
 
@@ -116,7 +117,7 @@ public:
 	RENDER_API_TYPE(Metal)
 
 public:
-	MetalContextProps props; ///< Properties for initializing the Metal context, including window and pixel format
+	MetalContextProps props; ///< Properties for initializing the Metal context
 
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands

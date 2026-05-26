@@ -4,12 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-26
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Define/Bind.hpp"
 
+#include "Apple/MetalCpp/AppKit/AppKit.hpp"
+#include "Apple/MetalCpp/QuartzCore/QuartzCore.hpp"
+#include "Apple/Types/EventHandlers/DisplayLinkEventHandler.hpp"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -17,10 +20,8 @@
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
-#include "MetalCpp/AppKit/AppKit.hpp"
-#include "MetalCpp/QuartzCore/QuartzCore.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Types/EventHandlers/DisplayLinkEventHandler.hpp"
+#include "Utility/Config/Config.hpp"
 
 #include <cassert>
 #include <stdexcept>
@@ -209,21 +210,22 @@ void CocoaApplication::RemoveImGuiLayer() {
 	_imguiLayer = nullptr;
 }
 
-void CocoaApplication::_InitWindow(const Types::Window::WindowProps& windowProps) {
+void CocoaApplication::_InitWindow() {
 	assert(not _window && "CocoaApplication::InitWindow: Window is already initialized!");
+	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
-	if (not TypeWindow::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
 		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
 	}
 
-	_window = std::make_unique<Window::CocoaWindow>(windowProps);
+	_window = std::make_unique<Window::CocoaWindow>();
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(CocoaApplication::OnEvent));
 
 	Input::InitInput(windowProps.windowApi);
 }
 
-void CocoaApplication::_InitRenderer(Types::Render::GraphicsApi) {
+void CocoaApplication::_InitRenderer() {
 	assert(not _context && "CocoaApplication::InitRenderer: Renderer is already initialized!");
 	assert(_window && "CocoaApplication::InitRenderer: Window must be initialized before initializing renderer");
 
@@ -232,7 +234,7 @@ void CocoaApplication::_InitRenderer(Types::Render::GraphicsApi) {
 	_context->Init();
 }
 
-void CocoaApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
+void CocoaApplication::InitImGuiLayer() {
 	assert(_window && "CocoaApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
 	assert(_context && "CocoaApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
 	assert(not _imguiLayer && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
@@ -240,22 +242,6 @@ void CocoaApplication::InitImGuiLayer(Types::Render::GraphicsApi) {
 	auto overlay = std::make_unique<Layers::ImGuiMetalLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
-}
-
-Window::I_Window& CocoaApplication::GetWindow() const {
-	return *_window;
-}
-
-Window::CocoaWindow& CocoaApplication::GetCocoaWindow() const {
-	return *_window;
-}
-
-Render::Context::MetalContext& CocoaApplication::GetMetalContext() const {
-	return *_context;
-}
-
-Render::Context::I_Context& CocoaApplication::GetRenderContext() const {
-	return *_context;
 }
 
 void CocoaApplication::_StAsyncTickCallback(void* userData) {

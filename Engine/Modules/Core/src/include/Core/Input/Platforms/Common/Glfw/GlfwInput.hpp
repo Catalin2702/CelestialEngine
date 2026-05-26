@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-26
 //
 
 #pragma once
@@ -40,10 +40,10 @@ protected:
 	[[nodiscard]] std::pair<float, float> _GetMouseXYImpl() override;
 
 private:
-	void _InitGLFWWindow();
+	void _InitWindow();
 
 private:
-	GLFWwindow* _glfWwindow = nullptr;				///< Cached GLFW window pointer for input state queries
+	GLFWwindow* _window = nullptr;				///< Cached GLFW window pointer for input state queries
 };
 
 }

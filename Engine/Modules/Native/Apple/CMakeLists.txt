@@ -4,14 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-25
+# Updated: 2026-05-26
 #
 
 cmake_minimum_required(VERSION 3.21)
 
-set(INCLUDE src/include)
-set(INTERFACE src/interface)
-set(SOURCE src/source)
+set(INCLUDE src/include/Apple)
+set(INTERFACE src/interface/Apple)
+set(SOURCE src/source/Apple)
 
 set(APPKIT_HEADERS
 	# Screen
@@ -319,8 +319,8 @@ target_compile_options(CE_Apple PUBLIC
 )
 
 target_include_directories(CE_Apple PUBLIC
-	${INCLUDE}
-	${INTERFACE}
+	src/include
+	src/interface
 )
 
 # Link the platform-specific modules
