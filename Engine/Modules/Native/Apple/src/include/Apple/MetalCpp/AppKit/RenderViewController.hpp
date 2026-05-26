@@ -69,7 +69,7 @@ public:
 	 * @param handler A pointer to an object that implements the I_ViewControllerEventHandler interface
 	 * @details This method allows clients to set a custom event handler for the RenderViewController. The event handler will receive callbacks for various view-related events, such as view loading and setup. Clients should implement the I_ViewControllerEventHandler interface and pass an instance of their event handler to this method to receive event notifications from the view controller.
 	 */
-	void setEventHandler(I_ViewControllerEventHandler* handler) const;
+	void SetEventHandler(I_ViewControllerEventHandler* handler) const;
 
 public:
 	/**
@@ -96,7 +96,7 @@ _NS_INLINE RenderViewController* RenderViewController::init(const CGRect& frame,
 	return sendMessage<RenderViewController*>(this, _APPKIT_PRIVATE_SEL(initWithFrame_device_), frame, device);
 }
 
-_NS_INLINE void RenderViewController::setEventHandler(I_ViewControllerEventHandler* handler) const {
+_NS_INLINE void RenderViewController::SetEventHandler(I_ViewControllerEventHandler* handler) const {
 	sendMessage<void>(this, _APPKIT_PRIVATE_SEL(setEventHandler_), handler);
 }
 

@@ -13,6 +13,8 @@
 #include "Apple/MetalCpp/AppKit/AppKit.hpp"
 #include "Apple/MetalCpp/QuartzCore/QuartzCore.hpp"
 #include "Apple/Types/EventHandlers/DisplayLinkEventHandler.hpp"
+#include "Apple/Types/EventHandlers/ViewEventHandler.hpp"
+#include "Apple/Types/EventHandlers/WindowDelegateEventHandler.hpp"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -134,9 +136,27 @@ void CocoaApplication::OnEvent(Events::I_Event& event) {
 	}
 }
 
-void CocoaApplication::Init(const Types::Window::WindowProps& windowProps) {
-	_InitWindow(windowProps);
-	_InitRenderer(windowProps.graphicsApi);
+void CocoaApplication::Init() {
+	assert(not _window && "CocoaApplication::Init: Window is already initialized!");
+	assert(not _context && "CocoaApplication::Init: Renderer is already initialized!");
+
+	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+
+	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+		CE_CORE_ERROR("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
+		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
+	}
+
+	_context = std::make_unique<Render::Context::MetalContext>();
+	_context->Init();
+
+	_window = std::make_unique<Window::CocoaWindow>();
+	_window->SetEventCallback(BIND_FN_ONE_PARAM(CocoaApplication::OnEvent));
+	_window->Init(_context->GetDevice());
+
+	_context->SetView(_window->GetViewController()->view());
+
+	Input::InitInput(windowProps.windowApi);
 
 	_SetWindowCallbacks();
 
@@ -208,30 +228,6 @@ void CocoaApplication::RemoveImGuiLayer() {
 
 	PopOverlay(_imguiLayer);
 	_imguiLayer = nullptr;
-}
-
-void CocoaApplication::_InitWindow() {
-	assert(not _window && "CocoaApplication::InitWindow: Window is already initialized!");
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
-
-	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
-		CE_CORE_ERROR("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
-		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
-	}
-
-	_window = std::make_unique<Window::CocoaWindow>();
-	_window->SetEventCallback(BIND_FN_ONE_PARAM(CocoaApplication::OnEvent));
-
-	Input::InitInput(windowProps.windowApi);
-}
-
-void CocoaApplication::_InitRenderer() {
-	assert(not _context && "CocoaApplication::InitRenderer: Renderer is already initialized!");
-	assert(_window && "CocoaApplication::InitRenderer: Window must be initialized before initializing renderer");
-
-	_context = std::make_unique<Render::Context::MetalContext>();
-	_context->props.pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
-	_context->Init();
 }
 
 void CocoaApplication::InitImGuiLayer() {

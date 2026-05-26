@@ -13,11 +13,11 @@
 #define CE_WINDOW_MAC_COCOAWINDOW_HPP
 
 #include "Core/Window/I_Window.hpp"
-
 #include "Define/DynamicLinker.hpp"
-#include "Define/Window.hpp"
+
 #include "Apple/MetalCpp/AppKit/AppKit.hpp"
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #include <memory>
@@ -41,6 +41,7 @@ class WindowDelegate;
 
 namespace CE::Apple::Types {
 class ViewEventHandler;
+class ViewControllerEventHandler;
 class WindowDelegateEventHandler;
 }
 
@@ -54,6 +55,12 @@ class WindowDelegateEventHandler;
  *			offering a native experience for applications targeting macOS with Metal.
  */
 namespace CE::Core::Window {
+
+struct EventHandlers {
+	std::unique_ptr<Apple::Types::ViewEventHandler> ViewEventHandler;
+	std::unique_ptr<Apple::Types::WindowDelegateEventHandler> WindowDelegateEventHandler;
+	std::unique_ptr<Apple::Types::ViewControllerEventHandler> ViewControllerEventHandler;
+};
 
 /**
  * @class CocoaWindow
@@ -192,6 +199,8 @@ protected:
 	 */
 	void _SetWindowEventCallbacks() override;
 
+	void _SetViewControllerEventCallbacks();
+
 	/**
 	 * @brief Sets internal callbacks for window events
 	 * @details Stores the provided callbacks in the _data structure, which will be
@@ -228,8 +237,7 @@ private:
 	NS::SharedPtr<NS::Window> _window;						///< Native macOS window
 	NS::SharedPtr<NS::WindowDelegate> _windowDelegate;		///< Delegate for handling window events
 
-	std::unique_ptr<Apple::Types::ViewEventHandler> _viewEventHandler; ///< Handler for view-related events (e.g., input events)
-	std::unique_ptr<Apple::Types::WindowDelegateEventHandler> _windowDelegateEventHandler; ///< Handler for window delegate events (e.g., resize, close)
+	EventHandlers _handlers;									///< Struct containing event handlers for view and window events
 };
 
 }

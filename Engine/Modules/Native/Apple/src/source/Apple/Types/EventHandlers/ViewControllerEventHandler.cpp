@@ -9,6 +9,8 @@
 
 #include "Apple/Types/EventHandlers/ViewControllerEventHandler.hpp"
 
+namespace CE::Apple::Types {
+
 void ViewControllerEventHandler::OnViewDidLoad(VoidEventCallback callback) {
 	_viewDidLoadCallback = std::move(callback);
 }
@@ -17,4 +19,6 @@ void ViewControllerEventHandler::DispatchViewDidLoad() {
 	if (_viewDidLoadCallback) {
 		_viewDidLoadCallback();
 	}
+}
+
 }

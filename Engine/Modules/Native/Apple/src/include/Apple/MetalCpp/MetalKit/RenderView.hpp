@@ -156,8 +156,6 @@ public:
 
 	[[nodiscard]] bool isPaused() const;
 
-	[[nodiscard]] void* layer() const;
-
 	[[nodiscard]] MTL::TextureUsage multisampleColorAttachmentTextureUsage() const;
 
 	[[nodiscard]] MTL::Texture* multisampleColorTexture() const;
@@ -387,10 +385,6 @@ _NS_INLINE CGRect RenderView::frame() const {
 
 _NS_INLINE bool RenderView::isPaused() const {
 	return sendMessage<bool>(this, _MTK_PRIVATE_SEL(isPaused));
-}
-
-_NS_INLINE void* RenderView::layer() const {
-	return sendMessage<void*>(this, _MTK_PRIVATE_SEL(layer));
 }
 
 _NS_INLINE MTL::TextureUsage RenderView::multisampleColorAttachmentTextureUsage() const {

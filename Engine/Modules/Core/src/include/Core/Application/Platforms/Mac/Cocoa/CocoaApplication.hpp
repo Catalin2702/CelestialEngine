@@ -173,18 +173,9 @@ public:
 	void RemoveImGuiLayer() override;
 
 protected:
-	/**
-     * @brief Initializes the application window
-     * @details Creates the application window and sets up event callbacks based on the provided window properties.
-     *			Initializes the appropriate input system based on the window API.
-     */
-	void _InitWindow() override;
+	void _InitWindow() override {}
 
-	/**
-     * @brief Initializes the renderer
-     * @details Initializes the rendering context based on the specified graphics API. For macOS, this will typically involve setting up a Metal rendering context.
-     */
-	void _InitRenderer() override;
+	void _InitRenderer() override {}
 
 public:
 	/**

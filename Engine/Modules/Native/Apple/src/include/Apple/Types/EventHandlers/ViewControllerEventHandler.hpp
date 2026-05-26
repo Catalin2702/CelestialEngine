@@ -15,6 +15,8 @@
 #include "Apple/Types/Types.hpp"
 #include "Apple/Types/EventHandlers/I_ViewControllerEventHandler.hpp"
 
+namespace CE::Apple::Types {
+
 class ViewControllerEventHandler final: public I_ViewControllerEventHandler {
 public:
 	void OnViewDidLoad(VoidEventCallback callback) override;
@@ -25,6 +27,8 @@ public:
 private:
 	VoidEventCallback _viewDidLoadCallback;
 };
+
+}
 
 
 #endif //CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_VIEWCONTROLLEREVENTHANDLER_HPP
