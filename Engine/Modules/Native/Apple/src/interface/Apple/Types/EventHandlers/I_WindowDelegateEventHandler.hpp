@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-20
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-28
 //
 
 #pragma once
@@ -12,7 +12,13 @@
 #ifndef CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_I_WINDOWDELEGATEEVENTHANDLER_HPP
 #define CE_NATIVE_APPLE_TYPES_EVENTCALLBACKS_I_WINDOWDELEGATEEVENTHANDLER_HPP
 
-#include "Apple/Types/Types.hpp"
+#include <functional>
+
+namespace NS {
+	class Notification;
+}
+
+using NativeNotificationCallback = std::function<void(NS::Notification*)>;
 
 namespace NS {
 class Notification;

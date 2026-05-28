@@ -12,15 +12,9 @@
 #ifndef CE_NATIVE_APPLE_TYPES_TYPES_HPP
 #define CE_NATIVE_APPLE_TYPES_TYPES_HPP
 
-#include <functional>
-
-namespace NS {
-class Event;
-class Notification;
-}
-
-using NativeEventCallback = std::function<void(NS::Event*)>;
-using NativeNotificationCallback = std::function<void(NS::Notification*)>;
-using VoidEventCallback = std::function<void()>;
+#include "EventHandlers/DisplayLinkEventHandler.hpp"
+#include "EventHandlers/ViewControllerEventHandler.hpp"
+#include "EventHandlers/ViewEventHandler.hpp"
+#include "EventHandlers/WindowDelegateEventHandler.hpp"
 
 #endif //CE_NATIVE_APPLE_TYPES_TYPES_HPP

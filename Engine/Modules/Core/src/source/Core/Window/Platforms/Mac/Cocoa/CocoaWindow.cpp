@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-28
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -73,9 +73,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 	if (not _viewController and _viewController->view())
 		return;
 
-	_handlers.ViewEventHandler = std::make_unique<Apple::Types::ViewEventHandler>();
-
-	_handlers.ViewEventHandler->OnKeyPressed([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnKeyPressed([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -83,7 +81,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnKeyReleased([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnKeyReleased([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -91,7 +89,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnKeyTyped([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnKeyTyped([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -103,7 +101,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		}
 	});
 
-	_handlers.ViewEventHandler->OnMouseMoved([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnMouseMoved([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e and _viewController->view()))
 			return;
 
@@ -113,7 +111,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnMouseScrolled([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnMouseScrolled([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -123,7 +121,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnMouseButtonPressed([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnMouseButtonPressed([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -131,7 +129,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnMouseButtonReleased([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnMouseButtonReleased([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -139,7 +137,7 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.ViewEventHandler->OnMouseDragged([this](const NS::Event* e) {
+	_handlers.ViewEventHandler.OnMouseDragged([this](const NS::Event* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -149,16 +147,14 @@ void CocoaWindow::_SetIOEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_viewController->view()->SetEventHandler(_handlers.ViewEventHandler.get());
+	_viewController->view()->SetEventHandler(&_handlers.ViewEventHandler);
 }
 
 void CocoaWindow::_SetWindowEventCallbacks() {
 	if (not _windowDelegate)
 		return;
 
-	_handlers.WindowDelegateEventHandler = std::make_unique<Apple::Types::WindowDelegateEventHandler>();
-
-	_handlers.WindowDelegateEventHandler->OnWindowDidResize([this](const NS::Notification* e) {
+	_handlers.WindowDelegateEventHandler.OnWindowDidResize([this](const NS::Notification* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -168,7 +164,7 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_handlers.WindowDelegateEventHandler->OnWindowWillClose([this](const NS::Notification* e) {
+	_handlers.WindowDelegateEventHandler.OnWindowWillClose([this](const NS::Notification* e) {
 		if (not (_callbacks.EventCallback and e))
 			return;
 
@@ -176,20 +172,18 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
-	_windowDelegate->SetEventHandler(_handlers.WindowDelegateEventHandler.get());
+	_windowDelegate->SetEventHandler(&_handlers.WindowDelegateEventHandler);
 }
 
 void CocoaWindow::_SetViewControllerEventCallbacks() {
 	if (not _viewController)
 		return;
 
-	_handlers.ViewControllerEventHandler = std::make_unique<Apple::Types::ViewControllerEventHandler>();
-
-	_handlers.ViewControllerEventHandler->OnViewDidLoad([this] {
+	_handlers.ViewControllerEventHandler.OnViewDidLoad([this] {
 		_SetIOEventCallbacks();
 	});
 
-	_viewController->SetEventHandler(_handlers.ViewControllerEventHandler.get());
+	_viewController->SetEventHandler(&_handlers.ViewControllerEventHandler);
 }
 
 void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-20
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-28
 //
 
 #pragma once
@@ -12,7 +12,13 @@
 #ifndef CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_I_VIEWEVENTHANDLER_HPP
 #define CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_I_VIEWEVENTHANDLER_HPP
 
-#include "Apple/Types/Types.hpp"
+#include <functional>
+
+namespace NS {
+	class Event;
+}
+
+using NativeEventCallback = std::function<void(NS::Event*)>;
 
 namespace NS {
 class Event;

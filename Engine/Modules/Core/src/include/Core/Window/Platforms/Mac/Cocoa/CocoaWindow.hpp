@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-28
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 
 #include "Apple/MetalCpp/AppKit/AppKit.hpp"
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Apple/Types/Types.hpp"
 #include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -38,12 +39,6 @@ class Window;
 class WindowDelegate;
 }
 
-namespace CE::Apple::Types {
-class ViewEventHandler;
-class ViewControllerEventHandler;
-class WindowDelegateEventHandler;
-}
-
 /**
  * @namespace CE::Core::Window
  * @brief Window management and window interfaces
@@ -56,9 +51,9 @@ class WindowDelegateEventHandler;
 namespace CE::Core::Window {
 
 struct EventHandlers {
-	std::unique_ptr<Apple::Types::ViewEventHandler> ViewEventHandler;
-	std::unique_ptr<Apple::Types::WindowDelegateEventHandler> WindowDelegateEventHandler;
-	std::unique_ptr<Apple::Types::ViewControllerEventHandler> ViewControllerEventHandler;
+	Apple::Types::ViewEventHandler ViewEventHandler{};
+	Apple::Types::WindowDelegateEventHandler WindowDelegateEventHandler{};
+	Apple::Types::ViewControllerEventHandler ViewControllerEventHandler{};
 };
 
 /**

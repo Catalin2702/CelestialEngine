@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-28
 //
 
 #pragma once
@@ -12,7 +12,6 @@
 #ifndef CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_VIEWCONTROLLEREVENTHANDLER_HPP
 #define CE_NATIVE_APPLE_TYPES_EVENTHANDLERS_VIEWCONTROLLEREVENTHANDLER_HPP
 
-#include "Apple/Types/Types.hpp"
 #include "Apple/Types/EventHandlers/I_ViewControllerEventHandler.hpp"
 
 namespace CE::Apple::Types {
