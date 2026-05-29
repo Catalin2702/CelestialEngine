@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 //
 // QuartzCore/CAMetalDrawable.hpp
 //
@@ -16,11 +16,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma once
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #include "Apple/MetalCpp/Foundation/NSTypes.hpp"
 #include "Apple/MetalCpp/Metal/MTLPixelFormat.hpp"
@@ -32,193 +29,148 @@
 #include "CAMetalDrawable.hpp"
 #include "CAPrivate.hpp"
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-namespace CA
-{
+namespace CA {
 
-class MetalLayer : public NS::Referencing<MetalLayer>
-{
+class MetalLayer: public NS::Referencing<MetalLayer> {
 public:
-    static class MetalLayer* layer();
+	void setAllowsNextDrawableTimeout(bool allowsNextDrawableTimeout);
 
-    MTL::Device*             device() const;
-    void                     setDevice(MTL::Device* device);
+	void setColorspace(CGColorSpaceRef colorspace);
 
-    MTL::PixelFormat         pixelFormat() const;
-    void                     setPixelFormat(MTL::PixelFormat pixelFormat);
+	void setContentsScale(CGFloat contentsScale);
 
-    void                     setContentsScale(CGFloat contentsScale) const;
+	void setDevice(MTL::Device* device);
 
-    bool                     framebufferOnly() const;
-    void                     setFramebufferOnly(bool framebufferOnly);
+	void setDisplaySyncEnabled(bool displaySyncEnabled);
 
-    CGSize                   drawableSize() const;
-    void                     setDrawableSize(CGSize drawableSize);
+	void setDrawableSize(CGSize drawableSize);
 
-    class MetalDrawable*     nextDrawable();
+	void setFramebufferOnly(bool framebufferOnly);
 
-    NS::UInteger             maximumDrawableCount() const;
-    void                     setMaximumDrawableCount(NS::UInteger maximumDrawableCount);
+	void setMaximumDrawableCount(NS::UInteger maximumDrawableCount);
 
-    bool                     displaySyncEnabled() const;
-    void                     setDisplaySyncEnabled(bool displaySyncEnabled);
+	void setPixelFormat(MTL::PixelFormat pixelFormat);
 
-    CGColorSpaceRef          colorspace() const;
-    void                     setColorspace(CGColorSpaceRef colorspace);
+public:
+	[[nodiscard]] static MetalLayer* layer();
 
-    bool                     allowsNextDrawableTimeout() const;
-    void                     setAllowsNextDrawableTimeout(bool allowsNextDrawableTimeout);
+public:
+	[[nodiscard]] bool allowsNextDrawableTimeout() const;
 
-    MTL::ResidencySet*       residencySet() const;
+	[[nodiscard]] CGColorSpaceRef colorspace() const;
+
+	[[nodiscard]] CGFloat contentsScale() const;
+
+	[[nodiscard]] MTL::Device* device() const;
+
+	[[nodiscard]] bool displaySyncEnabled() const;
+
+	[[nodiscard]] CGSize drawableSize() const;
+
+	[[nodiscard]] bool framebufferOnly() const;
+
+	[[nodiscard]] NS::UInteger maximumDrawableCount() const;
+
+	[[nodiscard]] MetalDrawable* nextDrawable() const;
+
+	[[nodiscard]] MTL::PixelFormat pixelFormat() const;
+
+	[[nodiscard]] MTL::ResidencySet* residencySet() const;
 };
+
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setAllowsNextDrawableTimeout(bool allowsNextDrawableTimeout) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setAllowsNextDrawableTimeout_), allowsNextDrawableTimeout);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setColorspace(CGColorSpaceRef colorspace) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setColorspace_), colorspace);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setContentsScale(const CGFloat contentsScale) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setContentsScale_), contentsScale);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setDevice(MTL::Device* device) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setDevice_), device);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setDisplaySyncEnabled(bool displaySyncEnabled) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setDisplaySyncEnabled_), displaySyncEnabled);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setDrawableSize(CGSize drawableSize) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setDrawableSize_), drawableSize);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setFramebufferOnly(bool framebufferOnly) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setFramebufferOnly_), framebufferOnly);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setMaximumDrawableCount(NS::UInteger maximumDrawableCount) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setMaximumDrawableCount_), maximumDrawableCount);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+_CA_INLINE void MetalLayer::setPixelFormat(MTL::PixelFormat pixelFormat) {
+	return sendMessage<void>(this, _CA_PRIVATE_SEL(setPixelFormat_), pixelFormat);
+}
+
+_CA_INLINE MetalLayer* MetalLayer::layer() {
+	return sendMessage<MetalLayer*>(_CA_PRIVATE_CLS(CAMetalLayer), _CA_PRIVATE_SEL(layer));
+}
+
+_CA_INLINE bool MetalLayer::allowsNextDrawableTimeout() const {
+	return sendMessage<bool>(this, _CA_PRIVATE_SEL(allowsNextDrawableTimeout));
+}
+
+_CA_INLINE CGColorSpaceRef MetalLayer::colorspace() const {
+	return sendMessage<CGColorSpaceRef>(this, _CA_PRIVATE_SEL(colorspace));
+}
+
+_CA_INLINE CGFloat MetalLayer::contentsScale() const {
+	return sendMessage<CGFloat>(this, _CA_PRIVATE_SEL(contentsScale));
+}
+
+_CA_INLINE MTL::Device* MetalLayer::device() const {
+	return sendMessage<MTL::Device*>(this, _CA_PRIVATE_SEL(device));
+}
+
+_CA_INLINE bool MetalLayer::displaySyncEnabled() const {
+	return sendMessage<bool>(this, _CA_PRIVATE_SEL(displaySyncEnabled));
+}
+
+_CA_INLINE CGSize MetalLayer::drawableSize() const {
+	return sendMessage<CGSize>(this, _CA_PRIVATE_SEL(drawableSize));
+}
+
+_CA_INLINE bool MetalLayer::framebufferOnly() const {
+	return sendMessage<bool>(this, _CA_PRIVATE_SEL(framebufferOnly));
+}
+
+_CA_INLINE NS::UInteger MetalLayer::maximumDrawableCount() const {
+	return sendMessage<NS::UInteger>(this, _CA_PRIVATE_SEL(maximumDrawableCount));
+}
+
+_CA_INLINE MetalDrawable* MetalLayer::nextDrawable() const {
+	return sendMessage<MetalDrawable*>(this, _CA_PRIVATE_SEL(nextDrawable));
+}
+
+_CA_INLINE MTL::PixelFormat MetalLayer::pixelFormat() const {
+	return sendMessage<MTL::PixelFormat>(this, _CA_PRIVATE_SEL(pixelFormat));
+}
+
+_CA_INLINE MTL::ResidencySet* MetalLayer::residencySet() const {
+	return sendMessage<MTL::ResidencySet*>(this, _CA_PRIVATE_SEL(residencySet));
+}
+
 } // namespace CA
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-_CA_INLINE CA::MetalLayer* CA::MetalLayer::layer()
-{
-    return Object::sendMessage<CA::MetalLayer*>(_CA_PRIVATE_CLS(CAMetalLayer), _CA_PRIVATE_SEL(layer));
-}
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE MTL::Device* CA::MetalLayer::device() const
-{
-    return Object::sendMessage<MTL::Device*>(this, _CA_PRIVATE_SEL(device));
-}
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setDevice(MTL::Device* device)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setDevice_), device);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE MTL::PixelFormat CA::MetalLayer::pixelFormat() const
-{
-    return Object::sendMessage<MTL::PixelFormat>(this,
-        _CA_PRIVATE_SEL(pixelFormat));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setPixelFormat(MTL::PixelFormat pixelFormat)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setPixelFormat_),
-        pixelFormat);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setContentsScale(const CGFloat contentsScale) const {
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setContentsScale_),
-        contentsScale);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE bool CA::MetalLayer::framebufferOnly() const
-{
-    return Object::sendMessage<bool>(this, _CA_PRIVATE_SEL(framebufferOnly));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setFramebufferOnly(bool framebufferOnly)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setFramebufferOnly_),
-        framebufferOnly);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE CGSize CA::MetalLayer::drawableSize() const
-{
-    return Object::sendMessage<CGSize>(this, _CA_PRIVATE_SEL(drawableSize));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setDrawableSize(CGSize drawableSize)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setDrawableSize_),
-        drawableSize);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE CA::MetalDrawable* CA::MetalLayer::nextDrawable()
-{
-    return Object::sendMessage<MetalDrawable*>(this,
-        _CA_PRIVATE_SEL(nextDrawable));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE NS::UInteger CA::MetalLayer::maximumDrawableCount() const
-{
-    return Object::sendMessage<NS::UInteger>(this,
-        _CA_PRIVATE_SEL(maximumDrawableCount));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setMaximumDrawableCount(NS::UInteger maximumDrawableCount)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setMaximumDrawableCount_),
-        maximumDrawableCount);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE bool CA::MetalLayer::displaySyncEnabled() const
-{
-    return Object::sendMessage<bool>(this, _CA_PRIVATE_SEL(displaySyncEnabled));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setDisplaySyncEnabled(bool displaySyncEnabled)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setDisplaySyncEnabled_),
-        displaySyncEnabled);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE CGColorSpaceRef CA::MetalLayer::colorspace() const
-{
-    return Object::sendMessage<CGColorSpaceRef>(this, _CA_PRIVATE_SEL(colorspace));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setColorspace(CGColorSpaceRef colorspace)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setColorspace_),
-        colorspace);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE bool CA::MetalLayer::allowsNextDrawableTimeout() const
-{
-    return Object::sendMessage<bool>(this, _CA_PRIVATE_SEL(allowsNextDrawableTimeout));
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE void CA::MetalLayer::setAllowsNextDrawableTimeout(bool allowsNextDrawableTimeout)
-{
-    return Object::sendMessage<void>(this, _CA_PRIVATE_SEL(setAllowsNextDrawableTimeout_),
-    allowsNextDrawableTimeout);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-_CA_INLINE MTL::ResidencySet* CA::MetalLayer::residencySet() const
-{
-    return Object::sendMessage<MTL::ResidencySet*>(this, _CA_PRIVATE_SEL(residencySet) );
-}

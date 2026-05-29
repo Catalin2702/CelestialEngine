@@ -97,6 +97,8 @@ namespace CA {
 								"allowsNextDrawableTimeout");
 			_CA_PRIVATE_DEF_SEL(colorspace,
 								"colorspace");
+			_CA_PRIVATE_DEF_SEL(contentsScale,
+								"contentsScale");
 			_CA_PRIVATE_DEF_SEL(device,
 								"device");
 			_CA_PRIVATE_DEF_SEL(displaySyncEnabled,

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-29
 //
 
 #pragma once
@@ -84,6 +84,22 @@ public:
 	 */
 	virtual void OnEvent(Events::I_Event& event) = 0;
 
+	/**
+	 * @brief Pure virtual method for handling rendering logic
+	 */
+	virtual void OnRender() const = 0;
+
+	/**
+	 * @brief Pure virtual method for handling begin frame logic
+	 * @param deltaTime Time elapsed since the last frame, used for time-based updates
+	 */
+	virtual void Begin(float deltaTime) = 0;
+
+	/**
+	 * @brief Pure virtual method for handling end frame logic
+	 */
+	virtual void End() = 0;
+
 #ifdef CE_DEBUG
 public:
 	/**
@@ -96,6 +112,10 @@ public:
 protected:
 	std::string _debugName;							///< Debug name for the layer (debug builds only)
 #endif
+
+protected:
+	mutable float _deltaTime = 0.f;					///< Time accumulator for frame timing
+	bool _currentFrameStarted = false;				///< Flag to track if the current frame has started
 
 };
 

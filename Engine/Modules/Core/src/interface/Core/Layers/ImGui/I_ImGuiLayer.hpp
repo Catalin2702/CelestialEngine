@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-05-29
 //
 
 #pragma once
@@ -12,7 +12,7 @@
 #ifndef CE_I_IMGUILAYER_HPP
 #define CE_I_IMGUILAYER_HPP
 
-#include "Core/Layers/Render/I_RenderLayer.hpp"
+#include "Core/Layers/I_Layer.hpp"
 
 namespace CE::Events {
 
@@ -38,9 +38,9 @@ namespace CE::Core::Layers {
  *			Defines pure virtual methods for handling various input events that are
  *			relevant for ImGui interactions. Concrete implementations handle platform-specific rendering.
  */
-class I_ImGuiLayer: public I_RenderLayer {
+class I_ImGuiLayer: public I_Layer {
 public:
-	I_ImGuiLayer([[maybe_unused]] const std::string& name = "ImGuiLayer"): I_RenderLayer(name) {}
+	I_ImGuiLayer([[maybe_unused]] const std::string& name = "ImGuiLayer"): I_Layer(name) {}
 
 	void OnAttach() override { _Init(); }
 	void OnDetach() override { _Shutdown(); }

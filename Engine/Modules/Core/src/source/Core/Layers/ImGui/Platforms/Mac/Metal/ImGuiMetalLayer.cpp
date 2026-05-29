@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -88,14 +88,14 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
-	_frameContext.drawable = NS::RetainPtr(_context->get().GetMetalLayer()->nextDrawable());
+	_frameContext.drawable = _context->get().GetView()->layer()->nextDrawable();
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = NS::RetainPtr(_context->get().GetMetalCommandQueue()->commandBuffer());
+	_frameContext.commandBuffer = _context->get().GetCommandQueue()->commandBuffer();
 
 	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
@@ -108,7 +108,7 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
-	Apple::Bridge::ImGuiOSXNewFrame(_window->get().GetCocoaView());
+	Apple::Bridge::ImGuiOSXNewFrame(_context->get().GetView());
 
 	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
 
@@ -121,7 +121,7 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer.get(), _frameContext.renderCommandEncoder);
+	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
@@ -129,7 +129,7 @@ void ImGuiMetalLayer::End() {
 		_renderSemaphore.release();
 	});
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable.get());
+	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
 	_frameContext.commandBuffer->commit();
 }
 
@@ -146,23 +146,24 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		const auto& app = Core::Application::CocoaApplication::StGet();
+		const auto& app = Application::CocoaApplication::StGet();
 
-		_window = dynamic_cast<Window::CocoaWindow&>(app.GetWindow());
+		_window = app.GetCocoaWindow();
 
-		_context = dynamic_cast<Render::Context::MetalContext&>(app.GetRenderContext());
+		_context = app.GetMetalContext();
 
-		Apple::Bridge::ImGuiMetalInit(_context->get().GetNativeDevice());
+		Apple::Bridge::ImGuiMetalInit(_context->get().GetDevice());
 
-		if (not Apple::Bridge::ImGuiOSXInit(_window->get().GetCocoaView())) {
-			CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
-			ImGui::DestroyContext(context);
-			throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+		if (const auto view = _context->get().GetView()) {
+			if (not Apple::Bridge::ImGuiOSXInit(view)) {
+				CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
+				ImGui::DestroyContext(context);
+				throw std::runtime_error("Failed to initialize ImGui OSX backend!");
+			}
+			const auto [width, height] = view->drawableSize();
+
+			io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
 		}
-
-		const auto [width, height] = _window->get().GetViewSize();
-
-		io.DisplaySize = ImVec2(width, height);
 
 		_initialized = true;
 	}
@@ -250,8 +251,8 @@ bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _window->get().GetContentScale();
-	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+	const auto scale = static_cast<float>(_context->get().GetView()->layer()->contentsScale());
+	io.DisplayFramebufferScale = ImVec2(scale, scale);
 
 	return false;
 }

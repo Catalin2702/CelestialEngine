@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -47,7 +47,7 @@ void MetalContext::HandleVSyncChange(const bool enabled) const {
 		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because RenderView is not initialized or does not have a layer.");
 		return;
 	}
-	CE_CORE_ERROR("MetalContext::HandleVSyncChange setting VSync to {0}", enabled);
+
 	const auto layer = _view->layer();
 	layer->setDisplaySyncEnabled(enabled);
 }
@@ -57,6 +57,7 @@ bool MetalContext::IsVSyncEnabled() const {
 		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get VSync state because RenderView is not initialized or does not have a layer.");
 		return false;
 	}
+
 	const auto layer = _view->layer();
 	return layer->displaySyncEnabled();
 }

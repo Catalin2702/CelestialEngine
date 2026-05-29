@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #pragma once
@@ -147,11 +147,9 @@ public:
 	void SetRunning(bool running) override;
 
 protected:
-	void _InitWindow() override {
-	}
+	void _InitWindow() override {}
 
-	void _InitRenderer() override {
-	}
+	void _InitRenderer() override {}
 
 public:
 	/**
@@ -181,6 +179,8 @@ public:
 	 * @details Provides access to the Metal-specific rendering context for platform-specific rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering operations that are specific to the Metal API on macOS.
 	 */
 	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const { return *_context; }
+
+	[[nodiscard]] static CocoaApplication& StGet() { return dynamic_cast<CocoaApplication&>(I_Application::StGet()); }
 
 private:
 	void _SetWindowCallbacks() const;

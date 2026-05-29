@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-25
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #include "Apple/AppKit/View/RenderViewController.h"
@@ -25,7 +25,6 @@
 
 - (instancetype) initWithFrame:(NSRect)frame device:(id<MTLDevice>)device {
 	self = [super initWithNibName:nil bundle:nil];
-	NSLog(@"RenderViewController: initWithFrame called with frame: %@ and device: %@", NSStringFromRect(frame), device);
 	if (self) {
 		_initialFrame = frame;
 		_device = device;
@@ -40,13 +39,10 @@
 -(void) loadView {
 	RenderView* renderView = [[RenderView alloc] initWithFrame:_initialFrame device:_device];
 	self.view = renderView;
-	NSLog(@"RenderViewController: loadView called, view set to RenderView with frame: %@", NSStringFromRect(_initialFrame));
 }
 
 -(void) viewDidLoad {
 	[super viewDidLoad];
-
-	NSLog(@"RenderViewController: viewDidLoad called");
 
 	if (not _eventHandler)
 		return;

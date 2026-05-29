@@ -4,17 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Define/Bind.hpp"
 
 #include "Apple/MetalCpp/AppKit/AppKit.hpp"
-#include "Apple/MetalCpp/QuartzCore/QuartzCore.hpp"
-#include "Apple/Types/EventHandlers/DisplayLinkEventHandler.hpp"
-#include "Apple/Types/EventHandlers/ViewEventHandler.hpp"
-#include "Apple/Types/EventHandlers/WindowDelegateEventHandler.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -98,15 +94,14 @@ void CocoaApplication::Tick(const float deltaTime) {
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
 
-	CE_CORE_INFO("Tick: {0}", deltaTime);
+	if (_imguiLayer) {
+		_imguiLayer->Begin(deltaTime);
 
-	// _imguiLayer->Begin(deltaTime);
-	//
-	// for (const auto layer: _layerStack)
-	// 	if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
-	// 		renderLayer->OnRender();
-	//
-	// _imguiLayer->End();
+		for (const auto layer: _layerStack)
+			layer->OnRender();
+
+		_imguiLayer->End();
+	}
 }
 
 void CocoaApplication::OnEvent(Events::I_Event& event) {
@@ -198,8 +193,6 @@ void CocoaApplication::RemoveImGuiLayer() {
 
 void CocoaApplication::SetRunning(const bool running) {
 	I_Application::SetRunning(running);
-
-	CE_CORE_INFO("CocoaApplication::SetRunning: Setting running state to {0}", running);
 
 	if (not Utility::Config::Config::StGetWindowProps().VSync) {
 		if (running && not _loopThread.joinable()) {

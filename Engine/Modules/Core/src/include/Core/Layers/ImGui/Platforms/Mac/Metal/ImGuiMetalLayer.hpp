@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-29
 //
 
 #pragma once
@@ -14,7 +14,6 @@
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
-#include "Apple/MetalCpp/Foundation/Foundation.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
@@ -42,8 +41,8 @@ namespace CE::Core::Layers {
 class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 
 	struct MetalFrameContext {
-		NS::SharedPtr<CA::MetalDrawable> drawable = nullptr;			///< Pointer to the Metal drawable
-		NS::SharedPtr<MTL::CommandBuffer> commandBuffer = nullptr;		//< Pointer to the Metal command buffer
+		CA::MetalDrawable* drawable = nullptr;			///< Pointer to the Metal drawable
+		MTL::CommandBuffer* commandBuffer = nullptr;		//< Pointer to the Metal command buffer
 		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder
 	};
 

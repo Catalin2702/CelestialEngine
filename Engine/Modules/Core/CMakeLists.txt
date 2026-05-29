@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-25
+# Updated: 2026-05-29
 #
 
 set(APPLICATION_HEADERS
@@ -71,7 +71,6 @@ set(INPUT_INTERFACES
 set(LAYERS_INTERFACES
 	src/interface/Core/Layers/I_Layer.hpp
 	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
-	src/interface/Core/Layers/Render/I_RenderLayer.hpp
 )
 
 set(RENDER_INTERFACES
