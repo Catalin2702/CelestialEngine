@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-29
+# Updated: 2026-05-31
 #
 
 set(APPLICATION_HEADERS
@@ -50,6 +50,10 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
+	>
 )
 
 set(WINDOW_HEADERS
@@ -133,6 +137,10 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
+	>
 )
 
 set(WINDOW_SOURCES

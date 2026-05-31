@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-05-31
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -153,9 +153,9 @@ void ImGuiOpenGlLayer::_Init() {
 
 	assert(_window->get().GetGlfwWindow() != nullptr);
 
-	const auto [x, y] = _window->get().GetContentScale();
-
-	io.DisplayFramebufferScale = ImVec2(x, y);
+	// const auto [x, y] = _window->get().GetContentScale();
+	//
+	// io.DisplayFramebufferScale = ImVec2(x, y);
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -254,8 +254,8 @@ bool ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const 
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _window->get().GetContentScale();
-	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+	// const auto [xScale, yScale] = _window->get().GetContentScale();
+	// io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 	return false;
 }
