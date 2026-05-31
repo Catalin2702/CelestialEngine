@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-05-31
 //
 
 #pragma once
@@ -17,22 +17,25 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
 
+#include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
+
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
 #include "Apple/MetalCpp/Metal/Metal.hpp"
 #include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
 
+#include <memory>
 #include <utility>
 
 
 namespace MTL {
-class CommandQueue;
-class Device;
-class RenderPassDescriptor;
-class RenderPipelineState;
+	class CommandQueue;
+	class Device;
+	class RenderPassDescriptor;
+	class RenderPipelineState;
 }
 
 namespace CE::Core::Window {
-class CocoaWindow;
+	class CocoaWindow;
 }
 
 namespace CE::Core::Render::Context {
@@ -49,13 +52,6 @@ struct CE_API MetalContextProps {
  *			for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
 class CE_API MetalContext final: public I_Context {
-public:
-	/**
-	 * @brief Constructor
-	 * @details
-	 */
-	MetalContext() = default;
-
 public:
 	/**
 	 * @brief Initializes the Metal graphics context
@@ -88,23 +84,32 @@ public:
 	[[nodiscard]] bool IsVSyncEnabled() const override;
 
 public:
-	/** @brief Gets the Metal device
-	 * @return MTL::Device* Pointer to the MTL::Device representing the Metal device (GPU)
-	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
-	 */
-	[[nodiscard]] MTL::Device* GetDevice() const { return _device.get(); }
-
 	/** @brief Gets the Metal command queue
 	 * @return MTL::CommandQueue* Pointer to the MTL::CommandQueue used for issuing rendering commands
 	 * @details Returns a pointer to the underlying MTL::CommandQueue used for issuing rendering commands. This allows the application to access platform-specific features or perform operations that require direct access to the Metal command queue.
 	 */
 	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _commandQueue.get(); }
 
-	[[nodiscard]] const MetalContextProps& GetProps() const { return props; }
+	/** @brief Gets the Metal device
+	 * @return MTL::Device* Pointer to the MTL::Device representing the Metal device (GPU)
+	 * @details Returns a pointer to the underlying MTL::Device used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the Metal device.
+	 */
+	[[nodiscard]] MTL::Device* GetDevice() const { return _device.get(); }
+
+	/** @brief Gets the shader library
+	 * @return const Shader::MetalShaderLibrary& Reference to the MetalShaderLibrary used for managing shaders
+	 * @details Returns a reference to the MetalShaderLibrary used for managing shaders in the Metal context. This allows the application to access platform-specific shader management features or perform operations that require direct access to the shader library.
+	 */
+	[[nodiscard]] const Shader::MetalShaderLibrary& GetShaderLibrary() const { return *_shaderLibrary; }
+
+	/** @brief Gets the MetalKit render view
+	 * @return MTK::RenderView* Pointer to the MTK::RenderView used for rendering
+	 * @details Returns a pointer to the underlying MTK::RenderView used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the MetalKit render view.
+	 */
+	[[nodiscard]] MTK::RenderView* GetView() const { return _view.get(); }
 
 public:
 	void SetView(MTK::RenderView* view);
-	[[nodiscard]] MTK::RenderView* GetView() const { return _view.get(); }
 
 	RENDER_API_TYPE(Metal)
 
@@ -116,8 +121,8 @@ private:
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<MTK::RenderView> _view = nullptr;					///< MetalKit view used for rendering
 
-public:
-	MTL::RenderPipelineState* _defaultRenderPipelineState = nullptr; ///< Default render pipeline state for basic rendering operations
+private:
+	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
 };
 
 }

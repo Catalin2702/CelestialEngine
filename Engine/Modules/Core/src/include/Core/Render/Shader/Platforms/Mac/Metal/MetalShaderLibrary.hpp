@@ -12,6 +12,8 @@
 #ifndef CE_RENDER_SHADER_METALSHADERLIBRARY_HPP
 #define CE_RENDER_SHADER_METALSHADERLIBRARY_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
 
 #include <string>
@@ -30,7 +32,7 @@ struct ShaderProgram {
 	MTL::Function* fragmentFunction = nullptr;
 };
 
-class MetalShaderLibrary {
+class CE_API MetalShaderLibrary {
 public:
 	explicit MetalShaderLibrary(MTL::Device* device, const std::string& path = "");
 

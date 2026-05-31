@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-05-31
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
+
 #include "Apple/MetalCpp/Metal/Metal.hpp"
 #include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
 #include "Tools/Log/Log.hpp"
@@ -30,6 +31,7 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
 
+	_shaderLibrary = std::make_unique<Shader::MetalShaderLibrary>(_device.get());
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>&) const {
