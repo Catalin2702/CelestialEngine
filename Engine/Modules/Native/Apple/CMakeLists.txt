@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-26
+# Updated: 2026-06-15
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -14,12 +14,6 @@ set(INTERFACE src/interface/Apple)
 set(SOURCE src/source/Apple)
 
 set(APPKIT_HEADERS
-	# Screen
-	${INCLUDE}/AppKit/Screen/Screen.hpp
-
-	# Utility
-	${INCLUDE}/AppKit/Utility/AppKit.hpp
-
 	# View
 	${INCLUDE}/AppKit/View/RenderViewController.h
 
@@ -53,6 +47,7 @@ set(METALCPP_HEADERS
 	${INCLUDE}/MetalCpp/AppKit/NSView.hpp
 	${INCLUDE}/MetalCpp/AppKit/NSWindow.hpp
 	${INCLUDE}/MetalCpp/AppKit/RenderViewController.hpp
+	${INCLUDE}/MetalCpp/AppKit/Screen.hpp
 	${INCLUDE}/MetalCpp/AppKit/WindowDelegate.hpp
 
 	# Foundation

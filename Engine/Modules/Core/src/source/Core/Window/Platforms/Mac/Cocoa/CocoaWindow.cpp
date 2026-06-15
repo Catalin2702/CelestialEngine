@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-28
+// Updated: 2026-06-15
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -172,6 +172,19 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 		_callbacks.EventCallback(event);
 	});
 
+	_handlers.WindowDelegateEventHandler.OnWindowDidChangeScreen([this](const NS::Notification* e) {
+		if (not callbacks.WindowDidChangeCallback)
+			return;
+
+		const auto window = reinterpret_cast<NS::Window*>(e->object());
+		const auto screen = window->screen();
+		if (not screen) {
+			CE_CORE_WARN("CocoaWindow::_SetWindowEventCallbacks: Window did change screen event received but could not get new screen from notification.");
+			return;
+		}
+		callbacks.WindowDidChangeCallback(screen);
+	});
+
 	_windowDelegate->SetEventHandler(&_handlers.WindowDelegateEventHandler);
 }
 
@@ -264,10 +277,6 @@ void CocoaWindow::_InitWindow() {
 	}
 	_windowDelegate = NS::TransferPtr(rawDelegate);
 
-	// Moves the window to the front of the screen list and makes it the key window, which means it will receive keyboard events and be the main focus for user interaction.
-	_window->makeKeyAndOrderFront(nullptr);
-	// Set frame autosave name to remember window position between launches
-	_window->setFrameAutosaveName(_window->title());
 	_window->setDelegate(_windowDelegate.get());
 	_window->setMinSize(CGSizeMake(640, 360));
 	_window->setOpaque(false);
@@ -296,6 +305,12 @@ void CocoaWindow::_InitViewController(const MTL::Device* device) {
 
 	// Assign the view controller to the window: this triggers loadView → viewDidLoad
 	_window->setContentViewController(_viewController.get());
+	// setFrameAutosaveName must come AFTER setContentViewController: MTKView resets the
+	// window frame during content view setup, which would clobber any previously restored
+	// saved frame. Calling it here also ensures the title is already set (used as the key).
+	_window->setFrameAutosaveName(_window->title());
+	// Moves the window to the front of the screen list and makes it the key window.
+	_window->makeKeyAndOrderFront(nullptr);
 }
 
 void CocoaWindow::_Shutdown() {

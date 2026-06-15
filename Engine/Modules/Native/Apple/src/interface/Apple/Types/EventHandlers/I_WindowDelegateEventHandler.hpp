@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-20
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-28
+// Updated: 2026-06-15
 //
 
 #pragma once
@@ -107,6 +107,8 @@ public:
 	 */
 	virtual void OnWindowDidResignKey(NativeNotificationCallback callback) = 0;
 
+	virtual void OnWindowDidChangeScreen(NativeNotificationCallback callback) = 0;
+
 public:
 	/**
 	 * @brief Dispatches the window will close event to the registered callback.
@@ -179,6 +181,12 @@ public:
 	 * @param notification The notification data associated with the window did resign key event.
 	 */
 	virtual void DispatchWindowDidResignKey(NS::Notification* notification) = 0;
+
+	/**
+	 * @brief Dispatches the window did change screen event to the registered callback.
+	 * @param notification The notification data associated with the window did change screen event.
+	 */
+	virtual void DispatchWindowDidChangeScreen(NS::Notification* notification) = 0;
 };
 
 

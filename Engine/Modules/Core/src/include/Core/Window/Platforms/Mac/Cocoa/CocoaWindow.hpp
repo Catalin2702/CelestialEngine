@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-28
+// Updated: 2026-06-15
 //
 
 #pragma once
@@ -21,7 +21,6 @@
 #include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
-#include <memory>
 #include <utility>
 
 namespace CA {
@@ -35,6 +34,7 @@ class Device;
 
 namespace NS {
 class RenderViewController;
+class Screen;
 class Window;
 class WindowDelegate;
 }
@@ -54,6 +54,10 @@ struct EventHandlers {
 	Apple::Types::ViewEventHandler ViewEventHandler{};
 	Apple::Types::WindowDelegateEventHandler WindowDelegateEventHandler{};
 	Apple::Types::ViewControllerEventHandler ViewControllerEventHandler{};
+};
+
+struct CocoaWindowCallbacks {
+	std::function<void(NS::Screen*)> WindowDidChangeCallback;
 };
 
 /**
@@ -225,6 +229,9 @@ protected:
 
 public:
 	WINDOW_API_TYPE(Cocoa)
+
+public:
+	CocoaWindowCallbacks callbacks; ///< Struct containing callback functions for window events
 
 private:
 	NS::SharedPtr<NS::RenderViewController> _viewController; ///< View controller for managing the content view

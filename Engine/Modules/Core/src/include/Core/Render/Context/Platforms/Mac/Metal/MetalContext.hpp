@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-31
+// Updated: 2026-06-15
 //
 
 #pragma once
@@ -100,7 +100,7 @@ public:
 	 * @return const Shader::MetalShaderLibrary& Reference to the MetalShaderLibrary used for managing shaders
 	 * @details Returns a reference to the MetalShaderLibrary used for managing shaders in the Metal context. This allows the application to access platform-specific shader management features or perform operations that require direct access to the shader library.
 	 */
-	[[nodiscard]] const Shader::MetalShaderLibrary& GetShaderLibrary() const { return *_shaderLibrary; }
+	[[nodiscard]] Shader::MetalShaderLibrary* GetShaderLibrary() const { return _shaderLibrary.get(); }
 
 	/** @brief Gets the MetalKit render view
 	 * @return MTK::RenderView* Pointer to the MTK::RenderView used for rendering

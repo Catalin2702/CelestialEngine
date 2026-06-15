@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Updated: 2026-05-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-28
+// Updated: 2026-06-15
 //
 
 #pragma once
@@ -30,6 +30,7 @@ public:
 	void OnWindowDidMove(NativeNotificationCallback callback) override;
 	void OnWindowDidBecomeKey(NativeNotificationCallback callback) override;
 	void OnWindowDidResignKey(NativeNotificationCallback callback) override;
+	void OnWindowDidChangeScreen(NativeNotificationCallback callback) override;
 
 public:
 	void DispatchWindowWillClose(NS::Notification* event) override;
@@ -44,6 +45,7 @@ public:
 	void DispatchWindowDidMove(NS::Notification* event) override;
 	void DispatchWindowDidBecomeKey(NS::Notification* event) override;
 	void DispatchWindowDidResignKey(NS::Notification* event) override;
+	void DispatchWindowDidChangeScreen(NS::Notification* event) override;
 
 private:
 	NativeNotificationCallback _windowWillCloseCallback;
@@ -58,6 +60,7 @@ private:
 	NativeNotificationCallback _windowDidMoveCallback;
 	NativeNotificationCallback _windowDidBecomeKeyCallback;
 	NativeNotificationCallback _windowDidResignKeyCallback;
+	NativeNotificationCallback _windowDidChangeScreenCallback;
 };
 
 }

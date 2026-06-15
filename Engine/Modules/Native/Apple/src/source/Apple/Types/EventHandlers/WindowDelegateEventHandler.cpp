@@ -60,6 +60,10 @@ void WindowDelegateEventHandler::OnWindowDidResignKey(NativeNotificationCallback
 	_windowDidResignKeyCallback = std::move(callback);
 }
 
+void WindowDelegateEventHandler::OnWindowDidChangeScreen(NativeNotificationCallback callback) {
+	_windowDidChangeScreenCallback = std::move(callback);
+}
+
 void WindowDelegateEventHandler::DispatchWindowWillClose(NS::Notification* event) {
 	if (_windowWillCloseCallback)
 		_windowWillCloseCallback(event);
@@ -118,6 +122,11 @@ void WindowDelegateEventHandler::DispatchWindowDidBecomeKey(NS::Notification* ev
 void WindowDelegateEventHandler::DispatchWindowDidResignKey(NS::Notification* event) {
 	if (_windowDidResignKeyCallback)
 		_windowDidResignKeyCallback(event);
+}
+
+void WindowDelegateEventHandler::DispatchWindowDidChangeScreen(NS::Notification* event) {
+	if (_windowDidChangeScreenCallback)
+		_windowDidChangeScreenCallback(event);
 }
 
 }

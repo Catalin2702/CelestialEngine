@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-06-15
 //
 
 #include "Apple/AppKit/Window/WindowDelegate.h"
@@ -104,6 +104,13 @@
 		return;
 
 	_eventHandler->DispatchWindowDidResignKey((__bridge NS::Notification*)notification);
+}
+
+- (void)windowDidChangeScreen:(NSNotification *)notification {
+	if (not (_eventHandler and notification))
+		return;
+
+	_eventHandler->DispatchWindowDidChangeScreen((__bridge NS::Notification*)notification);
 }
 
 @end

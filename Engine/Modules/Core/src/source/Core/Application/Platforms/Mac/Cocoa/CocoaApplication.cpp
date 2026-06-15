@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-06-15
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -14,6 +14,7 @@
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+#include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
@@ -87,7 +88,8 @@ void CocoaApplication::Quit() {
 		0
 	);
 	_appCocoa->postEvent(dummyEvent, true);
-	SetRunning(false);
+
+	I_Application::SetRunning(false);
 }
 
 void CocoaApplication::Tick(const float deltaTime) {
