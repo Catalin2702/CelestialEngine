@@ -44,3 +44,7 @@ obj/
 # --- Resources ---
 App/Resources/CelestialEngine.icns
 App/Resources/Assets.xcassets/AppIcon.appiconset/*.png
+
+# --- IA Tools ---
+CLAUDE.md
+graphify-out
