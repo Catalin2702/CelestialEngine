@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -184,6 +184,30 @@ void CocoaWindow::_SetWindowEventCallbacks() {
 		}
 		callbacks.WindowDidChangeCallback(screen);
 	});
+	_handlers.WindowDelegateEventHandler.OnWindowDidChangeScreenProfile([this](const NS::Notification* e) {
+		if (not callbacks.WindowDidChangeScreenProfileCallback)
+			return;
+
+		const auto window = reinterpret_cast<NS::Window*>(e->object());
+		const auto screen = window->screen();
+		if (not screen) {
+			CE_CORE_WARN("CocoaWindow::_SetWindowEventCallbacks: Window change screen profile event received but could not get new screen from notification.");
+			return;
+		}
+		callbacks.WindowDidChangeScreenProfileCallback(screen);
+	});
+	_handlers.WindowDelegateEventHandler.OnWindowDidChangeBackingProperties([this](const NS::Notification* e) {
+		if (not callbacks.WindowDidChangeBackingPropertiesCallback)
+			return;
+
+		const auto window = reinterpret_cast<NS::Window*>(e->object());
+		const auto screen = window->screen();
+		if (not screen) {
+			CE_CORE_WARN("CocoaWindow::_SetWindowEventCallbacks: Window change backing properties event received but could not get new screen from notification.");
+			return;
+		}
+		callbacks.WindowDidChangeBackingPropertiesCallback(screen);
+	});
 
 	_windowDelegate->SetEventHandler(&_handlers.WindowDelegateEventHandler);
 }
@@ -303,12 +327,10 @@ void CocoaWindow::_InitViewController(const MTL::Device* device) {
 	_viewController = NS::TransferPtr(rawViewController);
 	_SetViewControllerEventCallbacks();
 
-	// Assign the view controller to the window: this triggers loadView → viewDidLoad
-	_window->setContentViewController(_viewController.get());
-	// setFrameAutosaveName must come AFTER setContentViewController: MTKView resets the
-	// window frame during content view setup, which would clobber any previously restored
-	// saved frame. Calling it here also ensures the title is already set (used as the key).
+	// Restore the saved window position BEFORE creating the Metal view
 	_window->setFrameAutosaveName(_window->title());
+
+	_window->setContentViewController(_viewController.get());
 	// Moves the window to the front of the screen list and makes it the key window.
 	_window->makeKeyAndOrderFront(nullptr);
 }

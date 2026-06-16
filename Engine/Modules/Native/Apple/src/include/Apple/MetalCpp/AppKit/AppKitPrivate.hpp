@@ -213,6 +213,9 @@ _APPKIT_PRIVATE_DEF_SEL( title_,
 _APPKIT_PRIVATE_DEF_SEL( setFrameAutosaveName_,
 						"setFrameAutosaveName:" );
 
+_APPKIT_PRIVATE_DEF_SEL( setFrameUsingName_,
+						"setFrameUsingName:" );
+
 _APPKIT_PRIVATE_DEF_SEL(setFrame_display_,
 						"setFrame:display:" );
 

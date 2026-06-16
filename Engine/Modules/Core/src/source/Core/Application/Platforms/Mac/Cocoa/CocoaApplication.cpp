@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -59,17 +59,6 @@ CocoaApplication::~CocoaApplication() {
 }
 
 void CocoaApplication::Run() {
-	_appCocoa->setDelegate(&_appDelegate);
-
-	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
-		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
-			CE_CORE_ERROR("CocoaApplication::Run: Failed to set activation policy for the application");
-			throw std::runtime_error("Failed to set activation policy for the application");
-		}
-	}
-
-	_appCocoa->activateIgnoringOtherApps(true);
-
 	_appCocoa->run();
 }
 
@@ -135,6 +124,17 @@ void CocoaApplication::OnEvent(Events::I_Event& event) {
 void CocoaApplication::Init() {
 	assert(not _window && "CocoaApplication::Init: Window is already initialized!");
 	assert(not _context && "CocoaApplication::Init: Renderer is already initialized!");
+
+	_appCocoa->setDelegate(&_appDelegate);
+
+	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
+		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
+			CE_CORE_ERROR("CocoaApplication::Init: Failed to set activation policy for the application");
+			throw std::runtime_error("Failed to set activation policy for the application");
+		}
+	}
+
+	_appCocoa->activateIgnoringOtherApps(true);
 
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
@@ -217,6 +217,9 @@ void CocoaApplication::SetRunning(const bool running) {
 	else {
 		if (const auto view = _context->GetView()) {
 			view->setPaused(not running);
+			if (const auto screen = _window->GetWindow()->screen()) {
+				view->setPreferredFramesPerSecond(screen->maximumFramesPerSecond());
+			}
 		}
 	}
 }
@@ -237,6 +240,26 @@ void CocoaApplication::_SetWindowCallbacks() const {
 
 	_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleContentSizeChange));
 	_window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleVSyncChange));
+
+	const auto windowDidChangeCallback = [this](const NS::Screen* screen) {
+		if (not screen) return;
+		if (const auto view = _context->GetView()) {
+			const auto maxFps = screen->maximumFramesPerSecond();
+			view->setPreferredFramesPerSecond(maxFps);
+			if (IsRunning()) {
+				// Force MTKView to recreate its CADisplayLink tied to the new screen.
+				// setPreferredFramesPerSecond alone does not migrate the display link.
+				view->setPaused(true);
+				view->setPaused(false);
+			}
+		}
+	};
+
+	_window->callbacks = {
+		.WindowDidChangeCallback = windowDidChangeCallback,
+		.WindowDidChangeScreenProfileCallback = windowDidChangeCallback,
+		.WindowDidChangeBackingPropertiesCallback = windowDidChangeCallback
+	};
 }
 
 }

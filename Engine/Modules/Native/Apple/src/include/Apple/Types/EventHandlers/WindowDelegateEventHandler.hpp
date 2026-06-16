@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Updated: 2026-05-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #pragma once
@@ -31,6 +31,8 @@ public:
 	void OnWindowDidBecomeKey(NativeNotificationCallback callback) override;
 	void OnWindowDidResignKey(NativeNotificationCallback callback) override;
 	void OnWindowDidChangeScreen(NativeNotificationCallback callback) override;
+	void OnWindowDidChangeScreenProfile(NativeNotificationCallback callback) override;
+	void OnWindowDidChangeBackingProperties(NativeNotificationCallback callback) override;
 
 public:
 	void DispatchWindowWillClose(NS::Notification* event) override;
@@ -46,6 +48,8 @@ public:
 	void DispatchWindowDidBecomeKey(NS::Notification* event) override;
 	void DispatchWindowDidResignKey(NS::Notification* event) override;
 	void DispatchWindowDidChangeScreen(NS::Notification* event) override;
+	void DispatchWindowDidChangeScreenProfile(NS::Notification* event) override;
+	void DispatchWindowDidChangeBackingProperties(NS::Notification* event) override;
 
 private:
 	NativeNotificationCallback _windowWillCloseCallback;
@@ -61,6 +65,8 @@ private:
 	NativeNotificationCallback _windowDidBecomeKeyCallback;
 	NativeNotificationCallback _windowDidResignKeyCallback;
 	NativeNotificationCallback _windowDidChangeScreenCallback;
+	NativeNotificationCallback _windowDidChangeScreenProfileCallback;
+	NativeNotificationCallback _windowDidChangeBackingPropertiesCallback;
 };
 
 }

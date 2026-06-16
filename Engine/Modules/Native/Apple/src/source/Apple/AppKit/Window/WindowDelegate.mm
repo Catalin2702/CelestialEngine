@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #include "Apple/AppKit/Window/WindowDelegate.h"
@@ -111,6 +111,20 @@
 		return;
 
 	_eventHandler->DispatchWindowDidChangeScreen((__bridge NS::Notification*)notification);
+}
+
+- (void)windowDidChangeScreenProfile:(NSNotification *)notification {
+	if (not (_eventHandler and notification))
+		return;
+
+	_eventHandler->DispatchWindowDidChangeScreenProfile((__bridge NS::Notification*)notification);
+}
+
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification {
+	if (not (_eventHandler and notification))
+		return;
+
+	_eventHandler->DispatchWindowDidChangeBackingProperties((__bridge NS::Notification*)notification);
 }
 
 @end

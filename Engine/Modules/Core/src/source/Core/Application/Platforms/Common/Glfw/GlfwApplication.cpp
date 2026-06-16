@@ -80,8 +80,7 @@ void GlfwApplication::Tick(const float deltaTime) {
 		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
-			if (const auto renderLayer = dynamic_cast<Layers::I_RenderLayer*>(layer))
-				renderLayer->OnRender();
+			layer->OnRender();
 
 		_imguiLayer->End();
 	}

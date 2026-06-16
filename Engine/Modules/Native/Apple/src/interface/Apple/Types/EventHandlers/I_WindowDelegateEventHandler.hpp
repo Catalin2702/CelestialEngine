@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-20
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #pragma once
@@ -107,7 +107,23 @@ public:
 	 */
 	virtual void OnWindowDidResignKey(NativeNotificationCallback callback) = 0;
 
+	/**
+	 * @brief Registers a callback for the window did change screen event.
+	 * @param callback The callback function to be called when the event occurs.
+	 */
 	virtual void OnWindowDidChangeScreen(NativeNotificationCallback callback) = 0;
+
+	/**
+	 * @brief Registers a callback for the window change screen profile event.
+	 * @param callback The callback function to be called when the event occurs.
+	 */
+	virtual void OnWindowDidChangeScreenProfile(NativeNotificationCallback callback) = 0;
+
+	/**
+	 * @brief Registers a callback for the window change backing properties event.
+	 * @param callback The callback function to be called when the event occurs.
+	 */
+	virtual void OnWindowDidChangeBackingProperties(NativeNotificationCallback callback) = 0;
 
 public:
 	/**
@@ -187,6 +203,18 @@ public:
 	 * @param notification The notification data associated with the window did change screen event.
 	 */
 	virtual void DispatchWindowDidChangeScreen(NS::Notification* notification) = 0;
+
+	/**
+	 * @brief Dispatches the window change screen profile event to the registered callback.
+	 * @param notification The notification data associated with the window change screen profile event.
+	 */
+	virtual void DispatchWindowDidChangeScreenProfile(NS::Notification* notification) = 0;
+
+	/**
+	 * @brief Dispatches the window change backing properties event to the registered callback.
+	 * @param notification The notification data associated with the window change backing properties event.
+	 */
+	virtual void DispatchWindowDidChangeBackingProperties(NS::Notification* notification) = 0;
 };
 
 

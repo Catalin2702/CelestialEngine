@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-06-16
 //
 
 #pragma once
@@ -58,6 +58,8 @@ struct EventHandlers {
 
 struct CocoaWindowCallbacks {
 	std::function<void(NS::Screen*)> WindowDidChangeCallback;
+	std::function<void(NS::Screen*)> WindowDidChangeScreenProfileCallback;
+	std::function<void(NS::Screen*)> WindowDidChangeBackingPropertiesCallback;
 };
 
 /**

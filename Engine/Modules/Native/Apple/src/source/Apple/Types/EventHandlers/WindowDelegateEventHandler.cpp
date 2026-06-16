@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Updated: 2026-05-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-06-16
 //
 
 #include "Apple/Types/EventHandlers/WindowDelegateEventHandler.hpp"
@@ -62,6 +62,14 @@ void WindowDelegateEventHandler::OnWindowDidResignKey(NativeNotificationCallback
 
 void WindowDelegateEventHandler::OnWindowDidChangeScreen(NativeNotificationCallback callback) {
 	_windowDidChangeScreenCallback = std::move(callback);
+}
+
+void WindowDelegateEventHandler::OnWindowDidChangeScreenProfile(NativeNotificationCallback callback) {
+	_windowDidChangeScreenProfileCallback = std::move(callback);
+}
+
+void WindowDelegateEventHandler::OnWindowDidChangeBackingProperties(NativeNotificationCallback callback) {
+	_windowDidChangeBackingPropertiesCallback = std::move(callback);
 }
 
 void WindowDelegateEventHandler::DispatchWindowWillClose(NS::Notification* event) {
@@ -127,6 +135,16 @@ void WindowDelegateEventHandler::DispatchWindowDidResignKey(NS::Notification* ev
 void WindowDelegateEventHandler::DispatchWindowDidChangeScreen(NS::Notification* event) {
 	if (_windowDidChangeScreenCallback)
 		_windowDidChangeScreenCallback(event);
+}
+
+void WindowDelegateEventHandler::DispatchWindowDidChangeScreenProfile(NS::Notification* event) {
+	if (_windowDidChangeScreenProfileCallback)
+		_windowDidChangeScreenProfileCallback(event);
+}
+
+void WindowDelegateEventHandler::DispatchWindowDidChangeBackingProperties(NS::Notification* event) {
+	if (_windowDidChangeBackingPropertiesCallback)
+		_windowDidChangeBackingPropertiesCallback(event);
 }
 
 }

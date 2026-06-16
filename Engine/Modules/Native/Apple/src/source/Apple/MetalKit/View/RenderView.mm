@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-06-16
 //
 
 #include "Apple/MetalKit/View/RenderView.h"
@@ -53,24 +53,6 @@
 
 - (BOOL)isFlipped {
 	return YES;
-}
-
-- (BOOL)wantsLayer {
-	return YES;
-}
-
-- (BOOL)isOpaque {
-	return YES;
-}
-
-- (BOOL)wantsUpdateLayer {
-	return YES;
-}
-
-- (CALayer*)makeBackingLayer {
-	CAMetalLayer* layer = [CAMetalLayer layer];
-	layer.opaque = YES;
-	return layer;
 }
 
 - (void)updateTrackingAreas {
