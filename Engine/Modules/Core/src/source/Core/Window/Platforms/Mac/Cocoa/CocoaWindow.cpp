@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-16
+// Updated: 2026-06-20
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -70,7 +70,7 @@ void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
 }
 
 void CocoaWindow::_SetIOEventCallbacks() {
-	if (not _viewController and _viewController->view())
+	if (not (_viewController and _viewController->view()))
 		return;
 
 	_handlers.ViewEventHandler.OnKeyPressed([this](const NS::Event* e) {
