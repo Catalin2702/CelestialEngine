@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-07-02
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Core/Application/I_Application.hpp"
 
 #include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include "Apple/MetalCpp/Metal/Metal.hpp"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.hpp"
@@ -198,6 +199,10 @@ private:
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
+
+
+public:
+	MTL::RenderPipelineState* defaultRenderPipelineState = nullptr;
 };
 
 }

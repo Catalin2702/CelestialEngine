@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-07-02
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -49,6 +49,14 @@ void ImGuiMetalLayer::OnRender() const {
 
 	static bool show = true;
 	ImGui::ShowDemoWindow(&show);
+
+	_frameContext.renderCommandEncoder->setRenderPipelineState(Application::CocoaApplication::StGet().defaultRenderPipelineState);
+
+	_frameContext.renderCommandEncoder->drawPrimitives(
+		MTL::PrimitiveType::PrimitiveTypeTriangle,
+		static_cast<NS::UInteger>(0),
+		3
+	);
 }
 
 void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {

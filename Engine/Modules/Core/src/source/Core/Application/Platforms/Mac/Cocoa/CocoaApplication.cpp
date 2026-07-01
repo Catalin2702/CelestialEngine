@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-16
+// Updated: 2026-07-02
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -162,6 +162,23 @@ void CocoaApplication::Init() {
 	_SetWindowCallbacks();
 
 	_window->GetReady(windowProps.VSync);
+
+	const auto [vertexFunction, fragmentFunction] = _context->GetShaderLibrary()->GetShaderProgram("vertexMain", "fragmentMain");
+
+	const auto renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
+	renderPipelineDescriptor->setVertexFunction(vertexFunction);
+	renderPipelineDescriptor->setFragmentFunction(fragmentFunction);
+	renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(_context->props.pixelFormat);
+
+	NS::Error* pipelineError = nullptr;
+	defaultRenderPipelineState = _context->GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
+	if (not defaultRenderPipelineState) {
+		const auto errorMsg = "CocoaApplication::Init: Failed to create default render pipeline state. Error: " + std::string(pipelineError->localizedDescription()->utf8String());
+		CE_CORE_ERROR(errorMsg);
+		throw std::runtime_error(errorMsg);
+	}
+
+	renderPipelineDescriptor->release();
 }
 
 void CocoaApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
@@ -217,9 +234,6 @@ void CocoaApplication::SetRunning(const bool running) {
 	else {
 		if (const auto view = _context->GetView()) {
 			view->setPaused(not running);
-			if (const auto screen = _window->GetWindow()->screen()) {
-				view->setPreferredFramesPerSecond(screen->maximumFramesPerSecond());
-			}
 		}
 	}
 }
@@ -240,26 +254,6 @@ void CocoaApplication::_SetWindowCallbacks() const {
 
 	_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleContentSizeChange));
 	_window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleVSyncChange));
-
-	const auto windowDidChangeCallback = [this](const NS::Screen* screen) {
-		if (not screen) return;
-		if (const auto view = _context->GetView()) {
-			const auto maxFps = screen->maximumFramesPerSecond();
-			view->setPreferredFramesPerSecond(maxFps);
-			if (IsRunning()) {
-				// Force MTKView to recreate its CADisplayLink tied to the new screen.
-				// setPreferredFramesPerSecond alone does not migrate the display link.
-				view->setPaused(true);
-				view->setPaused(false);
-			}
-		}
-	};
-
-	_window->callbacks = {
-		.WindowDidChangeCallback = windowDidChangeCallback,
-		.WindowDidChangeScreenProfileCallback = windowDidChangeCallback,
-		.WindowDidChangeBackingPropertiesCallback = windowDidChangeCallback
-	};
 }
 
 }

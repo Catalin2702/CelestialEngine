@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-07-02
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -72,6 +72,8 @@ void GlfwApplication::Tick(const float deltaTime) {
 	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
 
 	_shaderProgram->Bind();
+	glBindVertexArray(_vertexArrayId);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
@@ -154,36 +156,32 @@ void GlfwApplication::_InitRenderer() {
 	_context = std::make_unique<Render::Context::OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
 	_context->Init();
 
-	const auto vertexSrc = R"(
-		#version 330 core
+	glGenVertexArrays(1, &_vertexArrayId);
+	glBindVertexArray(_vertexArrayId);
 
-		layout(location = 0) in vec3 a_Position;
+	glGenBuffers(1, &_vertexBufferId);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
 
-		out vec3 v_Position;
+	constexpr float vertices[3 * 3] = {
+		-0.5f, -0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		 0.0f,  0.5f, 0.0f
+	};
 
-		void main()
-		{
-			v_Position = a_Position;
-			gl_Position = vec4(a_Position, 1.0);
-		}
-	)";
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	const auto fragmentSrc = R"(
-		#version 330 core
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-		layout(location = 0) out vec4 color;
+	glGenBuffers(1, &_indexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
 
-		in vec3 v_Position;
-
-		void main()
-		{
-			color = vec4(v_Position * 0.5 + 0.5, 1.0);
-		}
-	)";
+	constexpr unsigned int indices[3] = { 0, 1, 2 };
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	std::array<std::unique_ptr<Render::Shader::I_Shader>, 2> shaders{
-		std::make_unique<Render::Shader::OpenGlShader>(vertexSrc, Types::Render::ShaderType::Vertex),
-		std::make_unique<Render::Shader::OpenGlShader>(fragmentSrc, Types::Render::ShaderType::Fragment)
+		std::make_unique<Render::Shader::OpenGlShader>(FS::FileSystem::StLoad("../Resources/Shaders/OpenGL/Vertex.glsl"), Types::Render::ShaderType::Vertex),
+		std::make_unique<Render::Shader::OpenGlShader>(FS::FileSystem::StLoad("../Resources/Shaders/OpenGL/Fragment.glsl"), Types::Render::ShaderType::Fragment)
 	};
 
 	_shaderProgram = std::make_unique<Render::Shader::OpenGlShaderProgram>(
