@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-23
+# Updated: 2026-07-02
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -29,7 +29,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")
 	endif()
 endif()
 
-project(CelestialEngine LANGUAGES CXX)
+project(CelestialEngine LANGUAGES CXX VERSION 0.1.3)
 
 enable_testing()
 
