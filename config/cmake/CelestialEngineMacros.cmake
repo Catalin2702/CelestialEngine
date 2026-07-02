@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-07-02
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -67,7 +67,6 @@ if (NOT TARGET CE_Config)
 			>
 			$<$<CONFIG:Dist>:
 				-O3
-				-ffast-math
 			>
 			-march=native
 		>
@@ -144,4 +143,3 @@ macro(ce_copy_to_last TARGET_NAME)
 		endif()
 	endif()
 endmacro()
-
