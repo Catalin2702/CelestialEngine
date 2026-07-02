@@ -1,0 +1,3 @@
+[submodule "Engine/Submodules/MetalCpp"]
+	path = Engine/Submodules/MetalCpp
+	url = https://github.com/Catalin2702/metal-cpp
