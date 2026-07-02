@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-31
+# Updated: 2026-07-02
 #
 
 set(APPLICATION_HEADERS
@@ -203,6 +203,10 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Vendor_Glfw
 	CE_Vendor_ImGui
 	CE_Vendor_SpdLog
+
+	$<$<PLATFORM_ID:Darwin>:
+		CE_Vendor_MetalCpp
+	>
 )
 
 target_compile_options(CE_Core PUBLIC

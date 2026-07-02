@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-25
+# Updated: 2026-07-02
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -22,14 +22,19 @@ set(HEADERS
 	src/internal/EntryPoint.hpp
 )
 
+set(SOURCES
+	src/implementation/Platforms/Mac/MetalCppImplementation.cpp
+)
+
 # Vendor libraries
 add_subdirectory(Vendor/Glad)
 add_subdirectory(Vendor/Glfw)
 add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
+add_subdirectory(Vendor/MetalCpp)
 add_subdirectory(Vendor/SpdLog)
 
-# Modules libraries
+# Module libraries
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
@@ -43,6 +48,7 @@ add_subdirectory(Shaders)
 
 add_library(CE_Engine INTERFACE
 	${HEADERS}
+	${SOURCES}
 )
 
 set_target_properties(CE_Engine PROPERTIES
@@ -62,6 +68,14 @@ target_link_libraries(CE_Engine INTERFACE
 	CE_Types
 )
 
+# Platform specific modules
+target_link_libraries(CE_Engine INTERFACE
+	$<$<PLATFORM_ID:Darwin>:
+		CE_Vendor_MetalCpp
+	>
+)
+
+# Shaders
 target_link_libraries(CE_Engine INTERFACE
 	CE_Shaders
 )
