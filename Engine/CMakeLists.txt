@@ -46,7 +46,7 @@ add_subdirectory(Modules/Utility)
 # Shaders
 add_subdirectory(Shaders)
 
-add_library(CE_Engine INTERFACE
+add_library(CE_Engine SHARED
 	${HEADERS}
 	${SOURCES}
 )
@@ -58,7 +58,7 @@ set_target_properties(CE_Engine PROPERTIES
 )
 
 # Modules
-target_link_libraries(CE_Engine INTERFACE
+target_link_libraries(CE_Engine PUBLIC
 	CE_Config
 	CE_Core
 	CE_Define
@@ -69,23 +69,23 @@ target_link_libraries(CE_Engine INTERFACE
 )
 
 # Platform specific modules
-target_link_libraries(CE_Engine INTERFACE
+target_link_libraries(CE_Engine PUBLIC
 	$<$<PLATFORM_ID:Darwin>:
 		CE_Vendor_MetalCpp
 	>
 )
 
 # Shaders
-target_link_libraries(CE_Engine INTERFACE
+target_link_libraries(CE_Engine PUBLIC
 	CE_Shaders
 )
 
-target_include_directories(CE_Engine INTERFACE
+target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
 )
 
-target_compile_definitions(CE_Engine INTERFACE
+target_compile_definitions(CE_Engine PRIVATE
 	CE_DEFINE_EXPORTS
 )
 
