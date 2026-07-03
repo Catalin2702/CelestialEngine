@@ -4,12 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-03
 //
 
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import <math.h>
+
+namespace CE::Apple::Bridge {
 
 bool IsKeyPressed(unsigned short keyCode) {
 	// Use CGEventSourceKeyState to check if a key is currently pressed
@@ -49,4 +51,6 @@ void GetMousePosition(void* cocoaWindow, float* outX, float* outY) {
 		*outX = (float)mouseLocationWindow.x;
 		*outY = (float)(viewHeight - mouseLocationWindow.y);
 	}
+}
+
 }
