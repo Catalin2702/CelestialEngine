@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -21,6 +21,7 @@ namespace NS {
 
 class ViewEventDispatcher: public I_ViewEventDispatcher {
 	using EventListener = std::function<void(Event*)>;
+	using VoidListener = std::function<void()>;
 public:
 	ViewEventDispatcher() = default;
 
@@ -43,6 +44,10 @@ public:
 	void DispatchKeyUp(Event* event) override;
 	void DispatchFlagsChanged(Event* event) override;
 	void DispatchScrollWheel(Event* event) override;
+	void DispatchViewDidMoveToWindow() override;
+	void DispatchViewDidMoveToSuperview() override;
+	void DispatchViewDidLayout() override;
+	void DispatchViewDidEndLiveResize() override;
 
 public:
 	void AddMouseDownListener(const EventListener* listener);
@@ -61,6 +66,10 @@ public:
 	void AddKeyUpListener(const EventListener* listener);
 	void AddFlagsChangedListener(const EventListener* listener);
 	void AddScrollWheelListener(const EventListener* listener);
+	void AddViewDidMoveToWindowListener(const VoidListener* listener);
+	void AddViewDidMoveToSuperviewListener(const VoidListener* listener);
+	void AddViewDidLayoutListener(const VoidListener* listener);
+	void AddViewDidEndLiveResizeListener(const VoidListener* listener);
 
 	void AddMouseDownListeners(const std::vector<const EventListener*>& listeners);
 	void AddMouseUpListeners(const std::vector<const EventListener*>& listeners);
@@ -78,6 +87,10 @@ public:
 	void AddKeyUpListeners(const std::vector<const EventListener*>& listeners);
 	void AddFlagsChangedListeners(const std::vector<const EventListener*>& listeners);
 	void AddScrollWheelListeners(const std::vector<const EventListener*>& listeners);
+	void AddViewDidMoveToWindowListeners(const std::vector<const VoidListener*>& listeners);
+	void AddViewDidMoveToSuperviewListeners(const std::vector<const VoidListener*>& listeners);
+	void AddViewDidLayoutListeners(const std::vector<const VoidListener*>& listeners);
+	void AddViewDidEndLiveResizeListeners(const std::vector<const VoidListener*>& listeners);
 
 public:
 	void RemoveMouseDownListener(const EventListener* listener);
@@ -96,6 +109,10 @@ public:
 	void RemoveKeyUpListener(const EventListener* listener);
 	void RemoveFlagsChangedListener(const EventListener* listener);
 	void RemoveScrollWheelListener(const EventListener* listener);
+	void RemoveViewDidMoveToWindowListener(const VoidListener* listener);
+	void RemoveViewDidMoveToSuperviewListener(const VoidListener* listener);
+	void RemoveViewDidLayoutListener(const VoidListener* listener);
+	void RemoveViewDidEndLiveResizeListener(const VoidListener* listener);
 
 	void RemoveMouseDownListener(size_t index);
 	void RemoveMouseUpListener(size_t index);
@@ -113,6 +130,10 @@ public:
 	void RemoveKeyUpListener(size_t index);
 	void RemoveFlagsChangedListener(size_t index);
 	void RemoveScrollWheelListener(size_t index);
+	void RemoveViewDidMoveToWindowListener(size_t index);
+	void RemoveViewDidMoveToSuperviewListener(size_t index);
+	void RemoveViewDidLayoutListener(size_t index);
+	void RemoveViewDidEndLiveResizeListener(size_t index);
 
 private:
 	std::vector<const EventListener*> _mouseDownListeners;
@@ -131,6 +152,11 @@ private:
 	std::vector<const EventListener*> _keyUpListeners;
 	std::vector<const EventListener*> _flagsChangedListeners;
 	std::vector<const EventListener*> _scrollWheelListeners;
+
+	std::vector<const VoidListener*> _viewDidMoveToWindowListeners;
+	std::vector<const VoidListener*> _viewDidMoveToSuperviewListeners;
+	std::vector<const VoidListener*> _viewDidLayoutListeners;
+	std::vector<const VoidListener*> _viewDidEndLiveResizeListeners;
 };
 
 }

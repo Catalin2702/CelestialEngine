@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
@@ -17,7 +17,19 @@ static void CallListeners(const std::vector<const std::function<void(NS::Event*)
 	}
 }
 
+static void CallListeners(const std::vector<const std::function<void()>*>& vec) {
+	for (const auto listener: vec) {
+		if (listener)
+			(*listener)();
+	}
+}
+
 static void ExtendListeners(std::vector<const std::function<void(NS::Event*)>*>& vec, const std::vector<const std::function<void(NS::Event*)>*>& source) {
+	vec.reserve(vec.size() + source.size());
+	vec.insert(vec.end(), source.begin(), source.end());
+}
+
+static void ExtendListeners(std::vector<const std::function<void()>*>& vec, const std::vector<const std::function<void()>*>& source) {
 	vec.reserve(vec.size() + source.size());
 	vec.insert(vec.end(), source.begin(), source.end());
 }
@@ -29,6 +41,21 @@ static void RemoveItem(std::vector<const std::function<void(NS::Event*)>*>& vec,
 }
 
 static void RemoveIndex(std::vector<const std::function<void(NS::Event*)>*>& vec, const size_t index, const char* functionCalled) {
+	if (index >= vec.size()) {
+		const auto message = std::string(functionCalled) + ": Index " + std::to_string(index) + " Vector size: " + std::to_string(vec.size());
+		CE_CORE_ERROR(message);
+		throw std::runtime_error(message);
+	}
+	vec.erase(vec.begin() + static_cast<long>(index));
+}
+
+static void RemoveItem(std::vector<const std::function<void()>*>& vec, const std::function<void()>* item) {
+	std::erase_if(vec, [&](const auto l) {
+		return l == nullptr or l == item;
+	});
+}
+
+static void RemoveIndex(std::vector<const std::function<void()>*>& vec, const size_t index, const char* functionCalled) {
 	if (index >= vec.size()) {
 		const auto message = std::string(functionCalled) + ": Index " + std::to_string(index) + " Vector size: " + std::to_string(vec.size());
 		CE_CORE_ERROR(message);
@@ -103,6 +130,22 @@ void ViewEventDispatcher::DispatchScrollWheel(Event* event) {
 	CallListeners(_scrollWheelListeners, event);
 }
 
+void ViewEventDispatcher::DispatchViewDidMoveToWindow() {
+	CallListeners(_viewDidMoveToWindowListeners);
+}
+
+void ViewEventDispatcher::DispatchViewDidMoveToSuperview() {
+	CallListeners(_viewDidMoveToSuperviewListeners);
+}
+
+void ViewEventDispatcher::DispatchViewDidLayout() {
+	CallListeners(_viewDidLayoutListeners);
+}
+
+void ViewEventDispatcher::DispatchViewDidEndLiveResize() {
+	CallListeners(_viewDidEndLiveResizeListeners);
+}
+
 void ViewEventDispatcher::AddMouseDownListener(const EventListener* listener) {
 	_mouseDownListeners.push_back(listener);
 }
@@ -165,6 +208,22 @@ void ViewEventDispatcher::AddFlagsChangedListener(const EventListener* listener)
 
 void ViewEventDispatcher::AddScrollWheelListener(const EventListener* listener) {
 	_scrollWheelListeners.push_back(listener);
+}
+
+void ViewEventDispatcher::AddViewDidMoveToWindowListener(const VoidListener* listener) {
+	_viewDidMoveToWindowListeners.push_back(listener);
+}
+
+void ViewEventDispatcher::AddViewDidMoveToSuperviewListener(const VoidListener* listener) {
+	_viewDidMoveToSuperviewListeners.push_back(listener);
+}
+
+void ViewEventDispatcher::AddViewDidLayoutListener(const VoidListener* listener) {
+	_viewDidLayoutListeners.push_back(listener);
+}
+
+void ViewEventDispatcher::AddViewDidEndLiveResizeListener(const VoidListener* listener) {
+	_viewDidEndLiveResizeListeners.push_back(listener);
 }
 
 void ViewEventDispatcher::AddMouseDownListeners(const std::vector<const EventListener*>& listeners) {
@@ -231,6 +290,22 @@ void ViewEventDispatcher::AddScrollWheelListeners(const std::vector<const EventL
 	ExtendListeners(_scrollWheelListeners, listeners);
 }
 
+void ViewEventDispatcher::AddViewDidMoveToWindowListeners(const std::vector<const VoidListener*>& listeners) {
+	ExtendListeners(_viewDidMoveToWindowListeners, listeners);
+}
+
+void ViewEventDispatcher::AddViewDidMoveToSuperviewListeners(const std::vector<const VoidListener*>& listeners) {
+	ExtendListeners(_viewDidMoveToSuperviewListeners, listeners);
+}
+
+void ViewEventDispatcher::AddViewDidLayoutListeners(const std::vector<const VoidListener*>& listeners) {
+	ExtendListeners(_viewDidLayoutListeners, listeners);
+}
+
+void ViewEventDispatcher::AddViewDidEndLiveResizeListeners(const std::vector<const VoidListener*>& listeners) {
+	ExtendListeners(_viewDidEndLiveResizeListeners, listeners);
+}
+
 void ViewEventDispatcher::RemoveMouseDownListener(const EventListener* listener) {
 	RemoveItem(_mouseDownListeners, listener);
 }
@@ -295,6 +370,22 @@ void ViewEventDispatcher::RemoveScrollWheelListener(const EventListener* listene
 	RemoveItem(_scrollWheelListeners, listener);
 }
 
+void ViewEventDispatcher::RemoveViewDidMoveToWindowListener(const VoidListener* listener) {
+	RemoveItem(_viewDidMoveToWindowListeners, listener);
+}
+
+void ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener(const VoidListener* listener) {
+	RemoveItem(_viewDidMoveToSuperviewListeners, listener);
+}
+
+void ViewEventDispatcher::RemoveViewDidLayoutListener(const VoidListener* listener) {
+	RemoveItem(_viewDidLayoutListeners, listener);
+}
+
+void ViewEventDispatcher::RemoveViewDidEndLiveResizeListener(const VoidListener* listener) {
+	RemoveItem(_viewDidEndLiveResizeListeners, listener);
+}
+
 void ViewEventDispatcher::RemoveMouseDownListener(const size_t index) {
 	RemoveIndex(_mouseDownListeners, index, "ViewEventDispatcher::RemoveMouseDownListener");
 }
@@ -357,6 +448,22 @@ void ViewEventDispatcher::RemoveFlagsChangedListener(const size_t index) {
 
 void ViewEventDispatcher::RemoveScrollWheelListener(const size_t index) {
 	RemoveIndex(_scrollWheelListeners, index, "ViewEventDispatcher::RemoveScrollWheelListener");
+}
+
+void ViewEventDispatcher::RemoveViewDidMoveToWindowListener(const size_t index) {
+	RemoveIndex(_viewDidMoveToWindowListeners, index, "ViewEventDispatcher::RemoveViewDidMoveToWindowListener");
+}
+
+void ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener(const size_t index) {
+	RemoveIndex(_viewDidMoveToSuperviewListeners, index, "ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener");
+}
+
+void ViewEventDispatcher::RemoveViewDidLayoutListener(const size_t index) {
+	RemoveIndex(_viewDidLayoutListeners, index, "ViewEventDispatcher::RemoveViewDidLayoutListener");
+}
+
+void ViewEventDispatcher::RemoveViewDidEndLiveResizeListener(const size_t index) {
+	RemoveIndex(_viewDidEndLiveResizeListeners, index, "ViewEventDispatcher::RemoveViewDidEndLiveResizeListener");
 }
 
 }
