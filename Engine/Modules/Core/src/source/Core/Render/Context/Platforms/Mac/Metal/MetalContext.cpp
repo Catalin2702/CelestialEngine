@@ -4,17 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-31
+// Updated: 2026-07-03
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
-#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-
-#include "Apple/MetalCpp/Metal/Metal.hpp"
-#include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
 #include "Tools/Log/Log.hpp"
 
-#include <cassert>
+#include "Foundation/Foundation.hpp"
 
 namespace CE::Core::Render::Context {
 
@@ -64,7 +60,7 @@ bool MetalContext::IsVSyncEnabled() const {
 	return layer->displaySyncEnabled();
 }
 
-void MetalContext::SetView(MTK::RenderView* view) {
+void MetalContext::SetView(MTK::View* view) {
 	if (not view) {
 		CE_CORE_ERROR("MetalContext::SetView: Cannot set null view!");
 		throw std::runtime_error("MetalContext::SetView: Cannot set null view!");

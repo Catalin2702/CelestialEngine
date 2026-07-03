@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-15
+// Updated: 2026-07-03
 //
 
 #pragma once
@@ -12,16 +12,15 @@
 #ifndef CE_RENDER_CONTEXT_METALCONTEXT_HPP
 #define CE_RENDER_CONTEXT_METALCONTEXT_HPP
 
-#include "Core/Render/Context/I_Context.hpp"
-
 #include "Define/DynamicLinker.hpp"
+
+#include "Core/Render/Context/I_Context.hpp"
+#include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Define/Render.hpp"
 
-#include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
-
-#include "Apple/MetalCpp/Foundation/Foundation.hpp"
-#include "Apple/MetalCpp/Metal/Metal.hpp"
-#include "Apple/MetalCpp/MetalKit/MetalKit.hpp"
+#include <Foundation/Foundation.hpp>
+#include <Metal/Metal.hpp>
+#include <MetalKit/MetalKit.hpp>
 
 #include <memory>
 #include <utility>
@@ -106,10 +105,10 @@ public:
 	 * @return MTK::RenderView* Pointer to the MTK::RenderView used for rendering
 	 * @details Returns a pointer to the underlying MTK::RenderView used for rendering. This allows the application to access platform-specific features or perform operations that require direct access to the MetalKit render view.
 	 */
-	[[nodiscard]] MTK::RenderView* GetView() const { return _view.get(); }
+	[[nodiscard]] MTK::View* GetView() const { return _view.get(); }
 
 public:
-	void SetView(MTK::RenderView* view);
+	void SetView(MTK::View* view);
 
 	RENDER_API_TYPE(Metal)
 
@@ -119,7 +118,7 @@ public:
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
-	NS::SharedPtr<MTK::RenderView> _view = nullptr;					///< MetalKit view used for rendering
+	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
 
 private:
 	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
