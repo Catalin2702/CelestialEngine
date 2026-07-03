@@ -59,8 +59,8 @@ public:
 	bool applicationShouldTerminateAfterLastWindowClosed(Application*) override;
 
 public:
-	void SetApplicationDidFinishLaunchingCallback(const callback& callback);
-	void SetApplicationWillFinishLaunchingCallback(const callback& callback);
+	void SetApplicationDidFinishLaunchingCallback(callback callback);
+	void SetApplicationWillFinishLaunchingCallback(callback callback);
 
 private:
 	callback appDidFinishLaunchingCallback;

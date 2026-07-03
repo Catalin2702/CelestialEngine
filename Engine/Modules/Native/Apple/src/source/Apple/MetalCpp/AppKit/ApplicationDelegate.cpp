@@ -11,6 +11,8 @@
 
 #include <Foundation/Foundation.hpp>
 
+#include <utility>
+
 namespace NS {
 
 void ApplicationDelegate::applicationDidFinishLaunching(Notification* notification) {
@@ -27,12 +29,12 @@ bool ApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(Applic
 	return true;
 }
 
-void ApplicationDelegate::SetApplicationDidFinishLaunchingCallback(const callback& callback) {
-	appDidFinishLaunchingCallback = callback;
+void ApplicationDelegate::SetApplicationDidFinishLaunchingCallback(callback callback) {
+	appDidFinishLaunchingCallback = std::move(callback);
 }
 
-void ApplicationDelegate::SetApplicationWillFinishLaunchingCallback(const callback& callback) {
-	appWillFinishLaunchingCallback = callback;
+void ApplicationDelegate::SetApplicationWillFinishLaunchingCallback(callback callback) {
+	appWillFinishLaunchingCallback = std::move(callback);
 }
 
 }
