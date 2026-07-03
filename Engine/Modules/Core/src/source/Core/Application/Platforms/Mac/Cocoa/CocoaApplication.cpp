@@ -10,7 +10,7 @@
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Define/Bind.hpp"
 
-#include "Apple/MetalCpp/AppKit/AppKit.hpp"
+#include <Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp>
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -20,6 +20,8 @@
 #include "Events/I_Event.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Config/Config.hpp"
+
+#include <AppKit/AppKit.hpp>
 
 #include <cassert>
 #include <stdexcept>
@@ -148,13 +150,13 @@ void CocoaApplication::Init() {
 
 	_window = std::make_unique<Window::CocoaWindow>();
 	_window->SetEventCallback(BIND_FN_ONE_PARAM(CocoaApplication::OnEvent));
-	_window->Init(_context->GetDevice());
+	_window->Init();
 
-	if (const auto view = _window->GetViewController()->view()) {
+	if (const auto view = _context->GetView()) {
 		_context->SetView(view);
 		view->setPaused(true);
 		view->setEnableSetNeedsDisplay(false);
-		view->setDelegate(&_renderViewDelegate);
+		// view->setDelegate(&_renderViewDelegate);
 	}
 
 	Input::InitInput(windowProps.windowApi);

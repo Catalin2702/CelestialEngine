@@ -12,15 +12,16 @@
 #ifndef CE_WINDOW_MAC_COCOAWINDOW_HPP
 #define CE_WINDOW_MAC_COCOAWINDOW_HPP
 
-#include "Core/Window/I_Window.hpp"
 #include "Define/DynamicLinker.hpp"
-
-#include "Apple/MetalCpp/AppKit/AppKit.hpp"
-#include "Apple/MetalCpp/Foundation/Foundation.hpp"
-#include "Apple/Types/Types.hpp"
 #include "Define/Window.hpp"
+
+#include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <AppKit/AppKit.hpp>
+#include <Foundation/Foundation.hpp>
+
+#include <memory>
 #include <utility>
 
 namespace CA {
@@ -36,7 +37,7 @@ namespace NS {
 class RenderViewController;
 class Screen;
 class Window;
-class WindowDelegate;
+class WindowEventDispatcher;
 }
 
 /**
@@ -49,18 +50,6 @@ class WindowDelegate;
  *			offering a native experience for applications targeting macOS with Metal.
  */
 namespace CE::Core::Window {
-
-struct EventHandlers {
-	Apple::Types::ViewEventHandler ViewEventHandler{};
-	Apple::Types::WindowDelegateEventHandler WindowDelegateEventHandler{};
-	Apple::Types::ViewControllerEventHandler ViewControllerEventHandler{};
-};
-
-struct CocoaWindowCallbacks {
-	std::function<void(NS::Screen*)> WindowDidChangeCallback;
-	std::function<void(NS::Screen*)> WindowDidChangeScreenProfileCallback;
-	std::function<void(NS::Screen*)> WindowDidChangeBackingPropertiesCallback;
-};
 
 /**
  * @class CocoaWindow
@@ -166,14 +155,6 @@ public:
 	 */
 	[[nodiscard]] NS::Window* GetWindow() const { return _window.get(); }
 
-	/**
-	 * @brief Gets the content view controller of the window
-	 * @return NS::RenderViewController* Pointer to the view controller managing the content view
-	 * @details Provides access to the view controller that manages the content view of the window.
-	 *			This allows for direct interaction with the view controller when necessary, such as for handling input events or managing the view hierarchy.
-	 */
-	[[nodiscard]] NS::RenderViewController* GetViewController() const { return _viewController.get(); }
-
 public:
 	/**
 	 * @brief Initializes the window with the provided Metal device
@@ -182,24 +163,12 @@ public:
 	 *			This method is called by the CocoaApplication during its initialization process to prepare the window for rendering with Metal.
 	 *			It ensures that the view controller is properly set up with the Metal device before initializing the window and its associated resources.
 	 */
-	void Init(const MTL::Device* device);
+	void Init();
 
 protected:
-	/**
-	 * @brief Sets internal callbacks for I/O events
-	 * @details Registers the necessary callbacks for handling keyboard input, mouse input, and other I/O events using the Cocoa event system.
-	 *			These callbacks will translate Cocoa events into the engine's event system and invoke the appropriate event callbacks stored in the _data structure.
-	 */
-	void _SetIOEventCallbacks() override;
+	void _SetIOEventCallbacks() override {};
 
-	/**
-	 * @brief Sets internal callbacks for window events
-	 * @details Registers the necessary callbacks for handling window events such as resizing, closing, minimizing, etc.
-	 *			These callbacks will translate Cocoa window events into the engine's event system and invoke the appropriate event callbacks stored in the _data structure.
-	 */
-	void _SetWindowEventCallbacks() override;
-
-	void _SetViewControllerEventCallbacks();
+	void _SetWindowEventCallbacks() override {};
 
 	/**
 	 * @brief Sets internal callbacks for window events
@@ -217,13 +186,6 @@ protected:
 	 */
 	void _InitWindow() override;
 
-	/**
-	 * @brief Initializes the view controller with the Metal device
-	 * @param device Pointer to the Metal device to be used for rendering
-	 * @details Initializes the view controller by creating a new instance of NS::RenderViewController and setting it up with the provided Metal device. This prepares the view controller for managing the content view and handling rendering operations using Metal.
-	 */
-	void _InitViewController(const MTL::Device* device);
-
 	/** @brief Shuts down the window and cleans up resources
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
 	 */
@@ -233,14 +195,10 @@ public:
 	WINDOW_API_TYPE(Cocoa)
 
 public:
-	CocoaWindowCallbacks callbacks; ///< Struct containing callback functions for window events
+	std::unique_ptr<NS::WindowEventDispatcher> windowEventDispatcher; ///< Delegate for handling window events
 
 private:
-	NS::SharedPtr<NS::RenderViewController> _viewController; ///< View controller for managing the content view
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
-	NS::SharedPtr<NS::WindowDelegate> _windowDelegate; ///< Delegate for handling window events
-
-	EventHandlers _handlers; ///< Struct containing event handlers for view and window events
 };
 
 }

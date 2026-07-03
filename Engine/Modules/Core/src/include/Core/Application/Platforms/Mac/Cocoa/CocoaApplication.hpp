@@ -14,13 +14,13 @@
 
 #include "Core/Application/I_Application.hpp"
 
-#include "Apple/MetalCpp/Foundation/Foundation.hpp"
-#include "Apple/MetalCpp/Metal/Metal.hpp"
-#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp"
+#include "Apple/MetalCpp/AppKit/ApplicationDelegate.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
-#include "Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
+
+#include <Foundation/Foundation.hpp>
+#include <Metal/Metal.hpp>
 
 #include <atomic>
 #include <memory>
@@ -194,8 +194,7 @@ private:
 
 	Layers::ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
 
-	CocoaApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
-	MTK::RenderViewDelegate _renderViewDelegate; ///< Delegate for handling Metal render view events
+	NS::ApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
