@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-03
+# Updated: 2026-07-04
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -29,6 +29,9 @@ set(METALCPP_HEADERS
 
 	# MetalKit
 	${INCLUDE}/MetalCpp/MetalKit/ViewDelegate.hpp
+
+	# QuartzCore
+	${INCLUDE}/MetalCpp/QuartzCore/MetalDisplayLinkDelegate.hpp
 )
 
 set(BRIDGE_SOURCES
@@ -50,6 +53,9 @@ set(METALCPP_SOURCES
 
 	# MetalKit
 	${SOURCE}/MetalCpp/MetalKit/ViewDelegate.cpp
+
+	# QuartzCore
+	${SOURCE}/MetalCpp/QuartzCore/MetalDisplayLinkDelegate.cpp
 )
 
 set(HEADERS
