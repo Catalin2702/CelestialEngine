@@ -24,6 +24,8 @@ class ViewDelegate: public I_ViewDelegate {
 public:
 	ViewDelegate() = default;
 
+	~ViewDelegate() override = default;
+
 public:
 	void drawInMTKView(View* view) override;
 	void drawableSizeWillChange(View* view, CGSize size) override;

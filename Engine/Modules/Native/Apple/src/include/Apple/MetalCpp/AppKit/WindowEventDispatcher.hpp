@@ -24,6 +24,8 @@ class WindowEventDispatcher: public I_WindowEventDispatcher {
 public:
 	WindowEventDispatcher() = default;
 
+	~WindowEventDispatcher() override = default;
+
 public:
 	void DispatchWindowDidResize(Notification* notification) override;
 	void DispatchWindowDidMove(Notification* notification) override;

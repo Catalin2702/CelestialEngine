@@ -8,6 +8,8 @@
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
+
+#include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include "Foundation/Foundation.hpp"
@@ -68,6 +70,8 @@ void MetalContext::SetView(MTK::View* view) {
 
 	// The release of the previous view (if any) will be handled by the assign operator of NS::SharedPtr
 	_view = NS::TransferPtr(view);
+	viewEventDispatcher = std::make_unique<NS::ViewEventDispatcher>();
+	_view->setEventDispatcher(viewEventDispatcher.get());
 }
 
 }

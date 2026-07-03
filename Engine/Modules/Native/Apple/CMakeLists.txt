@@ -24,7 +24,11 @@ set(BRIDGE_HEADERS
 set(METALCPP_HEADERS
 	# AppKit
 	${INCLUDE}/MetalCpp/AppKit/ApplicationDelegate.hpp
+	${INCLUDE}/MetalCpp/AppKit/ViewEventDispatcher.hpp
 	${INCLUDE}/MetalCpp/AppKit/WindowEventDispatcher.hpp
+
+	# MetalKit
+	${INCLUDE}/MetalCpp/MetalKit/ViewDelegate.hpp
 )
 
 set(BRIDGE_SOURCES
@@ -38,10 +42,14 @@ set(BRIDGE_SOURCES
 set(METALCPP_SOURCES
 	# AppKit
 	${SOURCE}/MetalCpp/AppKit/ApplicationDelegate.cpp
+	${SOURCE}/MetalCpp/AppKit/ViewEventDispatcher.cpp
 	${SOURCE}/MetalCpp/AppKit/WindowEventDispatcher.cpp
 
 	# Implementation
 	${SOURCE}/MetalCpp/Implementation/MetalCppImplementation.cpp
+
+	# MetalKit
+	${SOURCE}/MetalCpp/MetalKit/ViewDelegate.cpp
 )
 
 set(HEADERS

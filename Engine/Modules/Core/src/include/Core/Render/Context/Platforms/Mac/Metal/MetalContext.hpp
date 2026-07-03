@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Core/Render/Context/I_Context.hpp"
+
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Define/Render.hpp"
 
@@ -31,6 +32,10 @@ namespace MTL {
 	class Device;
 	class RenderPassDescriptor;
 	class RenderPipelineState;
+}
+
+namespace NS {
+	class ViewEventDispatcher;
 }
 
 namespace CE::Core::Window {
@@ -114,13 +119,13 @@ public:
 
 public:
 	MetalContextProps props; ///< Properties for initializing the Metal context
+	std::unique_ptr<NS::ViewEventDispatcher> viewEventDispatcher; ///< Event dispatcher for MTK::View
 
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
 
-private:
 	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
 };
 

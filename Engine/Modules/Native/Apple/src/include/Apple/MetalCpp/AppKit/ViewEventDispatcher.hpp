@@ -24,6 +24,8 @@ class ViewEventDispatcher: public I_ViewEventDispatcher {
 public:
 	ViewEventDispatcher() = default;
 
+	~ViewEventDispatcher() override = default;
+
 public:
 	void DispatchMouseDown(Event* event) override;
 	void DispatchMouseUp(Event* event) override;
