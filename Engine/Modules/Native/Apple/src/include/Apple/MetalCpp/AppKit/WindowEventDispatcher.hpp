@@ -21,7 +21,10 @@ using NotificationListener = std::function<void(NS::Notification*)>;
 
 namespace NS {
 
-class WindowDelegate: public I_WindowDelegate {
+class WindowEventDispatcher: public I_WindowEventDispatcher {
+public:
+	WindowEventDispatcher() = default;
+
 public:
 	void windowDidResize(Notification* notification) override;
 	void windowDidMove(Notification* notification) override;
