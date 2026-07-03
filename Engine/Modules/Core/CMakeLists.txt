@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-02
+# Updated: 2026-07-03
 #
 
 set(APPLICATION_HEADERS
@@ -12,7 +12,6 @@ set(APPLICATION_HEADERS
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp
-		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.hpp
 	>
 )
 
@@ -39,11 +38,6 @@ set(RENDER_HEADERS
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
-	>
-
-	# Delegates
-	$<$<PLATFORM_ID:Darwin>:
-		src/include/Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.hpp
 	>
 
 	# Shader
@@ -97,7 +91,6 @@ set(APPLICATION_SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.cpp
-		src/source/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationDelegate.cpp
 	>
 )
 
@@ -126,11 +119,6 @@ set(RENDER_SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
-	>
-
-	# Delegates
-	$<$<PLATFORM_ID:Darwin>:
-		src/source/Core/Render/Delegates/Platforms/Mac/Metal/RenderViewDelegate.cpp
 	>
 
 	# Shader
@@ -203,16 +191,6 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Vendor_Glfw
 	CE_Vendor_ImGui
 	CE_Vendor_SpdLog
-
-	$<$<PLATFORM_ID:Darwin>:
-		CE_Vendor_MetalCpp
-	>
-)
-
-target_compile_options(CE_Core PUBLIC
-	$<$<PLATFORM_ID:Darwin>:
-		-ObjC++ -fno-objc-arc
-	>
 )
 
 target_include_directories(CE_Core PUBLIC
