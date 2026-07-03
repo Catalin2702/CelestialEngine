@@ -26,15 +26,15 @@ public:
 	WindowEventDispatcher() = default;
 
 public:
-	void windowDidResize(Notification* notification) override;
-	void windowDidMove(Notification* notification) override;
-	void windowDidBecomeKey(Notification* notification) override;
-	void windowDidResignKey(Notification* notification) override;
-	void windowDidMiniaturize(Notification* notification) override;
-	void windowDidDeminiaturize(Notification* notification) override;
-	void windowDidEnterFullScreen(Notification* notification) override;
-	void windowDidExitFullScreen(Notification* notification) override;
-	void windowWillClose(Notification* notification) override;
+	void DispatchWindowDidResize(Notification* notification) override;
+	void DispatchWindowDidMove(Notification* notification) override;
+	void DispatchWindowDidBecomeKey(Notification* notification) override;
+	void DispatchWindowDidResignKey(Notification* notification) override;
+	void DispatchWindowDidMiniaturize(Notification* notification) override;
+	void DispatchWindowDidDeminiaturize(Notification* notification) override;
+	void DispatchWindowDidEnterFullScreen(Notification* notification) override;
+	void DispatchWindowDidExitFullScreen(Notification* notification) override;
+	void DispatchWindowWillClose(Notification* notification) override;
 
 public:
 	void AddWindowDidResizeListener(const NotificationListener* listener);

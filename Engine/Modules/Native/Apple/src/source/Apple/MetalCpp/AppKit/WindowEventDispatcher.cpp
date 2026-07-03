@@ -40,39 +40,39 @@ static void RemoveIndex(std::vector<const NotificationListener*>& vec, const siz
 
 namespace NS {
 
-void WindowEventDispatcher::windowDidResize(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidResize(Notification* notification) {
 	CallListeners(windowDidResizeListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidMove(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidMove(Notification* notification) {
 	CallListeners(windowDidMoveListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidBecomeKey(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidBecomeKey(Notification* notification) {
 	CallListeners(windowDidBecomeKeyListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidResignKey(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidResignKey(Notification* notification) {
 	CallListeners(windowDidResignKeyListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidMiniaturize(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidMiniaturize(Notification* notification) {
 	CallListeners(windowDidMiniaturizeListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidDeminiaturize(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidDeminiaturize(Notification* notification) {
 	CallListeners(windowDidDeminiaturizeListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidEnterFullScreen(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidEnterFullScreen(Notification* notification) {
 	CallListeners(windowDidEnterFullScreenListeners, notification);
 }
 
-void WindowEventDispatcher::windowDidExitFullScreen(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowDidExitFullScreen(Notification* notification) {
 	CallListeners(windowDidExitFullScreenListeners, notification);
 }
 
-void WindowEventDispatcher::windowWillClose(Notification* notification) {
+void WindowEventDispatcher::DispatchWindowWillClose(Notification* notification) {
 	CallListeners(windowWillCloseListeners, notification);
 }
 

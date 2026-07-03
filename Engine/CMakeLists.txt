@@ -22,10 +22,6 @@ set(HEADERS
 	src/internal/EntryPoint.hpp
 )
 
-set(SOURCES
-	src/implementation/Platforms/Mac/MetalCppImplementation.cpp
-)
-
 # Vendor libraries
 add_subdirectory(Vendor/Glad)
 add_subdirectory(Vendor/Glfw)
@@ -48,7 +44,6 @@ add_subdirectory(Shaders)
 
 add_library(CE_Engine SHARED
 	${HEADERS}
-	${SOURCES}
 )
 
 set_target_properties(CE_Engine PROPERTIES

@@ -10,8 +10,6 @@
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Apple/Bridge/ImGui/ImGuiBridge.h"
-#include "Apple/MetalCpp/Metal/Metal.hpp"
-#include "Apple/MetalCpp/QuartzCore/CAMetalLayer.hpp"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 #include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
@@ -20,6 +18,9 @@
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
+
+#include <Metal/Metal.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
 
 #include <imgui.h>
 
