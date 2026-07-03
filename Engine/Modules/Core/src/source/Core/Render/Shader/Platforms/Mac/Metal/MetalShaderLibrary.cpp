@@ -4,15 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-31
+// Updated: 2026-07-03
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
+#include "Tools/Log/Log.hpp"
+
+#include <Metal/Metal.hpp>
 
 #include <ranges>
-
-#include "Apple/MetalCpp/Metal/Metal.hpp"
-#include "Tools/Log/Log.hpp"
 
 namespace CE::Core::Render::Shader {
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-31
+// Updated: 2026-07-03
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
-#include "Apple/MetalCpp/Foundation/Foundation.hpp"
+#include <Foundation/Foundation.hpp>
 
 #include <string>
 #include <unordered_map>
