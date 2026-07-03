@@ -17,11 +17,10 @@
 #include <functional>
 #include <vector>
 
-using NotificationListener = std::function<void(NS::Notification*)>;
-
 namespace NS {
 
 class WindowEventDispatcher: public I_WindowEventDispatcher {
+	using NotificationListener = std::function<void(Notification*)>;
 public:
 	WindowEventDispatcher() = default;
 

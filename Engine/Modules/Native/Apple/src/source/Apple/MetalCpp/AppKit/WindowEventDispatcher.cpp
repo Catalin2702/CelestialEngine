@@ -11,25 +11,25 @@
 #include "Tools/Log/Log.hpp"
 
 
-static void CallListeners(const std::vector<const NotificationListener*>& vec, NS::Notification* notification) {
+static void CallListeners(const std::vector<const std::function<void(NS::Notification*)>*>& vec, NS::Notification* notification) {
 	for (const auto listener: vec) {
 		if (listener)
 			(*listener)(notification);
 	}
 }
 
-static void ExtendListeners(std::vector<const NotificationListener*>& vec, const std::vector<const NotificationListener*>& source) {
+static void ExtendListeners(std::vector<const std::function<void(NS::Notification*)>*>& vec, const std::vector<const std::function<void(NS::Notification*)>*>& source) {
 	vec.reserve(vec.size() + source.size());
 	vec.insert(vec.end(), source.begin(), source.end());
 }
 
-static void RemoveItem(std::vector<const NotificationListener*>& vec, const NotificationListener* item) {
+static void RemoveItem(std::vector<const std::function<void(NS::Notification*)>*>& vec, const std::function<void(NS::Notification*)>* item) {
 	std::erase_if(vec, [&](const auto l) {
 		return l == nullptr or l == item;
 	});
 }
 
-static void RemoveIndex(std::vector<const NotificationListener*>& vec, const size_t index, const char* functionCalled) {
+static void RemoveIndex(std::vector<const std::function<void(NS::Notification*)>*>& vec, const size_t index, const char* functionCalled) {
 	if (index >= vec.size()) {
 		const auto message = std::string(functionCalled) + ": Index " + std::to_string(index) + " Vector size: " + std::to_string(vec.size());
 		CE_CORE_ERROR(message);
