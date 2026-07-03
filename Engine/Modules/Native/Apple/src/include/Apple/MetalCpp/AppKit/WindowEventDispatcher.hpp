@@ -78,15 +78,15 @@ public:
 	void RemoveWindowWillCloseListener(size_t index);
 
 private:
-	std::vector<const NotificationListener*> windowDidResizeListeners;
-	std::vector<const NotificationListener*> windowDidMoveListeners;
-	std::vector<const NotificationListener*> windowDidBecomeKeyListeners;
-	std::vector<const NotificationListener*> windowDidResignKeyListeners;
-	std::vector<const NotificationListener*> windowDidMiniaturizeListeners;
-	std::vector<const NotificationListener*> windowDidDeminiaturizeListeners;
-	std::vector<const NotificationListener*> windowDidEnterFullScreenListeners;
-	std::vector<const NotificationListener*> windowDidExitFullScreenListeners;
-	std::vector<const NotificationListener*> windowWillCloseListeners;
+	std::vector<const NotificationListener*> _windowDidResizeListeners;
+	std::vector<const NotificationListener*> _windowDidMoveListeners;
+	std::vector<const NotificationListener*> _windowDidBecomeKeyListeners;
+	std::vector<const NotificationListener*> _windowDidResignKeyListeners;
+	std::vector<const NotificationListener*> _windowDidMiniaturizeListeners;
+	std::vector<const NotificationListener*> _windowDidDeminiaturizeListeners;
+	std::vector<const NotificationListener*> _windowDidEnterFullScreenListeners;
+	std::vector<const NotificationListener*> _windowDidExitFullScreenListeners;
+	std::vector<const NotificationListener*> _windowWillCloseListeners;
 };
 
 }

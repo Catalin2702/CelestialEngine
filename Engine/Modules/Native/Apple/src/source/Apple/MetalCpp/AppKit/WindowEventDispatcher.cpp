@@ -41,183 +41,183 @@ static void RemoveIndex(std::vector<const std::function<void(NS::Notification*)>
 namespace NS {
 
 void WindowEventDispatcher::DispatchWindowDidResize(Notification* notification) {
-	CallListeners(windowDidResizeListeners, notification);
+	CallListeners(_windowDidResizeListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMove(Notification* notification) {
-	CallListeners(windowDidMoveListeners, notification);
+	CallListeners(_windowDidMoveListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidBecomeKey(Notification* notification) {
-	CallListeners(windowDidBecomeKeyListeners, notification);
+	CallListeners(_windowDidBecomeKeyListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidResignKey(Notification* notification) {
-	CallListeners(windowDidResignKeyListeners, notification);
+	CallListeners(_windowDidResignKeyListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMiniaturize(Notification* notification) {
-	CallListeners(windowDidMiniaturizeListeners, notification);
+	CallListeners(_windowDidMiniaturizeListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidDeminiaturize(Notification* notification) {
-	CallListeners(windowDidDeminiaturizeListeners, notification);
+	CallListeners(_windowDidDeminiaturizeListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidEnterFullScreen(Notification* notification) {
-	CallListeners(windowDidEnterFullScreenListeners, notification);
+	CallListeners(_windowDidEnterFullScreenListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidExitFullScreen(Notification* notification) {
-	CallListeners(windowDidExitFullScreenListeners, notification);
+	CallListeners(_windowDidExitFullScreenListeners, notification);
 }
 
 void WindowEventDispatcher::DispatchWindowWillClose(Notification* notification) {
-	CallListeners(windowWillCloseListeners, notification);
+	CallListeners(_windowWillCloseListeners, notification);
 }
 
 void WindowEventDispatcher::AddWindowDidResizeListener(const NotificationListener* listener) {
-	windowDidResizeListeners.push_back(listener);
+	_windowDidResizeListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidMoveListener(const NotificationListener* listener) {
-	windowDidMoveListeners.push_back(listener);
+	_windowDidMoveListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidBecomeKeyListener(const NotificationListener* listener) {
-	windowDidBecomeKeyListeners.push_back(listener);
+	_windowDidBecomeKeyListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidResignKeyListener(const NotificationListener* listener) {
-	windowDidResignKeyListeners.push_back(listener);
+	_windowDidResignKeyListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidMiniaturizeListener(const NotificationListener* listener) {
-	windowDidMiniaturizeListeners.push_back(listener);
+	_windowDidMiniaturizeListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidDeminiaturizeListener(const NotificationListener* listener) {
-	windowDidDeminiaturizeListeners.push_back(listener);
+	_windowDidDeminiaturizeListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidEnterFullScreenListener(const NotificationListener* listener) {
-	windowDidEnterFullScreenListeners.push_back(listener);
+	_windowDidEnterFullScreenListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidExitFullScreenListener(const NotificationListener* listener) {
-	windowDidExitFullScreenListeners.push_back(listener);
+	_windowDidExitFullScreenListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowWillCloseListener(const NotificationListener* listener) {
-	windowWillCloseListeners.push_back(listener);
+	_windowWillCloseListeners.push_back(listener);
 }
 
 void WindowEventDispatcher::AddWindowDidResizeListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidResizeListeners, listeners);
+	ExtendListeners(_windowDidResizeListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidMoveListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidMoveListeners, listeners);
+	ExtendListeners(_windowDidMoveListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidBecomeKeyListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidBecomeKeyListeners, listeners);
+	ExtendListeners(_windowDidBecomeKeyListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidResignKeyListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidResignKeyListeners, listeners);
+	ExtendListeners(_windowDidResignKeyListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidMiniaturizeListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidMiniaturizeListeners, listeners);
+	ExtendListeners(_windowDidMiniaturizeListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidDeminiaturizeListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidDeminiaturizeListeners, listeners);
+	ExtendListeners(_windowDidDeminiaturizeListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidEnterFullScreenListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidEnterFullScreenListeners, listeners);
+	ExtendListeners(_windowDidEnterFullScreenListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowDidExitFullScreenListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowDidExitFullScreenListeners, listeners);
+	ExtendListeners(_windowDidExitFullScreenListeners, listeners);
 }
 
 void WindowEventDispatcher::AddWindowWillCloseListeners(const std::vector<const NotificationListener*>& listeners) {
-	ExtendListeners(windowWillCloseListeners, listeners);
+	ExtendListeners(_windowWillCloseListeners, listeners);
 }
 
 void WindowEventDispatcher::RemoveWindowDidResizeListener(const NotificationListener* listener) {
-	RemoveItem(windowDidResizeListeners, listener);
+	RemoveItem(_windowDidResizeListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidMoveListener(const NotificationListener* listener) {
-	RemoveItem(windowDidMoveListeners, listener);
+	RemoveItem(_windowDidMoveListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidBecomeKeyListener(const NotificationListener* listener) {
-	RemoveItem(windowDidBecomeKeyListeners, listener);
+	RemoveItem(_windowDidBecomeKeyListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidResignKeyListener(const NotificationListener* listener) {
-	RemoveItem(windowDidResignKeyListeners, listener);
+	RemoveItem(_windowDidResignKeyListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidMiniaturizeListener(const NotificationListener* listener) {
-	RemoveItem(windowDidMiniaturizeListeners, listener);
+	RemoveItem(_windowDidMiniaturizeListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidDeminiaturizeListener(const NotificationListener* listener) {
-	RemoveItem(windowDidDeminiaturizeListeners, listener);
+	RemoveItem(_windowDidDeminiaturizeListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidEnterFullScreenListener(const NotificationListener* listener) {
-	RemoveItem(windowDidEnterFullScreenListeners, listener);
+	RemoveItem(_windowDidEnterFullScreenListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidExitFullScreenListener(const NotificationListener* listener) {
-	RemoveItem(windowDidExitFullScreenListeners, listener);
+	RemoveItem(_windowDidExitFullScreenListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowWillCloseListener(const NotificationListener* listener) {
-	RemoveItem(windowWillCloseListeners, listener);
+	RemoveItem(_windowWillCloseListeners, listener);
 }
 
 void WindowEventDispatcher::RemoveWindowDidResizeListener(const size_t index) {
-	RemoveIndex(windowDidResizeListeners, index, "WindowDelegate::RemoveWindowDidResizeListener");
+	RemoveIndex(_windowDidResizeListeners, index, "WindowDelegate::RemoveWindowDidResizeListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidMoveListener(const size_t index) {
-	RemoveIndex(windowDidMoveListeners, index, "WindowDelegate::RemoveWindowDidMoveListener");
+	RemoveIndex(_windowDidMoveListeners, index, "WindowDelegate::RemoveWindowDidMoveListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidBecomeKeyListener(const size_t index) {
-	RemoveIndex(windowDidBecomeKeyListeners, index, "WindowDelegate::RemoveWindowDidBecomeKeyListener");
+	RemoveIndex(_windowDidBecomeKeyListeners, index, "WindowDelegate::RemoveWindowDidBecomeKeyListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidResignKeyListener(const size_t index) {
-	RemoveIndex(windowDidResignKeyListeners, index, "WindowDelegate::RemoveWindowDidResignKeyListener");
+	RemoveIndex(_windowDidResignKeyListeners, index, "WindowDelegate::RemoveWindowDidResignKeyListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidMiniaturizeListener(const size_t index) {
-	RemoveIndex(windowDidMiniaturizeListeners, index, "WindowDelegate::RemoveWindowDidMiniaturizeListener");
+	RemoveIndex(_windowDidMiniaturizeListeners, index, "WindowDelegate::RemoveWindowDidMiniaturizeListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidDeminiaturizeListener(const size_t index) {
-	RemoveIndex(windowDidDeminiaturizeListeners, index, "WindowDelegate::RemoveWindowDidDeminiaturizeListener");
+	RemoveIndex(_windowDidDeminiaturizeListeners, index, "WindowDelegate::RemoveWindowDidDeminiaturizeListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidEnterFullScreenListener(const size_t index) {
-	RemoveIndex(windowDidEnterFullScreenListeners, index, "WindowDelegate::RemoveWindowDidEnterFullScreenListener");
+	RemoveIndex(_windowDidEnterFullScreenListeners, index, "WindowDelegate::RemoveWindowDidEnterFullScreenListener");
 }
 
 void WindowEventDispatcher::RemoveWindowDidExitFullScreenListener(const size_t index) {
-	RemoveIndex(windowDidExitFullScreenListeners, index, "WindowDelegate::RemoveWindowDidExitFullScreenListener");
+	RemoveIndex(_windowDidExitFullScreenListeners, index, "WindowDelegate::RemoveWindowDidExitFullScreenListener");
 }
 
 void WindowEventDispatcher::RemoveWindowWillCloseListener(const size_t index) {
-	RemoveIndex(windowWillCloseListeners, index, "WindowDelegate::RemoveWindowWillCloseListener");
+	RemoveIndex(_windowWillCloseListeners, index, "WindowDelegate::RemoveWindowWillCloseListener");
 }
 
 }
