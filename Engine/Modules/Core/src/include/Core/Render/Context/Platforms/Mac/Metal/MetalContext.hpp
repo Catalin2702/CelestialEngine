@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -16,6 +16,8 @@
 
 #include "Core/Render/Context/I_Context.hpp"
 
+#include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
+#include "Apple/MetalCpp/MetalKit/ViewDelegate.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Define/Render.hpp"
 
@@ -112,14 +114,33 @@ public:
 	 */
 	[[nodiscard]] MTK::View* GetView() const { return _view.get(); }
 
-public:
-	void SetView(MTK::View* view);
-
 	RENDER_API_TYPE(Metal)
 
 public:
+	/**
+	 * Set the callback for the view delegate drawInMTKView method
+	 * @param callback
+	 */
+	void SetDrawCallback(std::function<void(MTK::View*)> callback) const;
+
+	/**
+	 * Set the callback for the view delegate drawableSizeWillChange method
+	 * @param callback
+	 */
+	void SetResizeCallback(std::function<void(MTK::View*, CGSize)> callback) const;
+
+public:
 	MetalContextProps props; ///< Properties for initializing the Metal context
-	std::unique_ptr<NS::ViewEventDispatcher> viewEventDispatcher; ///< Event dispatcher for MTK::View
+
+	std::unique_ptr<NS::ViewEventDispatcher> viewEventDispatcher; ///< Dispatches the MTK::View input (mouse / keyboard / scroll)
+
+private:
+	/**
+	 * @brief Creates and configures the MetalKit view used for rendering and input
+	 * @details Allocates the MTK::View with the Metal device, sets the pixel format/clear color, attaches the view
+	 *			delegate and the input event dispatcher, and starts it paused so the application controls the frame pace.
+	 */
+	void _CreateView();
 
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
@@ -127,6 +148,7 @@ private:
 	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
 
 	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
+	std::unique_ptr<MTK::ViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
 };
 
 }
