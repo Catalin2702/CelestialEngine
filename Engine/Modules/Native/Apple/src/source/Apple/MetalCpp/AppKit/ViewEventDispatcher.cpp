@@ -8,462 +8,87 @@
 //
 
 #include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
-#include "Tools/Log/Log.hpp"
-
-static void CallListeners(const std::vector<const std::function<void(NS::Event*)>*>& vec, NS::Event* notification) {
-	for (const auto listener: vec) {
-		if (listener)
-			(*listener)(notification);
-	}
-}
-
-static void CallListeners(const std::vector<const std::function<void()>*>& vec) {
-	for (const auto listener: vec) {
-		if (listener)
-			(*listener)();
-	}
-}
-
-static void ExtendListeners(std::vector<const std::function<void(NS::Event*)>*>& vec, const std::vector<const std::function<void(NS::Event*)>*>& source) {
-	vec.reserve(vec.size() + source.size());
-	vec.insert(vec.end(), source.begin(), source.end());
-}
-
-static void ExtendListeners(std::vector<const std::function<void()>*>& vec, const std::vector<const std::function<void()>*>& source) {
-	vec.reserve(vec.size() + source.size());
-	vec.insert(vec.end(), source.begin(), source.end());
-}
-
-static void RemoveItem(std::vector<const std::function<void(NS::Event*)>*>& vec, const std::function<void(NS::Event*)>* item) {
-	std::erase_if(vec, [&](const auto l) {
-		return l == nullptr or l == item;
-	});
-}
-
-static void RemoveIndex(std::vector<const std::function<void(NS::Event*)>*>& vec, const size_t index, const char* functionCalled) {
-	if (index >= vec.size()) {
-		const auto message = std::string(functionCalled) + ": Index " + std::to_string(index) + " Vector size: " + std::to_string(vec.size());
-		CE_CORE_ERROR(message);
-		throw std::runtime_error(message);
-	}
-	vec.erase(vec.begin() + static_cast<long>(index));
-}
-
-static void RemoveItem(std::vector<const std::function<void()>*>& vec, const std::function<void()>* item) {
-	std::erase_if(vec, [&](const auto l) {
-		return l == nullptr or l == item;
-	});
-}
-
-static void RemoveIndex(std::vector<const std::function<void()>*>& vec, const size_t index, const char* functionCalled) {
-	if (index >= vec.size()) {
-		const auto message = std::string(functionCalled) + ": Index " + std::to_string(index) + " Vector size: " + std::to_string(vec.size());
-		CE_CORE_ERROR(message);
-		throw std::runtime_error(message);
-	}
-	vec.erase(vec.begin() + static_cast<long>(index));
-}
 
 namespace NS {
 
 void ViewEventDispatcher::DispatchMouseDown(Event* event) {
-	CallListeners(_mouseDownListeners, event);
+	mouseDownDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseUp(Event* event) {
-	CallListeners(_mouseUpListeners, event);
+	mouseUpDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseDragged(Event* event) {
-	CallListeners(_mouseDraggedListeners, event);
+	mouseDraggedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDown(Event* event) {
-	CallListeners(_rightMouseDownListeners, event);
+	rightMouseDownDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseUp(Event* event) {
-	CallListeners(_rightMouseUpListeners, event);
+	rightMouseUpDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDragged(Event* event) {
-	CallListeners(_rightMouseDraggedListeners, event);
+	rightMouseDraggedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDown(Event* event) {
-	CallListeners(_otherMouseDownListeners, event);
+	otherMouseDownDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseUp(Event* event) {
-	CallListeners(_otherMouseUpListeners, event);
+	otherMouseUpDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDragged(Event* event) {
-	CallListeners(_otherMouseDraggedListeners, event);
+	otherMouseDraggedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseMoved(Event* event) {
-	CallListeners(_mouseMovedListeners, event);
+	mouseMovedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseEntered(Event* event) {
-	CallListeners(_mouseEnteredListeners, event);
+	mouseEnteredDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseExited(Event* event) {
-	CallListeners(_mouseExitedListeners, event);
+	mouseExitedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchKeyDown(Event* event) {
-	CallListeners(_keyDownListeners, event);
+	keyDownDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchKeyUp(Event* event) {
-	CallListeners(_keyUpListeners, event);
+	keyUpDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchFlagsChanged(Event* event) {
-	CallListeners(_flagsChangedListeners, event);
+	flagsChangedDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchScrollWheel(Event* event) {
-	CallListeners(_scrollWheelListeners, event);
+	scrollWheelDelegate.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToWindow() {
-	CallListeners(_viewDidMoveToWindowListeners);
+	viewDidMoveToWindowDelegate.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToSuperview() {
-	CallListeners(_viewDidMoveToSuperviewListeners);
+	viewDidMoveToSuperviewDelegate.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidLayout() {
-	CallListeners(_viewDidLayoutListeners);
+	viewDidLayoutDelegate.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidEndLiveResize() {
-	CallListeners(_viewDidEndLiveResizeListeners);
-}
-
-void ViewEventDispatcher::AddMouseDownListener(const EventListener* listener) {
-	_mouseDownListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseUpListener(const EventListener* listener) {
-	_mouseUpListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseDraggedListener(const EventListener* listener) {
-	_mouseDraggedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddRightMouseDownListener(const EventListener* listener) {
-	_rightMouseDownListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddRightMouseUpListener(const EventListener* listener) {
-	_rightMouseUpListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddRightMouseDraggedListener(const EventListener* listener) {
-	_rightMouseDraggedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddOtherMouseDownListener(const EventListener* listener) {
-	_otherMouseDownListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddOtherMouseUpListener(const EventListener* listener) {
-	_otherMouseUpListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddOtherMouseDraggedListener(const EventListener* listener) {
-	_otherMouseDraggedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseMovedListener(const EventListener* listener) {
-	_mouseMovedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseEnteredListener(const EventListener* listener) {
-	_mouseEnteredListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseExitedListener(const EventListener* listener) {
-	_mouseExitedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddKeyDownListener(const EventListener* listener) {
-	_keyDownListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddKeyUpListener(const EventListener* listener) {
-	_keyUpListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddFlagsChangedListener(const EventListener* listener) {
-	_flagsChangedListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddScrollWheelListener(const EventListener* listener) {
-	_scrollWheelListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddViewDidMoveToWindowListener(const VoidListener* listener) {
-	_viewDidMoveToWindowListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddViewDidMoveToSuperviewListener(const VoidListener* listener) {
-	_viewDidMoveToSuperviewListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddViewDidLayoutListener(const VoidListener* listener) {
-	_viewDidLayoutListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddViewDidEndLiveResizeListener(const VoidListener* listener) {
-	_viewDidEndLiveResizeListeners.push_back(listener);
-}
-
-void ViewEventDispatcher::AddMouseDownListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseDownListeners, listeners);
-}
-
-void ViewEventDispatcher::AddMouseUpListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseUpListeners, listeners);
-}
-
-void ViewEventDispatcher::AddMouseDraggedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseDraggedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddRightMouseDownListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_rightMouseDownListeners, listeners);
-}
-
-void ViewEventDispatcher::AddRightMouseUpListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_rightMouseUpListeners, listeners);
-}
-
-void ViewEventDispatcher::AddRightMouseDraggedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_rightMouseDraggedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddOtherMouseDownListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_otherMouseDownListeners, listeners);
-}
-
-void ViewEventDispatcher::AddOtherMouseUpListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_otherMouseUpListeners, listeners);
-}
-
-void ViewEventDispatcher::AddOtherMouseDraggedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_otherMouseDraggedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddMouseMovedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseMovedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddMouseEnteredListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseEnteredListeners, listeners);
-}
-
-void ViewEventDispatcher::AddMouseExitedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_mouseExitedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddKeyDownListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_keyDownListeners, listeners);
-}
-
-void ViewEventDispatcher::AddKeyUpListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_keyUpListeners, listeners);
-}
-
-void ViewEventDispatcher::AddFlagsChangedListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_flagsChangedListeners, listeners);
-}
-
-void ViewEventDispatcher::AddScrollWheelListeners(const std::vector<const EventListener*>& listeners) {
-	ExtendListeners(_scrollWheelListeners, listeners);
-}
-
-void ViewEventDispatcher::AddViewDidMoveToWindowListeners(const std::vector<const VoidListener*>& listeners) {
-	ExtendListeners(_viewDidMoveToWindowListeners, listeners);
-}
-
-void ViewEventDispatcher::AddViewDidMoveToSuperviewListeners(const std::vector<const VoidListener*>& listeners) {
-	ExtendListeners(_viewDidMoveToSuperviewListeners, listeners);
-}
-
-void ViewEventDispatcher::AddViewDidLayoutListeners(const std::vector<const VoidListener*>& listeners) {
-	ExtendListeners(_viewDidLayoutListeners, listeners);
-}
-
-void ViewEventDispatcher::AddViewDidEndLiveResizeListeners(const std::vector<const VoidListener*>& listeners) {
-	ExtendListeners(_viewDidEndLiveResizeListeners, listeners);
-}
-
-void ViewEventDispatcher::RemoveMouseDownListener(const EventListener* listener) {
-	RemoveItem(_mouseDownListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseUpListener(const EventListener* listener) {
-	RemoveItem(_mouseUpListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseDraggedListener(const EventListener* listener) {
-	RemoveItem(_mouseDraggedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveRightMouseDownListener(const EventListener* listener) {
-	RemoveItem(_rightMouseDownListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveRightMouseUpListener(const EventListener* listener) {
-	RemoveItem(_rightMouseUpListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveRightMouseDraggedListener(const EventListener* listener) {
-	RemoveItem(_rightMouseDraggedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveOtherMouseDownListener(const EventListener* listener) {
-	RemoveItem(_otherMouseDownListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveOtherMouseUpListener(const EventListener* listener) {
-	RemoveItem(_otherMouseUpListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveOtherMouseDraggedListener(const EventListener* listener) {
-	RemoveItem(_otherMouseDraggedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseMovedListener(const EventListener* listener) {
-	RemoveItem(_mouseMovedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseEnteredListener(const EventListener* listener) {
-	RemoveItem(_mouseEnteredListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseExitedListener(const EventListener* listener) {
-	RemoveItem(_mouseExitedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveKeyDownListener(const EventListener* listener) {
-	RemoveItem(_keyDownListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveKeyUpListener(const EventListener* listener) {
-	RemoveItem(_keyUpListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveFlagsChangedListener(const EventListener* listener) {
-	RemoveItem(_flagsChangedListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveScrollWheelListener(const EventListener* listener) {
-	RemoveItem(_scrollWheelListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveViewDidMoveToWindowListener(const VoidListener* listener) {
-	RemoveItem(_viewDidMoveToWindowListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener(const VoidListener* listener) {
-	RemoveItem(_viewDidMoveToSuperviewListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveViewDidLayoutListener(const VoidListener* listener) {
-	RemoveItem(_viewDidLayoutListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveViewDidEndLiveResizeListener(const VoidListener* listener) {
-	RemoveItem(_viewDidEndLiveResizeListeners, listener);
-}
-
-void ViewEventDispatcher::RemoveMouseDownListener(const size_t index) {
-	RemoveIndex(_mouseDownListeners, index, "ViewEventDispatcher::RemoveMouseDownListener");
-}
-
-void ViewEventDispatcher::RemoveMouseUpListener(const size_t index) {
-	RemoveIndex(_mouseUpListeners, index, "ViewEventDispatcher::RemoveMouseUpListener");
-}
-
-void ViewEventDispatcher::RemoveMouseDraggedListener(const size_t index) {
-	RemoveIndex(_mouseDraggedListeners, index, "ViewEventDispatcher::RemoveMouseDraggedListener");
-}
-
-void ViewEventDispatcher::RemoveRightMouseDownListener(const size_t index) {
-	RemoveIndex(_rightMouseDownListeners, index, "ViewEventDispatcher::RemoveRightMouseDownListener");
-}
-
-void ViewEventDispatcher::RemoveRightMouseUpListener(const size_t index) {
-	RemoveIndex(_rightMouseUpListeners, index, "ViewEventDispatcher::RemoveRightMouseUpListener");
-}
-
-void ViewEventDispatcher::RemoveRightMouseDraggedListener(const size_t index) {
-	RemoveIndex(_rightMouseDraggedListeners, index, "ViewEventDispatcher::RemoveRightMouseDraggedListener");
-}
-
-void ViewEventDispatcher::RemoveOtherMouseDownListener(const size_t index) {
-	RemoveIndex(_otherMouseDownListeners, index, "ViewEventDispatcher::RemoveOtherMouseDownListener");
-}
-
-void ViewEventDispatcher::RemoveOtherMouseUpListener(const size_t index) {
-	RemoveIndex(_otherMouseUpListeners, index, "ViewEventDispatcher::RemoveOtherMouseUpListener");
-}
-
-void ViewEventDispatcher::RemoveOtherMouseDraggedListener(const size_t index) {
-	RemoveIndex(_otherMouseDraggedListeners, index, "ViewEventDispatcher::RemoveOtherMouseDraggedListener");
-}
-
-void ViewEventDispatcher::RemoveMouseMovedListener(const size_t index) {
-	RemoveIndex(_mouseMovedListeners, index, "ViewEventDispatcher::RemoveMouseMovedListener");
-}
-
-void ViewEventDispatcher::RemoveMouseEnteredListener(const size_t index) {
-	RemoveIndex(_mouseEnteredListeners, index, "ViewEventDispatcher::RemoveMouseEnteredListener");
-}
-
-void ViewEventDispatcher::RemoveMouseExitedListener(const size_t index) {
-	RemoveIndex(_mouseExitedListeners, index, "ViewEventDispatcher::RemoveMouseExitedListener");
-}
-
-void ViewEventDispatcher::RemoveKeyDownListener(const size_t index) {
-	RemoveIndex(_keyDownListeners, index, "ViewEventDispatcher::RemoveKeyDownListener");
-}
-
-void ViewEventDispatcher::RemoveKeyUpListener(const size_t index) {
-	RemoveIndex(_keyUpListeners, index, "ViewEventDispatcher::RemoveKeyUpListener");
-}
-
-void ViewEventDispatcher::RemoveFlagsChangedListener(const size_t index) {
-	RemoveIndex(_flagsChangedListeners, index, "ViewEventDispatcher::RemoveFlagsChangedListener");
-}
-
-void ViewEventDispatcher::RemoveScrollWheelListener(const size_t index) {
-	RemoveIndex(_scrollWheelListeners, index, "ViewEventDispatcher::RemoveScrollWheelListener");
-}
-
-void ViewEventDispatcher::RemoveViewDidMoveToWindowListener(const size_t index) {
-	RemoveIndex(_viewDidMoveToWindowListeners, index, "ViewEventDispatcher::RemoveViewDidMoveToWindowListener");
-}
-
-void ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener(const size_t index) {
-	RemoveIndex(_viewDidMoveToSuperviewListeners, index, "ViewEventDispatcher::RemoveViewDidMoveToSuperviewListener");
-}
-
-void ViewEventDispatcher::RemoveViewDidLayoutListener(const size_t index) {
-	RemoveIndex(_viewDidLayoutListeners, index, "ViewEventDispatcher::RemoveViewDidLayoutListener");
-}
-
-void ViewEventDispatcher::RemoveViewDidEndLiveResizeListener(const size_t index) {
-	RemoveIndex(_viewDidEndLiveResizeListeners, index, "ViewEventDispatcher::RemoveViewDidEndLiveResizeListener");
+	viewDidEndLiveResizeDelegate.Dispatch();
 }
 
 }
