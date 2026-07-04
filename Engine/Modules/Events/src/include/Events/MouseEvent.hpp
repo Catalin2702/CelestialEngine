@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-21
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -42,9 +42,10 @@ protected:
 	 * @brief Constructor
 	 * @param x New X coordinate of the mouse cursor in window space
 	 * @param y New Y coordinate of the mouse cursor in window space
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse moved event with the specified cursor position
 	 */
-	I_MouseMovedEvent(float x, float y);
+	I_MouseMovedEvent(float x, float y, bool isMutable = true);
 
 public:
 	/**
@@ -78,9 +79,10 @@ public:
 	 * @brief Constructor
 	 * @param x New X coordinate of the mouse cursor in window space
 	 * @param y New Y coordinate of the mouse cursor in window space
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse moved event with the specified cursor position
 	 */
-	MouseMovedEvent(float x, float y);
+	MouseMovedEvent(float x, float y, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -104,9 +106,10 @@ public:
 	 * @brief Constructor
 	 * @param xOffset Horizontal scroll offset (positive = right, negative = left)
 	 * @param yOffset Vertical scroll offset (positive = up, negative = down)
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse scrolled event with the specified scroll offsets
 	 */
-	MouseScrolledEvent(float xOffset, float yOffset);
+	MouseScrolledEvent(float xOffset, float yOffset, bool isMutable = true);
 
 	/**
 	 * @brief Gets the horizontal scroll offset
@@ -145,9 +148,10 @@ protected:
 	/**
 	 * @brief Protected constructor
 	 * @param button Platform-specific mouse button code
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Only derived classes can construct a mouse button event
 	 */
-	I_MouseButtonEvent(KeyCode::MouseButtonCode button);
+	I_MouseButtonEvent(KeyCode::MouseButtonCode button, bool isMutable = true);
 
 public:
 	/**
@@ -174,9 +178,10 @@ public:
 	/**
 	 * @brief Constructor
 	 * @param button Platform-specific mouse button code
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse button pressed event with the specified button
 	 */
-	MouseButtonPressedEvent(KeyCode::MouseButtonCode button);
+	MouseButtonPressedEvent(KeyCode::MouseButtonCode button, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -198,9 +203,10 @@ public:
 	/**
 	 * @brief Constructor
 	 * @param button Platform-specific mouse button code
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse button released event with the specified button
 	 */
-	MouseButtonReleasedEvent(KeyCode::MouseButtonCode button);
+	MouseButtonReleasedEvent(KeyCode::MouseButtonCode button, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -225,9 +231,10 @@ public:
 	 * @param button Platform-specific mouse button code
 	 * @param x New X coordinate of the mouse cursor in window space
 	 * @param y New Y coordinate of the mouse cursor in window space
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse dragged event with the specified button and cursor position
 	 */
-	MouseDraggedEvent(KeyCode::MouseButtonCode button, float x, float y);
+	MouseDraggedEvent(KeyCode::MouseButtonCode button, float x, float y, bool isMutable = true);
 
 	/**
 	 * @brief Gets the mouse button code for the button being dragged

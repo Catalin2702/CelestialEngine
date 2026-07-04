@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -89,6 +89,9 @@ enum EventCategory {
 class CE_API I_Event {
 	friend class EventDispatcher;
 
+protected:
+	I_Event(const bool isMutable): _isMutable(isMutable) {}
+
 public:
 	/**
 	 * @brief Virtual destructor
@@ -142,14 +145,20 @@ public:
 	 */
 	[[nodiscard]] bool IsHandled() const { return _handled; }
 
+	[[nodiscard]] bool IsMutable() const { return _isMutable; }
+
 	/**
 	 * @brief Marks the event as handled
 	 * @details Sets the handled flag to true, indicating that the event has been processed
 	 */
-	void Consume() const {_handled = true; }
+	void Consume() const {
+		if (_isMutable)
+			_handled = true;
+	}
 
 protected:
 	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
+	const bool _isMutable;									///< Flag indicating whether the event is mutable. If not it can't be consumed
 };
 
 

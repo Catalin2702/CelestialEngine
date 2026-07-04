@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -42,9 +42,10 @@ public:
 	 * @brief Constructor
 	 * @param width New width of the window in pixels
 	 * @param height New height of the window in pixels
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a window resize event with the specified dimensions
 	 */
-	WindowResizeEvent(unsigned int width, unsigned int height);
+	WindowResizeEvent(unsigned int width, unsigned int height, bool isMutable = true);
 
 public:
 	/**
@@ -83,8 +84,9 @@ class CE_API WindowCloseEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	WindowCloseEvent() = default;
+	WindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(WindowClose)
@@ -102,8 +104,9 @@ class CE_API AppTickEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppTickEvent() = default;
+	AppTickEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(AppTick)
@@ -121,8 +124,9 @@ class CE_API AppUpdateEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppUpdateEvent() = default;
+	AppUpdateEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(AppUpdate)
@@ -140,8 +144,9 @@ class CE_API AppRenderEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
+	* @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppRenderEvent() = default;
+	AppRenderEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(AppRender)

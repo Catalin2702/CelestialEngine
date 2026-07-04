@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -53,9 +53,11 @@ protected:
 	/**
 	 * @brief Protected constructor
 	 * @param keycode The key code for this event
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Only derived classes can construct a key event
 	 */
-	I_KeyEvent(T keycode): _keyCode(keycode) {}
+	I_KeyEvent(T keycode, const bool isMutable = true):
+		I_Event(isMutable), _keyCode(keycode) {}
 
 protected:
 	T _keyCode;										///< Key code
@@ -82,9 +84,10 @@ public:
 	 * @brief Constructor
 	 * @param keycode Platform-specific key code of the pressed key
 	 * @param repeatCount Number of times the key has repeated (0 for initial press)
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a key pressed event with the specified key code and repeat count
 	 */
-	KeyPressedEvent(KeyType keycode, int repeatCount);
+	KeyPressedEvent(KeyType keycode, int repeatCount, bool isMutable = true);
 
 public:
 	/**
@@ -115,9 +118,10 @@ public:
 	/**
 	 * @brief Constructor
 	 * @param keycode Platform-specific key code of the released key
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a key released event with the specified key code
 	 */
-	KeyReleasedEvent(KeyType keycode);
+	KeyReleasedEvent(KeyType keycode, bool isMutable = true);
 
 public:
 	/**
@@ -141,9 +145,10 @@ public:
 	/**
 	 * @brief Constructor
 	 * @param keycode Unicode code point of the typed character
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a key typed event with the specified character code
 	 */
-	KeyTypedEvent(KeyCharType keycode);
+	KeyTypedEvent(KeyCharType keycode, bool isMutable = true);
 
 public:
 	/**
