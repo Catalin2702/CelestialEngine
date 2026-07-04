@@ -17,16 +17,12 @@
 #include "Utility/Callback/Dispatcher.hpp"
 
 using EventDelegate = CE::Utility::Delegate<const NS::Event*>;
-using EventDispatcher = CE::Utility::Dispatcher<const NS::Event*>;
-
-using VoidDelegate = CE::Utility::Delegate<>;
-using VoidDispatcher = CE::Utility::Dispatcher<>;
+using EventMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Event*>;
 
 namespace NS {
 
 class ViewEventDispatcher: public I_ViewEventDispatcher {
 public:
-
 	ViewEventDispatcher() = default;
 
 	~ViewEventDispatcher() override = default;
@@ -54,27 +50,27 @@ public:
 	void DispatchViewDidEndLiveResize() override;
 
 public:
-	EventDispatcher mouseDownDispatcher;
-	EventDispatcher mouseUpDispatcher;
-	EventDispatcher mouseDraggedDispatcher;
-	EventDispatcher rightMouseDownDispatcher;
-	EventDispatcher rightMouseUpDispatcher;
-	EventDispatcher rightMouseDraggedDispatcher;
-	EventDispatcher otherMouseDownDispatcher;
-	EventDispatcher otherMouseUpDispatcher;
-	EventDispatcher otherMouseDraggedDispatcher;
-	EventDispatcher mouseMovedDispatcher;
-	EventDispatcher mouseEnteredDispatcher;
-	EventDispatcher mouseExitedDispatcher;
-	EventDispatcher keyDownDispatcher;
-	EventDispatcher keyUpDispatcher;
-	EventDispatcher flagsChangedDispatcher;
-	EventDispatcher scrollWheelDispatcher;
+	EventMulticastDispatcher mouseDownMulticastDispatcher;
+	EventMulticastDispatcher mouseUpMulticastDispatcher;
+	EventMulticastDispatcher mouseDraggedMulticastDispatcher;
+	EventMulticastDispatcher rightMouseDownMulticastDispatcher;
+	EventMulticastDispatcher rightMouseUpMulticastDispatcher;
+	EventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
+	EventMulticastDispatcher otherMouseDownMulticastDispatcher;
+	EventMulticastDispatcher otherMouseUpMulticastDispatcher;
+	EventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
+	EventMulticastDispatcher mouseMovedMulticastDispatcher;
+	EventMulticastDispatcher mouseEnteredMulticastDispatcher;
+	EventMulticastDispatcher mouseExitedMulticastDispatcher;
+	EventMulticastDispatcher keyDownMulticastDispatcher;
+	EventMulticastDispatcher keyUpMulticastDispatcher;
+	EventMulticastDispatcher flagsChangedMulticastDispatcher;
+	EventMulticastDispatcher scrollWheelMulticastDispatcher;
 
-	VoidDispatcher viewDidMoveToWindowDispatcher;
-	VoidDispatcher viewDidMoveToSuperviewDispatcher;
-	VoidDispatcher viewDidLayoutDispatcher;
-	VoidDispatcher viewDidEndLiveResizeDispatcher;
+	VoidMulticastDispatcher viewDidMoveToWindowMulticastDispatcher;
+	VoidMulticastDispatcher viewDidMoveToSuperviewMulticastDispatcher;
+	VoidMulticastDispatcher viewDidLayoutMulticastDispatcher;
+	VoidMulticastDispatcher viewDidEndLiveResizeMulticastDispatcher;
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -63,6 +63,11 @@ public:
 	void OnUpdate() const override;
 
 	/**
+	 * @brief Initializes the OpenGL window
+	 */
+	void Init() override;
+
+	/**
 	 * @brief Prepares the window for rendering
 	 * @param VSync True to enable VSync, false to disable
 	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
@@ -109,28 +114,6 @@ public:
 	[[nodiscard]] GLFWwindow* GetGlfwWindow() const { return _glfwWindow.get(); }
 
 public:
-	/**
-	 * @brief Sets the event callback function
-	 * @param callback Function to be called when events occur
-	 * @details Stores the callback function that will be invoked for all window and
-	 *			input events (resize, close, keyboard, mouse, etc.)
-	 */
-	void SetEventCallback(const EventCallbackFn& callback) override;
-
-	/**
-	 * @brief Sets the resize event callback function
-	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
-	 *			Note: GLFW handles window resizing through its own callbacks, so this function may not be used in this implementation.
-	 */
-	void SetContentScaleCallback(const ContentSizeCallbackFn&) override {};
-
-	/**
-	 * @brief Sets the VSync state change callback function
-	 * @details The callback will be invoked with the new VSync state when it is changed, allowing the application to respond to VSync changes.
-	 *			Note: VSync changes are typically handled directly in the SetVSync method, so this function may not be used in this implementation.
-	 */
-	void SetVSyncCallback(const VSyncCallbackFn&) override {};
-
 	/**
 	 * @brief Sets the window size
 	 * @param width New width in pixels
@@ -180,11 +163,6 @@ protected:
 	void _SetInternalCallbacks() override;
 
 protected:
-	/**
-	 * @brief Initializes the OpenGL window
-	 */
-	void _Init() override;
-
 	/**
 	 * @brief Initializes the GLFW window and OpenGL context
 	 * @details This method is called by _Init() to perform the actual creation of the GLFW window and setup of the OpenGL context. It handles GLFW initialization, window creation, OpenGL context configuration, and error handling. If any step fails (e.g., GLFW initialization, window creation, GLAD initialization), it logs an error message and throws a runtime exception.

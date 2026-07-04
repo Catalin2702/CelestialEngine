@@ -9,7 +9,6 @@
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
-#include "Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Utility.hpp"
@@ -22,6 +21,23 @@
 
 
 namespace CE::Core::Window {
+
+void CocoaWindowEventHandler::DispatchCocoaWindowCreated() {
+	cocoaWindowCreatedMulticastDispatcher.Dispatch();
+}
+
+void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() {
+	cocoaWindowInitializedMulticastDispatcher.Dispatch();
+}
+
+void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() {
+	cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+}
+
+CocoaWindow::CocoaWindow() {
+	cocoaWindowEventDispatcher = std::make_unique<CocoaWindowEventHandler>();
+	cocoaWindowEventDispatcher->cocoaWindowCreatedMulticastDispatcher.Dispatch();
+}
 
 CocoaWindow::~CocoaWindow() {
 	_Shutdown();
@@ -47,18 +63,6 @@ std::pair<float, float> CocoaWindow::GetFrameSize() const {
 	return {static_cast<float>(size.width), static_cast<float>(size.height)};
 }
 
-bool CocoaWindow::IsVSync() const {
-	return false;
-}
-
-void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentSizeCallbackFn& callback) {
-	_callbacks.ContentSizeCallback = callback;
-}
-
-void CocoaWindow::SetVSyncCallback(const VSyncCallbackFn& callback) {
-	_callbacks.VSyncCallback = callback;
-}
-
 void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 	if (not _window)
 		return;
@@ -69,16 +73,6 @@ void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
 		{static_cast<CGFloat>(width), static_cast<CGFloat>(height)}
 	};
 	_window->setFrame(frame, true, true);
-}
-
-void CocoaWindow::SetVSync(const bool enabled) {
-	if (_callbacks.VSyncCallback) {
-		_callbacks.VSyncCallback(enabled);
-	}
-}
-
-void CocoaWindow::GetReady(const bool VSync) {
-	SetVSync(VSync);
 }
 
 void CocoaWindow::SetContentView(const MTK::View* view) const {
@@ -101,8 +95,7 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 
 void CocoaWindow::Init() {
 	_InitWindow();
-
-	_SetWindowEventCallbacks();
+	cocoaWindowEventDispatcher->cocoaWindowInitializedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindow::_InitWindow() {
@@ -136,9 +129,7 @@ void CocoaWindow::_InitWindow() {
 	}
 	_window = NS::TransferPtr(rawWindow);
 
-	windowEventDispatcher = std::make_unique<NS::WindowEventDispatcher>();
-
-	_window->setDelegate(windowEventDispatcher.get());
+	_window->setDelegate(cocoaWindowEventDispatcher.get());
 	_window->setMinSize(CGSizeMake(640, 360));
 	_window->setOpaque(false);
 	_window->setTitle(NS::String::string(windowProps.title.c_str(), NS::UTF8StringEncoding));
@@ -150,6 +141,7 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
+	cocoaWindowEventDispatcher->cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
 	if (_window) {
 		_window->close();
 		_window = nullptr;

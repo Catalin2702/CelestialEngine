@@ -35,6 +35,21 @@ namespace CE::Core::Application {
 static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
 dispatch_semaphore_t _inFlightSemaphore = dispatch_semaphore_create(MAX_FRAMES_IN_FLIGHT);
 
+static std::pair<float, float> MouseLocationTopLeft(const Render::Context::MetalContext* context, const Window::CocoaWindow* window, const NS::Event* event) {
+	if (not (event and context and context->GetView()))
+		return {0.0f, 0.0f};
+
+	const auto view = context->GetView();
+
+	// Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
+	// Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
+	// growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
+	const auto [x, y] = view->convertPointFromView(event->locationInWindow(), nullptr);
+	const auto [frameWidth, frameHeight] = window->GetFrameSize();
+
+	return {static_cast<float>(x), frameHeight - static_cast<float>(y)};
+}
+
 CocoaApplication::CocoaApplication() {
 	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
@@ -155,7 +170,7 @@ void CocoaApplication::Init() {
 	_BindViewCallbacks();
 	_SetViewEventCallbacks();
 
-	_window->GetReady(windowProps.VSync);
+	_context->SetVSync(windowProps.VSync);
 
 	const auto [vertexFunction, fragmentFunction] = _context->GetShaderLibrary()->GetShaderProgram("vertexMain", "fragmentMain");
 
@@ -245,12 +260,12 @@ void CocoaApplication::_BindWindowCallbacks() const {
 	assert(_window && "CocoaApplication::_BindWindowCallbacks: Window must be initialized before binding callbacks");
 	assert(_context && "CocoaApplication::_BindWindowCallbacks: Render context must be initialized before binding callbacks");
 
-	_window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleContentSizeChange));
-	_window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleVSyncChange));
+	// _window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleContentSizeChange));
+	// _window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleVSyncChange));
 }
 
 void CocoaApplication::_SetWindowCallbacks() {
-	_window->windowEventDispatcher->windowWillCloseDispatcher.Subscribe(NotificationDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowWillClose>(this));
+	_window->cocoaWindowEventDispatcher->windowWillCloseMulticastDispatcher.Subscribe(NotificationDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowWillClose>(this));
 }
 
 void CocoaApplication::_BindViewCallbacks() {
@@ -277,29 +292,27 @@ void CocoaApplication::_BindViewCallbacks() {
 
 void CocoaApplication::_SetViewEventCallbacks() {
 	assert(_context && "CocoaApplication::_SetViewEventCallbacks: Render context must be initialized before setting callbacks");
-	assert(_context->viewEventDispatcher && "CocoaApplication::_SetViewEventCallbacks: View event dispatcher must be initialized before setting callbacks");
+	assert(_context->metalContextEventDispatcher && "CocoaApplication::_SetViewEventCallbacks: View event dispatcher must be initialized before setting callbacks");
 
-	const auto eventDispatcher = _context->viewEventDispatcher.get();
+	const auto eventDispatcher = _context->metalContextEventDispatcher.get();
 
-	eventDispatcher->mouseDownDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
-	eventDispatcher->rightMouseDownDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
-	eventDispatcher->otherMouseDownDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->mouseDownMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->rightMouseDownMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->otherMouseDownMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
 
-	eventDispatcher->mouseUpDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
-	eventDispatcher->rightMouseUpDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
-	eventDispatcher->otherMouseUpDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->mouseUpMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->rightMouseUpMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->otherMouseUpMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
 
-	eventDispatcher->mouseDraggedDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
-	eventDispatcher->rightMouseDraggedDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
-	eventDispatcher->otherMouseDraggedDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->mouseDraggedMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->rightMouseDraggedMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->otherMouseDraggedMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
 
-	eventDispatcher->mouseMovedDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseMoved>(this));
+	eventDispatcher->mouseMovedMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseMoved>(this));
 
-	eventDispatcher->keyDownDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyDown>(this));
+	eventDispatcher->keyDownMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyDown>(this));
 
-	eventDispatcher->keyUpDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyUp>(this));
-
-	eventDispatcher->viewDidMoveToWindowDispatcher.Subscribe(VoidDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnViewDidMoveToWindow>(this));
+	eventDispatcher->keyUpMulticastDispatcher.Subscribe(EventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyUp>(this));
 }
 
 void CocoaApplication::_OnWindowWillClose(const NS::Notification*) {
@@ -331,7 +344,7 @@ void CocoaApplication::_OnMouseButtonDragged(const NS::Event* event) {
 		return;
 
 	const auto buttonCode = event->buttonNumber();
-	const auto [x, y] = _MouseLocationTopLeft(event);
+	const auto [x, y] = MouseLocationTopLeft(_context.get(), _window.get(), event);
 	Events::MouseDraggedEvent mouseDraggedEvent{static_cast<KeyCode::MouseButtonCode>(buttonCode), x, y};
 	DispatchEventToLayers(mouseDraggedEvent);
 }
@@ -340,24 +353,9 @@ void CocoaApplication::_OnMouseMoved(const NS::Event* event) {
 	if (not event)
 		return;
 
-	const auto [x, y] = _MouseLocationTopLeft(event);
+	const auto [x, y] = MouseLocationTopLeft(_context.get(), _window.get(), event);
 	Events::MouseMovedEvent mouseMovedEvent{x, y};
 	DispatchEventToLayers(mouseMovedEvent);
-}
-
-std::pair<float, float> CocoaApplication::_MouseLocationTopLeft(const NS::Event* event) const {
-	if (not (event and _context and _context->GetView()))
-		return {0.0f, 0.0f};
-
-	const auto view = _context->GetView();
-
-	// Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
-	// Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
-	// growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
-	const auto [x, y] = view->convertPointFromView(event->locationInWindow(), nullptr);
-	const auto [frameWidth, frameHeight] = _window->GetFrameSize();
-
-	return {static_cast<float>(x), frameHeight - static_cast<float>(y)};
 }
 
 void CocoaApplication::_OnKeyDown(const NS::Event* event) {
@@ -381,9 +379,6 @@ void CocoaApplication::_OnKeyUp(const NS::Event* event) {
 
 	Events::KeyReleasedEvent e{KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode())};
 	DispatchEventToLayers(e);
-}
-
-void CocoaApplication::_OnViewDidMoveToWindow() {
 }
 
 }

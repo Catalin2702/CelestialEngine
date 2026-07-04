@@ -42,10 +42,6 @@ namespace CA {
 	class MetalDisplayLink;
 }
 
-namespace NS {
-	class ViewEventDispatcher;
-}
-
 namespace CE::Core::Window {
 	class CocoaWindow;
 }
@@ -54,6 +50,20 @@ namespace CE::Core::Render::Context {
 
 struct CE_API MetalContextProps {
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
+};
+
+class MetalContextEventDispatcher: public NS::ViewEventDispatcher {
+public:
+	void DispatchMetalContextCreated();
+	void DispatchMetalContextInitialized();
+	void DispatchMetalContextWillShutdown();
+	void DispatchVSyncChanged(bool vsync);
+
+public:
+	VoidMulticastDispatcher metalContextCreatedMulticastDispatcher;
+	VoidMulticastDispatcher metalContextInitializedDispatcher;
+	VoidMulticastDispatcher metalContextWillShutdownDispatcher;
+	BoolMulticastDispatcher vsyncChangedMulticastDispatcher;
 };
 
 /**
@@ -65,6 +75,8 @@ struct CE_API MetalContextProps {
  */
 class CE_API MetalContext final: public I_Context {
 public:
+	MetalContext();
+
 	/**
 	 * @brief Destructor
 	 * @details Tears down the display link (removed from the run loop and invalidated) before the view and layer are released.
@@ -88,11 +100,11 @@ public:
 	void HandleContentSizeChange(const std::pair<float, float>& size) const;
 
 	/**
-	 * @brief Handles changes in VSync state
-	 * @param enabled True if VSync is enabled, false otherwise
+	 * @brief Changes VSync state
+	 * @param enabled
 	 * @details Updates the Metal layer's display sync setting based on the new VSync state. This method should be called when the VSync state changes to ensure that rendering is synchronized with the monitor's refresh rate if VSync is enabled.
 	 */
-	void HandleVSyncChange(bool enabled) const;
+	void SetVSync(bool enabled) const;
 
 public:
 	/**
@@ -162,7 +174,7 @@ public:
 public:
 	MetalContextProps props; ///< Properties for initializing the Metal context
 
-	std::unique_ptr<NS::ViewEventDispatcher> viewEventDispatcher; ///< Dispatches the MTK::View input (mouse / keyboard / scroll)
+	std::unique_ptr<MetalContextEventDispatcher> metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
 
 private:
 	/**

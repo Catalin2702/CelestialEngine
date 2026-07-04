@@ -12,39 +12,39 @@
 namespace NS {
 
 void WindowEventDispatcher::DispatchWindowDidResize(Notification* notification) {
-	windowDidResizeDispatcher.Dispatch(notification);
+	windowDidResizeMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMove(Notification* notification) {
-	windowDidMoveDispatcher.Dispatch(notification);
+	windowDidMoveMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidBecomeKey(Notification* notification) {
-	windowDidBecomeKeyDispatcher.Dispatch(notification);
+	windowDidBecomeKeyMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidResignKey(Notification* notification) {
-	windowDidResignKeyDispatcher.Dispatch(notification);
+	windowDidResignKeyMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMiniaturize(Notification* notification) {
-	windowDidMiniaturizeDispatcher.Dispatch(notification);
+	windowDidMiniaturizeMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidDeminiaturize(Notification* notification) {
-	windowDidDeminiaturizeDispatcher.Dispatch(notification);
+	windowDidDeminiaturizeMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidEnterFullScreen(Notification* notification) {
-	windowDidEnterFullScreenDispatcher.Dispatch(notification);
+	windowDidEnterFullScreenMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidExitFullScreen(Notification* notification) {
-	windowDidExitFullScreenDispatcher.Dispatch(notification);
+	windowDidExitFullScreenMulticastDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowWillClose(Notification* notification) {
-	windowWillCloseDispatcher.Dispatch(notification);
+	windowWillCloseMulticastDispatcher.Dispatch(notification);
 }
 
 }

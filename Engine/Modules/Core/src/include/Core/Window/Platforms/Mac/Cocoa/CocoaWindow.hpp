@@ -15,13 +15,13 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
 
+#include "Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
-#include <functional>
 #include <memory>
 #include <utility>
 
@@ -42,7 +42,6 @@ namespace NS {
 class Notification;
 class Screen;
 class Window;
-class WindowEventDispatcher;
 }
 
 /**
@@ -55,6 +54,18 @@ class WindowEventDispatcher;
  *			offering a native experience for applications targeting macOS with Metal.
  */
 namespace CE::Core::Window {
+
+class CocoaWindowEventHandler: public NS::WindowEventDispatcher {
+public:
+	void DispatchCocoaWindowCreated();
+	void DispatchCocoaWindowInitialized();
+	void DispatchCocoaWindowWillShutdown();
+
+public:
+	VoidMulticastDispatcher cocoaWindowCreatedMulticastDispatcher;
+	VoidMulticastDispatcher cocoaWindowInitializedMulticastDispatcher;
+	VoidMulticastDispatcher cocoaWindowWillShutdownMulticastDispatcher;
+};
 
 /**
  * @class CocoaWindow
@@ -69,7 +80,7 @@ public:
 	 * @brief Constructor
 	 * @details Creates and initializes a Cocoa window
 	 */
-	CocoaWindow() = default;
+	CocoaWindow();
 
 	/**
 	 * @brief Destructor
@@ -78,15 +89,10 @@ public:
 	~CocoaWindow() override;
 
 public:
-	void OnUpdate() const override {}
-
 	/**
-	 * @brief Prepares the window for rendering
-	 * @param VSync True to enable VSync, false to disable
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to ensure that the Metal layer is properly configured and ready for rendering.
+	 * @brief Initializes the window with the provided Metal device
 	 */
-	void GetReady(bool VSync) override;
+	void Init() override;
 
 public:
 	/**
@@ -100,12 +106,6 @@ public:
 	 * @return std::pair<float, float> Pair of frame width and height in pixels
 	 */
 	[[nodiscard]] std::pair<float, float> GetFrameSize() const override;
-
-	/**
-	 * @brief Checks if VSync is enabled
-	 * @return bool True if VSync is enabled, false otherwise
-	 */
-	[[nodiscard]] bool IsVSync() const override;
 
 	/**
 	 * @brief Gets the native macOS window
@@ -122,35 +122,6 @@ public:
 	 * @details Convenience method to set both width and height at once. Updates the window's dimensions and resizes the Metal layer accordingly to ensure proper rendering.
 	 */
 	void SetSize(unsigned int width, unsigned int height) override;
-
-	/**
-	 * @brief Enables or disables VSync
-	 * @param enabled True to enable VSync, false to disable
-	 * @details VSync synchronizes rendering with the monitor's refresh rate to prevent screen tearing. This method updates the Metal layer's display sync setting accordingly.
-	 */
-	void SetVSync(bool enabled) override;
-
-public:
-	/**
-	 * @brief Sets the event callback function
-	 * @param callback Function to be called when events occur
-	 * @details The callback will be invoked for all window and input events, allowing the application to respond to user interactions and window changes.
-	 */
-	void SetEventCallback(const EventCallbackFn&) override {}
-
-	/**
-	 * @brief Sets the resize event callback function
-	 * @param callback Function to be called when the window is resized
-	 * @details The callback will be invoked with the new content scale when the window is resized, allowing the application to adjust rendering or UI layout based on the new size.
-	 */
-	void SetContentScaleCallback(const ContentSizeCallbackFn& callback) override;
-
-	/**
-	 * @brief Sets the VSync state change callback function
-	 * @param callback Function to be called when the VSync state changes
-	 * @details The callback will be invoked with the new VSync state when it is changed, allowing the application to respond to VSync changes.
-	 */
-	void SetVSyncCallback(const VSyncCallbackFn& callback) override;
 
 public:
 	/**
@@ -169,34 +140,16 @@ public:
 	 */
 	void SetContentView(const MTK::View* view) const;
 
-public:
-	/**
-	 * @brief Initializes the window with the provided Metal device
-	 */
-	void Init();
-
 protected:
-	void _SetIOEventCallbacks() override {};
-
-	void _SetWindowEventCallbacks() override {};
-
 	/**
-	 * @brief Sets internal callbacks for window events
-	 * @details Stores the provided callbacks in the _data structure, which will be
-	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
-	 */
-	void _SetInternalCallbacks() override {};
-
-protected:
-	void _Init() override {}
-
-	/** @brief Initializes the Cocoa window and Metal layer
+	 * @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering.
 	 *			This includes configuring the layer's properties and attaching it to the window's content view.
 	 */
 	void _InitWindow() override;
 
-	/** @brief Shuts down the window and cleans up resources
+	/**
+	 * @brief Shuts down the window and cleans up resources
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
 	 */
 	void _Shutdown() override;
@@ -205,14 +158,10 @@ public:
 	WINDOW_API_TYPE(Cocoa)
 
 public:
-	std::unique_ptr<NS::WindowEventDispatcher> windowEventDispatcher; ///< Delegate for handling window events
+	std::unique_ptr<CocoaWindowEventHandler> cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events
 
 private:
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
-
-	// Listener registered on the window dispatcher. The dispatcher stores a raw pointer to it, so it must outlive the
-	// dispatcher and keep a stable address; hence it lives here rather than as a temporary.
-	std::function<void(NS::Notification*)> _onWindowWillClose; ///< Translates the window close notification into a WindowCloseEvent
 };
 
 }

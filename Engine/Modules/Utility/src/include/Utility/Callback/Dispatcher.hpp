@@ -13,6 +13,7 @@
 #define CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Tools/Log/Log.hpp"
 
 #include <vector>
 
@@ -80,11 +81,47 @@ private:
 };
 
 template <typename... Args>
-class CE_API Dispatcher {
+class CE_API UnicastDispatcher {
+public:
+	using DelegateType = Delegate<Args...>;
+
+public:
+	void Bind(DelegateType delegate) {
+		if (not IsBound())
+			_delegate = delegate;
+		else {
+			const auto message = "A delegate is already assigned";
+			CE_CORE_ERROR(message);
+		}
+	}
+
+	void Unbind(const DelegateType& delegate = {}) {
+		if (delegate)
+			_delegate = delegate;
+		else {
+			_delegate._context = nullptr;
+			_delegate._stub = nullptr;
+		}
+	}
+
+	void Dispatch(Args... args) const {
+		_delegate(args...);
+	}
+
+public:
+	[[nodiscard]] bool IsBound() const { return _delegate.IsValid(); }
+
+private:
+	DelegateType _delegate;
+};
+
+template <typename... Args>
+class CE_API MulticastDispatcher {
 public:
 	using Handle = uint32_t;
 	using DelegateType = Delegate<Args...>;
 
+public:
 	Handle Subscribe(DelegateType delegate) {
 		const auto handle = _handle++;
 		Entry entry{handle, delegate};
@@ -148,5 +185,13 @@ private:
 };
 
 }
+
+using VoidDelegate = CE::Utility::Delegate<>;
+using VoidUnicastDispatcher = CE::Utility::UnicastDispatcher<>;
+using VoidMulticastDispatcher = CE::Utility::MulticastDispatcher<>;
+
+using BoolDelegate = CE::Utility::Delegate<bool>;
+using BoolUnicastDispatcher = CE::Utility::UnicastDispatcher<bool>;
+using BoolMulticastDispatcher = CE::Utility::MulticastDispatcher<bool>;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP

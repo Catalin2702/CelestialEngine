@@ -20,6 +20,27 @@
 
 namespace CE::Core::Render::Context {
 
+void MetalContextEventDispatcher::DispatchMetalContextCreated() {
+	metalContextCreatedMulticastDispatcher.Dispatch();
+}
+
+void MetalContextEventDispatcher::DispatchMetalContextInitialized() {
+	metalContextInitializedDispatcher.Dispatch();
+}
+
+void MetalContextEventDispatcher::DispatchMetalContextWillShutdown() {
+	metalContextWillShutdownDispatcher.Dispatch();
+}
+
+void MetalContextEventDispatcher::DispatchVSyncChanged(bool vsync) {
+	vsyncChangedMulticastDispatcher.Dispatch(vsync);
+}
+
+MetalContext::MetalContext() {
+	metalContextEventDispatcher = std::make_unique<MetalContextEventDispatcher>();
+	metalContextEventDispatcher->metalContextCreatedMulticastDispatcher.Dispatch();
+}
+
 MetalContext::~MetalContext() {
 	if (_displayLink) {
 		_displayLink->removeFromRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
@@ -44,6 +65,7 @@ void MetalContext::Init() {
 
 	_CreateView();
 	_CreateDisplayLink();
+	metalContextEventDispatcher->metalContextInitializedDispatcher.Dispatch();
 }
 
 void MetalContext::_CreateView() {
@@ -70,8 +92,7 @@ void MetalContext::_CreateView() {
 	_viewDelegate = std::make_unique<MTK::ViewDelegate>();
 	_view->setDelegate(_viewDelegate.get());
 
-	viewEventDispatcher = std::make_unique<NS::ViewEventDispatcher>();
-	_view->setEventDispatcher(viewEventDispatcher.get());
+	_view->setEventDispatcher(metalContextEventDispatcher.get());
 }
 
 void MetalContext::_CreateDisplayLink() {
@@ -150,7 +171,7 @@ void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) 
 	_view->layer()->setDrawableSize(CGSizeMake(width, height));
 }
 
-void MetalContext::HandleVSyncChange(const bool enabled) const {
+void MetalContext::SetVSync(const bool enabled) const {
 	if (not (_view and _view->layer())) {
 		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because RenderView is not initialized or does not have a layer.");
 		return;
@@ -158,6 +179,7 @@ void MetalContext::HandleVSyncChange(const bool enabled) const {
 
 	const auto layer = _view->layer();
 	layer->setDisplaySyncEnabled(enabled);
+	metalContextEventDispatcher->vsyncChangedMulticastDispatcher.Dispatch(enabled);
 }
 
 bool MetalContext::IsVSyncEnabled() const {

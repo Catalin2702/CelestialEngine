@@ -201,18 +201,8 @@ private:
 	void _OnMouseButtonDragged(const NS::Event* event);
 	void _OnMouseMoved(const NS::Event* event);
 
-	/**
-	 * @brief Converts a mouse event's location into top-left-origin view coordinates
-	 * @param event The Cocoa mouse event to read the location from
-	 * @return std::pair<float, float> Cursor position in the view with origin at the top-left and Y growing downward
-	 * @details Cocoa reports the cursor in window space (bottom-left origin, Y up). This maps it into the view and flips
-	 *			Y so the engine and ImGui receive the top-left-origin coordinates they expect.
-	 */
-	[[nodiscard]] std::pair<float, float> _MouseLocationTopLeft(const NS::Event* event) const;
 	void _OnKeyDown(const NS::Event* event);
 	void _OnKeyUp(const NS::Event* event);
-
-	void _OnViewDidMoveToWindow();
 
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance

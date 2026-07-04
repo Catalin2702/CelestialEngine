@@ -17,7 +17,7 @@
 #include "Utility/Callback/Dispatcher.hpp"
 
 using NotificationDelegate = CE::Utility::Delegate<const NS::Notification*>;
-using NotificationDispatcher = CE::Utility::Dispatcher<const NS::Notification*>;
+using NotificationMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Notification*>;
 
 namespace NS {
 
@@ -39,15 +39,15 @@ public:
 	void DispatchWindowWillClose(Notification* notification) override;
 
 public:
-	NotificationDispatcher windowDidResizeDispatcher;
-	NotificationDispatcher windowDidMoveDispatcher;
-	NotificationDispatcher windowDidBecomeKeyDispatcher;
-	NotificationDispatcher windowDidResignKeyDispatcher;
-	NotificationDispatcher windowDidMiniaturizeDispatcher;
-	NotificationDispatcher windowDidDeminiaturizeDispatcher;
-	NotificationDispatcher windowDidEnterFullScreenDispatcher;
-	NotificationDispatcher windowDidExitFullScreenDispatcher;
-	NotificationDispatcher windowWillCloseDispatcher;
+	NotificationMulticastDispatcher windowDidResizeMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidMoveMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidBecomeKeyMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidResignKeyMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidMiniaturizeMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidDeminiaturizeMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidEnterFullScreenMulticastDispatcher;
+	NotificationMulticastDispatcher windowDidExitFullScreenMulticastDispatcher;
+	NotificationMulticastDispatcher windowWillCloseMulticastDispatcher;
 };
 
 }

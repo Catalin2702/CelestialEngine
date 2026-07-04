@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -32,30 +32,6 @@ class WindowResizeEvent;
  */
 namespace CE::Core::Window {
 
-using WindowResizeEventCallbackFn = Utility::CallbackFn<Events::WindowResizeEvent>;
-
-struct WindowInternalCallbacks {
-	WindowResizeEventCallbackFn ResizeEventCallback;	///< Callback function for handling window resize events
-};
-
-/**
- * @typedef EventCallbackFn
- * @brief Type alias for event callback functions
- * @details Function type for handling engine events
- */
-using EventCallbackFn = Utility::CallbackFn<Events::I_Event>;
-
-using ContentSizeCallbackFn = Utility::CallbackFn<const std::pair<float, float>>;
-using VSyncCallbackFn = Utility::CallbackFn<const bool>;
-
-struct WindowCallbacks {
-	EventCallbackFn EventCallback;				///< Callback function for handling engine events
-	ContentSizeCallbackFn ContentSizeCallback;	///< Callback function for handling window resize events
-	VSyncCallbackFn VSyncCallback;				///< Callback function for handling VSync state changes
-
-	WindowInternalCallbacks _internalCallbacks;
-};
-
 /**
  * @class I_Window
  * @brief Abstract interface for platform-specific window implementations
@@ -77,7 +53,15 @@ public:
 	 * @details Pure virtual method that handles per-frame updates, event polling,
 	 *			and buffer swapping. Must be implemented by derived classes.
 	 */
-	virtual void OnUpdate() const = 0;
+	virtual void OnUpdate() const {}
+
+	/**
+	 * @brief Initializes the window
+	 * @details This method is responsible for initializing the window, including creating the native window,
+	 *			setting up any necessary resources, and configuring the initial state of the window.
+	 *			It should be called before using the window for rendering or event handling.
+	 */
+	virtual void Init() = 0;
 
 	/**
 	 * @brief Prepares the window for rendering
@@ -86,7 +70,7 @@ public:
 	 *			For example, it can be used to set the callbacks to their initial states, ensure that the window is properly configured, or perform any other necessary initialization before rendering begins.
 	 *			Derived classes can override this method to implement any specific setup required for their window implementation before the rendering loop starts.
 	 */
-	virtual void GetReady(bool VSync) = 0;
+	virtual void GetReady(bool VSync) {}
 
 public:
 	/**
@@ -111,7 +95,7 @@ public:
 	 * @brief Checks if VSync is enabled
 	 * @return bool True if VSync is enabled, false otherwise
 	 */
-	[[nodiscard]] virtual bool IsVSync() const = 0;
+	[[nodiscard]] virtual bool IsVSync() const { return false; }
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
@@ -142,29 +126,7 @@ public:
 	 * @param enabled True to enable VSync, false to disable
 	 * @details VSync synchronizes rendering with the monitor's refresh rate
 	 */
-	virtual void SetVSync(bool enabled) = 0;
-
-public:
-	/**
-	 * @brief Sets the event callback function
-	 * @param callback Function to be called when events occur
-	 * @details The callback will be invoked for all window and input events
-	 */
-	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-
-	/**
-	 * @brief Sets the resize event callback function
-	 * @param callback Function to be called when the window is resized
-	 * @details The callback will be invoked with the new content scale when the window is resized
-	 */
-	virtual void SetContentScaleCallback(const ContentSizeCallbackFn& callback) = 0;
-
-	/**
-	 * @brief Sets the VSync state change callback function
-	 * @param callback Function to be called when the VSync state changes
-	 * @details The callback will be invoked with the new VSync state when it is changed
-	 */
-	virtual void SetVSyncCallback(const VSyncCallbackFn& callback) = 0;
+	virtual void SetVSync(bool enabled) {}
 
 protected:
 	/**
@@ -173,7 +135,7 @@ protected:
 	 *			to handle specific events such as keyboard input, mouse movement, etc. The provided
 	 *			callbacks will be stored internally and invoked when the corresponding events occur.
 	 */
-	virtual void _SetIOEventCallbacks() = 0;
+	virtual void _SetIOEventCallbacks() {}
 
 	/**
 	 * @brief Sets internal callback functions for window events
@@ -181,7 +143,7 @@ protected:
 	 *			to handle specific events such as window resizing. The provided callbacks will be stored
 	 *			internally and invoked when the corresponding events occur.
 	 */
-	virtual void _SetWindowEventCallbacks() = 0;
+	virtual void _SetWindowEventCallbacks() {}
 
 	/**
 	 * @brief Sets internal callback functions for window events
@@ -189,17 +151,9 @@ protected:
 	 *			to handle specific events such as window resizing. The provided callbacks will be stored
 	 *			internally and invoked when the corresponding events occur.
 	 */
-	virtual void _SetInternalCallbacks() = 0;
+	virtual void _SetInternalCallbacks() {}
 
 protected:
-	/**
-	 * @brief Initializes the window
-	 * @details This method is responsible for initializing the window, including creating the native window,
-	 *			setting up any necessary resources, and configuring the initial state of the window.
-	 *			It should be called before using the window for rendering or event handling.
-	 */
-	virtual void _Init() = 0;
-
 	/**
 	 * @brief Initializes the native window
 	 * @details This method is responsible for creating the native window using the appropriate platform-specific API (e.g., GLFW, Cocoa, etc.).
@@ -213,9 +167,6 @@ protected:
 	 *			It should be called when the window is no longer needed or when the application is closing to ensure that all resources are released correctly.
 	 */
 	virtual void _Shutdown() = 0;
-
-protected:
-	WindowCallbacks _callbacks;
 };
 
 }
