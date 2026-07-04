@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #include "Apple/MetalCpp/AppKit/ApplicationDelegate.hpp"
@@ -17,7 +17,7 @@ namespace NS {
 
 void ApplicationDelegate::applicationDidFinishLaunching(Notification* notification) {
 	if (appDidFinishLaunchingCallback)
-		applicationDidFinishLaunching(notification);
+		appDidFinishLaunchingCallback(notification);
 }
 
 void ApplicationDelegate::applicationWillFinishLaunching(Notification* notification) {
