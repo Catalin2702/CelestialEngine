@@ -10,7 +10,7 @@
 set(HEADERS
 	# Callback
 	src/include/Utility/Callback/Callback.hpp
-	src/include/Utility/Callback/EventDispatcher.hpp
+	src/include/Utility/Callback/Dispatcher.hpp
 
 	# CMD
 	src/include/Utility/CMD/Window.hpp

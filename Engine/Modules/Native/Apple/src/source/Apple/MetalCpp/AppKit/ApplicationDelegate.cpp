@@ -16,25 +16,29 @@
 namespace NS {
 
 void ApplicationDelegate::applicationDidFinishLaunching(Notification* notification) {
-	if (appDidFinishLaunchingCallback)
-		appDidFinishLaunchingCallback(notification);
+	if (_appDidFinishLaunchingCallback)
+		_appDidFinishLaunchingCallback(notification);
 }
 
 void ApplicationDelegate::applicationWillFinishLaunching(Notification* notification) {
-	if (appWillFinishLaunchingCallback)
-		appWillFinishLaunchingCallback(notification);
+	if (_appWillFinishLaunchingCallback)
+		_appWillFinishLaunchingCallback(notification);
 }
 
 bool ApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(Application*) {
-	return true;
+	return _appShouldTerminate;
 }
 
-void ApplicationDelegate::SetApplicationDidFinishLaunchingCallback(callback callback) {
-	appDidFinishLaunchingCallback = std::move(callback);
+void ApplicationDelegate::SetApplicationDidFinishLaunchingCallback(AppDelegateCallback callback) {
+	_appDidFinishLaunchingCallback = std::move(callback);
 }
 
-void ApplicationDelegate::SetApplicationWillFinishLaunchingCallback(callback callback) {
-	appWillFinishLaunchingCallback = std::move(callback);
+void ApplicationDelegate::SetApplicationWillFinishLaunchingCallback(AppDelegateCallback callback) {
+	_appWillFinishLaunchingCallback = std::move(callback);
+}
+
+void ApplicationDelegate::SetApplicationShouldTerminateAfterLastWindowClosed(bool should) {
+	_appShouldTerminate = should;
 }
 
 }

@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Utility/Callback
-// File: EventDispatcher.hpp
+// File: Dispatcher.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
@@ -80,7 +80,7 @@ private:
 };
 
 template <typename... Args>
-class CE_API EventDispatcher {
+class CE_API Dispatcher {
 public:
 	using Handle = uint32_t;
 	using DelegateType = Delegate<Args...>;

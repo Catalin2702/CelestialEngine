@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -23,19 +23,14 @@ class Application;
 class Notification;
 }
 
+using AppDelegateCallback = std::function<void(NS::Notification*)>;
+
 namespace NS {
 
 class CE_API ApplicationDelegate: public I_ApplicationDelegate {
-	using callback = std::function<void(Notification*)>;
 public:
-	/**
-	 * @brief Default constructor
-	 */
 	ApplicationDelegate() = default;
 
-	/**
-	 * @brief Default destructor
-	 */
 	~ApplicationDelegate() override = default;
 
 public:
@@ -59,12 +54,28 @@ public:
 	bool applicationShouldTerminateAfterLastWindowClosed(Application*) override;
 
 public:
-	void SetApplicationDidFinishLaunchingCallback(callback callback);
-	void SetApplicationWillFinishLaunchingCallback(callback callback);
+	/**
+	 * @brief Set the callback for the applicationDidFinishLaunching method
+	 * @param callback
+	 */
+	void SetApplicationDidFinishLaunchingCallback(AppDelegateCallback callback);
+
+	/**
+	 * @ Set the callback for the applicationWillFinishLaunching method
+	 * @param callback
+	 */
+	void SetApplicationWillFinishLaunchingCallback(AppDelegateCallback callback);
+
+	/**
+	 * Set the value returned by applicationShouldTerminateAfterLastWindowClosed method
+	 * @param should
+	 */
+	void SetApplicationShouldTerminateAfterLastWindowClosed(bool should);
 
 private:
-	callback appDidFinishLaunchingCallback;
-	callback appWillFinishLaunchingCallback;
+	AppDelegateCallback _appDidFinishLaunchingCallback;
+	AppDelegateCallback _appWillFinishLaunchingCallback;
+	bool _appShouldTerminate = true;
 };
 
 }

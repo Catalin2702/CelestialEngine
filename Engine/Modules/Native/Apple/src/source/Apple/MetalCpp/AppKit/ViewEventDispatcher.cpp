@@ -12,83 +12,83 @@
 namespace NS {
 
 void ViewEventDispatcher::DispatchMouseDown(Event* event) {
-	mouseDownDelegate.Dispatch(event);
+	mouseDownDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseUp(Event* event) {
-	mouseUpDelegate.Dispatch(event);
+	mouseUpDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseDragged(Event* event) {
-	mouseDraggedDelegate.Dispatch(event);
+	mouseDraggedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDown(Event* event) {
-	rightMouseDownDelegate.Dispatch(event);
+	rightMouseDownDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseUp(Event* event) {
-	rightMouseUpDelegate.Dispatch(event);
+	rightMouseUpDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDragged(Event* event) {
-	rightMouseDraggedDelegate.Dispatch(event);
+	rightMouseDraggedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDown(Event* event) {
-	otherMouseDownDelegate.Dispatch(event);
+	otherMouseDownDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseUp(Event* event) {
-	otherMouseUpDelegate.Dispatch(event);
+	otherMouseUpDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDragged(Event* event) {
-	otherMouseDraggedDelegate.Dispatch(event);
+	otherMouseDraggedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseMoved(Event* event) {
-	mouseMovedDelegate.Dispatch(event);
+	mouseMovedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseEntered(Event* event) {
-	mouseEnteredDelegate.Dispatch(event);
+	mouseEnteredDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseExited(Event* event) {
-	mouseExitedDelegate.Dispatch(event);
+	mouseExitedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchKeyDown(Event* event) {
-	keyDownDelegate.Dispatch(event);
+	keyDownDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchKeyUp(Event* event) {
-	keyUpDelegate.Dispatch(event);
+	keyUpDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchFlagsChanged(Event* event) {
-	flagsChangedDelegate.Dispatch(event);
+	flagsChangedDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchScrollWheel(Event* event) {
-	scrollWheelDelegate.Dispatch(event);
+	scrollWheelDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToWindow() {
-	viewDidMoveToWindowDelegate.Dispatch();
+	viewDidMoveToWindowDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToSuperview() {
-	viewDidMoveToSuperviewDelegate.Dispatch();
+	viewDidMoveToSuperviewDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidLayout() {
-	viewDidLayoutDelegate.Dispatch();
+	viewDidLayoutDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidEndLiveResize() {
-	viewDidEndLiveResizeDelegate.Dispatch();
+	viewDidEndLiveResizeDispatcher.Dispatch();
 }
 
 }

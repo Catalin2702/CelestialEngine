@@ -14,15 +14,16 @@
 
 #include <AppKit/AppKit.hpp>
 
-#include "Utility/Callback/EventDispatcher.hpp"
+#include "Utility/Callback/Dispatcher.hpp"
+
+using EventDispatcher = CE::Utility::Dispatcher<const NS::Event*>;
+using VoidDispatcher = CE::Utility::Dispatcher<>;
 
 namespace NS {
 
 class ViewEventDispatcher: public I_ViewEventDispatcher {
-	using EventListener = std::function<void(Event*)>;
-	using VoidListener = std::function<void()>;
-
 public:
+
 	ViewEventDispatcher() = default;
 
 	~ViewEventDispatcher() override = default;
@@ -50,27 +51,27 @@ public:
 	void DispatchViewDidEndLiveResize() override;
 
 public:
-	CE::Utility::EventDispatcher<const Event*> mouseDownDelegate;
-	CE::Utility::EventDispatcher<const Event*> mouseUpDelegate;
-	CE::Utility::EventDispatcher<const Event*> mouseDraggedDelegate;
-	CE::Utility::EventDispatcher<const Event*> rightMouseDownDelegate;
-	CE::Utility::EventDispatcher<const Event*> rightMouseUpDelegate;
-	CE::Utility::EventDispatcher<const Event*> rightMouseDraggedDelegate;
-	CE::Utility::EventDispatcher<const Event*> otherMouseDownDelegate;
-	CE::Utility::EventDispatcher<const Event*> otherMouseUpDelegate;
-	CE::Utility::EventDispatcher<const Event*> otherMouseDraggedDelegate;
-	CE::Utility::EventDispatcher<const Event*> mouseMovedDelegate;
-	CE::Utility::EventDispatcher<const Event*> mouseEnteredDelegate;
-	CE::Utility::EventDispatcher<const Event*> mouseExitedDelegate;
-	CE::Utility::EventDispatcher<const Event*> keyDownDelegate;
-	CE::Utility::EventDispatcher<const Event*> keyUpDelegate;
-	CE::Utility::EventDispatcher<const Event*> flagsChangedDelegate;
-	CE::Utility::EventDispatcher<const Event*> scrollWheelDelegate;
+	EventDispatcher mouseDownDispatcher;
+	EventDispatcher mouseUpDispatcher;
+	EventDispatcher mouseDraggedDispatcher;
+	EventDispatcher rightMouseDownDispatcher;
+	EventDispatcher rightMouseUpDispatcher;
+	EventDispatcher rightMouseDraggedDispatcher;
+	EventDispatcher otherMouseDownDispatcher;
+	EventDispatcher otherMouseUpDispatcher;
+	EventDispatcher otherMouseDraggedDispatcher;
+	EventDispatcher mouseMovedDispatcher;
+	EventDispatcher mouseEnteredDispatcher;
+	EventDispatcher mouseExitedDispatcher;
+	EventDispatcher keyDownDispatcher;
+	EventDispatcher keyUpDispatcher;
+	EventDispatcher flagsChangedDispatcher;
+	EventDispatcher scrollWheelDispatcher;
 
-	CE::Utility::EventDispatcher<> viewDidMoveToWindowDelegate;
-	CE::Utility::EventDispatcher<> viewDidMoveToSuperviewDelegate;
-	CE::Utility::EventDispatcher<> viewDidLayoutDelegate;
-	CE::Utility::EventDispatcher<> viewDidEndLiveResizeDelegate;
+	VoidDispatcher viewDidMoveToWindowDispatcher;
+	VoidDispatcher viewDidMoveToSuperviewDispatcher;
+	VoidDispatcher viewDidLayoutDispatcher;
+	VoidDispatcher viewDidEndLiveResizeDispatcher;
 };
 
 }

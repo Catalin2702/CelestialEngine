@@ -16,10 +16,11 @@
 
 #include <functional>
 
+using MetalDisplayLinkDelegateNeedsUpdateCallback = std::function<void(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*)>;
+
 namespace CA {
 
 class MetalDisplayLinkDelegate: I_MetalDisplayLinkDelegate {
-	using MetalDisplayLinkNeedsUpdateCallback = std::function<void(MetalDisplayLink*, MetalDisplayLinkUpdate*)>;
 public:
 	MetalDisplayLinkDelegate() = default;
 
@@ -29,10 +30,10 @@ public:
 	void metalDisplayLinkNeedsUpdate(MetalDisplayLink* metalDisplayLink, MetalDisplayLinkUpdate* metalDisplayLinkUpdate) override;
 
 public:
-	void SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkNeedsUpdateCallback callback);
+	void SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkDelegateNeedsUpdateCallback callback);
 
 private:
-	MetalDisplayLinkNeedsUpdateCallback _callback;
+	MetalDisplayLinkDelegateNeedsUpdateCallback _callback;
 };
 
 }

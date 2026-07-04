@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #include "Apple/MetalCpp/MetalKit/ViewDelegate.hpp"
@@ -23,11 +23,11 @@ void ViewDelegate::drawableSizeWillChange(View* view, CGSize size) {
 		_drawableSizeWillChangeCallback(view, size);
 }
 
-void ViewDelegate::SetDrawInMtkViewCallback(DrawInMtkViewCallback callback) {
+void ViewDelegate::SetDrawInMtkViewCallback(ViewDelegateDrawInMtkViewCallback callback) {
 	_drawInMtkViewCallback = std::move(callback);
 }
 
-void ViewDelegate::SetDrawableSizeWillChange(DrawableSizeWillChangeCallback callback) {
+void ViewDelegate::SetDrawableSizeWillChange(ViewDelegateDrawableSizeWillChangeCallback callback) {
 	_drawableSizeWillChangeCallback = std::move(callback);
 }
 

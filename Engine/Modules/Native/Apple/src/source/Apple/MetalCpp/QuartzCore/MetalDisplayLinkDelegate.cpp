@@ -18,7 +18,7 @@ void MetalDisplayLinkDelegate::metalDisplayLinkNeedsUpdate(MetalDisplayLink* met
 		_callback(metalDisplayLink, metalDisplayLinkUpdate);
 }
 
-void MetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkNeedsUpdateCallback callback) {
+void MetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkDelegateNeedsUpdateCallback callback) {
 	_callback = std::move(callback);
 }
 
