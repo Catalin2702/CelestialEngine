@@ -13,11 +13,19 @@
 #include "Utility/Config/Config.hpp"
 
 #include "Foundation/Foundation.hpp"
+#include "QuartzCore/CAMetalLayer.hpp"
 
 #include <stdexcept>
 #include <utility>
 
 namespace CE::Core::Render::Context {
+
+MetalContext::~MetalContext() {
+	if (_displayLink) {
+		_displayLink->removeFromRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
+		_displayLink->invalidate();
+	}
+}
 
 void MetalContext::Init() {
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
@@ -35,6 +43,7 @@ void MetalContext::Init() {
 	_shaderLibrary = std::make_unique<Shader::MetalShaderLibrary>(_device.get());
 
 	_CreateView();
+	_CreateDisplayLink();
 }
 
 void MetalContext::_CreateView() {
@@ -65,12 +74,62 @@ void MetalContext::_CreateView() {
 	_view->setEventDispatcher(viewEventDispatcher.get());
 }
 
-void MetalContext::SetDrawCallback(std::function<void(MTK::View*)> callback) const {
-	if (not _viewDelegate) {
-		CE_CORE_WARN("MetalContext::SetDrawCallback: View delegate is not initialized. Call Init() first.");
+void MetalContext::_CreateDisplayLink() {
+	if (not (_view and _view->layer())) {
+		CE_CORE_ERROR("MetalContext::_CreateDisplayLink: Cannot create display link because the view or its layer is not initialized.");
+		throw std::runtime_error("MetalContext::_CreateDisplayLink: Cannot create display link because the view or its layer is not initialized.");
+	}
+
+	_displayLink = NS::TransferPtr(CA::MetalDisplayLink::alloc()->init(_view->layer()));
+	if (not _displayLink) {
+		CE_CORE_ERROR("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
+		throw std::runtime_error("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
+	}
+
+	_displayLinkDelegate = std::make_unique<CA::MetalDisplayLinkDelegate>();
+	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateCallback(
+		[this](CA::MetalDisplayLink*, const CA::MetalDisplayLinkUpdate* update) {
+			// Publish the drawable vended by this update so AcquireDrawable() hands it to the renderer, then drive the
+			// frame. The drawable is only valid for the duration of the callback, so it is cleared once the frame is done.
+			_displayLinkDrawable = update ? update->drawable() : nullptr;
+
+			if (_drawCallback)
+				_drawCallback(_view.get());
+
+			_displayLinkDrawable = nullptr;
+		}
+	);
+	_displayLink->setDelegate(_displayLinkDelegate.get());
+
+	// Start paused: the application unpauses it in SetRunning once the app is actually running.
+	_displayLink->setPaused(true);
+	_displayLink->addToRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
+}
+
+void MetalContext::SetDrawCallback(std::function<void(MTK::View*)> callback) {
+	_drawCallback = std::move(callback);
+}
+
+CA::MetalDrawable* MetalContext::AcquireDrawable() const {
+	// Prefer the drawable vended by the current display-link update; fall back to dequeuing one from the layer when no
+	// update is in flight (e.g. the VSync-off tick loop drives frames without the display link).
+	if (_displayLinkDrawable)
+		return _displayLinkDrawable;
+
+	if (not (_view and _view->layer())) {
+		CE_CORE_WARN("MetalContext::AcquireDrawable: Cannot acquire drawable because the view or its layer is not initialized.");
+		return nullptr;
+	}
+
+	return _view->layer()->nextDrawable();
+}
+
+void MetalContext::SetDisplayLinkPaused(const bool paused) const {
+	if (not _displayLink) {
+		CE_CORE_WARN("MetalContext::SetDisplayLinkPaused: Cannot change display link state because it is not initialized.");
 		return;
 	}
-	_viewDelegate->SetDrawInMtkViewCallback(std::move(callback));
+	_displayLink->setPaused(paused);
 }
 
 void MetalContext::SetResizeCallback(std::function<void(MTK::View*, CGSize)> callback) const {

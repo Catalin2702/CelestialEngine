@@ -16,6 +16,7 @@
 
 #include "Utility/Callback/Dispatcher.hpp"
 
+using NotificationDelegate = CE::Utility::Delegate<const NS::Notification*>;
 using NotificationDispatcher = CE::Utility::Dispatcher<const NS::Notification*>;
 
 namespace NS {

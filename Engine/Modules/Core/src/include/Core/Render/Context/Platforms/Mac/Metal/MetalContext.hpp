@@ -18,6 +18,7 @@
 
 #include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
 #include "Apple/MetalCpp/MetalKit/ViewDelegate.hpp"
+#include "Apple/MetalCpp/QuartzCore/MetalDisplayLinkDelegate.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Define/Render.hpp"
 
@@ -34,6 +35,11 @@ namespace MTL {
 	class Device;
 	class RenderPassDescriptor;
 	class RenderPipelineState;
+}
+
+namespace CA {
+	class MetalDrawable;
+	class MetalDisplayLink;
 }
 
 namespace NS {
@@ -58,6 +64,13 @@ struct CE_API MetalContextProps {
  *			for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
 class CE_API MetalContext final: public I_Context {
+public:
+	/**
+	 * @brief Destructor
+	 * @details Tears down the display link (removed from the run loop and invalidated) before the view and layer are released.
+	 */
+	~MetalContext() override;
+
 public:
 	/**
 	 * @brief Initializes the Metal graphics context
@@ -118,16 +131,33 @@ public:
 
 public:
 	/**
-	 * Set the callback for the view delegate drawInMTKView method
-	 * @param callback
+	 * @brief Sets the per-frame callback driven by the CAMetalDisplayLink
+	 * @param callback Invoked once per display-link update (on the main run loop), while the display-link-vended drawable
+	 *		  is available through AcquireDrawable(). This is the render pace when the display link is running.
 	 */
-	void SetDrawCallback(std::function<void(MTK::View*)> callback) const;
+	void SetDrawCallback(std::function<void(MTK::View*)> callback);
 
 	/**
 	 * Set the callback for the view delegate drawableSizeWillChange method
 	 * @param callback
 	 */
 	void SetResizeCallback(std::function<void(MTK::View*, CGSize)> callback) const;
+
+public:
+	/**
+	 * @brief Acquires the drawable to render the current frame into
+	 * @return CA::MetalDrawable* The drawable vended by the CAMetalDisplayLink for the current update, or a freshly
+	 *		   dequeued drawable from the layer when no display-link update is in flight (e.g. the VSync-off tick loop).
+	 * @details Must be called from within a frame (between the display link update start and its end, or from the tick
+	 *			loop). The returned drawable is owned by the display-link update / autorelease pool; do not retain it.
+	 */
+	[[nodiscard]] CA::MetalDrawable* AcquireDrawable() const;
+
+	/**
+	 * @brief Starts or pauses the display link that drives frames
+	 * @param paused True to pause (no frames delivered), false to resume delivering per-frame updates
+	 */
+	void SetDisplayLinkPaused(bool paused) const;
 
 public:
 	MetalContextProps props; ///< Properties for initializing the Metal context
@@ -142,6 +172,13 @@ private:
 	 */
 	void _CreateView();
 
+	/**
+	 * @brief Creates the CAMetalDisplayLink that paces rendering and wires its delegate
+	 * @details Builds the display link from the view's CAMetalLayer, installs the delegate whose per-frame callback
+	 *			publishes the vended drawable and invokes the draw callback, then adds it to the main run loop paused.
+	 */
+	void _CreateDisplayLink();
+
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
@@ -149,6 +186,12 @@ private:
 
 	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
 	std::unique_ptr<MTK::ViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
+
+	NS::SharedPtr<CA::MetalDisplayLink> _displayLink = nullptr; ///< Paces frames in step with the display refresh
+	std::unique_ptr<CA::MetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
+
+	CA::MetalDrawable* _displayLinkDrawable = nullptr; ///< Drawable vended by the current display-link update; valid only for the duration of the frame callback
+	std::function<void(MTK::View*)> _drawCallback; ///< Invoked once per display-link update to render a frame
 };
 
 }

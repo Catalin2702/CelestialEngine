@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-02
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -33,6 +33,8 @@ class DisplayLink;
 
 namespace NS {
 class Application;
+class Event;
+class Notification;
 }
 
 namespace CE {
@@ -116,7 +118,9 @@ public:
 	 * @param event Reference to the event to be processed
 	 * @details Dispatches events to the appropriate layers in the layer stack
 	 */
-	void OnEvent(Events::I_Event& event) override;
+	void OnEvent(Events::I_Event& event) override {}
+
+	void DispatchEventToLayers(Events::I_Event& event);
 
 	/**
      * @brief Initializes the application with window properties
@@ -184,7 +188,31 @@ public:
 	[[nodiscard]] static CocoaApplication& StGet() { return dynamic_cast<CocoaApplication&>(I_Application::StGet()); }
 
 private:
-	void _SetWindowCallbacks() const;
+	void _BindWindowCallbacks() const;
+	void _SetWindowCallbacks();
+
+	void _BindViewCallbacks();
+	void _SetViewEventCallbacks();
+
+	void _OnWindowWillClose(const NS::Notification* notification);
+
+	void _OnMouseButtonDown(const NS::Event* event);
+	void _OnMouseButtonUp(const NS::Event* event);
+	void _OnMouseButtonDragged(const NS::Event* event);
+	void _OnMouseMoved(const NS::Event* event);
+
+	/**
+	 * @brief Converts a mouse event's location into top-left-origin view coordinates
+	 * @param event The Cocoa mouse event to read the location from
+	 * @return std::pair<float, float> Cursor position in the view with origin at the top-left and Y growing downward
+	 * @details Cocoa reports the cursor in window space (bottom-left origin, Y up). This maps it into the view and flips
+	 *			Y so the engine and ImGui receive the top-left-origin coordinates they expect.
+	 */
+	[[nodiscard]] std::pair<float, float> _MouseLocationTopLeft(const NS::Event* event) const;
+	void _OnKeyDown(const NS::Event* event);
+	void _OnKeyUp(const NS::Event* event);
+
+	void _OnViewDidMoveToWindow();
 
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance
@@ -198,7 +226,6 @@ private:
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
-
 
 public:
 	MTL::RenderPipelineState* defaultRenderPipelineState = nullptr;

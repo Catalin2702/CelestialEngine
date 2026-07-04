@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-02
+// Updated: 2026-07-04
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -97,7 +97,7 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
-	_frameContext.drawable = _context->get().GetView()->layer()->nextDrawable();
+	_frameContext.drawable = _context->get().AcquireDrawable();
 	if (not _frameContext.drawable) {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
@@ -117,7 +117,6 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
 	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
-	Apple::Bridge::ImGuiOSXNewFrame(_context->get().GetView());
 
 	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
 
@@ -163,15 +162,17 @@ void ImGuiMetalLayer::_Init() {
 
 		Apple::Bridge::ImGuiMetalInit(_context->get().GetDevice());
 
+		// Input is delivered exclusively through the engine event system: the MetalContext view dispatcher translates
+		// native events and they reach this layer via OnEvent(). The ImGui OSX platform backend is deliberately NOT
+		// initialized, because it installs its own event monitor that would capture the same input a second time.
+		// As a consequence this layer owns the platform-side state ImGui still needs: the display size (set here and
+		// refreshed in _OnWindowResized) and the delta time (set in Begin()).
 		if (const auto view = _context->get().GetView()) {
-			if (not Apple::Bridge::ImGuiOSXInit(view)) {
-				CE_CORE_ERROR("Failed to initialize ImGui OSX backend!");
-				ImGui::DestroyContext(context);
-				throw std::runtime_error("Failed to initialize ImGui OSX backend!");
-			}
-			const auto [width, height] = view->drawableSize();
+			const auto [width, height] = _window->get().GetFrameSize();
+			const auto scale = static_cast<float>(view->layer() ? view->layer()->contentsScale() : 1.0);
 
-			io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+			io.DisplaySize = ImVec2(width, height);
+			io.DisplayFramebufferScale = ImVec2(scale, scale);
 		}
 
 		_initialized = true;
@@ -188,7 +189,6 @@ void ImGuiMetalLayer::_Shutdown() {
 	_initialized = false;
 
 	Apple::Bridge::ImGuiMetalShutdown();
-	Apple::Bridge::ImGuiOSXShutdown();
 	ImGui::DestroyContext();
 }
 

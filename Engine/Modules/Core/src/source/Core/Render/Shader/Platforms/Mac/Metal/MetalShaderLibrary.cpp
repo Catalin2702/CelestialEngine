@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-04
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -16,11 +16,30 @@
 
 namespace CE::Core::Render::Shader {
 
-std::string defaultLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
+namespace {
+
+// Relative fallback, resolved against the current working directory. Only used
+// when the app is not running from a bundle (e.g. some test harnesses).
+constexpr auto relativeLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
+
+// Resolves the shader library to an absolute path based on the app bundle's
+// Resources directory, so loading is independent of the current working
+// directory (fixes launches from IDEs/debuggers such as CLion and Xcode).
+std::string ResolveDefaultLibraryPath() {
+	if (const auto bundle = NS::Bundle::mainBundle()) {
+		if (const auto resourcePath = bundle->resourcePath()) {
+			return std::string(resourcePath->utf8String()) + "/Shaders/Metal/Main.metallib";
+		}
+	}
+	return relativeLibraryPath;
+}
+
+}
+
+std::string defaultLibraryPath = relativeLibraryPath;
 
 MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path): _device(NS::RetainPtr(device)) {
-	if (not path.empty())
-		defaultLibraryPath = path;
+	defaultLibraryPath = path.empty() ? ResolveDefaultLibraryPath() : path;
 
 	_LoadLibrary();
 

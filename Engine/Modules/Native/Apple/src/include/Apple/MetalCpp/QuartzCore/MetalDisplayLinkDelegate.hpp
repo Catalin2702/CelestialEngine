@@ -20,7 +20,7 @@ using MetalDisplayLinkDelegateNeedsUpdateCallback = std::function<void(CA::Metal
 
 namespace CA {
 
-class MetalDisplayLinkDelegate: I_MetalDisplayLinkDelegate {
+class MetalDisplayLinkDelegate: public I_MetalDisplayLinkDelegate {
 public:
 	MetalDisplayLinkDelegate() = default;
 

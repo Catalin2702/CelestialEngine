@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-16
+// Updated: 2026-07-04
 //
 
 #pragma once
@@ -21,11 +21,16 @@
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
+#include <functional>
 #include <memory>
 #include <utility>
 
 namespace CA {
 class MetalLayer;
+}
+
+namespace MTK {
+class View;
 }
 
 namespace MTL {
@@ -34,7 +39,7 @@ class Device;
 }
 
 namespace NS {
-class RenderViewController;
+class Notification;
 class Screen;
 class Window;
 class WindowEventDispatcher;
@@ -131,7 +136,7 @@ public:
 	 * @param callback Function to be called when events occur
 	 * @details The callback will be invoked for all window and input events, allowing the application to respond to user interactions and window changes.
 	 */
-	void SetEventCallback(const EventCallbackFn& callback) override;
+	void SetEventCallback(const EventCallbackFn&) override {}
 
 	/**
 	 * @brief Sets the resize event callback function
@@ -157,11 +162,16 @@ public:
 
 public:
 	/**
+	 * @brief Installs the MetalKit view as the window's content view
+	 * @param view MetalKit view (owned by the render context) to display and route input through
+	 * @details Attaches @p view as the window's content view, makes it the first responder so it receives keyboard
+	 *			events, and enables mouse-moved delivery so the view's dispatcher gets continuous cursor updates.
+	 */
+	void SetContentView(const MTK::View* view) const;
+
+public:
+	/**
 	 * @brief Initializes the window with the provided Metal device
-	 * @param device Pointer to the Metal device to be used for view controller initialization
-	 * @details Initializes the window by first initializing the view controller with the provided Metal device and then setting up the Cocoa window and Metal layer.
-	 *			This method is called by the CocoaApplication during its initialization process to prepare the window for rendering with Metal.
-	 *			It ensures that the view controller is properly set up with the Metal device before initializing the window and its associated resources.
 	 */
 	void Init();
 
@@ -199,6 +209,10 @@ public:
 
 private:
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
+
+	// Listener registered on the window dispatcher. The dispatcher stores a raw pointer to it, so it must outlive the
+	// dispatcher and keep a stable address; hence it lives here rather than as a temporary.
+	std::function<void(NS::Notification*)> _onWindowWillClose; ///< Translates the window close notification into a WindowCloseEvent
 };
 
 }

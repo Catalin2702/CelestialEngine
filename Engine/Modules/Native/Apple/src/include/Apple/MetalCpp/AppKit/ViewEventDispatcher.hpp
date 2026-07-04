@@ -16,7 +16,10 @@
 
 #include "Utility/Callback/Dispatcher.hpp"
 
+using EventDelegate = CE::Utility::Delegate<const NS::Event*>;
 using EventDispatcher = CE::Utility::Dispatcher<const NS::Event*>;
+
+using VoidDelegate = CE::Utility::Delegate<>;
 using VoidDispatcher = CE::Utility::Dispatcher<>;
 
 namespace NS {

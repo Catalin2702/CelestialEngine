@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-06-20
+// Updated: 2026-07-04
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -15,6 +15,7 @@
 #include "Utility/Utility.hpp"
 
 #include <AppKit/AppKit.hpp>
+#include <MetalKit/MetalKit.hpp>
 
 #include <stdexcept>
 #include <utility>
@@ -50,10 +51,6 @@ bool CocoaWindow::IsVSync() const {
 	return false;
 }
 
-void CocoaWindow::SetEventCallback(const EventCallbackFn& callback) {
-	_callbacks.EventCallback = callback;
-}
-
 void CocoaWindow::SetContentScaleCallback([[maybe_unused]] const ContentSizeCallbackFn& callback) {
 	_callbacks.ContentSizeCallback = callback;
 }
@@ -82,6 +79,24 @@ void CocoaWindow::SetVSync(const bool enabled) {
 
 void CocoaWindow::GetReady(const bool VSync) {
 	SetVSync(VSync);
+}
+
+void CocoaWindow::SetContentView(const MTK::View* view) const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::SetContentView: Cannot set content view because window is not initialized.");
+		return;
+	}
+
+	if (not view) {
+		CE_CORE_ERROR("CocoaWindow::SetContentView: Cannot set a null content view!");
+		throw std::runtime_error("CocoaWindow::SetContentView: Cannot set a null content view!");
+	}
+
+	_window->setContentView(view);
+	// The view must be the first responder to receive key events, and the window must accept mouse-moved events for the
+	// view's dispatcher to get continuous cursor updates (there is no tracking area otherwise).
+	(void)_window->makeFirstResponder(view);
+	_window->setAcceptsMouseMovedEvents(true);
 }
 
 void CocoaWindow::Init() {
