@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-23
+# Updated: 2026-07-04
 #
 
 set(HEADERS
@@ -30,8 +30,12 @@ set_target_properties(CE_Tools PROPERTIES
 target_link_libraries(CE_Tools PUBLIC
 	CE_Config
 	CE_Define
-	CE_Vendor_SpdLog
 	CE_Types
+)
+
+# Vendor libraries
+target_link_libraries(CE_Tools PUBLIC
+	CE_Vendor_SpdLog
 )
 
 target_include_directories(CE_Tools PUBLIC
