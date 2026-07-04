@@ -256,8 +256,13 @@ void CocoaApplication::_SetWindowCallbacks() {
 void CocoaApplication::_BindViewCallbacks() {
 	assert(_context && "CocoaApplication::_BindViewCallbacks: Render context must be initialized before binding callbacks");
 
-	// Translate a drawable resize into a window resize event so layers (e.g. ImGui) can update their display size.
-	_context->SetResizeCallback([this](MTK::View*, CGSize) {
+	// Keep the Metal drawable in lockstep with the view on resize, then translate it into a window resize event so layers
+	// (e.g. ImGui) can update their display size. The view is paused and driven by the display link, so MetalKit does not
+	// auto-resize the drawable for us: without this explicit update the drawable stays at its initial size and the layer
+	// stretches it across the new bounds, distorting the aspect ratio. `size` is already expressed in backing pixels.
+	_context->SetResizeCallback([this](MTK::View*, const CGSize size) {
+		_context->HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
+
 		const auto [width, height] = _window->GetFrameSize();
 		Events::WindowResizeEvent event{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
 		DispatchEventToLayers(event);

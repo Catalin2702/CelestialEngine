@@ -19,7 +19,7 @@
 namespace CE::Utility {
 
 template <typename... Args>
-class Delegate {
+class CE_API Delegate {
 public:
 	using Stub = void(*)(void*, Args...);
 
