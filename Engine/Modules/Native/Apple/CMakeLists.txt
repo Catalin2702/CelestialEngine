@@ -83,6 +83,7 @@ set_target_properties(CE_Apple PROPERTIES
 target_link_libraries(CE_Apple PUBLIC
 	CE_Config
 	CE_Tools
+	CE_Utility
 )
 
 # Vendor libraries
