@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -16,8 +16,8 @@
 
 #include "Utility/Callback/Dispatcher.hpp"
 
-using EventDelegate = CE::Utility::Delegate<const NS::Event*>;
-using EventMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Event*>;
+using NSEventDelegate = EventDelegate<const NS::Event*>;
+using NSEventMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Event*>;
 
 namespace NS {
 
@@ -50,27 +50,27 @@ public:
 	void DispatchViewDidEndLiveResize() override;
 
 public:
-	EventMulticastDispatcher mouseDownMulticastDispatcher;
-	EventMulticastDispatcher mouseUpMulticastDispatcher;
-	EventMulticastDispatcher mouseDraggedMulticastDispatcher;
-	EventMulticastDispatcher rightMouseDownMulticastDispatcher;
-	EventMulticastDispatcher rightMouseUpMulticastDispatcher;
-	EventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
-	EventMulticastDispatcher otherMouseDownMulticastDispatcher;
-	EventMulticastDispatcher otherMouseUpMulticastDispatcher;
-	EventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
-	EventMulticastDispatcher mouseMovedMulticastDispatcher;
-	EventMulticastDispatcher mouseEnteredMulticastDispatcher;
-	EventMulticastDispatcher mouseExitedMulticastDispatcher;
-	EventMulticastDispatcher keyDownMulticastDispatcher;
-	EventMulticastDispatcher keyUpMulticastDispatcher;
-	EventMulticastDispatcher flagsChangedMulticastDispatcher;
-	EventMulticastDispatcher scrollWheelMulticastDispatcher;
+	NSEventMulticastDispatcher mouseDownMulticastDispatcher;
+	NSEventMulticastDispatcher mouseUpMulticastDispatcher;
+	NSEventMulticastDispatcher mouseDraggedMulticastDispatcher;
+	NSEventMulticastDispatcher rightMouseDownMulticastDispatcher;
+	NSEventMulticastDispatcher rightMouseUpMulticastDispatcher;
+	NSEventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
+	NSEventMulticastDispatcher otherMouseDownMulticastDispatcher;
+	NSEventMulticastDispatcher otherMouseUpMulticastDispatcher;
+	NSEventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
+	NSEventMulticastDispatcher mouseMovedMulticastDispatcher;
+	NSEventMulticastDispatcher mouseEnteredMulticastDispatcher;
+	NSEventMulticastDispatcher mouseExitedMulticastDispatcher;
+	NSEventMulticastDispatcher keyDownMulticastDispatcher;
+	NSEventMulticastDispatcher keyUpMulticastDispatcher;
+	NSEventMulticastDispatcher flagsChangedMulticastDispatcher;
+	NSEventMulticastDispatcher scrollWheelMulticastDispatcher;
 
-	VoidMulticastDispatcher viewDidMoveToWindowMulticastDispatcher;
-	VoidMulticastDispatcher viewDidMoveToSuperviewMulticastDispatcher;
-	VoidMulticastDispatcher viewDidLayoutMulticastDispatcher;
-	VoidMulticastDispatcher viewDidEndLiveResizeMulticastDispatcher;
+	VoidMulticastEventDispatcher viewDidMoveToWindowMulticastDispatcher;
+	VoidMulticastEventDispatcher viewDidMoveToSuperviewMulticastDispatcher;
+	VoidMulticastEventDispatcher viewDidLayoutMulticastDispatcher;
+	VoidMulticastEventDispatcher viewDidEndLiveResizeMulticastDispatcher;
 };
 
 }

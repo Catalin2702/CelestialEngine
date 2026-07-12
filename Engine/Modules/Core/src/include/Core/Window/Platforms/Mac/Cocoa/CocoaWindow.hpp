@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -62,9 +62,9 @@ public:
 	void DispatchCocoaWindowWillShutdown();
 
 public:
-	VoidMulticastDispatcher cocoaWindowCreatedMulticastDispatcher;
-	VoidMulticastDispatcher cocoaWindowInitializedMulticastDispatcher;
-	VoidMulticastDispatcher cocoaWindowWillShutdownMulticastDispatcher;
+	VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
+	VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
+	VoidMulticastEventDispatcher cocoaWindowWillShutdownMulticastDispatcher;
 };
 
 /**

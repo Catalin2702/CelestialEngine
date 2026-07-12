@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -16,8 +16,8 @@
 
 #include "Utility/Callback/Dispatcher.hpp"
 
-using NotificationDelegate = CE::Utility::Delegate<const NS::Notification*>;
-using NotificationMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Notification*>;
+using NSNotificationDelegate = EventDelegate<const NS::Notification*>;
+using NSNotificationMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Notification*>;
 
 namespace NS {
 
@@ -39,15 +39,15 @@ public:
 	void DispatchWindowWillClose(Notification* notification) override;
 
 public:
-	NotificationMulticastDispatcher windowDidResizeMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidMoveMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidBecomeKeyMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidResignKeyMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidMiniaturizeMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidDeminiaturizeMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidEnterFullScreenMulticastDispatcher;
-	NotificationMulticastDispatcher windowDidExitFullScreenMulticastDispatcher;
-	NotificationMulticastDispatcher windowWillCloseMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidResizeMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidMoveMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidBecomeKeyMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidResignKeyMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidMiniaturizeMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidDeminiaturizeMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidEnterFullScreenMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowDidExitFullScreenMulticastDispatcher;
+	NSNotificationMulticastDispatcher windowWillCloseMulticastDispatcher;
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -69,7 +69,7 @@ protected:
  *			It uses the KeyboardKeyCodes enum defined in the KeyCode namespace, which provides a standardized set of key codes across the application.
  */
 using KeyType = KeyCode::KeyboardKeyCode;
-using KeyCharType = KeyCode::KeyboardCharsCode;
+using KeyCharType = unsigned int;	///< Unicode code point of a typed character (as delivered by the platform)
 
 /**
  * @class KeyPressedEvent

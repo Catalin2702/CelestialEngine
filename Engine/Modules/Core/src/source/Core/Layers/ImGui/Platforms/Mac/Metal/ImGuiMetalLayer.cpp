@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -247,11 +247,11 @@ bool ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 }
 
 bool ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
-	const auto keycode = KeyCode::ToUInt(event.GetKeyCode());
-	if (keycode < KeyCode::KeyboardCharsCode::A || keycode > KeyCode::KeyboardCharsCode::z)
+	const unsigned int codepoint = event.GetKeyCode();
+	if (codepoint == 0)
 		return false;
 
-	ImGui::GetIO().AddInputCharacter(keycode);
+	ImGui::GetIO().AddInputCharacter(codepoint);
 
 	return false;
 }

@@ -4,12 +4,13 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-04
+# Updated: 2026-07-12
 #
 
 set(HEADERS
 	# Callback
 	src/include/Utility/Callback/Callback.hpp
+	src/include/Utility/Callback/Delegate.hpp
 	src/include/Utility/Callback/Dispatcher.hpp
 
 	# CMD

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -14,93 +14,33 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Utility/Callback/Delegate.hpp"
 
 #include <vector>
 
 namespace CE::Utility {
 
-template <typename... Args>
-class CE_API Delegate {
-public:
-	using Stub = void(*)(void*, Args...);
-
-	Delegate() = default;
-
-public:
-	template<void (*Fn)(Args...)>
-	static Delegate FromFunction() {
-		Delegate delegate;
-		delegate._context = nullptr;
-		delegate._stub = &FunctionStub<Fn>;
-		return delegate;
-	}
-
-	template<typename T, void (T::*Method)(Args...)>
-	static Delegate FromMethod(T* instance) {
-		Delegate delegate;
-		delegate._context = instance;
-		delegate._stub = &MethodStub<T, Method>;
-		return delegate;
-	}
-
-	template<typename T, void(T::*Method)(Args...) const>
-	static Delegate FromConstMethod(const T* instance) {
-		Delegate delegate;
-		delegate._context = const_cast<T*>(instance);
-		delegate._stub = &ConstMethodStub<T, Method>;
-		return delegate;
-	}
-
-public:
-	[[nodiscard]] bool IsValid() const { return _stub != nullptr; }
-
-public:
-	void operator()(Args... args) const { (*_stub)(_context, args...); }
-
-	bool operator==(const Delegate& other) const { return this->_context == other._context and this->_stub == other._stub; }
-
-private:
-	template<void (*Fn)(Args...)>
-	static void FunctionStub(void*, Args... args) {
-		Fn(args...);
-	}
-
-	template<typename T, void (T::*Method)(Args...)>
-	static void MethodStub(void* context, Args... args) {
-		(static_cast<T*>(context)->*Method)(args...);
-	}
-
-	template<typename T, void(T::*Method)(Args...) const>
-	static void ConstMethodStub(void* context, Args... args) {
-		(static_cast<const T*>(context)->*Method)(args...);
-	}
-
-private:
-	void* _context = nullptr;
-	Stub _stub = nullptr;
-};
-
-template <typename... Args>
+template <typename R, typename... Args>
 class CE_API UnicastDispatcher {
 public:
-	using DelegateType = Delegate<Args...>;
+	using CallbackType = CallbackDelegate<R, Args...>;
 
 public:
-	void Bind(DelegateType delegate) {
+	void Bind(CallbackType delegate) {
 		if (not IsBound())
-			_delegate = delegate;
+			_callback = delegate;
 		else {
 			const auto message = "A delegate is already assigned";
 			CE_CORE_ERROR(message);
 		}
 	}
 
-	void Unbind(const DelegateType& delegate = {}) {
+	void Unbind(const CallbackType& delegate = {}) {
 		if (delegate)
-			_delegate = delegate;
+			_callback = delegate;
 		else {
-			_delegate._context = nullptr;
-			_delegate._stub = nullptr;
+			_callback._context = nullptr;
+			_callback._stub = nullptr;
 		}
 	}
 
@@ -109,17 +49,17 @@ public:
 	}
 
 public:
-	[[nodiscard]] bool IsBound() const { return _delegate.IsValid(); }
+	[[nodiscard]] bool IsBound() const { return _callback.IsValid(); }
 
 private:
-	DelegateType _delegate;
+	CallbackType _callback;
 };
 
 template <typename... Args>
 class CE_API MulticastDispatcher {
 public:
 	using Handle = uint32_t;
-	using DelegateType = Delegate<Args...>;
+	using DelegateType = EventDelegate<Args...>;
 
 public:
 	Handle Subscribe(DelegateType delegate) {
@@ -186,12 +126,12 @@ private:
 
 }
 
-using VoidDelegate = CE::Utility::Delegate<>;
-using VoidUnicastDispatcher = CE::Utility::UnicastDispatcher<>;
-using VoidMulticastDispatcher = CE::Utility::MulticastDispatcher<>;
+using VoidEventDelegate = EventDelegate<void>;
+using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, void>;
+using VoidMulticastEventDispatcher = CE::Utility::MulticastDispatcher<>;
 
-using BoolDelegate = CE::Utility::Delegate<bool>;
-using BoolUnicastDispatcher = CE::Utility::UnicastDispatcher<bool>;
-using BoolMulticastDispatcher = CE::Utility::MulticastDispatcher<bool>;
+using BoolEventDelegate = EventDelegate<bool>;
+using BoolUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, bool>;
+using BoolMulticastEventDispatcher = CE::Utility::MulticastDispatcher<bool>;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP

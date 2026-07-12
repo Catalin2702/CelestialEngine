@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-12
 //
 
 #pragma once
@@ -60,10 +60,10 @@ public:
 	void DispatchVSyncChanged(bool vsync);
 
 public:
-	VoidMulticastDispatcher metalContextCreatedMulticastDispatcher;
-	VoidMulticastDispatcher metalContextInitializedDispatcher;
-	VoidMulticastDispatcher metalContextWillShutdownDispatcher;
-	BoolMulticastDispatcher vsyncChangedMulticastDispatcher;
+	VoidMulticastEventDispatcher metalContextCreatedMulticastDispatcher;
+	VoidMulticastEventDispatcher metalContextInitializedDispatcher;
+	VoidMulticastEventDispatcher metalContextWillShutdownDispatcher;
+	BoolMulticastEventDispatcher vsyncChangedMulticastDispatcher;
 };
 
 /**

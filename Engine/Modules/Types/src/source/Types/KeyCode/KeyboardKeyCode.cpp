@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-07-12
 //
 
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -93,67 +93,6 @@ const char* ToString(const KeyboardKeyCode key) {
 	}
 }
 
-const char* ToString(const KeyboardCharsCode key) {
-	switch (key) {
-		case KeyboardCharsCode::A: return "A";
-		case KeyboardCharsCode::B: return "B";
-		case KeyboardCharsCode::C: return "C";
-		case KeyboardCharsCode::D: return "D";
-		case KeyboardCharsCode::E: return "E";
-		case KeyboardCharsCode::F: return "F";
-		case KeyboardCharsCode::G: return "G";
-		case KeyboardCharsCode::H: return "H";
-		case KeyboardCharsCode::I: return "I";
-		case KeyboardCharsCode::J: return "J";
-		case KeyboardCharsCode::K: return "K";
-		case KeyboardCharsCode::L: return "L";
-		case KeyboardCharsCode::M: return "M";
-		case KeyboardCharsCode::N: return "N";
-		case KeyboardCharsCode::O: return "O";
-		case KeyboardCharsCode::P: return "P";
-		case KeyboardCharsCode::Q: return "Q";
-		case KeyboardCharsCode::R: return "R";
-		case KeyboardCharsCode::S: return "S";
-		case KeyboardCharsCode::T: return "T";
-		case KeyboardCharsCode::U: return "U";
-		case KeyboardCharsCode::V: return "V";
-		case KeyboardCharsCode::W: return "W";
-		case KeyboardCharsCode::X: return "X";
-		case KeyboardCharsCode::Y: return "Y";
-		case KeyboardCharsCode::Z: return "Z";
-
-		case KeyboardCharsCode::a: return "a";
-		case KeyboardCharsCode::b: return "b";
-		case KeyboardCharsCode::c: return "c";
-		case KeyboardCharsCode::d: return "d";
-		case KeyboardCharsCode::e: return "e";
-		case KeyboardCharsCode::f: return "f";
-		case KeyboardCharsCode::g: return "g";
-		case KeyboardCharsCode::h: return "h";
-		case KeyboardCharsCode::i: return "i";
-		case KeyboardCharsCode::j: return "j";
-		case KeyboardCharsCode::k: return "k";
-		case KeyboardCharsCode::l: return "l";
-		case KeyboardCharsCode::m: return "m";
-		case KeyboardCharsCode::n: return "n";
-		case KeyboardCharsCode::o: return "o";
-		case KeyboardCharsCode::p: return "p";
-		case KeyboardCharsCode::q: return "q";
-		case KeyboardCharsCode::r: return "r";
-		case KeyboardCharsCode::s: return "s";
-		case KeyboardCharsCode::t: return "t";
-		case KeyboardCharsCode::u: return "u";
-		case KeyboardCharsCode::v: return "v";
-		case KeyboardCharsCode::w: return "w";
-		case KeyboardCharsCode::x: return "x";
-		case KeyboardCharsCode::y: return "y";
-		case KeyboardCharsCode::z: return "z";
-
-		case KeyboardCharsCode::Unknown:
-		default: return "Unknown";
-	}
-}
-
 KeyboardKeyCode KeyboardKeyCodeFromGlfw(const int keycode) {
 	switch (keycode) {
 		case GLFW_KEY_A: return KeyboardKeyCode::A;
@@ -228,13 +167,6 @@ KeyboardKeyCode KeyboardKeyCodeFromGlfw(const int keycode) {
 
 		default: return KeyboardKeyCode::Unknown;
 	}
-}
-
-KeyboardCharsCode KeyboardCharsCodeFromGlfw(unsigned int charCode) {
-	if (charCode >= 32 && charCode <= 126) {
-		return static_cast<KeyboardCharsCode>(charCode);
-	}
-	return KeyboardCharsCode::Unknown;
 }
 
 int GlfwKeyCodeFromKeyboard(const KeyboardKeyCode keycode) {
@@ -312,10 +244,6 @@ int GlfwKeyCodeFromKeyboard(const KeyboardKeyCode keycode) {
 		case KeyboardKeyCode::Unknown:
 		default: return GLFW_KEY_UNKNOWN;
 	}
-}
-
-unsigned int GlfwCharCodeFromKeyboard(const KeyboardCharsCode charCode) {
-	return ToUInt(charCode);
 }
 
 ImGuiKey ImGuiKeyFromKeyboard(const KeyboardKeyCode keycode) {
@@ -568,10 +496,6 @@ unsigned short CocoaKeyCodeFromKeyboard(const KeyboardKeyCode keyCode) {
 		case KeyboardKeyCode::Unknown:
 		default: return 0;
 	}
-}
-
-unsigned int ImGuiKeyFromKeyboard(const KeyboardCharsCode charCode) {
-	return ToUInt(charCode);
 }
 
 }
