@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -145,12 +145,16 @@ public:
 	 */
 	[[nodiscard]] I_Window& GetWindow() const override;
 
+	[[nodiscard]] GlfwWindow& GetGlfwWindow() const;
+
 	/**
 	* @brief Gets the rendering context
 	* @return Render::Context::I_Context& Reference to the rendering context
 	 * @details Returns a reference to the application renderer context, which can be used for rendering operations and managing graphics resources.
 	 */
 	I_Context& GetRenderContext() const override;
+
+	OpenGlContext& GetOpenGlContext() const;
 
 private:
 	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -223,7 +223,15 @@ I_Window& GlfwApplication::GetWindow() const {
 	return *_window;
 }
 
+GlfwWindow& GlfwApplication::GetGlfwWindow() const {
+	return *_window;
+}
+
 I_Context& GlfwApplication::GetRenderContext() const {
+	return *_context;
+}
+
+OpenGlContext& GlfwApplication::GetOpenGlContext() const {
 	return *_context;
 }
 
