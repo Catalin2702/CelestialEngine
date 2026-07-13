@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -45,7 +45,7 @@ public:
 	}
 
 	void Dispatch(Args... args) const {
-		_delegate(args...);
+		_callback(args...);
 	}
 
 public:
@@ -125,6 +125,9 @@ private:
 };
 
 }
+
+template<typename... Args>
+using UnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, Args...>;
 
 using VoidEventDelegate = EventDelegate<void>;
 using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, void>;
