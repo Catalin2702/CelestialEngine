@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
@@ -12,83 +12,83 @@
 namespace NS {
 
 void ViewEventDispatcher::DispatchMouseDown(Event* event) {
-	mouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseDownMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseUp(Event* event) {
-	mouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseUpMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseDragged(Event* event) {
-	mouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDown(Event* event) {
-	rightMouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseDownMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseUp(Event* event) {
-	rightMouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseUpMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchRightMouseDragged(Event* event) {
-	rightMouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDown(Event* event) {
-	otherMouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseDownMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseUp(Event* event) {
-	otherMouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseUpMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchOtherMouseDragged(Event* event) {
-	otherMouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseMoved(Event* event) {
-	mouseMovedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseMovedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseEntered(Event* event) {
-	mouseEnteredMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseEnteredMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchMouseExited(Event* event) {
-	mouseExitedMulticastDispatcher.Dispatch(event);
-}
-
-void ViewEventDispatcher::DispatchKeyDown(Event* event) {
-	keyDownMulticastDispatcher.Dispatch(event);
-}
-
-void ViewEventDispatcher::DispatchKeyUp(Event* event) {
-	keyUpMulticastDispatcher.Dispatch(event);
-}
-
-void ViewEventDispatcher::DispatchFlagsChanged(Event* event) {
-	flagsChangedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseExitedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchScrollWheel(Event* event) {
-	scrollWheelMulticastDispatcher.Dispatch(event);
+	mouseEvents.scrollWheelMulticastDispatcher.Dispatch(event);
+}
+
+void ViewEventDispatcher::DispatchKeyDown(Event* event) {
+	keyboardEvents.keyDownMulticastDispatcher.Dispatch(event);
+}
+
+void ViewEventDispatcher::DispatchKeyUp(Event* event) {
+	keyboardEvents.keyUpMulticastDispatcher.Dispatch(event);
+}
+
+void ViewEventDispatcher::DispatchFlagsChanged(Event* event) {
+	keyboardEvents.flagsChangedMulticastDispatcher.Dispatch(event);
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToWindow() {
-	viewDidMoveToWindowMulticastDispatcher.Dispatch();
+	stateEvents.viewDidMoveToWindowMulticastDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidMoveToSuperview() {
-	viewDidMoveToSuperviewMulticastDispatcher.Dispatch();
+	stateEvents.viewDidMoveToSuperviewMulticastDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidLayout() {
-	viewDidLayoutMulticastDispatcher.Dispatch();
+	stateEvents.viewDidLayoutMulticastDispatcher.Dispatch();
 }
 
 void ViewEventDispatcher::DispatchViewDidEndLiveResize() {
-	viewDidEndLiveResizeMulticastDispatcher.Dispatch();
+	stateEvents.viewDidEndLiveResizeMulticastDispatcher.Dispatch();
 }
 
 }

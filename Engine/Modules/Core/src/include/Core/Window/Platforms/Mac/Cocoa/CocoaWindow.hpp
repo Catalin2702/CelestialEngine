@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -56,15 +56,19 @@ class Window;
 namespace CE::Core::Window {
 
 class CocoaWindowEventHandler: public NS::WindowEventDispatcher {
+	struct WindowStateEvents {
+		VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
+		VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
+		VoidMulticastEventDispatcher cocoaWindowWillShutdownMulticastDispatcher;
+	};
+
 public:
 	void DispatchCocoaWindowCreated();
 	void DispatchCocoaWindowInitialized();
 	void DispatchCocoaWindowWillShutdown();
 
 public:
-	VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
-	VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
-	VoidMulticastEventDispatcher cocoaWindowWillShutdownMulticastDispatcher;
+	WindowStateEvents windowStateEvents;
 };
 
 /**

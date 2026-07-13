@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -23,6 +23,36 @@ namespace NS {
 
 class ViewEventDispatcher: public I_ViewEventDispatcher {
 public:
+	struct MouseEvents {
+		NSEventMulticastDispatcher mouseDownMulticastDispatcher;
+		NSEventMulticastDispatcher mouseUpMulticastDispatcher;
+		NSEventMulticastDispatcher mouseDraggedMulticastDispatcher;
+		NSEventMulticastDispatcher rightMouseDownMulticastDispatcher;
+		NSEventMulticastDispatcher rightMouseUpMulticastDispatcher;
+		NSEventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
+		NSEventMulticastDispatcher otherMouseDownMulticastDispatcher;
+		NSEventMulticastDispatcher otherMouseUpMulticastDispatcher;
+		NSEventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
+		NSEventMulticastDispatcher mouseMovedMulticastDispatcher;
+		NSEventMulticastDispatcher mouseEnteredMulticastDispatcher;
+		NSEventMulticastDispatcher mouseExitedMulticastDispatcher;
+		NSEventMulticastDispatcher scrollWheelMulticastDispatcher;
+	};
+
+	struct KeyboardEvents {
+		NSEventMulticastDispatcher keyDownMulticastDispatcher;
+		NSEventMulticastDispatcher keyUpMulticastDispatcher;
+		NSEventMulticastDispatcher flagsChangedMulticastDispatcher;
+	};
+
+	struct ViewStateEvents {
+		VoidMulticastEventDispatcher viewDidMoveToWindowMulticastDispatcher;
+		VoidMulticastEventDispatcher viewDidMoveToSuperviewMulticastDispatcher;
+		VoidMulticastEventDispatcher viewDidLayoutMulticastDispatcher;
+		VoidMulticastEventDispatcher viewDidEndLiveResizeMulticastDispatcher;
+	};
+
+public:
 	ViewEventDispatcher() = default;
 
 	~ViewEventDispatcher() override = default;
@@ -40,37 +70,21 @@ public:
 	void DispatchMouseMoved(Event* event) override;
 	void DispatchMouseEntered(Event* event) override;
 	void DispatchMouseExited(Event* event) override;
+	void DispatchScrollWheel(Event* event) override;
+
 	void DispatchKeyDown(Event* event) override;
 	void DispatchKeyUp(Event* event) override;
 	void DispatchFlagsChanged(Event* event) override;
-	void DispatchScrollWheel(Event* event) override;
+
 	void DispatchViewDidMoveToWindow() override;
 	void DispatchViewDidMoveToSuperview() override;
 	void DispatchViewDidLayout() override;
 	void DispatchViewDidEndLiveResize() override;
 
 public:
-	NSEventMulticastDispatcher mouseDownMulticastDispatcher;
-	NSEventMulticastDispatcher mouseUpMulticastDispatcher;
-	NSEventMulticastDispatcher mouseDraggedMulticastDispatcher;
-	NSEventMulticastDispatcher rightMouseDownMulticastDispatcher;
-	NSEventMulticastDispatcher rightMouseUpMulticastDispatcher;
-	NSEventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
-	NSEventMulticastDispatcher otherMouseDownMulticastDispatcher;
-	NSEventMulticastDispatcher otherMouseUpMulticastDispatcher;
-	NSEventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
-	NSEventMulticastDispatcher mouseMovedMulticastDispatcher;
-	NSEventMulticastDispatcher mouseEnteredMulticastDispatcher;
-	NSEventMulticastDispatcher mouseExitedMulticastDispatcher;
-	NSEventMulticastDispatcher keyDownMulticastDispatcher;
-	NSEventMulticastDispatcher keyUpMulticastDispatcher;
-	NSEventMulticastDispatcher flagsChangedMulticastDispatcher;
-	NSEventMulticastDispatcher scrollWheelMulticastDispatcher;
-
-	VoidMulticastEventDispatcher viewDidMoveToWindowMulticastDispatcher;
-	VoidMulticastEventDispatcher viewDidMoveToSuperviewMulticastDispatcher;
-	VoidMulticastEventDispatcher viewDidLayoutMulticastDispatcher;
-	VoidMulticastEventDispatcher viewDidEndLiveResizeMulticastDispatcher;
+	MouseEvents mouseEvents;
+	KeyboardEvents keyboardEvents;
+	ViewStateEvents stateEvents;
 };
 
 }

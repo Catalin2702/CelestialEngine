@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -23,20 +23,20 @@
 namespace CE::Core::Window {
 
 void CocoaWindowEventHandler::DispatchCocoaWindowCreated() {
-	cocoaWindowCreatedMulticastDispatcher.Dispatch();
+	windowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() {
-	cocoaWindowInitializedMulticastDispatcher.Dispatch();
+	windowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() {
-	cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+	windowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
 }
 
 CocoaWindow::CocoaWindow() {
 	cocoaWindowEventDispatcher = std::make_unique<CocoaWindowEventHandler>();
-	cocoaWindowEventDispatcher->cocoaWindowCreatedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
 }
 
 CocoaWindow::~CocoaWindow() {
@@ -95,7 +95,7 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 
 void CocoaWindow::Init() {
 	_InitWindow();
-	cocoaWindowEventDispatcher->cocoaWindowInitializedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindow::_InitWindow() {
@@ -141,7 +141,7 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
-	cocoaWindowEventDispatcher->cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
 	if (_window) {
 		_window->close();
 		_window = nullptr;

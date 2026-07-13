@@ -295,23 +295,23 @@ void CocoaApplication::_SetViewEventCallbacks() {
 
 	const auto eventDispatcher = _context->metalContextEventDispatcher.get();
 
-	eventDispatcher->mouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
-	eventDispatcher->rightMouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
-	eventDispatcher->otherMouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->mouseEvents.mouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->mouseEvents.rightMouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
+	eventDispatcher->mouseEvents.otherMouseDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDown>(this));
 
-	eventDispatcher->mouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
-	eventDispatcher->rightMouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
-	eventDispatcher->otherMouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->mouseEvents.mouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->mouseEvents.rightMouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
+	eventDispatcher->mouseEvents.otherMouseUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonUp>(this));
 
-	eventDispatcher->mouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
-	eventDispatcher->rightMouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
-	eventDispatcher->otherMouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->mouseEvents.mouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->mouseEvents.rightMouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
+	eventDispatcher->mouseEvents.otherMouseDraggedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseButtonDragged>(this));
 
-	eventDispatcher->mouseMovedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseMoved>(this));
+	eventDispatcher->mouseEvents.mouseMovedMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnMouseMoved>(this));
 
-	eventDispatcher->keyDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyDown>(this));
+	eventDispatcher->keyboardEvents.keyDownMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyDown>(this));
 
-	eventDispatcher->keyUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyUp>(this));
+	eventDispatcher->keyboardEvents.keyUpMulticastDispatcher.Subscribe(NSEventDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnKeyUp>(this));
 }
 
 void CocoaApplication::_OnWindowWillClose(const NS::Notification*) {
