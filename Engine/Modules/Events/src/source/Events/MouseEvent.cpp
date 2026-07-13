@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Events/MouseEvent.hpp"
@@ -25,12 +25,12 @@ std::string MouseMovedEvent::ToString() const {
 	return ss.str();
 }
 
-MouseScrolledEvent::MouseScrolledEvent(const float xOffset, const float yOffset, const bool isMutable):
+MouseWheelScrolledEvent::MouseWheelScrolledEvent(const float xOffset, const float yOffset, const bool isMutable):
 	I_Event(isMutable), _xOffset(xOffset), _yOffset(yOffset) {}
 
-std::string MouseScrolledEvent::ToString() const {
+std::string MouseWheelScrolledEvent::ToString() const {
 	std::stringstream ss;
-	ss << "MouseScrolledEvent: " << _xOffset << ", " << _yOffset;
+	ss << "MouseWheelScrolledEvent: " << _xOffset << ", " << _yOffset;
 	return ss.str();
 }
 

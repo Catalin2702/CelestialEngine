@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -86,13 +86,13 @@ public:
 };
 
 /**
- * @class MouseScrolledEvent
+ * @class MouseWheelScrolledEvent
  * @brief Event triggered when the mouse scroll wheel is moved
  * @details Contains the scroll offset in both X and Y directions. Most mice only
  *			have vertical scrolling (Y offset), but some devices support horizontal
  *			scrolling (X offset) as well.
  */
-class CE_API MouseScrolledEvent final: public I_Event {
+class CE_API MouseWheelScrolledEvent final: public I_Event {
 public:
 	/**
 	 * @brief Constructor
@@ -101,7 +101,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse scrolled event with the specified scroll offsets
 	 */
-	MouseScrolledEvent(float xOffset, float yOffset, bool isMutable = true);
+	MouseWheelScrolledEvent(float xOffset, float yOffset, bool isMutable = true);
 
 	/**
 	 * @brief Gets the horizontal scroll offset
