@@ -1,10 +1,10 @@
 //
-// Module:
+// Module: CelestialEngine/Engine/Modules/Types/FileSystem
 // File: File.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-namespace CE::FileSystem {
+namespace CE::Types {
 
 enum class FileLoadState: uint8_t {
 	NotLoaded,

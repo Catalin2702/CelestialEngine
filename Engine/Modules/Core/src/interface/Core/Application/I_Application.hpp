@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -21,40 +21,23 @@
 
 namespace CE {
 namespace Events {
-class I_Event;
+	class I_Event;
 }
 
 namespace Core {
-namespace Layers {
-class I_Layer;
+	class I_Layer;
+	class I_Context;
+	class I_Window;
 }
-namespace Render::Context {
-class I_Context;
-}
-namespace Window {
-class I_Window;
-}
-}
-
 
 namespace Types {
-namespace Window {
-struct WindowProps;
-}
-namespace Render {
-enum class GraphicsApi: uint8_t;
-}
+	struct WindowProps;
+	enum class GraphicsApi: uint8_t;
 }
 
+}
 
-/**
- * @namespace CE::Core::Application
- * @brief Core application interface and related types
- * @details Contains the I_Application interface which defines the core application API for client applications.
- *			Defines the main application lifecycle methods, event handling, and layer management functions.
- *			Client applications should implement this interface and provide a factory function to create an instance of their application.
- */
-namespace Core::Application {
+namespace CE::Core {
 
 /**
  * @class I_Application
@@ -111,7 +94,7 @@ public:
 	 * @param layer Pointer to the layer to add
 	 * @details Layers are updated and receive events in the order they are pushed
 	 */
-	void PushLayer(Layers::I_Layer* layer);
+	void virtual PushLayer(I_Layer* layer);
 
 	/**
 	 * @brief Adds an overlay to the layer stack
@@ -119,7 +102,7 @@ public:
 	 * @details Overlays are rendered on top of regular layers and receive
 	 *			events before regular layers
 	 */
-	void PushOverlay(Layers::I_Layer* overlay);
+	void virtual PushOverlay(I_Layer* overlay);
 
 	/**
 	 * @brief Removes a layer from the layer stack
@@ -127,7 +110,7 @@ public:
 	 * @details Delegates to LayerStack::PopLayer, which removes the layer
 	 *			from the stack and calls its OnDetach method
 	 */
-	void PopLayer(Layers::I_Layer* layer);
+	void virtual PopLayer(I_Layer* layer);
 
 	/**
 	 * @brief Removes an overlay from the layer stack
@@ -135,7 +118,7 @@ public:
 	 * @details Delegates to LayerStack::PopOverlay, which removes the overlay
 	 *			from the stack and calls its OnDetach method
 	 */
-	void PopOverlay(Layers::I_Layer* overlay);
+	void virtual PopOverlay(I_Layer* overlay);
 
 protected:
 	/**
@@ -172,13 +155,13 @@ public:
 	 * @brief Gets the application's window
 	 * @return Window::I_Window* Pointer to the window
 	 */
-	[[nodiscard]] virtual Window::I_Window& GetWindow() const = 0;
+	[[nodiscard]] virtual I_Window& GetWindow() const = 0;
 
 	/**
 	 * @brief Gets the application's graphics context
 	 * @return Render::Context::I_Context* Pointer to the graphics context
 	 */
-	[[nodiscard]] virtual Render::Context::I_Context& GetRenderContext() const = 0;
+	[[nodiscard]] virtual I_Context& GetRenderContext() const = 0;
 
 	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
 
@@ -188,7 +171,7 @@ public:
 	 * @brief Sets the ImGui layer for the application
 	 * @param imguiLayer Pointer to the ImGui layer to set
 	 */
-	virtual void SetImGuiLayer(Layers::I_Layer* imguiLayer) = 0;
+	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
 
 	/**
 	 * @brief Removes the ImGui layer from the application
@@ -204,12 +187,10 @@ protected:
 	mutable std::atomic<TimePoint> _lastFrameTime = Clock::now(); ///< Timestamp of the last frame for delta time calculation
 
 	std::atomic<bool> _isRunning = false; ///< Flag indicating if the application is running
-	Layers::LayerStack _layerStack; ///< Stack of layers and overlays
+	LayerStack _layerStack; ///< Stack of layers and overlays
 };
 
 std::unique_ptr<I_Application> CreateApplication(int argc, const char* argv[]);
-
-}
 
 }
 

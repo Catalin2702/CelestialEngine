@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Input/Platforms/Common/Glfw
+// Module: CelestialEngine/Engine/Modules/Core/Input/Platforms/Common/Glfw
 // File: GlfwInput.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
@@ -16,21 +16,21 @@
 
 #include <GLFW/glfw3.h>
 
-namespace CE::Core::Input {
+namespace CE::Core {
 
-bool GlfwInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
+bool GlfwInput::_IsKeyPressedImpl(const Types::KeyboardKeyCode keyCode) {
 	if (not _window) {
 		_InitWindow();
 	}
-	const auto state = glfwGetKey(_window, KeyCode::GlfwKeyCodeFromKeyboard(keyCode));
+	const auto state = glfwGetKey(_window, Types::GlfwKeyCodeFromKeyboard(keyCode));
 	return state == GLFW_PRESS or state == GLFW_REPEAT;
 }
 
-bool GlfwInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode buttonCode) {
+bool GlfwInput::_IsMouseButtonPressedImpl(const Types::MouseButtonCode buttonCode) {
 	if (not _window) {
 		_InitWindow();
 	}
-	const auto state = glfwGetMouseButton(_window, KeyCode::GlfwKeyCodeFromMouseButton(buttonCode));
+	const auto state = glfwGetMouseButton(_window, Types::GlfwKeyCodeFromMouseButton(buttonCode));
 	return state == GLFW_PRESS;
 }
 
@@ -62,7 +62,7 @@ std::pair<float, float> GlfwInput::_GetMouseXYImpl() {
 }
 
 void GlfwInput::_InitWindow() {
-	const auto& window = Application::GlfwApplication::StGet().GetWindow();
+	const auto& window = GlfwApplication::StGet().GetWindow();
 	_window = static_cast<GLFWwindow*>(window.GetNativeWindow());
 }
 

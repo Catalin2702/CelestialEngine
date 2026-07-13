@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common/OpenGl
+// Module: CelestialEngine/Engine/Modules/Core/Layers/ImGui/Platforms/Common/OpenGl
 // File: ImGuiOpenGlLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUIOPENGLLAYER_HPP
-#define CE_LAYERS_IMGUIOPENGLLAYER_HPP
+#ifndef CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP
+#define CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -19,30 +19,12 @@
 #include <functional>
 #include <optional>
 
+namespace CE::Core {
+	class OpenGlContext;
+	class GlfwWindow;
+}
 
 namespace CE::Core {
-
-namespace Render::Context {
-class OpenGlContext;
-}
-
-namespace Window {
-class GlfwWindow;
-}
-
-}
-
-
-/**
- * @namespace CE::Core::Layers
- * @brief Layer system for organizing application logic into stackable components
- * @details Provides the ImGuiOpenGlLayer class, a concrete implementation of I_ImGuiLayer
- *			that integrates ImGui with OpenGL for rendering on Windows and Linux. This layer
- *			handles initialization, rendering, and input events specific to ImGui interactions
- *			in an OpenGL context. It caches pointers to the OpenGL window and GLFW window
- *			to optimize performance by avoiding repeated lookups every frame.
- */
-namespace CE::Core::Layers {
 
 /**
  * @class ImGuiOpenGlLayer
@@ -126,10 +108,10 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	std::optional<std::reference_wrapper<Render::Context::OpenGlContext>> _context; ///< Cached OpenGL context pointer
-	std::optional<std::reference_wrapper<Window::GlfwWindow>> _window; ///< Cached OpenGL window pointer
+	std::optional<std::reference_wrapper<OpenGlContext>> _context; ///< Cached OpenGL context pointer
+	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached OpenGL window pointer
 };
 
 }
 
-#endif //CE_LAYERS_IMGUIOPENGLLAYER_HPP
+#endif //CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP

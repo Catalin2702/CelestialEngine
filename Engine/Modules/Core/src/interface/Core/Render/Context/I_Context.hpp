@@ -1,31 +1,20 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Context
+// Module: CelestialEngine/Engine/Modules/Core/Render/Context
 // File: I_Context.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-25
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_CONTEXT_CONTEXT_HPP
-#define CE_RENDER_CONTEXT_CONTEXT_HPP
+#ifndef CE_CORE_RENDER_CONTEXT_CONTEXT_HPP
+#define CE_CORE_RENDER_CONTEXT_CONTEXT_HPP
 
 #include "Types/Render/Render.hpp"
 
-#include <utility>
-
-/**
- * @namespace CE::Core::Render::Context
- * @brief Graphics context management and interfaces
- * @details Contains the I_Context interface and related type definitions for graphics context management.
- *			This namespace defines the common interface for all graphics context implementations,
- *			allowing for platform-specific rendering contexts while maintaining a consistent API.
- *			Implementations include OpenGlContext for cross-platform OpenGL contexts and
- *			MetalContext for macOS Metal-based contexts.
- */
-namespace CE::Core::Render::Context {
+namespace CE::Core {
 
 /**
  * @class I_Context
@@ -63,9 +52,9 @@ public:
 	 * @details Pure virtual method that returns the graphics API type used by this context.
 	 *			This allows the application to query the context for its underlying graphics API, which can be useful for conditional rendering logic or debugging.
 	 */
-	[[nodiscard]] virtual Types::Render::GraphicsApi GetGraphicsApi() const = 0;
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicsApi() const = 0;
 };
 
 }
 
-#endif //CE_RENDER_CONTEXT_CONTEXT_HPP
+#endif //CE_CORE_RENDER_CONTEXT_CONTEXT_HPP

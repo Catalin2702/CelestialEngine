@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -28,29 +28,21 @@
 
 
 namespace CA {
-class DisplayLink;
+	class DisplayLink;
 }
 
 namespace NS {
-class Application;
-class Event;
-class Notification;
+	class Application;
+	class Event;
+	class Notification;
 }
 
-namespace CE {
-
-namespace Apple::Types {
-class DisplayLinkEventHandler;
+namespace CE::Core {
+	class I_Layer;
+	class ImGuiMetalLayer;
 }
 
-namespace Core::Layers {
-class I_Layer;
-class ImGuiMetalLayer;
-}
-
-}
-
-namespace CE::Core::Application {
+namespace CE::Core {
 
 /**
  * @class CocoaApplication
@@ -141,7 +133,7 @@ public:
 	 * @details Sets the ImGui layer for rendering UI. This method allows you to specify the ImGui layer that will be used for rendering the user interface.
 	 *			It must be an ImGuiMetalLayer or derived class that is compatible with the Metal rendering context used by the application.
 	 */
-	void SetImGuiLayer(Layers::I_Layer* imguiLayer) override;
+	void SetImGuiLayer(I_Layer* imguiLayer) override;
 
 	/**
 	 * @brief Removes the ImGui layer from the application
@@ -162,28 +154,28 @@ public:
      * @return Window::I_Window& Reference to the window
      * @details Provides access to the window for rendering operations. This method returns a reference to the window instance managed by the CocoaApplication, allowing other components to interact with the window as needed.
      */
-	[[nodiscard]] Window::I_Window& GetWindow() const override { return *_window; }
+	[[nodiscard]] I_Window& GetWindow() const override { return *_window; }
 
 	/**
 	 * @brief Gets the Cocoa-specific window
 	 * @return Window::CocoaWindow& Reference to the CocoaWindow
 	 * @details Provides access to the Cocoa-specific window for platform-specific operations. This method returns a reference to the CocoaWindow instance managed by the CocoaApplication, allowing other components to perform operations that are specific to the macOS platform.
 	 */
-	[[nodiscard]] Window::CocoaWindow& GetCocoaWindow() const { return *_window; }
+	[[nodiscard]] CocoaWindow& GetCocoaWindow() const { return *_window; }
 
 	/**
      * @brief Gets the rendering context
      * @return Render::Context::I_Context& Reference to the rendering context
      * @details Provides access to the rendering context for rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering using the Metal API.
      */
-	[[nodiscard]] Render::Context::I_Context& GetRenderContext() const override { return *_context; }
+	[[nodiscard]] I_Context& GetRenderContext() const override { return *_context; }
 
 	/**
 	 * @brief Gets the Metal-specific rendering context
 	 * @return Render::Context::MetalContext& Reference to the MetalContext
 	 * @details Provides access to the Metal-specific rendering context for platform-specific rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering operations that are specific to the Metal API on macOS.
 	 */
-	[[nodiscard]] Render::Context::MetalContext& GetMetalContext() const { return *_context; }
+	[[nodiscard]] MetalContext& GetMetalContext() const { return *_context; }
 
 	[[nodiscard]] static CocoaApplication& StGet() { return dynamic_cast<CocoaApplication&>(I_Application::StGet()); }
 
@@ -207,12 +199,12 @@ private:
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance
 
-	std::unique_ptr<Render::Context::MetalContext> _context = nullptr; ///< Pointer to the Metal rendering context
-	std::unique_ptr<Window::CocoaWindow> _window = nullptr; ///< Pointer to the application window
+	std::unique_ptr<MetalContext> _context = nullptr; ///< Pointer to the Metal rendering context
+	std::unique_ptr<CocoaWindow> _window = nullptr; ///< Pointer to the application window
 
-	Layers::ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
+	ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
 
-	NS::ApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
+	Native::ApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame

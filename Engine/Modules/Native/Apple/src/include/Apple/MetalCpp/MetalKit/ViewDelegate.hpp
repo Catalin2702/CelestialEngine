@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -19,17 +19,17 @@
 using ViewDelegateDrawInMtkViewCallback = std::function<void(MTK::View*)>;
 using ViewDelegateDrawableSizeWillChangeCallback = std::function<void(MTK::View*, CGSize)>;
 
-namespace MTK {
+namespace CE::Native {
 
-class ViewDelegate: public I_ViewDelegate {
+class ViewDelegate: public MTK::I_ViewDelegate {
 public:
 	ViewDelegate() = default;
 
 	~ViewDelegate() override = default;
 
 public:
-	void drawInMTKView(View* view) override;
-	void drawableSizeWillChange(View* view, CGSize size) override;
+	void drawInMTKView(MTK::View* view) override;
+	void drawableSizeWillChange(MTK::View* view, CGSize size) override;
 
 public:
 	void SetDrawInMtkViewCallback(ViewDelegateDrawInMtkViewCallback callback);

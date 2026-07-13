@@ -1,35 +1,33 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
+// Module: CelestialEngine/Engine/Modules/Core/Layers
 // File: I_ImGuiLayer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_I_IMGUILAYER_HPP
-#define CE_I_IMGUILAYER_HPP
+#ifndef CE_CORE_LAYERS_IMGUI_I_IMGUILAYER_HPP
+#define CE_CORE_LAYERS_IMGUI_I_IMGUILAYER_HPP
 
 #include "Core/Layers/I_Layer.hpp"
 
 namespace CE::Events {
+	class MouseMovedEvent;
+	class MouseScrolledEvent;
+	class MouseButtonPressedEvent;
+	class MouseButtonReleasedEvent;
 
-class MouseMovedEvent;
-class MouseScrolledEvent;
-class MouseButtonPressedEvent;
-class MouseButtonReleasedEvent;
+	class KeyPressedEvent;
+	class KeyReleasedEvent;
+	class KeyTypedEvent;
 
-class KeyPressedEvent;
-class KeyReleasedEvent;
-class KeyTypedEvent;
-
-class WindowResizeEvent;
-
+	class WindowResizeEvent;
 }
 
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 /**
  * @class I_ImGuiLayer
@@ -134,4 +132,4 @@ protected:
 
 }
 
-#endif //CE_I_IMGUILAYER_HPP
+#endif //CE_CORE_LAYERS_IMGUI_I_IMGUILAYER_HPP

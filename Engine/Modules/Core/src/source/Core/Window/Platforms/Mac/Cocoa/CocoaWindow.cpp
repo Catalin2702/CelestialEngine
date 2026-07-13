@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac/Cocoa
+// Module: CelestialEngine/Engine/Modules/Core/Window/Platforms/Mac/Cocoa
 // File: CocoaWindow.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
@@ -9,7 +9,6 @@
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
-#include "Events/ApplicationEvent.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Utility.hpp"
 
@@ -20,7 +19,7 @@
 #include <utility>
 
 
-namespace CE::Core::Window {
+namespace CE::Core {
 
 void CocoaWindowEventHandler::DispatchCocoaWindowCreated() {
 	windowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();

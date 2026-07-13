@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_IMGUIMETALLAYER_HPP
-#define CE_LAYERS_IMGUIMETALLAYER_HPP
+#ifndef CE_CORE_LAYERS_IMGUIMETALLAYER_HPP
+#define CE_CORE_LAYERS_IMGUIMETALLAYER_HPP
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
@@ -23,20 +23,16 @@
 #include <semaphore>
 
 namespace CA {
-
-class MetalDrawable;
-class MetalLayer;
-
+	class MetalDrawable;
+	class MetalLayer;
 }
 
 namespace MTL {
-class CommandBuffer;
-class RenderCommandEncoder;
-
+	class CommandBuffer;
+	class RenderCommandEncoder;
 }
 
-namespace CE::Core::Layers {
-
+namespace CE::Core {
 
 class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 
@@ -82,8 +78,8 @@ protected:
 	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	std::optional<std::reference_wrapper<Render::Context::MetalContext>> _context;	///< Cached Metal context for rendering
-	std::optional<std::reference_wrapper<Window::CocoaWindow>> _window;	///< Cached Cocoa window for event handling and context access
+	std::optional<std::reference_wrapper<MetalContext>> _context;	///< Cached Metal context for rendering
+	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for event handling and context access
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
@@ -91,4 +87,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_IMGUIMETALLAYER_HPP
+#endif //CE_CORE_LAYERS_IMGUIMETALLAYER_HPP

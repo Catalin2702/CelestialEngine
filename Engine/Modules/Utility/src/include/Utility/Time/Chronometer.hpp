@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -16,14 +16,7 @@
 
 #include <chrono>
 
-
-/**
- * @namespace CE::Utility::Time
- * @brief Timing utilities for performance measurement and profiling
- * @details Provides the Chronometer class, a RAII-style timing utility that automatically measures the duration of a code block. The timer starts on construction and stops on destruction,
- * 			printing the elapsed time. This is useful for profiling specific sections of code without manually starting and stopping timers. The Chronometer is only active in debug builds to avoid performance overhead in release builds.
- */
-namespace CE::Utility::Time {
+namespace CE::Utility {
 
 /**
  * @class Chronometer

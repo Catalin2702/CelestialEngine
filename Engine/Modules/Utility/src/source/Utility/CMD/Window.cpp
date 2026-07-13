@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #include "Utility/CMD/Window.hpp"
@@ -15,35 +15,20 @@
 
 #include <stdexcept>
 
+namespace CE::Utility {
 
-namespace CE::Utility::CMD {
-
-/**
- * @brief Parses command-line arguments to create window properties
- * @param argc Number of command-line arguments
- * @param argv Array of command-line argument strings
- * @return Types::Window::WindowProps Window configuration extracted from arguments
- * @details Parses command-line arguments for window configuration:
- *			- --title/-t "title" : Sets window title (default: "CelestialEngine")
- *			- --width/-w 1280 : Sets window width (default: 1280)
- *			- --height/-h 720 : Sets window height (default: 720)
- *			- --vsync/-v true/false : Enables/disables VSync (default: true)
- *			- --graphics-api/-g opengl/metal/vulkan/directx11/directx12 : Sets graphics API (default: opengl)
- *			Uses case-insensitive matching for argument names. Throws std::runtime_error
- *			if invalid values are provided for numeric parameters.
- */
-Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
+Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	std::string title = "CelestialEngine";
 	unsigned int width = 1280;
 	unsigned int height = 720;
 	auto VSync = true;
-	auto graphicsApi = Types::Render::GraphicsApi::OpenGL;
-	auto windowApi = Types::Window::WindowApi::GLFW;
+	auto graphicsApi = Types::GraphicsApi::OpenGL;
+	auto windowApi = Types::WindowApi::GLFW;
 
 	// Start from 1 to skip executable path
 	for (int i = 1; i < argc; ++i) {
 		// ReSharper disable once CppTooWideScopeInitStatement
-		const std::string arg = Manipulation::ToLowerCase(argv[i]);
+		const std::string arg = ToLowerCase(argv[i]);
 
 		if ((arg == "--title" or arg == "-t") and i + 1 < argc) {
 			title = argv[++i];
@@ -75,50 +60,50 @@ Types::Window::WindowProps GetWindowProps(const int argc, const char* argv[]){
 			}
 		}
 		else if ((arg == "--vsync" or arg == "-v") and i + 1 < argc) {
-			const std::string vsyncArg = Manipulation::ToLowerCase(argv[++i]);
+			const std::string vsyncArg = ToLowerCase(argv[++i]);
 			VSync = (vsyncArg == "true" || vsyncArg == "1");
 		}
 		else if ((arg == "--graphics-api" or arg == "-g") and i + 1 < argc) {
 			// ReSharper disable once CppTooWideScopeInitStatement
-			const std::string apiArg = Manipulation::ToLowerCase(argv[++i]);
+			const std::string apiArg = ToLowerCase(argv[++i]);
 			if (apiArg == "opengl") {
-				graphicsApi = Types::Render::GraphicsApi::OpenGL;
+				graphicsApi = Types::GraphicsApi::OpenGL;
 			}
 			else if (apiArg == "metal") {
-				graphicsApi = Types::Render::GraphicsApi::Metal;
+				graphicsApi = Types::GraphicsApi::Metal;
 			}
 			else if (apiArg == "vulkan") {
-				graphicsApi = Types::Render::GraphicsApi::Vulkan;
+				graphicsApi = Types::GraphicsApi::Vulkan;
 			}
 			else if (apiArg == "directx11" or apiArg == "dx11" or apiArg == "d3d11") {
-				graphicsApi = Types::Render::GraphicsApi::DirectX11;
+				graphicsApi = Types::GraphicsApi::DirectX11;
 			}
 			else if (apiArg == "directx12" or apiArg == "dx12" or apiArg == "d3d12") {
-				graphicsApi = Types::Render::GraphicsApi::DirectX12;
+				graphicsApi = Types::GraphicsApi::DirectX12;
 			}
 			else {
 				CE_CORE_WARN("Unsupported graphics API specified: ({0}). Defaulting to OpenGL.", argv[i]);
-				graphicsApi = Types::Render::GraphicsApi::OpenGL;
+				graphicsApi = Types::GraphicsApi::OpenGL;
 			}
 		}
 		else if ((arg == "--window-api" or arg == "-wa") and i + 1 < argc) {
 			// ReSharper disable once CppTooWideScopeInitStatement
-			const std::string apiArg = Manipulation::ToLowerCase(argv[++i]);
+			const std::string apiArg = ToLowerCase(argv[++i]);
 			if (apiArg == "glfw") {
-				windowApi = Types::Window::WindowApi::GLFW;
+				windowApi = Types::WindowApi::GLFW;
 			}
 			else if (apiArg == "win32") {
-				windowApi = Types::Window::WindowApi::Win32;
+				windowApi = Types::WindowApi::Win32;
 			}
 			else if (apiArg == "x11") {
-				windowApi = Types::Window::WindowApi::X11;
+				windowApi = Types::WindowApi::X11;
 			}
 			else if (apiArg == "cocoa") {
-				windowApi = Types::Window::WindowApi::Cocoa;
+				windowApi = Types::WindowApi::Cocoa;
 			}
 			else {
 				CE_CORE_WARN("Unsupported window API specified: ({0}). Defaulting to GLFW.", argv[i]);
-				windowApi = Types::Window::WindowApi::GLFW;
+				windowApi = Types::WindowApi::GLFW;
 			}
 		}
 		else {

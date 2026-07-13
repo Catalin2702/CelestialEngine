@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_EVENTS_EVENT_HPP
-#define CE_EVENTS_EVENT_HPP
+#ifndef CE_EVENTS_I_EVENT_HPP
+#define CE_EVENTS_I_EVENT_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Type.hpp"
@@ -19,19 +19,10 @@
 #include <ostream>
 #include <string>
 
-
-/**
- * @namespace CE::Events
- * @brief Event system for handling various types of events in the engine
- * @details Provides the I_Event interface and EventDispatcher class for defining
- *			and dispatching events. Events are categorized by type and category
- *			to allow for efficient filtering and handling by different layers
- *			and systems within the engine.
- */
 namespace CE::Events {
 
-class I_Event;
-class EventDispatcher;
+	class I_Event;
+	class EventDispatcher;
 
 /**
  * @enum EventType
@@ -228,4 +219,4 @@ inline std::string format_as(const I_Event& event) {
 
 }
 
-#endif //CE_EVENTS_EVENT_HPP
+#endif //CE_EVENTS_I_EVENT_HPP

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-07-13
 //
 
 #include "Tools/Log/Log.hpp"
@@ -13,7 +13,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
-namespace CE::Tools::Log {
+namespace CE::Tools {
 
 std::shared_ptr<spdlog::logger> Log::_s_coreLogger;
 std::shared_ptr<spdlog::logger> Log::_s_clientLogger;

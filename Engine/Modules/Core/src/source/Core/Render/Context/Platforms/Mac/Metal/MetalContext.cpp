@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Context
+// Module: CelestialEngine/Engine/Modules/Core/Render/Context/Platforms/Mac/Metal
 // File: MetalContext.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -18,7 +18,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace CE::Core::Render::Context {
+namespace CE::Core {
 
 void MetalContextEventDispatcher::DispatchMetalContextCreated() {
 	metalContextCreatedMulticastDispatcher.Dispatch();
@@ -61,7 +61,7 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
 
-	_shaderLibrary = std::make_unique<Shader::MetalShaderLibrary>(_device.get());
+	_shaderLibrary = std::make_unique<MetalShaderLibrary>(_device.get());
 
 	_CreateView();
 	_CreateDisplayLink();
@@ -89,7 +89,7 @@ void MetalContext::_CreateView() {
 	_view->setPaused(true);
 	_view->setEnableSetNeedsDisplay(false);
 
-	_viewDelegate = std::make_unique<MTK::ViewDelegate>();
+	_viewDelegate = std::make_unique<Native::ViewDelegate>();
 	_view->setDelegate(_viewDelegate.get());
 
 	_view->setEventDispatcher(metalContextEventDispatcher.get());
@@ -107,7 +107,7 @@ void MetalContext::_CreateDisplayLink() {
 		throw std::runtime_error("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
 	}
 
-	_displayLinkDelegate = std::make_unique<CA::MetalDisplayLinkDelegate>();
+	_displayLinkDelegate = std::make_unique<Native::MetalDisplayLinkDelegate>();
 	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateCallback(
 		[this](CA::MetalDisplayLink*, const CA::MetalDisplayLinkUpdate* update) {
 			// Publish the drawable vended by this update so AcquireDrawable() hands it to the renderer, then drive the

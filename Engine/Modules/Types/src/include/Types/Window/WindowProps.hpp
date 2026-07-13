@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-23
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -21,16 +21,10 @@
 
 
 namespace CE::Events {
-class Event;
+	class Event;
 }
 
-/**
- * @namespace CE::Types::Window
- * @brief Types and utilities related to window management
- * @details Contains type definitions and helper structures for managing windows,
- *			including properties for window creation and event handling.
- */
-namespace CE::Types::Window {
+namespace CE::Types {
 
 /**
  * @enum WindowApi
@@ -57,7 +51,7 @@ struct CE_API WindowProps {
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
 	bool VSync = false;								///< Vertical synchronization enabled/disabled
-	Render::GraphicsApi graphicsApi = Render::GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
+	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
 	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management (GLFW, Win32, X11, Cocoa)
 
 	/**
@@ -77,7 +71,7 @@ struct CE_API WindowProps {
 	 * @details Initializes the WindowProps structure with the provided values.
 	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
-	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, Render::GraphicsApi graphicsApi, WindowApi windowApi);
+	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
 };
 
 inline std::string format_as(const WindowApi& event) {
@@ -118,7 +112,7 @@ CE_API bool IsWindowApiSupported(const WindowApi& api);
  * @details This function checks if the given graphics API can be used with the given window API.
  *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
  */
-CE_API bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi);
+CE_API bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 

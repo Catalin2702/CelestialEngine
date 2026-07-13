@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -34,14 +34,14 @@
 int main(const int argc, const char* argv[]) {
 	int code = 0;
 
-	Log::Log::Init();
+	Tools::Log::Init();
 	{
 		try {
 #ifdef CE_DEBUG
-			Time::Chronometer chronometer;
+			Utility::Chronometer chronometer;
 #endif
-			FS::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
-			const auto app = Application::CreateApplication(argc, argv);
+			Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
+			const auto app = Core::CreateApplication(argc, argv);
 			app->Run();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
 			CE_CORE_ERROR("Runtime error: {0}", _err.what());
@@ -54,7 +54,7 @@ int main(const int argc, const char* argv[]) {
 			code = 1;
 		}
 	}
-	Log::Log::Shutdown();
+	Tools::Log::Shutdown();
 
 	return code;
 }

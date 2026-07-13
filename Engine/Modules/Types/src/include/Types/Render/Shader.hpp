@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -16,16 +16,9 @@
 
 #include <cstdint>
 
-/**
- * @namespace CE::Types::Render
- * @brief Contains type definitions related to rendering, including shader types and graphics APIs
- * @details This namespace encapsulates the various type definitions used in the rendering module of the engine.
- *			It includes enumerations for shader types (e.g., vertex, fragment) and graphics APIs (e.g., OpenGL, Metal).
- *			These types are used throughout the rendering system to ensure consistency and clarity when working with shaders and graphics contexts.
- */
-namespace CE::Types::Render {
+namespace CE::Types {
 
-enum class GraphicsApi: uint8_t;
+	enum class GraphicsApi: uint8_t;
 
 /**
  * @enum ShaderType

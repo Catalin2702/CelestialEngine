@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Context
+// Module: CelestialEngine/Engine/Modules/Core/Render/Context/Platforms/Common/OpenGl
 // File: OpenGlContext.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -17,7 +17,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace CE::Core::Render::Context {
+namespace CE::Core {
 
 OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {}
 
@@ -37,7 +37,7 @@ void OpenGlContext::Init() {
 	}
 }
 
-void OpenGlContext::SwapBuffers() {
+void OpenGlContext::SwapBuffers() const {
 	glfwSwapBuffers(_window);
 }
 
@@ -45,8 +45,8 @@ void OpenGlContext::SetViewport(const int x, const int y, const int width, const
 	glViewport(x, y, width, height);
 }
 
-void OpenGlContext::ClearBuffers(const Types::Render::BufferBit mask) {
-	glClear(Types::Render::ToInt(mask));
+void OpenGlContext::ClearBuffers(const Types::BufferBit mask) {
+	glClear(Types::ToInt(mask));
 }
 
 bool OpenGlContext::IsVSyncEnabled() const {

@@ -4,13 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-09
+// Updated: 2026-07-13
 //
 
 #include "Events/KeyEvent.hpp"
 
 #include <sstream>
-
 
 namespace CE::Events {
 

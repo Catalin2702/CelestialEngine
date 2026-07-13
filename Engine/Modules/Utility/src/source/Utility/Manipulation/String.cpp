@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #include "Utility/Manipulation/String.hpp"
 
 #include <algorithm>
 
-namespace CE::Utility::Manipulation {
+namespace CE::Utility {
 
 /**
  * @brief Converts a string to lowercase

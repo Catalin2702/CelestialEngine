@@ -1,31 +1,29 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Context
+// Module: CelestialEngine/Engine/Modules/Core/Render/Context/Platforms/Common/OpenGl
 // File: OpenGlContext.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
-#define CE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
+#ifndef CE_CORE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
+#define CE_CORE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
 
 #include "Core/Render/Context/I_Context.hpp"
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
 
-#include <utility>
-
 struct GLFWwindow;
 
-namespace CE::Types::Render {
-enum class BufferBit: uint32_t;
+namespace CE::Types {
+	enum class BufferBit: uint32_t;
 }
 
-namespace CE::Core::Render::Context {
+namespace CE::Core {
 
 /**
  * @class OpenGlContext
@@ -70,11 +68,11 @@ public:
 	 * @details Pure virtual method that handles buffer swapping to present the rendered frame on the screen.
 	 *			Must be implemented by derived classes to ensure proper presentation of rendered content.
 	 */
-	void SwapBuffers();
+	void SwapBuffers() const;
 
 	static void SetViewport(int x, int y, int width, int height);
 
-	static void ClearBuffers(Types::Render::BufferBit mask);
+	static void ClearBuffers(Types::BufferBit mask);
 
 public:
 	/**
@@ -92,4 +90,4 @@ private:
 
 }
 
-#endif //CE_RENDER_CONTEXT_OPENGLCONTEXT_HPP
+#endif //CE_CORE_RENDER_CONTEXT_OPENGLCONTEXT_HPP

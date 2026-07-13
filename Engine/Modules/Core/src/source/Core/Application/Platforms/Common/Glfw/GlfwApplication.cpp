@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/Application
+// Module: CelestialEngine/Engine/Modules/Core/Application/Platforms/Common/Glfw
 // File: GlfwApplication.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-02
+// Updated: 2026-07-13
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -13,7 +13,6 @@
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Tools/Log/Log.hpp"
@@ -27,15 +26,13 @@
 
 #include <cassert>
 
-namespace CE::Core::Application {
-
-namespace FS = Utility::FileSystem;
+namespace CE::Core {
 
 GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
 
-	SetRunning(false);
+	I_Application::SetRunning(false);
 }
 
 GlfwApplication::~GlfwApplication() {
@@ -60,7 +57,7 @@ void GlfwApplication::Run() {
 }
 
 void GlfwApplication::Quit() {
-	Input::ShutdownInput();
+	ShutdownInput();
 	SetRunning(false);
 }
 
@@ -69,7 +66,7 @@ void GlfwApplication::Tick(const float deltaTime) {
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
 	assert(_shaderProgram && "GlfwApplication::Tick: Vertex shader must be initialized before ticking application");
 
-	Render::Context::OpenGlContext::ClearBuffers(Types::Render::BufferBit::Color);
+	OpenGlContext::ClearBuffers(Types::BufferBit::Color);
 
 	_shaderProgram->Bind();
 	glBindVertexArray(_vertexArrayId);
@@ -129,7 +126,7 @@ void GlfwApplication::InitImGuiLayer() {
 	assert(_context && "GlfwApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
 	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
-	auto overlay = std::make_unique<Layers::ImGuiOpenGlLayer>();
+	auto overlay = std::make_unique<ImGuiOpenGlLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
 }
@@ -138,22 +135,22 @@ void GlfwApplication::_InitWindow() {
 	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
-	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
 		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
 	}
 
-	_window = std::make_unique<Window::GlfwWindow>();
-	_window->SetEventCallback(BIND_FN_ONE_PARAM(GlfwApplication::OnEvent));
+	_window = std::make_unique<GlfwWindow>();
+	// _window->SetEventCallback(BIND_FN_ONE_PARAM(GlfwApplication::OnEvent));
 
-	Input::InitInput(windowProps.windowApi);
+	InitInput(windowProps.windowApi);
 }
 
 void GlfwApplication::_InitRenderer() {
 	assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
 	assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
 
-	_context = std::make_unique<Render::Context::OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+	_context = std::make_unique<OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
 	_context->Init();
 
 	glGenVertexArrays(1, &_vertexArrayId);
@@ -179,12 +176,12 @@ void GlfwApplication::_InitRenderer() {
 	constexpr unsigned int indices[3] = { 0, 1, 2 };
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	std::array<std::unique_ptr<Render::Shader::I_Shader>, 2> shaders{
-		std::make_unique<Render::Shader::OpenGlShader>(FS::FileSystem::StLoad("../Resources/Shaders/OpenGL/Vertex.glsl"), Types::Render::ShaderType::Vertex),
-		std::make_unique<Render::Shader::OpenGlShader>(FS::FileSystem::StLoad("../Resources/Shaders/OpenGL/Fragment.glsl"), Types::Render::ShaderType::Fragment)
+	std::array<std::unique_ptr<I_Shader>, 2> shaders{
+		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad("../Resources/Shaders/OpenGL/Vertex.glsl"), Types::ShaderType::Vertex),
+		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad("../Resources/Shaders/OpenGL/Fragment.glsl"), Types::ShaderType::Fragment)
 	};
 
-	_shaderProgram = std::make_unique<Render::Shader::OpenGlShaderProgram>(
+	_shaderProgram = std::make_unique<OpenGlShaderProgram>(
 		std::initializer_list{
 			shaders[0].release(),
 			shaders[1].release()
@@ -193,13 +190,13 @@ void GlfwApplication::_InitRenderer() {
 	_shaderProgram->Link();
 }
 
-void GlfwApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
+void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 	if (not imguiLayer) {
 		CE_CORE_WARN("GlfwApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto openGlLayer = dynamic_cast<Layers::ImGuiOpenGlLayer*>(imguiLayer)) {
+	if (const auto openGlLayer = dynamic_cast<ImGuiOpenGlLayer*>(imguiLayer)) {
 		if (_imguiLayer) {
 			PopOverlay(_imguiLayer);
 			_imguiLayer = nullptr;
@@ -222,11 +219,11 @@ void GlfwApplication::RemoveImGuiLayer() {
 	_imguiLayer = nullptr;
 }
 
-Window::I_Window& GlfwApplication::GetWindow() const {
+I_Window& GlfwApplication::GetWindow() const {
 	return *_window;
 }
 
-Render::Context::I_Context& GlfwApplication::GetRenderContext() const {
+I_Context& GlfwApplication::GetRenderContext() const {
 	return *_context;
 }
 

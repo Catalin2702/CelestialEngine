@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Input/Platforms/Mac/Cocoa
+// Module: CelestialEngine/Engine/Input/Core/Platforms/Mac/Cocoa
 // File: CocoaInput.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
@@ -15,19 +15,18 @@
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
+namespace CE::Core {
 
-namespace CE::Core::Input {
-
-bool CocoaInput::_IsKeyPressedImpl(const KeyCode::KeyboardKeyCode keyCode) {
+bool CocoaInput::_IsKeyPressedImpl(const Types::KeyboardKeyCode keyCode) {
 	// Convert CE keycode to macOS virtual key code and check state
-	const auto cocoaKeyCode = KeyCode::CocoaKeyCodeFromKeyboard(keyCode);
-	return Apple::Bridge::IsKeyPressed(cocoaKeyCode);
+	const auto cocoaKeyCode = Types::CocoaKeyCodeFromKeyboard(keyCode);
+	return Native::IsKeyPressed(cocoaKeyCode);
 }
 
-bool CocoaInput::_IsMouseButtonPressedImpl(const KeyCode::MouseButtonCode buttonCode) {
+bool CocoaInput::_IsMouseButtonPressedImpl(const Types::MouseButtonCode buttonCode) {
 	// Convert CE mouse button code to Cocoa button number
-	const auto cocoaButton = KeyCode::CocoaButtonNumberFromMouseButton(buttonCode);
-	return Apple::Bridge::IsMouseButtonPressed(cocoaButton);
+	const auto cocoaButton = Types::CocoaButtonNumberFromMouseButton(buttonCode);
+	return Native::IsMouseButtonPressed(cocoaButton);
 }
 
 float CocoaInput::_GetMouseXImpl() {
@@ -36,7 +35,7 @@ float CocoaInput::_GetMouseXImpl() {
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_window, &x, &y);
+	Native::GetMousePosition(_window, &x, &y);
 	return x;
 }
 
@@ -46,7 +45,7 @@ float CocoaInput::_GetMouseYImpl() {
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_window, &x, &y);
+	Native::GetMousePosition(_window, &x, &y);
 	return y;
 }
 
@@ -56,13 +55,13 @@ std::pair<float, float> CocoaInput::_GetMouseXYImpl() {
 	}
 
 	float x = 0.0f, y = 0.0f;
-	Apple::Bridge::GetMousePosition(_window, &x, &y);
+	Native::GetMousePosition(_window, &x, &y);
 	return {x, y};
 }
 
 void CocoaInput::_InitWindow() {
-	const auto& window = Application::CocoaApplication::StGet().GetWindow();
-	const auto& cocoaWindow = dynamic_cast<const Window::CocoaWindow&>(window);
+	const auto& window = CocoaApplication::StGet().GetWindow();
+	const auto& cocoaWindow = dynamic_cast<const CocoaWindow&>(window);
 	_window = cocoaWindow.GetWindow();
 }
 

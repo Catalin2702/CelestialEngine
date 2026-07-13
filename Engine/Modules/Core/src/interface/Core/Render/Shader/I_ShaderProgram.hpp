@@ -1,28 +1,20 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader
 // File: I_ShaderProgram.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_SHADER_I_SHADERPROGRAM_HPP
-#define CE_RENDER_SHADER_I_SHADERPROGRAM_HPP
+#ifndef CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP
+#define CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP
 
 #include <cstdint>
 
-/**
- * @namespace CE::Core::Render::Shader
- * @brief Shader management and interfaces
- * @details Contains the I_ShaderProgram interface and related type definitions for shader program management.
- *			This namespace defines the common interface for all shader program implementations,
- *			allowing for platform-specific shader program handling while maintaining a consistent API.
- *			Implementations include OpenGlShaderProgram for OpenGL shader programs and MetalShaderProgram for Metal-based shader programs.
- */
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 class I_Shader;
 
@@ -101,4 +93,4 @@ public:
 
 }
 
-#endif //CE_RENDER_SHADER_I_SHADERPROGRAM_HPP
+#endif //CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP

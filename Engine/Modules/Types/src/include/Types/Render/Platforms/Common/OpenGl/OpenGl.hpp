@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-24
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-namespace CE::Types::Render {
+namespace CE::Types {
 
 enum class BufferBit: uint32_t {
 	Color = 0x00004000,		///< GL_COLOR_BUFFER_BIT

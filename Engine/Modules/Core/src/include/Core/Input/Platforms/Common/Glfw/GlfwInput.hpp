@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Input/Platforms/Common/Glfw
+// Module: CelestialEngine/Engine/Modules/Core/Input/Platforms/Common/Glfw
 // File: GlfwInput.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_INPUT_COMMON_GLFWINPUT_HPP
-#define CE_INPUT_COMMON_GLFWINPUT_HPP
+#ifndef CE_CORE_INPUT_COMMON_GLFWINPUT_HPP
+#define CE_CORE_INPUT_COMMON_GLFWINPUT_HPP
 
 #include "Core/Input/I_Input.hpp"
 
@@ -20,8 +20,7 @@
 
 struct GLFWwindow;
 
-
-namespace CE::Core::Input {
+namespace CE::Core {
 
 /**
  * @class GlfwInput
@@ -33,8 +32,8 @@ namespace CE::Core::Input {
  */
 class CE_API GlfwInput final: public I_Input {
 protected:
-	[[nodiscard]] bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) override;
-	[[nodiscard]] bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) override;
+	[[nodiscard]] bool _IsKeyPressedImpl(Types::KeyboardKeyCode keyCode) override;
+	[[nodiscard]] bool _IsMouseButtonPressedImpl(Types::MouseButtonCode buttonCode) override;
 	[[nodiscard]] float _GetMouseXImpl() override;
 	[[nodiscard]] float _GetMouseYImpl() override;
 	[[nodiscard]] std::pair<float, float> _GetMouseXYImpl() override;
@@ -48,4 +47,4 @@ private:
 
 }
 
-#endif //CE_INPUT_COMMON_GLFWINPUT_HPP
+#endif //CE_CORE_INPUT_COMMON_GLFWINPUT_HPP

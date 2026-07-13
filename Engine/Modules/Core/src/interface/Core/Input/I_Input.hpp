@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Input
+// Module: CelestialEngine/Engine/Modules/Core/Input
 // File: I_Input.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_INPUT_I_INPUT_HPP
-#define CE_INPUT_I_INPUT_HPP
+#ifndef CE_CORE_INPUT_I_INPUT_HPP
+#define CE_CORE_INPUT_I_INPUT_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -19,13 +19,7 @@
 
 #include <utility>
 
-
-/**
- * @namespace CE::Core::Input
- * @brief Input handling module for processing user input events
- * @details
- */
-namespace CE::Core::Input {
+namespace CE::Core {
 
 /**
  * @class I_Input
@@ -33,7 +27,7 @@ namespace CE::Core::Input {
  * @details Provides a platform-agnostic interface for querying input states such as keyboard keys and mouse buttons. This class is designed to be inherited by platform-specific implementations (e.g., MetalInput for macOS). It uses the singleton pattern to allow static access to input queries throughout the application without needing to pass around an instance.
  */
 class CE_API I_Input {
-	friend void InitInput(Types::Window::WindowApi windowApi);
+	friend void InitInput(Types::WindowApi windowApi);
 	friend void ShutdownInput();
 public:
 	/**
@@ -52,7 +46,7 @@ public:
 	 *			the singleton instance to perform the actual check. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static bool IsKeyPressed(KeyCode::KeyboardKeyCode keyCode);
+	static bool IsKeyPressed(Types::KeyboardKeyCode keyCode);
 	/**
 	 * @brief Checks if a specific mouse button is currently pressed
 	 * @param buttonCode The button code of the mouse button to check
@@ -61,7 +55,7 @@ public:
 	*			method is static and relies on the singleton instance to perform the check. If the instance is not initialized,
 	 *			it crashes.
 	 */
-	static bool IsMouseButtonPressed(KeyCode::MouseButtonCode buttonCode);
+	static bool IsMouseButtonPressed(Types::MouseButtonCode buttonCode);
 	/**
 	 * @brief Gets the current X position of the mouse cursor
 	 * @return float The X coordinate of the mouse cursor
@@ -102,14 +96,14 @@ protected:
 	 * @return bool True if the key is pressed, false otherwise
 	 * @details Pure virtual method that must be implemented by derived classes to provide platform-specific key press checking logic.
 	 */
-	[[nodiscard]] virtual bool _IsKeyPressedImpl(KeyCode::KeyboardKeyCode keyCode) = 0;
+	[[nodiscard]] virtual bool _IsKeyPressedImpl(Types::KeyboardKeyCode keyCode) = 0;
 	/**
 	 * @brief Implementation of mouse button press check
 	 * @param buttonCode The button code of the mouse button to check
 	 * @return bool True if the mouse button is pressed, false otherwise
 	 * @details Pure virtual method that must be implemented by derived classes to provide platform-specific mouse button press checking logic.
 	 */
-	[[nodiscard]] virtual bool _IsMouseButtonPressedImpl(KeyCode::MouseButtonCode buttonCode) = 0;
+	[[nodiscard]] virtual bool _IsMouseButtonPressedImpl(Types::MouseButtonCode buttonCode) = 0;
 	/**
 	 * @brief Implementation of mouse X position retrieval
 	 * @return float The X coordinate of the mouse cursor
@@ -133,9 +127,9 @@ private:
 	static I_Input* _instance;						///< Singleton instance of the I_Input class
 };
 
-void InitInput(Types::Window::WindowApi windowApi);
+void InitInput(Types::WindowApi windowApi);
 void ShutdownInput();
 
 }
 
-#endif //CE_INPUT_I_INPUT_HPP
+#endif //CE_CORE_INPUT_I_INPUT_HPP

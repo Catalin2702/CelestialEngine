@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_LOG_LOG_HPP
-#define CE_LOG_LOG_HPP
+#ifndef CE_TOOLS_LOG_LOG_HPP
+#define CE_TOOLS_LOG_LOG_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Log.hpp"
@@ -20,14 +20,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <spdlog/fmt/ostr.h>
 
-/**
- * @namespace CE::Tools::Log
- * @brief Logging system for the engine and client applications
- * @details Provides static loggers for both the engine core and client applications.
- *			Built on top of spdlog for high-performance logging with formatting support.
- *			Must be initialized with Init() before use and terminated with Terminate() on shutdown.
- */
-namespace CE::Tools::Log {
+namespace CE::Tools {
 
 /**
  * @class Log
@@ -76,4 +69,4 @@ private:
 
 }
 
-#endif //CE_LOG_LOG_HPP
+#endif //CE_TOOLS_LOG_LOG_HPP

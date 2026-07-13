@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShaderProgram.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -15,7 +15,7 @@
 
 #include <memory>
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 OpenGlShaderProgram::OpenGlShaderProgram() {
 	_programId = glCreateProgram();

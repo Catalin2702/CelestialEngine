@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core
+// Module: CelestialEngine/Engine/Modules/Core/Application
 // File: ApplicationImpl.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-23
+// Updated: 2026-07-13
 //
 
 #include "Core/Application/I_Application.hpp"
@@ -12,7 +12,7 @@
 #include <cassert>
 
 
-namespace CE::Core::Application {
+namespace CE::Core {
 
 std::atomic<I_Application*> I_Application::_stInstance = nullptr;
 
@@ -20,22 +20,22 @@ I_Application::~I_Application() {
 	_stInstance = nullptr;
 }
 
-void I_Application::PushLayer(Layers::I_Layer* layer) {
+void I_Application::PushLayer(I_Layer* layer) {
 	assert(layer != nullptr && "I_Application::PushLayer: Cannot push a null layer");
 	_layerStack.PushLayer(layer);
 }
 
-void I_Application::PushOverlay(Layers::I_Layer* overlay) {
+void I_Application::PushOverlay(I_Layer* overlay) {
 	assert(overlay != nullptr && "I_Application::PushOverlay: Cannot push a null overlay");
 	_layerStack.PushOverlay(overlay);
 }
 
-void I_Application::PopLayer(Layers::I_Layer* layer) {
+void I_Application::PopLayer(I_Layer* layer) {
 	assert(layer != nullptr && "I_Application::PopLayer: Cannot pop a null layer");
 	_layerStack.PopLayer(layer);
 }
 
-void I_Application::PopOverlay(Layers::I_Layer* overlay) {
+void I_Application::PopOverlay(I_Layer* overlay) {
 	assert(overlay != nullptr && "I_Application::PopOverlay: Cannot pop a null overlay");
 	_layerStack.PopOverlay(overlay);
 }

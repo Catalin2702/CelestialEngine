@@ -1,31 +1,32 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader/Platforms/Common/OpenGl
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShader.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_SHADER_OPENGLSHADER_HPP
-#define CE_RENDER_SHADER_OPENGLSHADER_HPP
+#ifndef CE_CORE_RENDER_SHADER_OPENGLSHADER_HPP
+#define CE_CORE_RENDER_SHADER_OPENGLSHADER_HPP
 
 #include "Define/DynamicLinker.hpp"
+
 #include "Core/Render/Shader/I_Shader.hpp"
 
 namespace CE {
-namespace Types::Render {
-enum class ShaderType: uint8_t;
+namespace Types {
+	enum class ShaderType: uint8_t;
 }
 
-namespace Utility::FileSystem {
-class File;
+namespace Utility {
+	class File;
 }
 }
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 /**
  * @class OpenGlShader
@@ -41,7 +42,7 @@ public:
 	 * @param type Type of the shader (e.g., vertex, fragment) specified by the ShaderType enum
 	 * @details Compiles the provided shader source code and creates an OpenGL shader object. The shader is compiled based on the specified type, and any compilation errors are logged and result in an exception being thrown.
 	 */
-	OpenGlShader(const char* shader, Types::Render::ShaderType type);
+	OpenGlShader(const char* shader, Types::ShaderType type);
 
 	/**
 	 * @brief Constructs an OpenGlShader from a file containing shader source code
@@ -49,7 +50,7 @@ public:
 	 * @param type Type of the shader (e.g., vertex, fragment) specified by the ShaderType enum
 	 * @details Loads the shader source code from the provided File object, compiles it, and creates an OpenGL shader object. The shader is compiled based on the specified type, and any compilation errors are logged and result in an exception being thrown. If the file cannot be read or loaded, an exception is also thrown.
 	 */
-	OpenGlShader(const Utility::FileSystem::File& file, Types::Render::ShaderType type);
+	OpenGlShader(const Utility::File& file, Types::ShaderType type);
 
 	/**
 	 * @brief Copy constructor (deleted)
@@ -87,13 +88,13 @@ public:
 
 public:
 	[[nodiscard]] uint32_t GetShaderId() const override;
-	[[nodiscard]] Types::Render::ShaderType GetType() const override;
+	[[nodiscard]] Types::ShaderType GetType() const override;
 
 private:
 	uint32_t _shaderId;
-	Types::Render::ShaderType _type;
+	Types::ShaderType _type;
 };
 
 }
 
-#endif //CE_RENDER_SHADER_OPENGLSHADER_HPP
+#endif //CE_CORE_RENDER_SHADER_OPENGLSHADER_HPP

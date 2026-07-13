@@ -1,17 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
+// Module: CelestialEngine/Engine/Modules/Core/Layers
 // File: LayerStack.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-07-13
 //
 
 #include "Core/Layers/LayerStack.hpp"
 #include "Core/Layers/I_Layer.hpp"
 
-
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 /**
  * @brief LayerStack constructor implementation

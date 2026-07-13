@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -12,14 +12,7 @@
 #ifndef CE_NATIVE_APPLE_BRIDGE_APPKIT_WINDOW_WINDOWBRIDGE_H
 #define CE_NATIVE_APPLE_BRIDGE_APPKIT_WINDOW_WINDOWBRIDGE_H
 
-/**
- * @namespace CE::Apple::Bridge
- * @brief Bridge functions for integrating Metal with Cocoa windows
- * @details Provides C++ functions to interact with Objective-C/Cocoa APIs for setting up
- *			Metal rendering in GLFW windows on macOS. These functions handle the conversion
- *			between C++ and Objective-C objects.
- */
-namespace CE::Apple::Bridge {
+namespace CE::Native {
 /**
  * @brief Checks if a keyboard key is currently pressed
  * @param keyCode Virtual key code (macOS virtual key code)

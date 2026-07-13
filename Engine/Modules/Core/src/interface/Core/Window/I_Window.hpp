@@ -1,20 +1,19 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window
+// Module: CelestialEngine/Engine/Core/Modules/Window
 // File: I_Window.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_WINDOW_I_WINDOW_HPP
-#define CE_WINDOW_I_WINDOW_HPP
+#ifndef CE_CORE_WINDOW_I_WINDOW_HPP
+#define CE_CORE_WINDOW_I_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
-#include "Utility/Callback/Callback.hpp"
 
 #include <utility>
 
@@ -23,14 +22,7 @@ class I_Event;
 class WindowResizeEvent;
 }
 
-/**
- * @namespace CE::Core::Window
- * @brief Window management and window interfaces
- * @details Contains the I_Window interface and related type definitions for window management.
- *			This namespace defines the common interface for all window implementations,
- *			allowing for platform-specific implementations while maintaining a consistent API.
- */
-namespace CE::Core::Window {
+namespace CE::Core {
 
 /**
  * @class I_Window
@@ -109,7 +101,7 @@ public:
 	 * @return Types::Window::WindowApi Enum value representing the window API
 	 * @details Returns the specific window API type used by this window implementation (e.g., OpenGL, Metal, Cocoa). This can be used for platform-specific handling or optimizations.
 	 */
-	[[nodiscard]] virtual Types::Window::WindowApi GetWindowApi() const = 0;
+	[[nodiscard]] virtual Types::WindowApi GetWindowApi() const = 0;
 
 public:
 	/**
@@ -171,4 +163,4 @@ protected:
 
 }
 
-#endif //CE_WINDOW_I_WINDOW_HPP
+#endif //CE_CORE_WINDOW_I_WINDOW_HPP

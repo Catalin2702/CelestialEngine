@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Mac/Cocoa
+// Module: CelestialEngine/Engine/Modules/Core/Window/Platforms/Mac/Cocoa
 // File: CocoaWindow.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_WINDOW_MAC_COCOAWINDOW_HPP
-#define CE_WINDOW_MAC_COCOAWINDOW_HPP
+#ifndef CE_CORE_WINDOW_MAC_COCOAWINDOW_HPP
+#define CE_CORE_WINDOW_MAC_COCOAWINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
@@ -26,36 +26,27 @@
 #include <utility>
 
 namespace CA {
-class MetalLayer;
+	class MetalLayer;
 }
 
 namespace MTK {
-class View;
+	class View;
 }
 
 namespace MTL {
-class CommandQueue;
-class Device;
+	class CommandQueue;
+	class Device;
 }
 
 namespace NS {
-class Notification;
-class Screen;
-class Window;
+	class Notification;
+	class Screen;
+	class Window;
 }
 
-/**
- * @namespace CE::Core::Window
- * @brief Window management and window interfaces
- * @details Contains the I_Window interface and related type definitions for window management.
- *			This namespace defines the common interface for all window implementations,
- *			allowing for platform-specific implementations while maintaining a consistent API.
- *			The CocoaWindow class provides a macOS-specific implementation of the I_Window interface using Metal for rendering and Cocoa for window management,
- *			offering a native experience for applications targeting macOS with Metal.
- */
-namespace CE::Core::Window {
+namespace CE::Core {
 
-class CocoaWindowEventHandler: public NS::WindowEventDispatcher {
+class CocoaWindowEventHandler: public Native::WindowEventDispatcher {
 	struct WindowStateEvents {
 		VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
 		VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
@@ -170,4 +161,4 @@ private:
 
 }
 
-#endif //CE_WINDOW_MAC_COCOAWINDOW_HPP
+#endif //CE_CORE_WINDOW_MAC_COCOAWINDOW_HPP

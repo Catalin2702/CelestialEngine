@@ -1,30 +1,22 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers
+// Module: CelestialEngine/Engine/Modules/Core/Layers
 // File: I_Layer.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-29
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_I_LAYER_HPP
-#define CE_LAYERS_I_LAYER_HPP
+#ifndef CE_CORE_LAYERS_I_LAYER_HPP
+#define CE_CORE_LAYERS_I_LAYER_HPP
 
 #include "Define/DynamicLinker.hpp"
-// ReSharper disable once CppUnusedIncludeDirective
+
 #include "Events/I_Event.hpp"
 
-
-/**
- * @namespace CE::Core::Layers
- * @brief Layer system for organizing application logic into stackable components
- * @details Provides the I_Layer interface for defining application layers that can handle events,
- *			update logic, and rendering. Layers are managed in a stack and can be added or removed
- *			dynamically during the application's lifecycle.
- */
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 /**
  * @class I_Layer
@@ -121,4 +113,4 @@ protected:
 
 }
 
-#endif //CE_LAYERS_I_LAYER_HPP
+#endif //CE_CORE_LAYERS_I_LAYER_HPP

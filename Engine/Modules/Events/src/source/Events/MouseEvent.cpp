@@ -4,13 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Events/MouseEvent.hpp"
 
 #include <sstream>
-
 
 namespace CE::Events {
 
@@ -35,10 +34,10 @@ std::string MouseScrolledEvent::ToString() const {
 	return ss.str();
 }
 
-I_MouseButtonEvent::I_MouseButtonEvent(const KeyCode::MouseButtonCode button, const bool isMutable):
+I_MouseButtonEvent::I_MouseButtonEvent(const Types::MouseButtonCode button, const bool isMutable):
 	I_Event(isMutable), _button(button) {}
 
-MouseButtonPressedEvent::MouseButtonPressedEvent(const KeyCode::MouseButtonCode button, const bool isMutable):
+MouseButtonPressedEvent::MouseButtonPressedEvent(const Types::MouseButtonCode button, const bool isMutable):
 	I_MouseButtonEvent(button, isMutable) {}
 
 std::string MouseButtonPressedEvent::ToString() const {
@@ -47,7 +46,7 @@ std::string MouseButtonPressedEvent::ToString() const {
 	return ss.str();
 }
 
-MouseButtonReleasedEvent::MouseButtonReleasedEvent(const KeyCode::MouseButtonCode button, const bool isMutable):
+MouseButtonReleasedEvent::MouseButtonReleasedEvent(const Types::MouseButtonCode button, const bool isMutable):
 	I_MouseButtonEvent(button, isMutable) {}
 
 std::string MouseButtonReleasedEvent::ToString() const {
@@ -56,7 +55,7 @@ std::string MouseButtonReleasedEvent::ToString() const {
 	return ss.str();
 }
 
-MouseDraggedEvent::MouseDraggedEvent(const KeyCode::MouseButtonCode button, const float x, const float y, const bool isMutable):
+MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const float x, const float y, const bool isMutable):
 	I_MouseMovedEvent(x, y, isMutable), _button(button)  {}
 
 std::string MouseDraggedEvent::ToString() const {

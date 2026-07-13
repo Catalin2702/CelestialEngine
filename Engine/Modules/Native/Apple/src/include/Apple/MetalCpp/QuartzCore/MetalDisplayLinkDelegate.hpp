@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -18,16 +18,16 @@
 
 using MetalDisplayLinkDelegateNeedsUpdateCallback = std::function<void(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*)>;
 
-namespace CA {
+namespace CE::Native {
 
-class MetalDisplayLinkDelegate: public I_MetalDisplayLinkDelegate {
+class MetalDisplayLinkDelegate: public CA::I_MetalDisplayLinkDelegate {
 public:
 	MetalDisplayLinkDelegate() = default;
 
 	~MetalDisplayLinkDelegate() override = default;
 
 public:
-	void metalDisplayLinkNeedsUpdate(MetalDisplayLink* metalDisplayLink, MetalDisplayLinkUpdate* metalDisplayLinkUpdate) override;
+	void metalDisplayLinkNeedsUpdate(CA::MetalDisplayLink* metalDisplayLink, CA::MetalDisplayLinkUpdate* metalDisplayLinkUpdate) override;
 
 public:
 	void SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkDelegateNeedsUpdateCallback callback);

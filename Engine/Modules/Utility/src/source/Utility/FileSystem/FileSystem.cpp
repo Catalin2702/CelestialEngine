@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -17,7 +17,7 @@
 #include <fstream>
 #include <vector>
 
-namespace CE::Utility::FileSystem {
+namespace CE::Utility {
 
 fs::path FileSystem::_rootDirectory = fs::current_path();
 
@@ -43,13 +43,13 @@ File FileSystem::StCreate(const fs::path& path, const std::string& content, cons
 		throw std::runtime_error(errorMessage);
 	}
 
-	File file(path, CE::FileSystem::FileLoadState::Loaded, autoSave);
+	File file(path, Types::FileLoadState::Loaded, autoSave);
 	file.SetContent(content);
 	return file;
 }
 
 File FileSystem::StNew(const fs::path& path, const std::string& content, const bool autoSave) {
-	File file(path, CE::FileSystem::FileLoadState::Loaded, autoSave);
+	File file(path, Types::FileLoadState::Loaded, autoSave);
 	file.SetContent(content);
 	return file;
 }
@@ -74,7 +74,7 @@ File FileSystem::StLoad(const fs::path& path, const bool autoSave) {
 		std::istreambuf_iterator<char>{}
 	);
 
-	File file(path, CE::FileSystem::FileLoadState::Loaded, autoSave);
+	File file(path, Types::FileLoadState::Loaded, autoSave);
 	file.SetContent(std::move(bytes));
 	return file;
 }

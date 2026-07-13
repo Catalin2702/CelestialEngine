@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/Application
+// Module: CelestialEngine/Engine/Modules/Core/Application/Platforms/Common/Glfw
 // File: GlfwApplication.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -15,32 +15,17 @@
 #include "Core/Application/I_Application.hpp"
 #include "Define/DynamicLinker.hpp"
 
-#include <chrono>
 #include <memory>
 
+namespace CE::Core {
+	class OpenGlContext;
+	class OpenGlShaderProgram;
+	class I_Layer;
+	class ImGuiOpenGlLayer;
+	class GlfwWindow;
+}
 
 namespace CE::Core {
-namespace Render {
-namespace Context {
-class I_Context;
-class OpenGlContext;
-}
-namespace Shader {
-class OpenGlShaderProgram;
-}
-}
-namespace Layers {
-class I_Layer;
-class ImGuiOpenGlLayer;
-}
-namespace Window {
-class I_Window;
-class GlfwWindow;
-}
-}
-
-
-namespace CE::Core::Application {
 
 /**
  * @class GlfwApplication
@@ -129,7 +114,7 @@ public:
 	 * @details Sets the ImGui layer for rendering UI. This method allows you to specify the ImGui layer that will be used for rendering the user interface.
 	 *			It must be an ImGuiOpenGlLayer or derived class that is compatible with the OpenGL rendering context used by the application.
 	 */
-	void SetImGuiLayer(Layers::I_Layer* imguiLayer) override;
+	void SetImGuiLayer(I_Layer* imguiLayer) override;
 
 	/**
 	 * @brief Removes the ImGui layer from the application
@@ -158,21 +143,21 @@ public:
 	 * @return Reference to the application window
 	 * @details Returns a reference to the application window, which can be used for various operations such as event handling and rendering.
 	 */
-	[[nodiscard]] Window::I_Window& GetWindow() const override;
+	[[nodiscard]] I_Window& GetWindow() const override;
 
 	/**
 	* @brief Gets the rendering context
 	* @return Render::Context::I_Context& Reference to the rendering context
 	 * @details Returns a reference to the application renderer context, which can be used for rendering operations and managing graphics resources.
 	 */
-	Render::Context::I_Context& GetRenderContext() const override;
+	I_Context& GetRenderContext() const override;
 
 private:
-	std::unique_ptr<Render::Context::OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
-	std::unique_ptr<Render::Shader::OpenGlShaderProgram> _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
-	std::unique_ptr<Window::GlfwWindow> _window; ///< Pointer to the GLFW window
+	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
+	std::unique_ptr<OpenGlShaderProgram> _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
+	std::unique_ptr<GlfwWindow> _window; ///< Pointer to the GLFW window
 
-	Layers::ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
+	ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 
 	uint32_t _vertexArrayId = 0, _vertexBufferId = 0, _indexBufferId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
 };

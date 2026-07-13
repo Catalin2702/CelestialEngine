@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -19,15 +19,7 @@
 #include <ostream>
 #include <string>
 
-
-/**
- * @namespace CE::KeyCode
- * @brief Contains definitions and utilities for mouse button codes
- * @details This namespace encapsulates the MouseButtonCode enum and related functions for handling mouse input within the engine.
- *			It provides a standardized set of mouse button codes that can be used across different modules, ensuring consistency in input handling.
- *			The namespace also includes functions to convert between MouseButtonCode values and their string representations, as well as mappings to and from GLFW mouse button codes for seamless integration with GLFW's input system.
- */
-namespace CE::KeyCode {
+namespace CE::Types {
 
 /**
  * @brief Enumeration of mouse button codes

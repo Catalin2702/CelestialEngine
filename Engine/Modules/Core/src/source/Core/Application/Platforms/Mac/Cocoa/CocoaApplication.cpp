@@ -20,8 +20,8 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Utility/Callback/Dispatcher.hpp"
 #include "Utility/Config/Config.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
 #include <AppKit/AppKit.hpp>
 
@@ -29,12 +29,12 @@
 #include <stdexcept>
 
 
-namespace CE::Core::Application {
+namespace CE::Core {
 
 static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
 dispatch_semaphore_t _inFlightSemaphore = dispatch_semaphore_create(MAX_FRAMES_IN_FLIGHT);
 
-static std::pair<float, float> MouseLocationTopLeft(const Render::Context::MetalContext* context, const Window::CocoaWindow* window, const NS::Event* event) {
+static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
 	if (not (event and context and context->GetView()))
 		return {0.0f, 0.0f};
 
@@ -62,7 +62,7 @@ CocoaApplication::~CocoaApplication() {
 	if (IsRunning())
 		CocoaApplication::Quit();
 
-	Input::ShutdownInput();
+	ShutdownInput();
 
 	if (_loopThread.joinable()) {
 		_loopThread.join();
@@ -147,21 +147,21 @@ void CocoaApplication::Init() {
 
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
-	if (not Types::Window::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		CE_CORE_ERROR("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
 		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
 	}
 
-	_context = std::make_unique<Render::Context::MetalContext>();
+	_context = std::make_unique<MetalContext>();
 	_context->Init();
 
-	_window = std::make_unique<Window::CocoaWindow>();
+	_window = std::make_unique<CocoaWindow>();
 	_window->Init();
 
 	// Attach the render context's MetalKit view to the window and wire it into the engine.
 	_window->SetContentView(_context->GetView());
 
-	Input::InitInput(windowProps.windowApi);
+	InitInput(windowProps.windowApi);
 
 	_BindWindowCallbacks();
 	_SetWindowCallbacks();
@@ -189,13 +189,13 @@ void CocoaApplication::Init() {
 	renderPipelineDescriptor->release();
 }
 
-void CocoaApplication::SetImGuiLayer(Layers::I_Layer* imguiLayer) {
+void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 	if (not imguiLayer){
 		CE_WARN("CocoaApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto metalLayer = dynamic_cast<Layers::ImGuiMetalLayer*>(imguiLayer)) {
+	if (const auto metalLayer = dynamic_cast<ImGuiMetalLayer*>(imguiLayer)) {
 		if (_imguiLayer) {
 			PopOverlay(_imguiLayer);
 			_imguiLayer = nullptr;
@@ -250,7 +250,7 @@ void CocoaApplication::InitImGuiLayer() {
 	assert(_context && "CocoaApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
 	assert(not _imguiLayer && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
-	auto overlay = std::make_unique<Layers::ImGuiMetalLayer>();
+	auto overlay = std::make_unique<ImGuiMetalLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
 }
@@ -259,8 +259,8 @@ void CocoaApplication::_BindWindowCallbacks() const {
 	assert(_window && "CocoaApplication::_BindWindowCallbacks: Window must be initialized before binding callbacks");
 	assert(_context && "CocoaApplication::_BindWindowCallbacks: Render context must be initialized before binding callbacks");
 
-	// _window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleContentSizeChange));
-	// _window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &Render::Context::MetalContext::HandleVSyncChange));
+	// _window->SetContentScaleCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &MetalContext::HandleContentSizeChange));
+	// _window->SetVSyncCallback(BIND_FN_ONE_PARAM_ON(_context.get(), &MetalContext::HandleVSyncChange));
 }
 
 void CocoaApplication::_SetWindowCallbacks() {
@@ -326,7 +326,7 @@ void CocoaApplication::_OnMouseButtonDown(const NS::Event* event) {
 	if (not event)
 		return;
 
-	Events::MouseButtonPressedEvent mouseButtonPressedEvent{KeyCode::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
+	Events::MouseButtonPressedEvent mouseButtonPressedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
 	DispatchEventToLayers(mouseButtonPressedEvent);
 }
 
@@ -334,7 +334,7 @@ void CocoaApplication::_OnMouseButtonUp(const NS::Event* event) {
 	if (not event)
 		return;
 
-	Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{KeyCode::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
+	Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
 	DispatchEventToLayers(mouseButtonReleasedEvent);
 }
 
@@ -344,7 +344,7 @@ void CocoaApplication::_OnMouseButtonDragged(const NS::Event* event) {
 
 	const auto buttonCode = event->buttonNumber();
 	const auto [x, y] = MouseLocationTopLeft(_context.get(), _window.get(), event);
-	Events::MouseDraggedEvent mouseDraggedEvent{static_cast<KeyCode::MouseButtonCode>(buttonCode), x, y};
+	Events::MouseDraggedEvent mouseDraggedEvent{static_cast<Types::MouseButtonCode>(buttonCode), x, y};
 	DispatchEventToLayers(mouseDraggedEvent);
 }
 
@@ -361,7 +361,7 @@ void CocoaApplication::_OnKeyDown(const NS::Event* event) {
 	if (not event)
 		return;
 
-	Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode()), 0};
+	Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode()), 0};
 	DispatchEventToLayers(keyPressedEvent);
 
 	if (const auto* characters = event->characters(); characters and characters->length() > 0) {
@@ -375,7 +375,7 @@ void CocoaApplication::_OnKeyUp(const NS::Event* event) {
 	if (not event)
 		return;
 
-	Events::KeyReleasedEvent e{KeyCode::KeyboardKeyCodeFromCocoa(event->keyCode())};
+	Events::KeyReleasedEvent e{Types::KeyboardKeyCodeFromCocoa(event->keyCode())};
 	DispatchEventToLayers(e);
 }
 

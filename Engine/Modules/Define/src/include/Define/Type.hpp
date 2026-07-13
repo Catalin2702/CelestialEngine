@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -27,6 +27,6 @@
  *				EventCategoryInput = BIT(1)
  *			};
  */
-#define BIT(x) (1 << x)
+#define BIT(x) (1 << (x))
 
 #endif //CE_DEFINE_TYPE_HPP

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -48,8 +48,8 @@
 	 * @details Logs trace-level messages from the engine core. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CORE_TRACE(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CoreLogger is not initialized");\
-		CE::Tools::Log::Log::GetCoreLogger()->trace(__VA_ARGS__)
+	#define CE_CORE_TRACE(...) assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");\
+		CE::Tools::Log::GetCoreLogger()->trace(__VA_ARGS__)
 
 	/**
 	 * @brief Core engine info logging macro
@@ -57,8 +57,8 @@
 	 * @details Logs info-level messages from the engine core. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CORE_INFO(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CoreLogger is not initialized");\
-		CE::Tools::Log::Log::GetCoreLogger()->info(__VA_ARGS__)
+	#define CE_CORE_INFO(...) assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");\
+		CE::Tools::Log::GetCoreLogger()->info(__VA_ARGS__)
 
 	/**
 	 * @brief Client application trace logging macro
@@ -66,8 +66,8 @@
 	 * @details Logs trace-level messages from the client application. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_TRACE(...) assert(CE::Tools::Log::Log::GetClientLogger() && "ClientLogger is not initialized");\
-		CE::Tools::Log::Log::GetClientLogger()->trace(__VA_ARGS__)
+	#define CE_TRACE(...) assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");\
+		CE::Tools::Log::GetClientLogger()->trace(__VA_ARGS__)
 
 	/**
 	 * @brief Client application info logging macro
@@ -75,8 +75,8 @@
 	 * @details Logs info-level messages from the client application. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_INFO(...) assert(CE::Tools::Log::Log::GetClientLogger() && "ClientLogger is not initialized");\
-		CE::Tools::Log::Log::GetClientLogger()->info(__VA_ARGS__)
+	#define CE_INFO(...) assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");\
+		CE::Tools::Log::GetClientLogger()->info(__VA_ARGS__)
 #endif
 
 // Warning, Error, and Critical logging macros - disabled only in Dist builds
@@ -129,8 +129,8 @@
 	 * @details Logs warning-level messages from the engine core. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CORE_WARN(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CoreLogger is not initialized");\
-	CE::Tools::Log::Log::GetCoreLogger()->warn(__VA_ARGS__)
+	#define CE_CORE_WARN(...) assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");\
+	CE::Tools::Log::GetCoreLogger()->warn(__VA_ARGS__)
 
 	/**
 	 * @brief Core engine error logging macro
@@ -138,8 +138,8 @@
 	 * @details Logs error-level messages from the engine core. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CORE_ERROR(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CoreLogger is not initialized");\
-	CE::Tools::Log::Log::GetCoreLogger()->error(__VA_ARGS__)
+	#define CE_CORE_ERROR(...) assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");\
+	CE::Tools::Log::GetCoreLogger()->error(__VA_ARGS__)
 
 	/**
 	 * @brief Core engine critical logging macro
@@ -147,8 +147,8 @@
 	 * @details Logs critical-level messages from the engine core. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CORE_CRITICAL(...) assert(CE::Tools::Log::Log::GetCoreLogger() && "CoreLogger is not initialized");\
-	CE::Tools::Log::Log::GetCoreLogger()->critical(__VA_ARGS__)
+	#define CE_CORE_CRITICAL(...) assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");\
+	CE::Tools::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 	/**
 	 * @brief Client application warning logging macro
@@ -156,8 +156,8 @@
 	 * @details Logs warning-level messages from the client application. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_WARN(...) assert(CE::Tools::Log::Log::GetClientLogger() && "ClientLogger is not initialized");\
-	CE::Tools::Log::Log::GetClientLogger()->warn(__VA_ARGS__)
+	#define CE_WARN(...) assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");\
+	CE::Tools::Log::GetClientLogger()->warn(__VA_ARGS__)
 
 	/**
 	 * @brief Client application error logging macro
@@ -165,8 +165,8 @@
 	 * @details Logs error-level messages from the client application. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_ERROR(...) assert(CE::Tools::Log::Log::GetClientLogger() && "ClientLogger is not initialized");\
-	CE::Tools::Log::Log::GetClientLogger()->error(__VA_ARGS__)
+	#define CE_ERROR(...) assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");\
+	CE::Tools::Log::GetClientLogger()->error(__VA_ARGS__)
 
 	/**
 	 * @brief Client application critical logging macro
@@ -174,8 +174,8 @@
 	 * @details Logs critical-level messages from the client application. Includes assertion check
 	 *			to ensure logger is initialized.
 	 */
-	#define CE_CRITICAL(...) assert(CE::Tools::Log::Log::GetClientLogger() && "ClientLogger is not initialized");\
-	CE::Tools::Log::Log::GetClientLogger()->critical(__VA_ARGS__)
+	#define CE_CRITICAL(...) assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");\
+	CE::Tools::Log::GetClientLogger()->critical(__VA_ARGS__)
 #endif
 
 #endif //CE_DEFINE_LOG_HPP

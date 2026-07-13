@@ -1,36 +1,29 @@
 //
-// Module: CelestialEngine/Engine/Modules/Window/Platforms/Common/Glfw
+// Module: CelestialEngine/Engine/Modules/Core/Window/Platforms/Common/Glfw
 // File: GlfwWindow.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_WINDOW_COMMON_GLFWWINDOW_HPP
-#define CE_WINDOW_COMMON_GLFWWINDOW_HPP
+#ifndef CE_CORE_WINDOW_COMMON_GLFWWINDOW_HPP
+#define CE_CORE_WINDOW_COMMON_GLFWWINDOW_HPP
 
 #include "Core/Window/I_Window.hpp"
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
-#include "Types/Window/WindowDestructor.hpp"
 #include "Types/Window/WindowProps.hpp"
+#include "Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
 
 #include <utility>
 
 struct GLFWwindow;
 
-/**
- * @namespace CE::Core::Window
- * @brief Window management and window implementations
- * @details Contains the I_Window interface and concrete implementations for different platforms.
- *			The OpenGLWindow class provides a cross-platform implementation using OpenGL and GLFW,
- *			while the MetalWindow class provides a macOS-specific implementation using Metal.
- */
-namespace CE::Core::Window {
+namespace CE::Core {
 
 /**
  * @class GlfwWindow
@@ -180,7 +173,7 @@ public:
 	WINDOW_API_TYPE(GLFW)
 
 private:
-	Types::Window::GLFWwindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
+	Types::GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
 };
 
 }

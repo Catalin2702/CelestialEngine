@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #include "Utility/ImGui/ImGui.hpp"
 
 #include <GLFW/glfw3.h>
 
-namespace CE::Utility::ImGui {
+namespace CE::Utility {
 
 /**
  * @brief Converts GLFW key code to ImGui key code

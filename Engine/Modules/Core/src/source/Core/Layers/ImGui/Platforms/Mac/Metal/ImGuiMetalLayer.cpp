@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Mac/Metal
+// Module: CelestialEngine/Engine/Modules/Core/Layers/ImGui/Platforms/Mac/Metal
 // File: ImGuiMetalLayer.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -24,7 +24,7 @@
 
 #include <imgui.h>
 
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _context(std::nullopt), _window(std::nullopt) {
 }
@@ -51,7 +51,7 @@ void ImGuiMetalLayer::OnRender() const {
 	static bool show = true;
 	ImGui::ShowDemoWindow(&show);
 
-	_frameContext.renderCommandEncoder->setRenderPipelineState(Application::CocoaApplication::StGet().defaultRenderPipelineState);
+	_frameContext.renderCommandEncoder->setRenderPipelineState(CocoaApplication::StGet().defaultRenderPipelineState);
 
 	_frameContext.renderCommandEncoder->drawPrimitives(
 		MTL::PrimitiveType::PrimitiveTypeTriangle,
@@ -116,7 +116,7 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
-	Apple::Bridge::ImGuiMetalNewFrame(renderPassDescriptor.get());
+	Native::ImGuiMetalNewFrame(renderPassDescriptor.get());
 
 	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
 
@@ -129,7 +129,7 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Apple::Bridge::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
+	Native::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
@@ -154,13 +154,13 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		const auto& app = Application::CocoaApplication::StGet();
+		const auto& app = CocoaApplication::StGet();
 
 		_window = app.GetCocoaWindow();
 
 		_context = app.GetMetalContext();
 
-		Apple::Bridge::ImGuiMetalInit(_context->get().GetDevice());
+		Native::ImGuiMetalInit(_context->get().GetDevice());
 
 		// Input is delivered exclusively through the engine event system: the MetalContext view dispatcher translates
 		// native events and they reach this layer via OnEvent(). The ImGui OSX platform backend is deliberately NOT
@@ -188,7 +188,7 @@ void ImGuiMetalLayer::_Shutdown() {
 		return;
 	_initialized = false;
 
-	Apple::Bridge::ImGuiMetalShutdown();
+	Native::ImGuiMetalShutdown();
 	ImGui::DestroyContext();
 }
 
@@ -207,7 +207,7 @@ bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const 
 }
 
 bool ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
 
@@ -217,7 +217,7 @@ bool ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& eve
 }
 
 bool ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
 
@@ -227,7 +227,7 @@ bool ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& e
 }
 
 bool ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 
@@ -237,7 +237,7 @@ bool ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 }
 
 bool ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 

@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader/Platforms/Mac/Metal
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Mac/Metal
 // File: MetalShaderLibrary.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_SHADER_METALSHADERLIBRARY_HPP
-#define CE_RENDER_SHADER_METALSHADERLIBRARY_HPP
+#ifndef CE_CORE_RENDER_SHADER_METALSHADERLIBRARY_HPP
+#define CE_CORE_RENDER_SHADER_METALSHADERLIBRARY_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -20,12 +20,12 @@
 #include <unordered_map>
 
 namespace MTL {
-class Device;
-class Function;
-class Library;
+	class Device;
+	class Function;
+	class Library;
 }
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 struct ShaderProgram {
 	MTL::Function* vertexFunction = nullptr;
@@ -68,4 +68,4 @@ private:
 
 }
 
-#endif //CE_RENDER_SHADER_METALSHADERLIBRARY_HPP
+#endif //CE_CORE_RENDER_SHADER_METALSHADERLIBRARY_HPP

@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Layers/ImGui/Platforms/Common/OpenGl
+// Module: CelestialEngine/Engine/Modules/Core/Layers/ImGui/Platforms/Common/OpenGl
 // File: ImGuiOpenGlLayer.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -26,8 +26,7 @@
 
 #include <stdexcept>
 
-
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 static int _st_imGuiOpenGlLayerCount = 0;
 
@@ -109,7 +108,7 @@ void ImGuiOpenGlLayer::End() {
 
 	const auto [width, height] = _window->get().GetFrameSize();
 
-	Render::Context::OpenGlContext::SetViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
+	OpenGlContext::SetViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -133,15 +132,15 @@ void ImGuiOpenGlLayer::_Init() {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-	const auto& app = Core::Application::GlfwApplication::StGet();
+	const auto& app = GlfwApplication::StGet();
 
-	_window = dynamic_cast<Window::GlfwWindow&>(app.GetWindow());
+	_window = dynamic_cast<GlfwWindow&>(app.GetWindow());
 	if (not _window) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 	}
 
-	_context = dynamic_cast<Render::Context::OpenGlContext&>(app.GetRenderContext());
+	_context = dynamic_cast<OpenGlContext&>(app.GetRenderContext());
 	if (not _context) {
 		CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
 		throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
@@ -201,7 +200,7 @@ bool ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const
 }
 
 bool ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
 
@@ -211,7 +210,7 @@ bool ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 }
 
 bool ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = KeyCode::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
 		return false;
 
@@ -221,7 +220,7 @@ bool ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& 
 }
 
 bool ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 
@@ -231,7 +230,7 @@ bool ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 }
 
 bool ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const auto key = KeyCode::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
 		return false;
 

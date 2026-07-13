@@ -14,14 +14,14 @@
 
 #include <AppKit/AppKit.hpp>
 
-#include "Utility/Callback/Dispatcher.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
 using NSEventDelegate = EventDelegate<const NS::Event*>;
 using NSEventMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Event*>;
 
-namespace NS {
+namespace CE::Native {
 
-class ViewEventDispatcher: public I_ViewEventDispatcher {
+class ViewEventDispatcher: public NS::I_ViewEventDispatcher {
 public:
 	struct MouseEvents {
 		NSEventMulticastDispatcher mouseDownMulticastDispatcher;
@@ -58,23 +58,23 @@ public:
 	~ViewEventDispatcher() override = default;
 
 public:
-	void DispatchMouseDown(Event* event) override;
-	void DispatchMouseUp(Event* event) override;
-	void DispatchMouseDragged(Event* event) override;
-	void DispatchRightMouseDown(Event* event) override;
-	void DispatchRightMouseUp(Event* event) override;
-	void DispatchRightMouseDragged(Event* event) override;
-	void DispatchOtherMouseDown(Event* event) override;
-	void DispatchOtherMouseUp(Event* event) override;
-	void DispatchOtherMouseDragged(Event* event) override;
-	void DispatchMouseMoved(Event* event) override;
-	void DispatchMouseEntered(Event* event) override;
-	void DispatchMouseExited(Event* event) override;
-	void DispatchScrollWheel(Event* event) override;
+	void DispatchMouseDown(NS::Event* event) override;
+	void DispatchMouseUp(NS::Event* event) override;
+	void DispatchMouseDragged(NS::Event* event) override;
+	void DispatchRightMouseDown(NS::Event* event) override;
+	void DispatchRightMouseUp(NS::Event* event) override;
+	void DispatchRightMouseDragged(NS::Event* event) override;
+	void DispatchOtherMouseDown(NS::Event* event) override;
+	void DispatchOtherMouseUp(NS::Event* event) override;
+	void DispatchOtherMouseDragged(NS::Event* event) override;
+	void DispatchMouseMoved(NS::Event* event) override;
+	void DispatchMouseEntered(NS::Event* event) override;
+	void DispatchMouseExited(NS::Event* event) override;
+	void DispatchScrollWheel(NS::Event* event) override;
 
-	void DispatchKeyDown(Event* event) override;
-	void DispatchKeyUp(Event* event) override;
-	void DispatchFlagsChanged(Event* event) override;
+	void DispatchKeyDown(NS::Event* event) override;
+	void DispatchKeyUp(NS::Event* event) override;
+	void DispatchFlagsChanged(NS::Event* event) override;
 
 	void DispatchViewDidMoveToWindow() override;
 	void DispatchViewDidMoveToSuperview() override;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -15,12 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
-/**
- * @namespace CE::Utility::CMD
- * @brief Command-line argument parsing utilities
- * @details Provides functions to parse command-line arguments and extract configuration
- */
-namespace CE::Utility::CMD {
+namespace CE::Utility {
 
 /**
  * @brief Parses command-line arguments to create window properties
@@ -36,7 +31,7 @@ namespace CE::Utility::CMD {
  *			Returns default window properties if no arguments are provided or if
  *			parsing fails. Uses case-insensitive matching for argument names.
  */
-CE_API Types::Window::WindowProps GetWindowProps(int argc, const char* argv[]);
+CE_API Types::WindowProps GetWindowProps(int argc, const char* argv[]);
 
 }
 

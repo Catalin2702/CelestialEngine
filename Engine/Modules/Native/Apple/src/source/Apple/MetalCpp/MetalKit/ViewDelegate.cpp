@@ -4,21 +4,21 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Apple/MetalCpp/MetalKit/ViewDelegate.hpp"
 
 #include <utility>
 
-namespace MTK {
+namespace CE::Native {
 
-void ViewDelegate::drawInMTKView(View* view) {
+void ViewDelegate::drawInMTKView(MTK::View* view) {
 	if (_drawInMtkViewCallback)
 		_drawInMtkViewCallback(view);
 }
 
-void ViewDelegate::drawableSizeWillChange(View* view, CGSize size) {
+void ViewDelegate::drawableSizeWillChange(MTK::View* view, CGSize size) {
 	if (_drawableSizeWillChangeCallback)
 		_drawableSizeWillChangeCallback(view, size);
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-21
+// Updated: 2026-07-13
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -12,8 +12,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <GLFW/glfw3.h>
 
-
-namespace CE::KeyCode {
+namespace CE::Types {
 
 const char* ToString(const MouseButtonCode buttonCode) {
 	switch (buttonCode) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #include "Types/Render/Shader.hpp"
@@ -13,7 +13,7 @@
 
 #include "Types/Render/Render.hpp"
 
-namespace CE::Types::Render {
+namespace CE::Types {
 
 const char* ToString(const ShaderType type) {
 	switch (type) {

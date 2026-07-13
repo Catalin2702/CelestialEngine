@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Input/
+// Module: CelestialEngine/Engine/Core/Input/
 // File: InputImpl.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-07-13
 //
 
 #include "Core/Input/I_Input.hpp"
@@ -19,16 +19,15 @@
 
 #include <cassert>
 
-
-namespace CE::Core::Input {
+namespace CE::Core {
 
 I_Input* I_Input::_instance = nullptr;
 
-bool I_Input::IsKeyPressed(const KeyCode::KeyboardKeyCode keyCode) {
+bool I_Input::IsKeyPressed(const Types::KeyboardKeyCode keyCode) {
 	return _instance->_IsKeyPressedImpl(keyCode);
 }
 
-bool I_Input::IsMouseButtonPressed(const KeyCode::MouseButtonCode buttonCode) {
+bool I_Input::IsMouseButtonPressed(const Types::MouseButtonCode buttonCode) {
 	return _instance->_IsMouseButtonPressedImpl(buttonCode);
 }
 
@@ -49,14 +48,14 @@ I_Input* I_Input::Get() {
 	return _instance;
 }
 
-void InitInput(const Types::Window::WindowApi windowApi) {
+void InitInput(const Types::WindowApi windowApi) {
 	if (I_Input::_instance) {
 		return;
 	}
-	if (windowApi == Types::Window::WindowApi::GLFW)
+	if (windowApi == Types::WindowApi::GLFW)
 		I_Input::_instance = new GlfwInput();
 #ifdef CE_PLATFORM_MACOS
-	if (windowApi == Types::Window::WindowApi::Cocoa)
+	if (windowApi == Types::WindowApi::Cocoa)
 		I_Input::_instance = new CocoaInput();
 #endif
 }

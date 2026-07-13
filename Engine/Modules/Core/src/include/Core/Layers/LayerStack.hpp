@@ -4,27 +4,19 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_LAYERS_LAYERSTACK_HPP
-#define CE_LAYERS_LAYERSTACK_HPP
+#ifndef CE_CORE_LAYERS_LAYERSTACK_HPP
+#define CE_CORE_LAYERS_LAYERSTACK_HPP
 
 #include <Define/DynamicLinker.hpp>
 
 #include <vector>
 
-/**
- * @namespace CE::Core::Layers
- * @brief Layer system for organizing application logic into stackable components
- * @details Provides the LayerStack class for managing a collection of layers and overlays.
- *			The LayerStack allows adding and removing layers dynamically, and ensures that
- *			layers are updated and rendered in the correct order. Regular layers are inserted
- *			before overlays, allowing overlays to receive events first.
- */
-namespace CE::Core::Layers {
+namespace CE::Core {
 
 class I_Layer;
 
@@ -122,4 +114,4 @@ private:
 
 }
 
-#endif //CE_LAYERS_LAYERSTACK_HPP
+#endif //CE_CORE_LAYERS_LAYERSTACK_HPP

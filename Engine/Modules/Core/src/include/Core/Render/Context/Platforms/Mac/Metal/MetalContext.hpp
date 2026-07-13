@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Context
+// Module: CelestialEngine/Engine/Modules/Core/Render/Context/Platforms/Mac/Metal
 // File: MetalContext.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_CONTEXT_METALCONTEXT_HPP
-#define CE_RENDER_CONTEXT_METALCONTEXT_HPP
+#ifndef CE_CORE_RENDER_CONTEXT_METALCONTEXT_HPP
+#define CE_CORE_RENDER_CONTEXT_METALCONTEXT_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-
 namespace MTL {
 	class CommandQueue;
 	class Device;
@@ -42,17 +41,15 @@ namespace CA {
 	class MetalDisplayLink;
 }
 
-namespace CE::Core::Window {
-	class CocoaWindow;
-}
+namespace CE::Core {
 
-namespace CE::Core::Render::Context {
+	class CocoaWindow;
 
 struct CE_API MetalContextProps {
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 };
 
-class MetalContextEventDispatcher: public NS::ViewEventDispatcher {
+class MetalContextEventDispatcher: public Native::ViewEventDispatcher {
 public:
 	void DispatchMetalContextCreated();
 	void DispatchMetalContextInitialized();
@@ -131,7 +128,7 @@ public:
 	 * @return const Shader::MetalShaderLibrary& Reference to the MetalShaderLibrary used for managing shaders
 	 * @details Returns a reference to the MetalShaderLibrary used for managing shaders in the Metal context. This allows the application to access platform-specific shader management features or perform operations that require direct access to the shader library.
 	 */
-	[[nodiscard]] Shader::MetalShaderLibrary* GetShaderLibrary() const { return _shaderLibrary.get(); }
+	[[nodiscard]] MetalShaderLibrary* GetShaderLibrary() const { return _shaderLibrary.get(); }
 
 	/** @brief Gets the MetalKit render view
 	 * @return MTK::RenderView* Pointer to the MTK::RenderView used for rendering
@@ -196,11 +193,11 @@ private:
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
 
-	std::unique_ptr<Shader::MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
-	std::unique_ptr<MTK::ViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
+	std::unique_ptr<MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
+	std::unique_ptr<Native::ViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
 
 	NS::SharedPtr<CA::MetalDisplayLink> _displayLink = nullptr; ///< Paces frames in step with the display refresh
-	std::unique_ptr<CA::MetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
+	std::unique_ptr<Native::MetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
 
 	CA::MetalDrawable* _displayLinkDrawable = nullptr; ///< Drawable vended by the current display-link update; valid only for the duration of the frame callback
 	std::function<void(MTK::View*)> _drawCallback; ///< Invoked once per display-link update to render a frame
@@ -208,4 +205,4 @@ private:
 
 }
 
-#endif //CE_RENDER_CONTEXT_METALCONTEXT_HPP
+#endif //CE_CORE_RENDER_CONTEXT_METALCONTEXT_HPP

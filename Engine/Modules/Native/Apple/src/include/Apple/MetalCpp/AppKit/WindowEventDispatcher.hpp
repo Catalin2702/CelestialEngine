@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -14,29 +14,29 @@
 
 #include <AppKit/AppKit.hpp>
 
-#include "Utility/Callback/Dispatcher.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
 using NSNotificationDelegate = EventDelegate<const NS::Notification*>;
 using NSNotificationMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Notification*>;
 
-namespace NS {
+namespace CE::Native {
 
-class WindowEventDispatcher: public I_WindowEventDispatcher {
+class WindowEventDispatcher: public NS::I_WindowEventDispatcher {
 public:
 	WindowEventDispatcher() = default;
 
 	~WindowEventDispatcher() override = default;
 
 public:
-	void DispatchWindowDidResize(Notification* notification) override;
-	void DispatchWindowDidMove(Notification* notification) override;
-	void DispatchWindowDidBecomeKey(Notification* notification) override;
-	void DispatchWindowDidResignKey(Notification* notification) override;
-	void DispatchWindowDidMiniaturize(Notification* notification) override;
-	void DispatchWindowDidDeminiaturize(Notification* notification) override;
-	void DispatchWindowDidEnterFullScreen(Notification* notification) override;
-	void DispatchWindowDidExitFullScreen(Notification* notification) override;
-	void DispatchWindowWillClose(Notification* notification) override;
+	void DispatchWindowDidResize(NS::Notification* notification) override;
+	void DispatchWindowDidMove(NS::Notification* notification) override;
+	void DispatchWindowDidBecomeKey(NS::Notification* notification) override;
+	void DispatchWindowDidResignKey(NS::Notification* notification) override;
+	void DispatchWindowDidMiniaturize(NS::Notification* notification) override;
+	void DispatchWindowDidDeminiaturize(NS::Notification* notification) override;
+	void DispatchWindowDidEnterFullScreen(NS::Notification* notification) override;
+	void DispatchWindowDidExitFullScreen(NS::Notification* notification) override;
+	void DispatchWindowWillClose(NS::Notification* notification) override;
 
 public:
 	NSNotificationMulticastDispatcher windowDidResizeMulticastDispatcher;

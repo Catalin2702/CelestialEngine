@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader/Platforms/Mac/Metal
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Mac/Metal
 // File: MetalShaderLibrary.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -14,7 +14,7 @@
 
 #include <ranges>
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 namespace {
 

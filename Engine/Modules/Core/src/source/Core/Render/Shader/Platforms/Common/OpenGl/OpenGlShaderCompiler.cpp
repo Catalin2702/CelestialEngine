@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShaderCompiler.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
@@ -15,10 +15,10 @@
 
 #include <vector>
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
-uint32_t OpenGlShaderCompiler::Compile(const char* shader, const Types::Render::ShaderType type) {
-	const uint32_t shaderId = glCreateShader(Types::Render::ToOpenGlShaderType(type));
+uint32_t OpenGlShaderCompiler::Compile(const char* shader, const Types::ShaderType type) {
+	const uint32_t shaderId = glCreateShader(Types::ToOpenGlShaderType(type));
 
 	glShaderSource(shaderId, 1, &shader, nullptr);
 

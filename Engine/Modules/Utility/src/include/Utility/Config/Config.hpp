@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 
 #include <atomic>
 
-namespace CE::Utility::Config {
+namespace CE::Utility {
 
 class CE_API Config {
 	Config() = default;
@@ -34,15 +34,15 @@ public:
 public:
 	static Config& StGet();
 
-	static const Types::Window::WindowProps& StGetWindowProps();
+	static const Types::WindowProps& StGetWindowProps();
 
 public:
-	static void StSetWindowProps(Types::Window::WindowProps windowProps);
+	static void StSetWindowProps(Types::WindowProps windowProps);
 
 private:
 	static std::atomic<Config*> _stInstance;
 
-	Types::Window::WindowProps _windowProps;
+	Types::WindowProps _windowProps;
 };
 
 }

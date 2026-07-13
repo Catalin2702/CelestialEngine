@@ -4,23 +4,23 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-26
+// Updated: 2026-07-13
 //
 
 #include <CelestialEngine.hpp>
 #include <memory>
 
-std::unique_ptr<Application::I_Application> Application::CreateApplication(const int argc, const char* argv[]) {
-	Config::Config::StSetWindowProps(CMD::GetWindowProps(argc, argv));
-	const auto& windowProps = Config::Config::StGetWindowProps();
+std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, const char* argv[]) {
+	Utility::Config::StSetWindowProps(Utility::GetWindowProps(argc, argv));
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 	std::unique_ptr<I_Application> app;
 	switch (windowProps.windowApi) {
-		case Types::Window::WindowApi::GLFW: {
+		case Types::WindowApi::GLFW: {
 			app = std::make_unique<GlfwApplication>();
 			break;
 		}
 #ifdef CE_PLATFORM_MACOS
-		case Types::Window::WindowApi::Cocoa: {
+		case Types::WindowApi::Cocoa: {
 			app = std::make_unique<CocoaApplication>();
 			break;
 		}

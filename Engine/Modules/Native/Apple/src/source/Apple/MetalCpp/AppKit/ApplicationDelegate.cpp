@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-04
+// Updated: 2026-07-13
 //
 
 #include "Apple/MetalCpp/AppKit/ApplicationDelegate.hpp"
@@ -13,19 +13,19 @@
 
 #include <utility>
 
-namespace NS {
+namespace CE::Native {
 
-void ApplicationDelegate::applicationDidFinishLaunching(Notification* notification) {
+void ApplicationDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
 	if (_appDidFinishLaunchingCallback)
 		_appDidFinishLaunchingCallback(notification);
 }
 
-void ApplicationDelegate::applicationWillFinishLaunching(Notification* notification) {
+void ApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
 	if (_appWillFinishLaunchingCallback)
 		_appWillFinishLaunchingCallback(notification);
 }
 
-bool ApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(Application*) {
+bool ApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application*) {
 	return _appShouldTerminate;
 }
 

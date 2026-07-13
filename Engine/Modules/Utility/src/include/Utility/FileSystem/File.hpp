@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -22,7 +22,7 @@
 
 namespace fs = std::filesystem;
 
-namespace CE::Utility::FileSystem {
+namespace CE::Utility {
 
 class CE_API File {
 	friend class FileSystem;
@@ -36,7 +36,7 @@ public:
 	 * @details Initializes the File object by extracting the file name, extension, directory, and content from the provided file path.
 	 *			If the file does not exist or cannot be read, an exception is thrown.
 	 */
-	explicit File(std::filesystem::path path, CE::FileSystem::FileLoadState loadState, bool autoSave = false);
+	explicit File(std::filesystem::path path, Types::FileLoadState loadState, bool autoSave = false);
 
 	/**
 	 * @brief Copy constructor
@@ -234,7 +234,7 @@ private:
 
 	std::vector<uint8_t> _content;					///< File content as a byte array
 
-	CE::FileSystem::FileLoadState _loadState = CE::FileSystem::FileLoadState::NotLoaded;		///< Load state of the file (e.g., NotLoaded, Loaded, LazyLoading)
+	Types::FileLoadState _loadState = Types::FileLoadState::NotLoaded;		///< Load state of the file (e.g., NotLoaded, Loaded, LazyLoading)
 	bool _autoSave = false;							///< Flag indicating whether the file should be automatically saved to disk when modified
 
 	mutable bool _isLoaded = false;					///< Flag indicating whether the file content was successfully loaded

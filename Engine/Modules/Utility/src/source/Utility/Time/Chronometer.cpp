@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #include "Utility/Time/Chronometer.hpp"
 
 #include "Tools/Log/Log.hpp"
 
-namespace CE::Utility::Time {
+namespace CE::Utility {
 
 /**
  * @brief Chronometer constructor - starts timing

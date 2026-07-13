@@ -4,15 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-27
+// Updated: 2026-07-13
 //
 
 #include "Types/Window/WindowProps.hpp"
 
+namespace CE::Types {
 
-namespace CE::Types::Window {
-
-WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const Render::GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
+WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
 	title(title), width(width), height(height), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 
 bool IsWindowApiSupported(const WindowApi& api) {
@@ -37,21 +36,21 @@ bool IsWindowApiSupported(const WindowApi& api) {
 	return false;
 }
 
-bool IsGraphicsApiCompatibleWithWindowApi(const Render::GraphicsApi& graphicsApi, const WindowApi& windowApi) {
-	if (windowApi == WindowApi::None or graphicsApi == Render::GraphicsApi::None)
+bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
+	if (windowApi == WindowApi::None or graphicsApi == GraphicsApi::None)
 		return false;
 
-	if (windowApi == WindowApi::GLFW and graphicsApi == Render::GraphicsApi::OpenGL)
+	if (windowApi == WindowApi::GLFW and graphicsApi == GraphicsApi::OpenGL)
 		return true;
 
 #ifdef CE_PLATFORM_MACOS
-	if (windowApi == WindowApi::Cocoa and (graphicsApi == Render::GraphicsApi::Metal or graphicsApi == Render::GraphicsApi::Vulkan))
+	if (windowApi == WindowApi::Cocoa and (graphicsApi == GraphicsApi::Metal or graphicsApi == GraphicsApi::Vulkan))
 		return true;
 #elifdef CE_PLATFORM_WINDOWS
-	if (windowApi == WindowApi::Win32 and (graphicsApi == Render::GraphicsApi::DirectX11 or graphicsApi == Render::GraphicsApi::DirectX12 or graphicsApi == Render::GraphicsApi::Vulkan))
+	if (windowApi == WindowApi::Win32 and (graphicsApi == GraphicsApi::DirectX11 or graphicsApi == GraphicsApi::DirectX12 or graphicsApi == GraphicsApi::Vulkan))
 		return true;
 #elifdef CE_PLATFORM_LINUX
-	if (windowApi == WindowApi::X11 and graphicsApi == Render::GraphicsApi::Vulkan)
+	if (windowApi == WindowApi::X11 and graphicsApi == GraphicsApi::Vulkan)
 		return true;
 #endif
 

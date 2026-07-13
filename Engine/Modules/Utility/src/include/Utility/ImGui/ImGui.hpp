@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -16,13 +16,7 @@
 
 #include <imgui.h>
 
-/**
- * @namespace CE::Utility::ImGui
- * @brief Utility functions for ImGui setup and configuration
- * @details Provides helper functions to initialize and configure ImGui with
- *			appropriate styles and settings for the engine.
- */
-namespace CE::Utility::ImGui {
+namespace CE::Utility {
 
 /**
  * @brief Converts a GLFW key code to the corresponding ImGui key code

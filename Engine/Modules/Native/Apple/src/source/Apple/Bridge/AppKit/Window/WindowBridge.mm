@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-03
+// Updated: 2026-07-13
 //
 
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 #import <math.h>
 
-namespace CE::Apple::Bridge {
+namespace CE::Native {
 
 bool IsKeyPressed(unsigned short keyCode) {
 	// Use CGEventSourceKeyState to check if a key is currently pressed

@@ -1,18 +1,19 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShaderProgram.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #pragma once
 
-#ifndef CE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
-#define CE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
+#ifndef CE_CORE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
+#define CE_CORE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
 
 #include "Define/DynamicLinker.hpp"
+
 #include "Core/Render/Shader/I_ShaderProgram.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 
@@ -20,7 +21,7 @@
 #include <memory>
 #include <vector>
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
 /**
  * @class OpenGlShaderProgram
@@ -119,5 +120,5 @@ private:
 
 }
 
-#endif //CE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
+#endif //CE_CORE_RENDER_SHADER_OPENGLSHADERPROGRAM_HPP
 

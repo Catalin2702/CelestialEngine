@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #include "Utility/FileSystem/File.hpp"
@@ -14,13 +14,13 @@
 
 #include <utility>
 
-namespace CE::Utility::FileSystem {
+namespace CE::Utility {
 
-File::File(fs::path  path, const CE::FileSystem::FileLoadState loadState, const bool autoSave):
+File::File(fs::path  path, const Types::FileLoadState loadState, const bool autoSave):
 _path(std::move(path)),
 _loadState(loadState),
 _autoSave(autoSave) {
-	if (loadState == CE::FileSystem::FileLoadState::NotLoaded)
+	if (loadState == Types::FileLoadState::NotLoaded)
 		Load();
 }
 

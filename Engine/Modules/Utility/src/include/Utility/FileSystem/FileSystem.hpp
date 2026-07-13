@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -16,7 +16,7 @@
 
 #include <filesystem>
 
-namespace CE::Utility::FileSystem {
+namespace CE::Utility {
 
 namespace fs = std::filesystem;
 
@@ -37,7 +37,8 @@ public:
 
 	/**
 	 * @brief Creates a new file with empty content at the given path
-	 * @param path The file path where the new file should be created
+	 * @param path File path where the new file should be created
+	 * @param content File content
 	 * @param autoSave If true, the file will be automatically saved to disk when closed. Defaults to false.
 	 * @return File A File object representing the newly created file
 	 * @throws std::runtime_error if the file cannot be created or written to disk

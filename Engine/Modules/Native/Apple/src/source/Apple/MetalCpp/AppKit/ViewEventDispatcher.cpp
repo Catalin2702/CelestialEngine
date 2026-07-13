@@ -9,69 +9,69 @@
 
 #include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
 
-namespace NS {
+namespace CE::Native {
 
-void ViewEventDispatcher::DispatchMouseDown(Event* event) {
+void ViewEventDispatcher::DispatchMouseDown(NS::Event* event) {
 	mouseEvents.mouseDownMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchMouseUp(Event* event) {
+void ViewEventDispatcher::DispatchMouseUp(NS::Event* event) {
 	mouseEvents.mouseUpMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchMouseDragged(Event* event) {
+void ViewEventDispatcher::DispatchMouseDragged(NS::Event* event) {
 	mouseEvents.mouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchRightMouseDown(Event* event) {
+void ViewEventDispatcher::DispatchRightMouseDown(NS::Event* event) {
 	mouseEvents.rightMouseDownMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchRightMouseUp(Event* event) {
+void ViewEventDispatcher::DispatchRightMouseUp(NS::Event* event) {
 	mouseEvents.rightMouseUpMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchRightMouseDragged(Event* event) {
+void ViewEventDispatcher::DispatchRightMouseDragged(NS::Event* event) {
 	mouseEvents.rightMouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchOtherMouseDown(Event* event) {
+void ViewEventDispatcher::DispatchOtherMouseDown(NS::Event* event) {
 	mouseEvents.otherMouseDownMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchOtherMouseUp(Event* event) {
+void ViewEventDispatcher::DispatchOtherMouseUp(NS::Event* event) {
 	mouseEvents.otherMouseUpMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchOtherMouseDragged(Event* event) {
+void ViewEventDispatcher::DispatchOtherMouseDragged(NS::Event* event) {
 	mouseEvents.otherMouseDraggedMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchMouseMoved(Event* event) {
+void ViewEventDispatcher::DispatchMouseMoved(NS::Event* event) {
 	mouseEvents.mouseMovedMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchMouseEntered(Event* event) {
+void ViewEventDispatcher::DispatchMouseEntered(NS::Event* event) {
 	mouseEvents.mouseEnteredMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchMouseExited(Event* event) {
+void ViewEventDispatcher::DispatchMouseExited(NS::Event* event) {
 	mouseEvents.mouseExitedMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchScrollWheel(Event* event) {
+void ViewEventDispatcher::DispatchScrollWheel(NS::Event* event) {
 	mouseEvents.scrollWheelMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchKeyDown(Event* event) {
+void ViewEventDispatcher::DispatchKeyDown(NS::Event* event) {
 	keyboardEvents.keyDownMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchKeyUp(Event* event) {
+void ViewEventDispatcher::DispatchKeyUp(NS::Event* event) {
 	keyboardEvents.keyUpMulticastDispatcher.Dispatch(event);
 }
 
-void ViewEventDispatcher::DispatchFlagsChanged(Event* event) {
+void ViewEventDispatcher::DispatchFlagsChanged(NS::Event* event) {
 	keyboardEvents.flagsChangedMulticastDispatcher.Dispatch(event);
 }
 

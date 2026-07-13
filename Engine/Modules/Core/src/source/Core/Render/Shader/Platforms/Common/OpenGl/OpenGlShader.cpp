@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Render/Shader
+// Module: CelestialEngine/Engine/Modules/Core/Render/Shader/Platforms/Common/OpenGl
 // File: OpenGlShader.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-19
+// Updated: 2026-07-13
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
@@ -14,13 +14,13 @@
 
 #include <glad/glad.h>
 
-namespace CE::Core::Render::Shader {
+namespace CE::Core {
 
-OpenGlShader::OpenGlShader(const char* shader, const Types::Render::ShaderType type): _type(type) {
+OpenGlShader::OpenGlShader(const char* shader, const Types::ShaderType type): _type(type) {
 	_shaderId = OpenGlShaderCompiler::Compile(shader, type);
 }
 
-OpenGlShader::OpenGlShader(const Utility::FileSystem::File& file, Types::Render::ShaderType type) {
+OpenGlShader::OpenGlShader(const Utility::File& file, Types::ShaderType type) {
 	_type = type;
 	_shaderId = OpenGlShaderCompiler::Compile(file.GetContentString().c_str(), type);
 }
@@ -54,7 +54,7 @@ uint32_t OpenGlShader::GetShaderId() const {
 	return _shaderId;
 }
 
-Types::Render::ShaderType OpenGlShader::GetType() const {
+Types::ShaderType OpenGlShader::GetType() const {
 	return _type;
 }
 

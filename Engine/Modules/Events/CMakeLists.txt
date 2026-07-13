@@ -4,14 +4,17 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-03-31
+# Updated: 2026-07-13
 #
 
 set(HEADERS
 	src/include/Events/ApplicationEvent.hpp
-	src/include/Events/I_Event.hpp
 	src/include/Events/KeyEvent.hpp
 	src/include/Events/MouseEvent.hpp
+)
+
+set(INTERFACES
+	src/interface/Events/I_Event.hpp
 )
 
 set(SOURCES
@@ -23,6 +26,7 @@ set(SOURCES
 
 add_library(CE_Events SHARED
 	${HEADERS}
+	${INTERFACES}
 	${SOURCES}
 )
 
@@ -41,6 +45,7 @@ target_link_libraries(CE_Events PUBLIC
 
 target_include_directories(CE_Events PUBLIC
 	src/include
+	src/interface
 )
 
 target_compile_definitions(CE_Events PRIVATE

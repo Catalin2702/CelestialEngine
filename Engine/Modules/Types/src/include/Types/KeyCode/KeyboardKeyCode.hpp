@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -19,17 +19,9 @@
 #include <ostream>
 #include <string>
 
-
 enum ImGuiKey: int;
 
-/**
- * @namespace CE::KeyCode
- * @brief Contains definitions and utilities for keyboard key codes
- * @details This namespace encapsulates the KeyboardKeyCode enum and related functions for handling keyboard input within the engine.
- *			It provides a standardized set of key codes that can be used across different modules, ensuring consistency in input handling.
- *			The namespace also includes functions to convert between KeyCode values and their string representations, as well as mappings to and from GLFW key codes for seamless integration with GLFW's input system.
- */
-namespace CE::KeyCode {
+namespace CE::Types {
 
 /**
  * @brief Enumeration of keyboard key codes

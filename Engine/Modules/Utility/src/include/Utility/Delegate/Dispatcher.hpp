@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Utility/Callback/Delegate.hpp"
+#include "Utility/Delegate/Delegate.hpp"
 
 #include <vector>
 

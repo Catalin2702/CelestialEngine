@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-26
+# Updated: 2026-07-13
 #
 
 set(HEADERS
@@ -22,7 +22,9 @@ set(HEADERS
 
 	# Window
 	src/include/Types/Window/WindowProps.hpp
-	src/include/Types/Window/WindowDestructor.hpp
+	src/include/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
+
+	# FileSystem
 	src/include/Types/FileSystem/File.hpp
 
 	# Main
@@ -44,7 +46,7 @@ set(SOURCES
 
 	# Window
 	src/source/Types/Window/WindowProps.cpp
-	src/source/Types/Window/WindowDestructor.cpp
+	src/source/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.cpp
 )
 
 add_library(CE_Types SHARED

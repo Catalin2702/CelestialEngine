@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-07-13
 //
 
 #pragma once
@@ -16,12 +16,7 @@
 
 #include <string>
 
-/**
- * @namespace CE::Utility::Manipulation
- * @brief String manipulation utilities
- * @details Provides helper functions for common string operations like case conversion
- */
-namespace CE::Utility::Manipulation {
+namespace CE::Utility {
 
 /**
  * @brief Converts a string to lowercase

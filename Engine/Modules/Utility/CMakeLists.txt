@@ -4,20 +4,19 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-12
+# Updated: 2026-07-13
 #
 
 set(HEADERS
-	# Callback
-	src/include/Utility/Callback/Callback.hpp
-	src/include/Utility/Callback/Delegate.hpp
-	src/include/Utility/Callback/Dispatcher.hpp
-
 	# CMD
 	src/include/Utility/CMD/Window.hpp
 
 	# Config
 	src/include/Utility/Config/Config.hpp
+
+	# Delegate
+	src/include/Utility/Delegate/Delegate.hpp
+	src/include/Utility/Delegate/Dispatcher.hpp
 
 	# Manipulation
 	src/include/Utility/Manipulation/String.hpp
