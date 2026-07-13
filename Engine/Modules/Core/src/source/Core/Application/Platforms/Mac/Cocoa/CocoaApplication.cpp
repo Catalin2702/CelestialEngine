@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-12
+// Updated: 2026-07-13
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -366,7 +366,6 @@ void CocoaApplication::_OnKeyDown(const NS::Event* event) {
 
 	if (const auto* characters = event->characters(); characters and characters->length() > 0) {
 		const unsigned int codepoint = characters->character(0);
-		CE_CORE_INFO("Char: {}", codepoint);
 		Events::KeyTypedEvent keyTypedEvent{codepoint};
 		DispatchEventToLayers(keyTypedEvent);
 	}
