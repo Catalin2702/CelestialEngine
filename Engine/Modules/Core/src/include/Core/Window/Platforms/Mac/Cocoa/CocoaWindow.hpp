@@ -48,15 +48,15 @@ namespace CE::Core {
 
 class CocoaWindowEventHandler: public Native::NsWindowEventDispatcher {
 	struct CocoaWindowLifecycleEvents {
-		UnicastEventDispatcher<> cocoaWindowCreatedMulticastDispatcher;
-		UnicastEventDispatcher<> cocoaWindowInitializedMulticastDispatcher;
-		UnicastEventDispatcher<> cocoaWindowWillShutdownMulticastDispatcher;
+		UnicastDispatcher<> cocoaWindowCreatedDispatcher;
+		UnicastDispatcher<> cocoaWindowInitializedDispatcher;
+		UnicastDispatcher<> cocoaWindowWillShutdownDispatcher;
 	};
 
 public:
-	void DispatchCocoaWindowCreated();
-	void DispatchCocoaWindowInitialized();
-	void DispatchCocoaWindowWillShutdown();
+	void DispatchCocoaWindowCreated() const;
+	void DispatchCocoaWindowInitialized() const;
+	void DispatchCocoaWindowWillShutdown() const;
 
 public:
 	CocoaWindowLifecycleEvents cocoaWindowStateEvents;
@@ -134,6 +134,14 @@ public:
 	 *			events, and enables mouse-moved delivery so the view's dispatcher gets continuous cursor updates.
 	 */
 	void SetContentView(const MTK::View* view) const;
+
+	/**
+	 * @brief Makes the window key and brings it to the front
+	 * @details Orders the window front and gives it key status so it starts receiving input. This is deferred until the
+	 *			application has finished launching (see NsApplicationDelegate::applicationDidFinishLaunching) so the window is
+	 *			revealed once the run loop is active, following the canonical Cocoa lifecycle.
+	 */
+	void Show() const;
 
 protected:
 	/**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -21,20 +21,20 @@
 
 namespace CE::Core {
 
-void CocoaWindowEventHandler::DispatchCocoaWindowCreated() {
-	cocoaWindowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
+void CocoaWindowEventHandler::DispatchCocoaWindowCreated() const {
+	cocoaWindowStateEvents.cocoaWindowCreatedDispatcher.Dispatch();
 }
 
-void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() {
-	cocoaWindowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
+void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() const {
+	cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
 }
 
-void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() {
-	cocoaWindowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() const {
+	cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
 }
 
 CocoaWindow::CocoaWindow() {
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowCreatedDispatcher.Dispatch();
 }
 
 CocoaWindow::~CocoaWindow() {
@@ -91,9 +91,18 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 	_window->setAcceptsMouseMovedEvents(true);
 }
 
+void CocoaWindow::Show() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::Show: Cannot show window because it is not initialized.");
+		return;
+	}
+
+	_window->makeKeyAndOrderFront(nullptr);
+}
+
 void CocoaWindow::Init() {
 	_InitWindow();
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
 }
 
 void CocoaWindow::_InitWindow() {
@@ -134,12 +143,10 @@ void CocoaWindow::_InitWindow() {
 
 	// Restore the saved window position BEFORE creating the Metal view
 	_window->setFrameAutosaveName(_window->title());
-
-	_window->makeKeyAndOrderFront(nullptr);
 }
 
 void CocoaWindow::_Shutdown() {
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
 	if (_window) {
 		_window->close();
 		_window = nullptr;
