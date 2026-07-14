@@ -141,7 +141,9 @@ void GlfwApplication::_InitWindow() {
 	}
 
 	_window = std::make_unique<GlfwWindow>();
-	// _window->SetEventCallback(BIND_FN_ONE_PARAM(GlfwApplication::OnEvent));
+	SetEventHubDispatcher();
+
+	eventHubDispatcher.glfwMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromFunction<&LogMouseMoved>());
 
 	InitInput(windowProps.windowApi);
 }
@@ -217,6 +219,29 @@ void GlfwApplication::RemoveImGuiLayer() {
 
 	PopOverlay(_imguiLayer);
 	_imguiLayer = nullptr;
+}
+
+void GlfwApplication::SetEventHubDispatcher() {
+	if (not _window) {
+		const auto error = "GlfwApplication::SetEventHubDispatcher: Window must be initialized before setting up the event hub dispatcher";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	using hub = GlfwEventHubDispatcher;
+	auto& [windowStateEvents, keyboardEvents, mouseEvents] = _window->windowEventHandler;
+
+	windowStateEvents.onResizeDispatcher.Bind(EventDelegate<int, int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher));
+	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveWindowCloseEvent>(&eventHubDispatcher));
+	windowStateEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
+
+	keyboardEvents.onKeyDispatcher.Bind(EventDelegate<int, int, int, int>::FromMethod<hub, &hub::ReceiveKeyEvent>(&eventHubDispatcher));
+	keyboardEvents.onCharDispatcher.Bind(EventDelegate<unsigned int>::FromMethod<hub, &hub::ReceiveCharEvent>(&eventHubDispatcher));
+
+	mouseEvents.onMouseButtonDispatcher.Bind(EventDelegate<int, int, int>::FromMethod<hub, &hub::ReceiveMouseButtonEvent>(&eventHubDispatcher));
+	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMousePositionEvent>(&eventHubDispatcher));
+	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, double, double>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
+	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
 }
 
 I_Window& GlfwApplication::GetWindow() const {

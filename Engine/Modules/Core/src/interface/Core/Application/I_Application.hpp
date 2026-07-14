@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -165,14 +165,6 @@ public:
 
 	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
 
-	virtual void SetRunning(const bool running) { _isRunning.store(running); }
-
-	/**
-	 * @brief Sets the ImGui layer for the application
-	 * @param imguiLayer Pointer to the ImGui layer to set
-	 */
-	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
-
 	/**
 	 * @brief Removes the ImGui layer from the application
 	 */
@@ -181,6 +173,17 @@ public:
 	float GetDeltaTime() const;
 
 	void ResetDeltaTime() const;
+
+public:
+	virtual void SetRunning(const bool running) { _isRunning.store(running); }
+
+	/**
+	 * @brief Sets the ImGui layer for the application
+	 * @param imguiLayer Pointer to the ImGui layer to set
+	 */
+	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
+
+	virtual void SetEventHubDispatcher() = 0;
 
 protected:
 	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance

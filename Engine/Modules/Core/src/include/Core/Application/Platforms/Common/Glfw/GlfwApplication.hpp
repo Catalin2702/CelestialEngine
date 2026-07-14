@@ -12,8 +12,10 @@
 #ifndef CE_CORE_APPLICATION_PLATFORMS_COMMON_GLFW_GLFWAPPLICATION_HPP
 #define CE_CORE_APPLICATION_PLATFORMS_COMMON_GLFW_GLFWAPPLICATION_HPP
 
-#include "Core/Application/I_Application.hpp"
 #include "Define/DynamicLinker.hpp"
+
+#include "Core/Application/I_Application.hpp"
+#include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 
 #include <memory>
 
@@ -122,6 +124,8 @@ public:
 	 */
 	void RemoveImGuiLayer() override;
 
+	void SetEventHubDispatcher() override;
+
 protected:
 	/**
 	 * @brief Initializes the application window
@@ -155,6 +159,9 @@ public:
 	I_Context& GetRenderContext() const override;
 
 	OpenGlContext& GetOpenGlContext() const;
+
+public:
+	GlfwEventHubDispatcher eventHubDispatcher;
 
 private:
 	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context

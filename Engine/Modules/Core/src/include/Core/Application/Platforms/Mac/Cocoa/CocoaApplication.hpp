@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -178,6 +178,9 @@ public:
 	[[nodiscard]] MetalContext& GetMetalContext() const { return *_context; }
 
 	[[nodiscard]] static CocoaApplication& StGet() { return dynamic_cast<CocoaApplication&>(I_Application::StGet()); }
+
+public:
+	void SetEventHubDispatcher() override;
 
 private:
 	void _BindWindowCallbacks() const;

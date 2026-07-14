@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -255,6 +255,9 @@ void CocoaApplication::InitImGuiLayer() {
 	PushOverlay(_imguiLayer);
 }
 
+void CocoaApplication::SetEventHubDispatcher() {
+}
+
 void CocoaApplication::_BindWindowCallbacks() const {
 	assert(_window && "CocoaApplication::_BindWindowCallbacks: Window must be initialized before binding callbacks");
 	assert(_context && "CocoaApplication::_BindWindowCallbacks: Render context must be initialized before binding callbacks");
@@ -264,7 +267,7 @@ void CocoaApplication::_BindWindowCallbacks() const {
 }
 
 void CocoaApplication::_SetWindowCallbacks() {
-	_window->cocoaWindowEventDispatcher->windowWillCloseMulticastDispatcher.Subscribe(NSNotificationDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowWillClose>(this));
+	// _window->cocoaWindowEventDispatcher.windowWillCloseMulticastDispatcher.Subscribe(NSNotificationDelegate::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowWillClose>(this));
 }
 
 void CocoaApplication::_BindViewCallbacks() {
