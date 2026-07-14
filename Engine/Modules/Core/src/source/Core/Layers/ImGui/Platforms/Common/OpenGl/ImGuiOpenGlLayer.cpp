@@ -10,9 +10,9 @@
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
+#include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Define/Bind.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
@@ -33,6 +33,9 @@ static int _st_imGuiOpenGlLayerCount = 0;
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
 ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
+	// Drop hub subscriptions first so the dispatchers never call back into a half-destroyed layer.
+	UnsubscribeFromEventHub();
+
 	_Shutdown();
 }
 
@@ -54,36 +57,41 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::ShowDemoWindow(&show);
 }
 
-void ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
-	Events::EventDispatcher dispatcher(event);
-	switch (event.GetEventType()) {
-	case Events::EventType::MouseMoved:
-		dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseMoved));
-		break;
-	case Events::EventType::MouseScrolled:
-		dispatcher.Dispatch<Events::MouseWheelScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseScrolled));
-		break;
-	case Events::EventType::MouseButtonPressed:
-		dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseButtonPressed));
-		break;
-	case Events::EventType::MouseButtonReleased:
-		dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseButtonReleased));
-		break;
-	case Events::EventType::KeyPressed:
-		dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyPressed));
-		break;
-	case Events::EventType::KeyReleased:
-		dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyReleased));
-		break;
-	case Events::EventType::KeyTyped:
-		dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnKeyTyped));
-		break;
-	case Events::EventType::WindowResize:
-		dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnWindowResized));
-		break;
-	default:
-		break;
-	}
+void ImGuiOpenGlLayer::OnEvent(Events::I_Event&) {
+	// Input is delivered directly through the event hub (see SubscribeToEventHub), not the layer-stack OnEvent path.
+}
+
+void ImGuiOpenGlLayer::SubscribeToEventHub(GlfwEventHubDispatcher& hub) {
+	if (_eventHub)
+		UnsubscribeFromEventHub();
+
+	_eventHub = &hub;
+
+	_eventHubHandles[0] = hub.glfwMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
+	_eventHubHandles[1] = hub.glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
+	_eventHubHandles[2] = hub.glfwMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandles[3] = hub.glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandles[4] = hub.glfwKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
+	_eventHubHandles[5] = hub.glfwKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
+	_eventHubHandles[6] = hub.glfwKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
+	_eventHubHandles[7] = hub.glfwApplicationEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnWindowResized>(this));
+}
+
+void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
+	if (not _eventHub)
+		return;
+
+	_eventHub->glfwMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[0]);
+	_eventHub->glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[1]);
+	_eventHub->glfwMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[2]);
+	_eventHub->glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[3]);
+	_eventHub->glfwKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[4]);
+	_eventHub->glfwKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[5]);
+	_eventHub->glfwKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[6]);
+	_eventHub->glfwApplicationEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[7]);
+
+	_eventHub = nullptr;
+	_eventHubHandles = {};
 }
 
 void ImGuiOpenGlLayer::Begin(const float deltaTime) {
@@ -185,78 +193,62 @@ void ImGuiOpenGlLayer::_Shutdown() {
 	ImGui::DestroyContext();
 }
 
-bool ImGuiOpenGlLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+void ImGuiOpenGlLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
+void ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
-		return false;
+		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, true);
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
-		return false;
+		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, false);
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
+void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
-		return false;
+		return;
 
 	ImGui::GetIO().AddKeyEvent(key, true);
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
+void ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
-		return false;
+		return;
 
 	ImGui::GetIO().AddKeyEvent(key, false);
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
+void ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const unsigned int codepoint = event.GetKeyCode();
 	if (codepoint == 0)
-		return false;
+		return;
 
 	ImGui::GetIO().AddInputCharacter(codepoint);
-
-	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+void ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
 	// const auto [xScale, yScale] = _window->get().GetContentScale();
 	// io.DisplayFramebufferScale = ImVec2(xScale, yScale);
-
-	return false;
 }
 
 }

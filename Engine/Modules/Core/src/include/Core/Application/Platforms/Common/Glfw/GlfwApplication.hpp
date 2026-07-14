@@ -126,6 +126,13 @@ public:
 
 	void SetEventHubDispatcher() override;
 
+private:
+	/**
+	 * @brief Application-level reaction to a window close event dispatched by the event hub
+	 * @details Subscribed to GlfwEventHubDispatcher::glfwApplicationEventHub.onCloseMulticastDispatcher; quits the application.
+	 */
+	void _OnWindowClose(Events::WindowCloseEvent& event);
+
 protected:
 	/**
 	 * @brief Initializes the application window

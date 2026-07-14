@@ -23,9 +23,9 @@ public:
 	virtual ~I_KeyboardEventHubDispatcher() = default;
 
 public:
-	virtual void DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) {}
-	virtual void DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) {}
-	virtual void DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) {}
+	virtual void DispatchKeyPressedEvent(Events::KeyPressedEvent&) {}
+	virtual void DispatchKeyReleasedEvent(Events::KeyReleasedEvent&) {}
+	virtual void DispatchKeyTypedEvent(Events::KeyTypedEvent&) {}
 };
 
 }

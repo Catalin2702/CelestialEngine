@@ -133,6 +133,7 @@ void GlfwApplication::InitImGuiLayer() {
 	auto overlay = std::make_unique<ImGuiOpenGlLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
+	_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
 }
 
 void GlfwApplication::_InitWindow() {
@@ -148,6 +149,7 @@ void GlfwApplication::_InitWindow() {
 	SetEventHubDispatcher();
 
 	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(EventDelegate<Events::AppErrorEvent&>::FromFunction<&LogError>());
+	eventHubDispatcher.glfwApplicationEventHub.onCloseMulticastDispatcher.Subscribe(EventDelegate<Events::WindowCloseEvent&>::FromMethod<GlfwApplication, &GlfwApplication::_OnWindowClose>(this));
 
 	InitInput(windowProps.windowApi);
 }
@@ -204,12 +206,14 @@ void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 
 	if (const auto openGlLayer = dynamic_cast<ImGuiOpenGlLayer*>(imguiLayer)) {
 		if (_imguiLayer) {
+			_imguiLayer->UnsubscribeFromEventHub();
 			PopOverlay(_imguiLayer);
 			_imguiLayer = nullptr;
 		}
 
 		_imguiLayer = openGlLayer;
 		PushOverlay(_imguiLayer);
+		_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
 	}
 	else {
 		CE_CORE_ERROR("GlfwApplication::SetImGuiLayer: Provided ImGui layer is not compatible with OpenGlContext. Expected ImGuiOpenGlLayer or derived class.");
@@ -221,6 +225,7 @@ void GlfwApplication::RemoveImGuiLayer() {
 	if (not _imguiLayer)
 		return;
 
+	_imguiLayer->UnsubscribeFromEventHub();
 	PopOverlay(_imguiLayer);
 	_imguiLayer = nullptr;
 }
@@ -246,6 +251,10 @@ void GlfwApplication::SetEventHubDispatcher() {
 	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMousePositionEvent>(&eventHubDispatcher));
 	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, double, double>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
 	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
+}
+
+void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
+	Quit();
 }
 
 I_Window& GlfwApplication::GetWindow() const {

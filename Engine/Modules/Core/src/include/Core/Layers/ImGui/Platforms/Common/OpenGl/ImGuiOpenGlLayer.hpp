@@ -16,12 +16,15 @@
 
 #include "Define/DynamicLinker.hpp"
 
+#include <array>
+#include <cstdint>
 #include <functional>
 #include <optional>
 
 namespace CE::Core {
 	class OpenGlContext;
 	class GlfwWindow;
+	class GlfwEventHubDispatcher;
 }
 
 namespace CE::Core {
@@ -82,6 +85,20 @@ public:
 	 */
 	void End() override;
 
+public:
+	/**
+	 * @brief Subscribes this layer's input handlers to the GLFW event hub
+	 * @param hub The application's event hub whose multicast dispatchers drive ImGui input
+	 * @details Input is delivered directly from the hub (no layer-stack traversal): each ImGui handler becomes a hub
+	 *			subscriber. Call UnsubscribeFromEventHub before the layer is destroyed to avoid dangling delegates.
+	 */
+	void SubscribeToEventHub(GlfwEventHubDispatcher& hub);
+
+	/**
+	 * @brief Removes this layer's input handlers from the event hub it was subscribed to
+	 */
+	void UnsubscribeFromEventHub();
+
 protected:
 	/**
 	 * @brief Platform-specific initialization logic for ImGui layer
@@ -96,20 +113,23 @@ protected:
 	 */
 	void _Shutdown() override;
 
-	bool _OnMouseMoved(Events::MouseMovedEvent& event) const override;
-	bool _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
-	bool _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
-	bool _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
+	void _OnMouseMoved(Events::MouseMovedEvent& event) const override;
+	void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
+	void _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
+	void _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
 
-	bool _OnKeyPressed(Events::KeyPressedEvent& event) const override;
-	bool _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
-	bool _OnKeyTyped(Events::KeyTypedEvent& event) const override;
+	void _OnKeyPressed(Events::KeyPressedEvent& event) const override;
+	void _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
+	void _OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
-	bool _OnWindowResized(Events::WindowResizeEvent& event) const override;
+	void _OnWindowResized(Events::WindowResizeEvent& event) const override;
 
 private:
 	std::optional<std::reference_wrapper<OpenGlContext>> _context; ///< Cached OpenGL context pointer
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached OpenGL window pointer
+
+	GlfwEventHubDispatcher* _eventHub = nullptr;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
+	std::array<uint32_t, 8> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

@@ -23,11 +23,11 @@ public:
 	virtual ~I_MouseEventHubDispatcher() = default;
 
 public:
-	virtual void DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) {}
-	virtual void DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) {}
-	virtual void DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) {}
-	virtual void DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) {}
-	virtual void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseScrolledEvent) {}
+	virtual void DispatchMouseMovedEvent(Events::MouseMovedEvent&) {}
+	virtual void DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent&) {}
+	virtual void DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent&) {}
+	virtual void DispatchMouseDraggedEvent(Events::MouseDraggedEvent&) {}
+	virtual void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent&) {}
 };
 
 }

@@ -11,7 +11,7 @@
 
 #include "Apple/Bridge/ImGui/ImGuiBridge.h"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
-#include "Define/Bind.hpp"
+#include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
@@ -30,6 +30,9 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _context(st
 }
 
 ImGuiMetalLayer::~ImGuiMetalLayer() {
+	// Drop hub subscriptions first so the dispatchers never call back into a half-destroyed layer.
+	UnsubscribeFromEventHub();
+
 	// Ensure _Shutdown is called if OnDetach was not called
 	_Shutdown();
 }
@@ -60,36 +63,41 @@ void ImGuiMetalLayer::OnRender() const {
 	);
 }
 
-void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
-	Events::EventDispatcher dispatcher(event);
-	switch (event.GetEventType()) {
-		case Events::EventType::MouseMoved:
-			dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseMoved));
-			break;
-		case Events::EventType::MouseScrolled:
-			dispatcher.Dispatch<Events::MouseWheelScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseScrolled));
-			break;
-		case Events::EventType::MouseButtonPressed:
-			dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonPressed));
-			break;
-		case Events::EventType::MouseButtonReleased:
-			dispatcher.Dispatch<Events::MouseButtonReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonReleased));
-			break;
-		case Events::EventType::KeyPressed:
-			dispatcher.Dispatch<Events::KeyPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyPressed));
-			break;
-		case Events::EventType::KeyReleased:
-			dispatcher.Dispatch<Events::KeyReleasedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyReleased));
-			break;
-		case Events::EventType::KeyTyped:
-			dispatcher.Dispatch<Events::KeyTypedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnKeyTyped));
-			break;
-		case Events::EventType::WindowResize:
-			dispatcher.Dispatch<Events::WindowResizeEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnWindowResized));
-			break;
-		default:
-			break;
-	}
+void ImGuiMetalLayer::OnEvent(Events::I_Event&) {
+	// Input is delivered directly through the event hub (see SubscribeToEventHub), not the layer-stack OnEvent path.
+}
+
+void ImGuiMetalLayer::SubscribeToEventHub(CocoaEventHubDispatcher& hub) {
+	if (_eventHub)
+		UnsubscribeFromEventHub();
+
+	_eventHub = &hub;
+
+	_eventHubHandles[0] = hub.cocoaMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseMoved>(this));
+	_eventHubHandles[1] = hub.cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseScrolled>(this));
+	_eventHubHandles[2] = hub.cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandles[3] = hub.cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandles[4] = hub.cocoaKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyPressed>(this));
+	_eventHubHandles[5] = hub.cocoaKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyReleased>(this));
+	_eventHubHandles[6] = hub.cocoaKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyTyped>(this));
+	_eventHubHandles[7] = hub.cocoaApplicationEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnWindowResized>(this));
+}
+
+void ImGuiMetalLayer::UnsubscribeFromEventHub() {
+	if (not _eventHub)
+		return;
+
+	_eventHub->cocoaMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[0]);
+	_eventHub->cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[1]);
+	_eventHub->cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[2]);
+	_eventHub->cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[3]);
+	_eventHub->cocoaKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[4]);
+	_eventHub->cocoaKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[5]);
+	_eventHub->cocoaKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[6]);
+	_eventHub->cocoaApplicationEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[7]);
+
+	_eventHub = nullptr;
+	_eventHubHandles = {};
 }
 
 void ImGuiMetalLayer::Begin(const float deltaTime) {
@@ -192,78 +200,62 @@ void ImGuiMetalLayer::_Shutdown() {
 	ImGui::DestroyContext();
 }
 
-bool ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+void ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
+void ImGuiMetalLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
-		return false;
+		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, true);
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
+void ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT)
-		return false;
+		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, false);
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
+void ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
-		return false;
+		return;
 
 	ImGui::GetIO().AddKeyEvent(key, true);
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
+void ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None)
-		return false;
+		return;
 
 	ImGui::GetIO().AddKeyEvent(key, false);
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
+void ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const unsigned int codepoint = event.GetKeyCode();
 	if (codepoint == 0)
-		return false;
+		return;
 
 	ImGui::GetIO().AddInputCharacter(codepoint);
-
-	return false;
 }
 
-bool ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+void ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
 	const auto scale = static_cast<float>(_context->get().GetView()->layer()->contentsScale());
 	io.DisplayFramebufferScale = ImVec2(scale, scale);
-
-	return false;
 }
 
 }

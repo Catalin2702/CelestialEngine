@@ -65,7 +65,14 @@ void MetalContext::Init() {
 	_shaderLibrary = std::make_unique<MetalShaderLibrary>(_device.get());
 
 	_CreateView();
-	_CreateDisplayLink();
+
+	// Only attach a CAMetalDisplayLink when VSync is on: it is what paces frames in that mode. With VSync off the tick loop
+	// drives frames and pulls drawables via CAMetalLayer::nextDrawable(), which Core Animation forbids once a display link
+	// exists for the layer (`-nextDrawable should not be called when using CAMetalDisplayLink`). So leave the layer
+	// display-link-free in that mode.
+	if (Utility::Config::Config::StGetWindowProps().VSync)
+		_CreateDisplayLink();
+
 	metalContextEventDispatcher->metalContextDispatcher.Dispatch();
 }
 

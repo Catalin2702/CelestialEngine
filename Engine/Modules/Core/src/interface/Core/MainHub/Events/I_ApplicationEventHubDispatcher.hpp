@@ -23,13 +23,13 @@ public:
 	virtual ~I_ApplicationEventHubDispatcher() = default;
 
 public:
-	virtual void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {}
-	virtual void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {}
+	virtual void DispatchWindowResizeEvent(Events::WindowResizeEvent&) {}
+	virtual void DispatchWindowCloseEvent(Events::WindowCloseEvent&) {}
 
-	virtual void DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {}
-	virtual void DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) {}
-	virtual void DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) {}
-	virtual void DispatchAppErrorEvent(Events::AppErrorEvent& appErrorEvent) {}
+	virtual void DispatchAppTickEvent(Events::AppTickEvent&) {}
+	virtual void DispatchAppUpdateEvent(Events::AppUpdateEvent&) {}
+	virtual void DispatchAppRenderEvent(Events::AppRenderEvent&) {}
+	virtual void DispatchAppErrorEvent(Events::AppErrorEvent&) {}
 };
 
 }

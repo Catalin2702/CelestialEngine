@@ -63,68 +63,59 @@ protected:
 	/**
 	 * @brief Handles mouse moved events for ImGui
 	 * @param event Mouse moved event
-	 * @return bool True if the event was handled
-	 * @details Pure virtual method for updating mouse cursor position in ImGui
-	 * @brief Pure virtual method for handling creation frame logic
+	 * @details Pure virtual method for updating mouse cursor position in ImGui. Subscribed to the event hub's
+	 *			mouse-moved multicast dispatcher (see the concrete layer's SubscribeToEventHub).
 	 */
-	virtual bool _OnMouseMoved(Events::MouseMovedEvent& event) const = 0;
+	virtual void _OnMouseMoved(Events::MouseMovedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles mouse scrolled events for ImGui
 	 * @param event Mouse scrolled event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing mouse wheel scrolling in ImGui
-	 * @brief Pure virtual method for handling rendering frame logic
 	 */
-	virtual bool _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const = 0;
+	virtual void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const = 0;
 
 	/**
 	 * @brief Handles mouse button pressed events for ImGui
 	 * @param event Mouse button pressed event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing mouse button presses in ImGui context
 	 */
-	virtual bool _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const = 0;
+	virtual void _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles mouse button released events for ImGui
 	 * @param event Mouse button released event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing mouse button releases in ImGui context
 	 */
-	virtual bool _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const = 0;
+	virtual void _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles key pressed events for ImGui
 	 * @param event Key pressed event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing keyboard key presses in ImGui context
 	 */
-	virtual bool _OnKeyPressed(Events::KeyPressedEvent& event) const = 0;
+	virtual void _OnKeyPressed(Events::KeyPressedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles key released events for ImGui
 	 * @param event Key released event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing keyboard key releases in ImGui context
 	 */
-	virtual bool _OnKeyReleased(Events::KeyReleasedEvent& event) const = 0;
+	virtual void _OnKeyReleased(Events::KeyReleasedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles key typed events for ImGui
 	 * @param event Key typed event (character input)
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for processing character input for ImGui text fields
 	 */
-	virtual bool _OnKeyTyped(Events::KeyTypedEvent& event) const = 0;
+	virtual void _OnKeyTyped(Events::KeyTypedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles window resized events for ImGui
 	 * @param event Window resize event
-	 * @return bool True if the event was handled
 	 * @details Pure virtual method for updating ImGui window when window is resized
 	 */
-	virtual bool _OnWindowResized(Events::WindowResizeEvent& event) const = 0;
+	virtual void _OnWindowResized(Events::WindowResizeEvent& event) const = 0;
 
 protected:
 	bool _initialized = false;						///< Flag to track if ImGui Metal backend was successfully initialized

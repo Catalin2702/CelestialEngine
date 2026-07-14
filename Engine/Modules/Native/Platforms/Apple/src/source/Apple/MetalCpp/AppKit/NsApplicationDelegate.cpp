@@ -15,12 +15,12 @@
 
 namespace CE::Native {
 
-void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
+void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification*) {
 	assert(_appDidFinishLaunchingDispatcher.IsBound() and "NsApplicationDelegate::applicationDidFinishLaunching: The delegate is not bound.");
 	_appDidFinishLaunchingDispatcher.Execute();
 }
 
-void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
+void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification*) {
 	if (_appWillFinishLaunchingDispatcher.IsBound())
 		_appWillFinishLaunchingDispatcher.Execute();
 }

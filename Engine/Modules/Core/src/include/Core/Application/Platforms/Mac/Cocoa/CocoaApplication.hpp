@@ -15,6 +15,7 @@
 #include "Core/Application/I_Application.hpp"
 
 #include "Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp"
+#include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
@@ -110,7 +111,7 @@ public:
 	 * @param event Reference to the event to be processed
 	 * @details Dispatches events to the appropriate layers in the layer stack
 	 */
-	void OnEvent(Events::I_Event& event) override {}
+	void OnEvent(Events::I_Event& /*event*/) override {}
 
 	void DispatchEventToLayers(Events::I_Event& event);
 
@@ -182,22 +183,36 @@ public:
 public:
 	void SetEventHubDispatcher() override;
 
+public:
+	CocoaEventHubDispatcher eventHubDispatcher; ///< Multicast event hub fed by the native view/window unicast dispatchers
+
 private:
-	void _BindWindowCallbacks() const;
-	void _SetWindowCallbacks();
+	void _BindContextDelegates();
 
-	void _BindViewCallbacks();
-	void _SetViewEventCallbacks();
+	/**
+	 * @brief Handles the application's did-finish-launching lifecycle event
+	 * @details Bound to NsApplicationDelegate and invoked once the AppKit run loop has started. Performs the app-level setup
+	 *			that must happen after launch completes: promotes the process to a regular UI app, builds the main menu,
+	 *			activates the app and reveals the window.
+	 */
+	void _OnDidFinishLaunching() const;
 
-	void _OnWindowWillClose(const NS::Notification* notification);
+	/**
+	 * @brief Builds and installs the application's main menu
+	 * @details Creates a minimal main menu with an application menu holding a standard "Quit" item wired to Cmd+Q, so the
+	 *			native menu bar and its keyboard shortcut work.
+	 */
+	void _CreateMenuBar() const;
 
-	void _OnMouseButtonDown(const NS::Event* event);
-	void _OnMouseButtonUp(const NS::Event* event);
-	void _OnMouseButtonDragged(const NS::Event* event);
-	void _OnMouseMoved(const NS::Event* event);
+	/**
+	 * @brief Application-level reaction to a window close event dispatched by the event hub
+	 * @details Subscribed to CocoaEventHubDispatcher::cocoaApplicationEventHub.onCloseMulticastDispatcher. Routes the close
+	 *			through the engine's clean shutdown path.
+	 */
+	void _OnWindowClose(Events::WindowCloseEvent& event);
 
-	void _OnKeyDown(const NS::Event* event);
-	void _OnKeyUp(const NS::Event* event);
+	void _OnDrawableResize(MTK::View*, CGSize size);
+	void _OnDraw(MTK::View*);
 
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance

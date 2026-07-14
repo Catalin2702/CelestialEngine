@@ -62,7 +62,7 @@ public:
 	 *			For example, it can be used to set the callbacks to their initial states, ensure that the window is properly configured, or perform any other necessary initialization before rendering begins.
 	 *			Derived classes can override this method to implement any specific setup required for their window implementation before the rendering loop starts.
 	 */
-	virtual void GetReady(bool VSync) {}
+	virtual void GetReady(bool /*VSync*/) {}
 
 public:
 	/**
@@ -118,7 +118,7 @@ public:
 	 * @param enabled True to enable VSync, false to disable
 	 * @details VSync synchronizes rendering with the monitor's refresh rate
 	 */
-	virtual void SetVSync(bool enabled) {}
+	virtual void SetVSync(bool /*enabled*/) {}
 
 protected:
 	/**
