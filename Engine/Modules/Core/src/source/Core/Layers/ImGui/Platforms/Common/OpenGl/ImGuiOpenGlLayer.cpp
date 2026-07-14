@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -61,7 +61,7 @@ void ImGuiOpenGlLayer::OnEvent(Events::I_Event& event) {
 		dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseMoved));
 		break;
 	case Events::EventType::MouseScrolled:
-		dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseScrolled));
+		dispatcher.Dispatch<Events::MouseWheelScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseScrolled));
 		break;
 	case Events::EventType::MouseButtonPressed:
 		dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiOpenGlLayer::_OnMouseButtonPressed));
@@ -192,7 +192,7 @@ bool ImGuiOpenGlLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	return false;
 }
 
-bool ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
+bool ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 

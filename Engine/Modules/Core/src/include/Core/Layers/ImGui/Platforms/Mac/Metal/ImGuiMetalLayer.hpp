@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -63,7 +63,7 @@ protected:
 
 	bool _OnMouseMoved(Events::MouseMovedEvent& event) const override;
 
-	bool _OnMouseScrolled(Events::MouseScrolledEvent& event) const override;
+	bool _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
 
 	bool _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
 

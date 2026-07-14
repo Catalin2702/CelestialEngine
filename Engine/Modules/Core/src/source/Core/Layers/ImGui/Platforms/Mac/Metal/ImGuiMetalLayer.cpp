@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -67,7 +67,7 @@ void ImGuiMetalLayer::OnEvent(Events::I_Event& event) {
 			dispatcher.Dispatch<Events::MouseMovedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseMoved));
 			break;
 		case Events::EventType::MouseScrolled:
-			dispatcher.Dispatch<Events::MouseScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseScrolled));
+			dispatcher.Dispatch<Events::MouseWheelScrolledEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseScrolled));
 			break;
 		case Events::EventType::MouseButtonPressed:
 			dispatcher.Dispatch<Events::MouseButtonPressedEvent>(BIND_FN_ONE_PARAM(ImGuiMetalLayer::_OnMouseButtonPressed));
@@ -199,7 +199,7 @@ bool ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
 	return false;
 }
 
-bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseScrolledEvent& event) const {
+bool ImGuiMetalLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 

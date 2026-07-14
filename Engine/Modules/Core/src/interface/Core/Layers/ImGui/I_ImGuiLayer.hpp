@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -16,7 +16,7 @@
 
 namespace CE::Events {
 	class MouseMovedEvent;
-	class MouseScrolledEvent;
+	class MouseWheelScrolledEvent;
 	class MouseButtonPressedEvent;
 	class MouseButtonReleasedEvent;
 
@@ -76,7 +76,7 @@ protected:
 	 * @details Pure virtual method for processing mouse wheel scrolling in ImGui
 	 * @brief Pure virtual method for handling rendering frame logic
 	 */
-	virtual bool _OnMouseScrolled(Events::MouseScrolledEvent& event) const = 0;
+	virtual bool _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const = 0;
 
 	/**
 	 * @brief Handles mouse button pressed events for ImGui
