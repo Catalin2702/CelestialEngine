@@ -22,13 +22,4 @@ std::string WindowResizeEvent::ToString() const {
 	return ss.str();
 }
 
-AppErrorEvent::AppErrorEvent(int errorCode, const char* description, bool isMutable):
-	I_Event(isMutable), _errorCode(errorCode), _description(description) {}
-
-std::string AppErrorEvent::ToString() const {
-	std::stringstream ss;
-	ss << GetName() << ": " << "ErrorCode: " << _errorCode << ". Description: " << _description;
-	return ss.str();
-}
-
 }
