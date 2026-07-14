@@ -20,32 +20,77 @@
 
 namespace CE::Utility {
 
-template <typename R, typename... Args>
+template <typename... Args>
 class CE_API UnicastDispatcher {
 public:
-	using CallbackType = CallbackDelegate<R, Args...>;
+	using DelegateType = EventDelegate<Args...>;
 
 public:
-	void Bind(CallbackType delegate) {
+	void Bind(DelegateType delegate) {
 		if (not IsBound())
-			_callback = delegate;
+			_delegate = delegate;
 		else {
 			const auto message = "A delegate is already assigned";
 			CE_CORE_ERROR(message);
 		}
 	}
 
-	void Unbind(const CallbackType& delegate = {}) {
+	void Unbind(const DelegateType& delegate = {}) {
 		if (delegate)
-			_callback = delegate;
+			_delegate = delegate;
+		else {
+			_delegate._context = nullptr;
+			_delegate._stub = nullptr;
+		}
+	}
+
+	void Dispatch(Args... args) const {
+		if (not IsBound()) {
+			const auto error = "UnicastDispatcher::Dispatch: Set the delegate before trying to execute this method.";
+			CE_CORE_WARN(error);
+			return;
+		}
+		_delegate(args...);
+	}
+
+public:
+	[[nodiscard]] bool IsBound() const { return _delegate.IsValid(); }
+
+private:
+	DelegateType _delegate;
+};
+
+template <typename R, typename... Args>
+class CE_API CallbackDispatcher {
+public:
+	using CallbackType = CallbackDelegate<R, Args...>;
+
+public:
+	void Bind(CallbackType callback) {
+		if (not IsBound())
+			_callback = callback;
+		else {
+			const auto message = "A delegate is already assigned";
+			CE_CORE_ERROR(message);
+		}
+	}
+
+	void Unbind(const CallbackType& callback = {}) {
+		if (callback)
+			_callback = callback;
 		else {
 			_callback._context = nullptr;
 			_callback._stub = nullptr;
 		}
 	}
 
-	void Dispatch(Args... args) const {
-		_callback(args...);
+	R Execute(Args... args) {
+		if (not IsBound()) {
+			const auto error = "CallbackDispatcher::Execute: Set the callback before trying to execute this method.";
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
+		}
+		return _callback(args...);
 	}
 
 public:
@@ -127,14 +172,14 @@ private:
 }
 
 template<typename... Args>
-using UnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, Args...>;
+using UnicastEventDispatcher = CE::Utility::UnicastDispatcher<Args...>;
 
 using VoidEventDelegate = EventDelegate<void>;
-using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, void>;
+using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void>;
 using VoidMulticastEventDispatcher = CE::Utility::MulticastDispatcher<>;
 
 using BoolEventDelegate = EventDelegate<bool>;
-using BoolUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void, bool>;
+using BoolUnicastEventDispatcher = CE::Utility::UnicastDispatcher<bool>;
 using BoolMulticastEventDispatcher = CE::Utility::MulticastDispatcher<bool>;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
