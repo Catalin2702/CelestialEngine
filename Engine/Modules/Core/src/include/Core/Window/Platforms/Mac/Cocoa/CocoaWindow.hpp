@@ -47,7 +47,7 @@ namespace NS {
 namespace CE::Core {
 
 class CocoaWindowEventHandler: public Native::WindowEventDispatcher {
-	struct WindowStateEvents {
+	struct CocoaWindowLifecycleEvents {
 		VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
 		VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
 		VoidMulticastEventDispatcher cocoaWindowWillShutdownMulticastDispatcher;
@@ -59,7 +59,7 @@ public:
 	void DispatchCocoaWindowWillShutdown();
 
 public:
-	WindowStateEvents windowStateEvents;
+	CocoaWindowLifecycleEvents cocoaWindowStateEvents;
 };
 
 /**
@@ -153,7 +153,7 @@ public:
 	WINDOW_API_TYPE(Cocoa)
 
 public:
-	std::unique_ptr<CocoaWindowEventHandler> cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events
+	CocoaWindowEventHandler cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events
 
 private:
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window

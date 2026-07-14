@@ -22,20 +22,19 @@
 namespace CE::Core {
 
 void CocoaWindowEventHandler::DispatchCocoaWindowCreated() {
-	windowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
+	cocoaWindowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() {
-	windowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
+	cocoaWindowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() {
-	windowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+	cocoaWindowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
 }
 
 CocoaWindow::CocoaWindow() {
-	cocoaWindowEventDispatcher = std::make_unique<CocoaWindowEventHandler>();
-	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowCreatedMulticastDispatcher.Dispatch();
 }
 
 CocoaWindow::~CocoaWindow() {
@@ -94,7 +93,7 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 
 void CocoaWindow::Init() {
 	_InitWindow();
-	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedMulticastDispatcher.Dispatch();
 }
 
 void CocoaWindow::_InitWindow() {
@@ -128,7 +127,7 @@ void CocoaWindow::_InitWindow() {
 	}
 	_window = NS::TransferPtr(rawWindow);
 
-	_window->setDelegate(cocoaWindowEventDispatcher.get());
+	_window->setDelegate(&cocoaWindowEventDispatcher);
 	_window->setMinSize(CGSizeMake(640, 360));
 	_window->setOpaque(false);
 	_window->setTitle(NS::String::string(windowProps.title.c_str(), NS::UTF8StringEncoding));
@@ -140,7 +139,7 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
-	cocoaWindowEventDispatcher->windowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
+	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownMulticastDispatcher.Dispatch();
 	if (_window) {
 		_window->close();
 		_window = nullptr;
