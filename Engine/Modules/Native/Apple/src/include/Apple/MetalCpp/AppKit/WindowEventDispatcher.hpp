@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -23,6 +23,27 @@ namespace CE::Native {
 
 class WindowEventDispatcher: public NS::I_WindowEventDispatcher {
 public:
+	struct NSWindowGeometryEvents {
+		UnicastEventDispatcher<const NS::Notification*> didResizeDispatcher;
+		UnicastEventDispatcher<const NS::Notification*> didMoveDispatcher;
+	};
+
+	struct NSWindowFocusEvents {
+		UnicastEventDispatcher<const NS::Notification*> didBecomeKeyDispatcher;
+		UnicastEventDispatcher<const NS::Notification*> didResignKeyDispatcher;
+	};
+
+	struct NSWindowStateEvents {
+		UnicastEventDispatcher<const NS::Notification*> didMiniaturizeDispatcher;
+		UnicastEventDispatcher<const NS::Notification*> didDeminiaturizeDispatcher;
+		UnicastEventDispatcher<const NS::Notification*> didEnterFullScreenDispatcher;
+		UnicastEventDispatcher<const NS::Notification*> didExitFullScreenDispatcher;
+	};
+
+	struct NSWindowLifecycleEvents {
+		UnicastEventDispatcher<const NS::Notification*> willCloseDispatcher;
+	};
+public:
 	WindowEventDispatcher() = default;
 
 	~WindowEventDispatcher() override = default;
@@ -39,15 +60,10 @@ public:
 	void DispatchWindowWillClose(NS::Notification* notification) override;
 
 public:
-	NSNotificationMulticastDispatcher windowDidResizeMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidMoveMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidBecomeKeyMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidResignKeyMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidMiniaturizeMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidDeminiaturizeMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidEnterFullScreenMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowDidExitFullScreenMulticastDispatcher;
-	NSNotificationMulticastDispatcher windowWillCloseMulticastDispatcher;
+	NSWindowGeometryEvents nsWindowGeometryEvents;
+	NSWindowFocusEvents nsWindowFocusEvents;
+	NSWindowStateEvents nsWindowStateEvents;
+	NSWindowLifecycleEvents nsWindowLifecycleEvents;
 };
 
 }

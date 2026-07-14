@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp"
@@ -12,39 +12,39 @@
 namespace CE::Native {
 
 void WindowEventDispatcher::DispatchWindowDidResize(NS::Notification* notification) {
-	windowDidResizeMulticastDispatcher.Dispatch(notification);
+	nsWindowGeometryEvents.didResizeDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMove(NS::Notification* notification) {
-	windowDidMoveMulticastDispatcher.Dispatch(notification);
+	nsWindowGeometryEvents.didMoveDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidBecomeKey(NS::Notification* notification) {
-	windowDidBecomeKeyMulticastDispatcher.Dispatch(notification);
+	nsWindowFocusEvents.didBecomeKeyDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidResignKey(NS::Notification* notification) {
-	windowDidResignKeyMulticastDispatcher.Dispatch(notification);
+	nsWindowFocusEvents.didResignKeyDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidMiniaturize(NS::Notification* notification) {
-	windowDidMiniaturizeMulticastDispatcher.Dispatch(notification);
+	nsWindowStateEvents.didMiniaturizeDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidDeminiaturize(NS::Notification* notification) {
-	windowDidDeminiaturizeMulticastDispatcher.Dispatch(notification);
+	nsWindowStateEvents.didDeminiaturizeDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidEnterFullScreen(NS::Notification* notification) {
-	windowDidEnterFullScreenMulticastDispatcher.Dispatch(notification);
+	nsWindowStateEvents.didEnterFullScreenDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowDidExitFullScreen(NS::Notification* notification) {
-	windowDidExitFullScreenMulticastDispatcher.Dispatch(notification);
+	nsWindowStateEvents.didExitFullScreenDispatcher.Dispatch(notification);
 }
 
 void WindowEventDispatcher::DispatchWindowWillClose(NS::Notification* notification) {
-	windowWillCloseMulticastDispatcher.Dispatch(notification);
+	nsWindowLifecycleEvents.willCloseDispatcher.Dispatch(notification);
 }
 
 }
