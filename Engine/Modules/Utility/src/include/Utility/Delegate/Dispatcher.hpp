@@ -175,7 +175,7 @@ template<typename... Args>
 using UnicastEventDispatcher = CE::Utility::UnicastDispatcher<Args...>;
 
 using VoidEventDelegate = EventDelegate<void>;
-using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<void>;
+using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<>;
 using VoidMulticastEventDispatcher = CE::Utility::MulticastDispatcher<>;
 
 using BoolEventDelegate = EventDelegate<bool>;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -89,7 +89,7 @@ void MetalContext::_CreateView() {
 	_view->setPaused(true);
 	_view->setEnableSetNeedsDisplay(false);
 
-	_viewDelegate = std::make_unique<Native::ViewDelegate>();
+	_viewDelegate = std::make_unique<Native::MtkViewDelegate>();
 	_view->setDelegate(_viewDelegate.get());
 
 	_view->setEventDispatcher(metalContextEventDispatcher.get());
@@ -107,7 +107,7 @@ void MetalContext::_CreateDisplayLink() {
 		throw std::runtime_error("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
 	}
 
-	_displayLinkDelegate = std::make_unique<Native::MetalDisplayLinkDelegate>();
+	_displayLinkDelegate = std::make_unique<Native::CaMetalDisplayLinkDelegate>();
 	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateCallback(
 		[this](CA::MetalDisplayLink*, const CA::MetalDisplayLinkUpdate* update) {
 			// Publish the drawable vended by this update so AcquireDrawable() hands it to the renderer, then drive the

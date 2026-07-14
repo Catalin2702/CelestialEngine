@@ -9,7 +9,7 @@
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 
-#include <Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp>
+#include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"

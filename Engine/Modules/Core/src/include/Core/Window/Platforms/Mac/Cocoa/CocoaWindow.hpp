@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
 
-#include "Apple/MetalCpp/AppKit/WindowEventDispatcher.hpp"
+#include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -46,11 +46,11 @@ namespace NS {
 
 namespace CE::Core {
 
-class CocoaWindowEventHandler: public Native::WindowEventDispatcher {
+class CocoaWindowEventHandler: public Native::NsWindowEventDispatcher {
 	struct CocoaWindowLifecycleEvents {
-		VoidMulticastEventDispatcher cocoaWindowCreatedMulticastDispatcher;
-		VoidMulticastEventDispatcher cocoaWindowInitializedMulticastDispatcher;
-		VoidMulticastEventDispatcher cocoaWindowWillShutdownMulticastDispatcher;
+		UnicastEventDispatcher<> cocoaWindowCreatedMulticastDispatcher;
+		UnicastEventDispatcher<> cocoaWindowInitializedMulticastDispatcher;
+		UnicastEventDispatcher<> cocoaWindowWillShutdownMulticastDispatcher;
 	};
 
 public:

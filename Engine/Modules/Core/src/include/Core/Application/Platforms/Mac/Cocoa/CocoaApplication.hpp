@@ -14,7 +14,7 @@
 
 #include "Core/Application/I_Application.hpp"
 
-#include "Apple/MetalCpp/AppKit/ApplicationDelegate.hpp"
+#include "Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
@@ -207,7 +207,7 @@ private:
 
 	ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
 
-	Native::ApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
+	Native::NsApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame

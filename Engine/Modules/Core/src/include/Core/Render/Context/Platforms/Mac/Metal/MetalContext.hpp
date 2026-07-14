@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -16,9 +16,9 @@
 
 #include "Core/Render/Context/I_Context.hpp"
 
-#include "Apple/MetalCpp/AppKit/ViewEventDispatcher.hpp"
-#include "Apple/MetalCpp/MetalKit/ViewDelegate.hpp"
-#include "Apple/MetalCpp/QuartzCore/MetalDisplayLinkDelegate.hpp"
+#include "Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp"
+#include "Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp"
+#include "Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Define/Render.hpp"
 
@@ -49,7 +49,7 @@ struct CE_API MetalContextProps {
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 };
 
-class MetalContextEventDispatcher: public Native::ViewEventDispatcher {
+class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
 public:
 	void DispatchMetalContextCreated();
 	void DispatchMetalContextInitialized();
@@ -194,10 +194,10 @@ private:
 	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
 
 	std::unique_ptr<MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
-	std::unique_ptr<Native::ViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
+	std::unique_ptr<Native::MtkViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
 
 	NS::SharedPtr<CA::MetalDisplayLink> _displayLink = nullptr; ///< Paces frames in step with the display refresh
-	std::unique_ptr<Native::MetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
+	std::unique_ptr<Native::CaMetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
 
 	CA::MetalDrawable* _displayLinkDrawable = nullptr; ///< Drawable vended by the current display-link update; valid only for the duration of the frame callback
 	std::function<void(MTK::View*)> _drawCallback; ///< Invoked once per display-link update to render a frame
