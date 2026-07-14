@@ -12,6 +12,7 @@ set(HEADERS
 	src/include/Events/GenericEvent.hpp
 	src/include/Events/KeyEvent.hpp
 	src/include/Events/MouseEvent.hpp
+	src/include/Events/WindowEvent.hpp
 )
 
 set(INTERFACES
@@ -24,6 +25,7 @@ set(SOURCES
 	src/source/Events/I_Event.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
+	src/source/Events/WindowEvent.cpp
 )
 
 add_library(CE_Events SHARED
