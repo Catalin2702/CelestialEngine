@@ -30,8 +30,8 @@ public:
 		if (not IsBound())
 			_delegate = delegate;
 		else {
-			const auto message = "A delegate is already assigned";
-			CE_CORE_ERROR(message);
+			CE_CORE_WARN("A delegate is already assigned");
+			return;
 		}
 	}
 
@@ -45,11 +45,9 @@ public:
 	}
 
 	void Dispatch(Args... args) const {
-		if (not IsBound()) {
-			const auto error = "UnicastDispatcher::Dispatch: Set the delegate before trying to execute this method.";
-			CE_CORE_WARN(error);
+		if (not IsBound())
 			return;
-		}
+
 		_delegate(args...);
 	}
 
@@ -70,8 +68,8 @@ public:
 		if (not IsBound())
 			_callback = callback;
 		else {
-			const auto message = "A delegate is already assigned";
-			CE_CORE_ERROR(message);
+			CE_CORE_WARN("A delegate is already assigned");
+			return;
 		}
 	}
 
