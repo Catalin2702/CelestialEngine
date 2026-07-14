@@ -4,17 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
-#include "Events/ApplicationEvent.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
+#include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Utility.hpp"
 
@@ -22,7 +18,6 @@
 
 #include <stdexcept>
 #include <utility>
-
 
 namespace CE::Core {
 
@@ -43,6 +38,42 @@ static int _st_GLFWWindowCount = 0;
  * @details Updated by SetVSync() and returned by IsVSync()
  */
 bool _glfwVSync = false;
+
+void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int height) const {
+	windowStateEvents.onResizeDispatcher.Dispatch(width, height);
+}
+
+void GlfwWindowEventHandler::DispatchCloseEvent() const {
+	windowStateEvents.onCloseDispatcher.Dispatch();
+}
+
+void GlfwWindowEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
+	windowStateEvents.onErrorDispatcher.Dispatch(errorCode, description);
+}
+
+void GlfwWindowEventHandler::DispatchKeyEvent(const int key, const int action, const int scancode, const int mods) const {
+	keyboardEvents.onKeyDispatcher.Dispatch(key, action, scancode, mods);
+}
+
+void GlfwWindowEventHandler::DispatchCharEvent(const unsigned int codepoint) const {
+	keyboardEvents.onCharDispatcher.Dispatch(codepoint);
+}
+
+void GlfwWindowEventHandler::DispatchMouseButtonEvent(const int button, const int action, const int mods) const {
+	mouseEvents.onMouseButtonDispatcher.Dispatch(button, action, mods);
+}
+
+void GlfwWindowEventHandler::DispatchMousePositionEvent(const double xPos, const double yPos) const {
+	mouseEvents.onMousePositionDispatcher.Dispatch(xPos, yPos);
+}
+
+void GlfwWindowEventHandler::DispatchMouseDraggedEvent(const int button, const int action, const int mods, const double xPos, const double yPos) const {
+	mouseEvents.onMouseDraggedDispatcher.Dispatch(button, action, mods, xPos, yPos);
+}
+
+void GlfwWindowEventHandler::DispatchMouseWheelScrollEvent(const double xOffset, const double yOffset) const {
+	mouseEvents.onMouseWheelScrollDispatcher.Dispatch(xOffset, yOffset);
+}
 
 GlfwWindow::GlfwWindow() {
 	Init();
@@ -111,95 +142,69 @@ void GlfwWindow::_SetIOEventCallbacks() {
 	if (not _glfwWindow)
 		return;
 
-	// glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int, const int action, const int) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		switch (action) {
-	// 			case GLFW_PRESS: {
-	// 				Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key), 0};
-	// 				windowCallbacks->EventCallback(keyPressedEvent);
-	// 				break;
-	// 			}
-	//
-	// 			case GLFW_RELEASE: {
-	// 				Events::KeyReleasedEvent keyReleasedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key)};
-	// 				windowCallbacks->EventCallback(keyReleasedEvent);
-	// 				break;
-	// 			}
-	//
-	// 			case GLFW_REPEAT: {
-	// 				Events::KeyPressedEvent keyPressedEvent{KeyCode::KeyboardKeyCodeFromGlfw(key), 1};
-	// 				windowCallbacks->EventCallback(keyPressedEvent);
-	// 				break;
-	// 			}
-	// 			default:;
-	// 		}
-	// 	}
-	// });
-	//
-	// glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int codepoint) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		Events::KeyTypedEvent keyTypedEvent{codepoint};
-	// 		windowCallbacks->EventCallback(keyTypedEvent);
-	// 	}
-	// });
-	//
-	// glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		switch (action) {
-	// 			case GLFW_PRESS: {
-	// 				Events::MouseButtonPressedEvent mouseButtonPressedEvent{KeyCode::MouseButtonKeyCodeFromGlfw(button)};
-	// 				windowCallbacks->EventCallback(mouseButtonPressedEvent);
-	// 				break;
-	// 			}
-	// 			case GLFW_RELEASE: {
-	// 				Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{KeyCode::MouseButtonKeyCodeFromGlfw(button)};
-	// 				windowCallbacks->EventCallback(mouseButtonReleasedEvent);
-	// 				break;
-	// 			}
-	// 			default:;
-	// 		}
-	// 	}
-	// });
-	//
-	// glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		Events::MouseScrolledEvent mouseScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
-	// 		windowCallbacks->EventCallback(mouseScrolledEvent);
-	// 	}
-	// });
-	//
-	// glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
-	// 		windowCallbacks->EventCallback(mouseMovedEvent);
-	// 	}
-	// });
+	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int scancode, const int action, const int mods) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchKeyEvent(key, scancode, action, mods);
+		}
+	});
+
+	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int codepoint) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchCharEvent(codepoint);
+		}
+	});
+
+	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int mods) {
+		// GLFW has no native drag event, so we track button state here to synthesize
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			if (button >= 0 && button < static_cast<int>(_this->_pressedMouseButtons.size()))
+				_this->_pressedMouseButtons[button] = (action == GLFW_PRESS);
+			_this->_lastMouseMods = mods;
+
+			_this->windowEventHandler.DispatchMouseButtonEvent(button, action, mods);
+		}
+	});
+
+	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
+		// if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
+		// 	Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
+		// 	windowCallbacks->EventCallback(mouseMovedEvent);
+		// }
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchMousePositionEvent(xPos, yPos);
+
+			// GLFW has no native drag event: if the cursor moves while a mouse button is
+			// held, synthesize a drag event for each pressed button.
+			for (int button = 0; button < static_cast<int>(_this->_pressedMouseButtons.size()); ++button) {
+				if (_this->_pressedMouseButtons[button])
+					_this->windowEventHandler.DispatchMouseDraggedEvent(button, GLFW_PRESS, _this->_lastMouseMods, xPos, yPos);
+			}
+		}
+	});
+
+	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
+		}
+	});
 }
 
 void GlfwWindow::_SetWindowEventCallbacks() {
 	if (not _glfwWindow)
 		return;
 
-	// glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		Events::WindowResizeEvent event{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
-	// 		windowCallbacks->EventCallback(event);
-	// 		windowCallbacks->_internalCallbacks.ResizeEventCallback(event);
-	// 	}
-	// });
-	//
-	// glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-	// 	if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-	// 		Events::WindowCloseEvent event;
-	// 		windowCallbacks->EventCallback(event);
-	// 	}
-	// });
-}
+	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchResizeEvent(width, height);
+			_this->SetSize(width, height);
+		}
+	});
 
-void GlfwWindow::_SetInternalCallbacks() {
-	// _callbacks._internalCallbacks.ResizeEventCallback = [this](const Events::WindowResizeEvent& event) {
-	// 	SetSize(event.GetWidth(), event.GetHeight());
-	// };
+	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchCloseEvent();
+		}
+	});
 }
 
 void GlfwWindow::Init() {
@@ -207,7 +212,6 @@ void GlfwWindow::Init() {
 
 	_SetIOEventCallbacks();
 	_SetWindowEventCallbacks();
-	_SetInternalCallbacks();
 
 	_st_GLFWWindowCount++;
 }
@@ -215,11 +219,13 @@ void GlfwWindow::Init() {
 void GlfwWindow::_InitWindow() {
 	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
-			CE_CORE_ERROR("Could not initialize GLFW!");
-			throw std::runtime_error("Could not initialize GLFW!");
+			const auto error = "GlfwWindow::_InitWindow: Could not initialize GLFW!";
+			windowEventHandler.DispatchErrorEvent(-1, error);
+			throw std::runtime_error(error);
 		}
-		glfwSetErrorCallback([]([[maybe_unused]] const int error_code, [[maybe_unused]] const char* description) {
-			CE_CORE_ERROR("GLFW error: {0}\nDescription: {1}", error_code, description);
+		glfwSetErrorCallback([](const int error_code, const char* description) {
+			const auto& app = dynamic_cast<GlfwApplication&>(I_Application::StGet());
+			app.GetGlfwWindow().windowEventHandler.DispatchErrorEvent(error_code, description);
 		});
 		_st_GLFWInitialized = true;
 	}
@@ -240,11 +246,12 @@ void GlfwWindow::_InitWindow() {
 	));
 
 	if (not _glfwWindow) {
-		CE_CORE_ERROR("Failed to create GLFW window!");
-		throw std::runtime_error("Failed to create GLFW window!");
+		const auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";
+		windowEventHandler.DispatchErrorEvent(-1, error);
+		throw std::runtime_error(error);
 	}
 
-	// glfwSetWindowUserPointer(_glfwWindow.get(), &_callbacks);
+	glfwSetWindowUserPointer(_glfwWindow.get(), this);
 }
 
 void GlfwWindow::_Shutdown() {

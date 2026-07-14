@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -18,12 +18,53 @@
 #include "Define/Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
+#include <array>
 #include <utility>
 
 struct GLFWwindow;
 
 namespace CE::Core {
+
+class GlfwWindowEventHandler {
+public:
+	struct GlfwWindowStateEvents {
+		UnicastEventDispatcher<int, int> onResizeDispatcher;
+		UnicastEventDispatcher<> onCloseDispatcher;
+		UnicastEventDispatcher<int, const char*> onErrorDispatcher;
+	};
+
+	struct GlfwKeyboardEvents {
+		UnicastEventDispatcher<int, int, int, int> onKeyDispatcher;
+		UnicastEventDispatcher<unsigned int> onCharDispatcher;
+	};
+
+	struct GlfwMouseEvents {
+		UnicastEventDispatcher<int, int, int> onMouseButtonDispatcher;
+		UnicastEventDispatcher<double, double> onMousePositionDispatcher;
+		UnicastEventDispatcher<int, int, int, double, double> onMouseDraggedDispatcher;
+		UnicastEventDispatcher<double, double> onMouseWheelScrollDispatcher;
+	};
+
+public:
+	void DispatchResizeEvent(int width, int height) const;
+	void DispatchCloseEvent() const;
+	void DispatchErrorEvent(int errorCode, const char* description) const;
+
+	void DispatchKeyEvent(int key, int action, int scancode, int mods) const;
+	void DispatchCharEvent(unsigned int codepoint) const;
+
+	void DispatchMouseButtonEvent(int button, int action, int mods) const;
+	void DispatchMousePositionEvent(double xPos, double yPos) const;
+	void DispatchMouseDraggedEvent(int button, int action, int mods, double xPos, double yPos) const;
+	void DispatchMouseWheelScrollEvent(double xOffset, double yOffset) const;
+
+public:
+	GlfwWindowStateEvents windowStateEvents;
+	GlfwKeyboardEvents keyboardEvents;
+	GlfwMouseEvents mouseEvents;
+};
 
 /**
  * @class GlfwWindow
@@ -148,13 +189,6 @@ protected:
 	 */
 	void _SetWindowEventCallbacks() override;
 
-	/**
-	 * @brief Sets internal callbacks for window events
-	 * @details Stores the provided callbacks in the _data structure, which will be
-	 *			invoked by the GLFW event callbacks registered in _SetWindowCallbacks()
-	 */
-	void _SetInternalCallbacks() override;
-
 protected:
 	/**
 	 * @brief Initializes the GLFW window and OpenGL context
@@ -172,8 +206,18 @@ protected:
 public:
 	WINDOW_API_TYPE(GLFW)
 
+public:
+	GlfwWindowEventHandler windowEventHandler;
+
 private:
 	Types::GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
+
+	/// @brief Tracks the pressed/released state of each mouse button (indexed by GLFW button code).
+	/// @details GLFW has no native drag event, so a drag is synthesized when the cursor moves while a button is held.
+	std::array<bool, 8> _pressedMouseButtons{};
+
+	/// @brief Latest keyboard modifier flags reported by the mouse button callback, forwarded with synthesized drag events.
+	int _lastMouseMods = 0;
 };
 
 }

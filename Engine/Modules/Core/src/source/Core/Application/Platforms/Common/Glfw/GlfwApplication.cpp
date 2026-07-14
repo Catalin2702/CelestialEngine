@@ -28,6 +28,10 @@
 
 namespace CE::Core {
 
+static void LogError(Events::AppErrorEvent& appErrorEvent) {
+	CE_CORE_ERROR(appErrorEvent);
+}
+
 GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
@@ -143,7 +147,7 @@ void GlfwApplication::_InitWindow() {
 	_window = std::make_unique<GlfwWindow>();
 	SetEventHubDispatcher();
 
-	eventHubDispatcher.glfwMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromFunction<&LogMouseMoved>());
+	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(EventDelegate<Events::AppErrorEvent&>::FromFunction<&LogError>());
 
 	InitInput(windowProps.windowApi);
 }
