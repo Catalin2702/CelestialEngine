@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-03
+# Updated: 2026-07-14
 #
 
 set(APPLICATION_HEADERS
@@ -29,6 +29,15 @@ set(LAYERS_HEADERS
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
+	>
+)
+
+set(MAINHUB_HEADERS
+	#Events
+	src/include/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
 	>
 )
 
@@ -70,6 +79,15 @@ set(LAYERS_INTERFACES
 	src/interface/Core/Layers/I_Layer.hpp
 	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
 )
+
+set(MAINHUB_INTERFACES
+	# Events
+	src/interface/Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp
+	src/interface/Core/MainHub/Events/I_EventHubDispatcher.hpp
+	src/interface/Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp
+	src/interface/Core/MainHub/Events/I_MouseEventHubDispatcher.hpp
+)
+
 
 set(RENDER_INTERFACES
 	# Context
@@ -113,6 +131,15 @@ set(LAYERS_SOURCES
 	>
 )
 
+set(MAINHUB_SOURCES
+	#Events
+	src/source/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
+	>
+)
+
 set(RENDER_SOURCES
 	# Context
 	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
@@ -143,6 +170,7 @@ set(HEADERS
 	${APPLICATION_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
+	${MAINHUB_HEADERS}
 	${RENDER_HEADERS}
 	${WINDOW_HEADERS}
 )
@@ -151,6 +179,7 @@ set(INTERFACES
 	${APPLICATION_INTERFACES}
 	${INPUT_INTERFACES}
 	${LAYERS_INTERFACES}
+	${MAINHUB_INTERFACES}
 	${RENDER_INTERFACES}
 	${WINDOW_INTERFACES}
 )
@@ -159,6 +188,7 @@ set(SOURCES
 	${APPLICATION_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
+	${MAINHUB_SOURCES}
 	${RENDER_SOURCES}
 	${WINDOW_SOURCES}
 )
