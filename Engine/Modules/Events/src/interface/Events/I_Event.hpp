@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -42,6 +42,7 @@ enum class EventType: uint8_t {
 	AppTick,										///< Application tick event
 	AppUpdate,										///< Application update event
 	AppRender,										///< Application render event
+	AppError,										///< Application error event
 
 	KeyPressed,										///< Keyboard key pressed event
 	KeyReleased,									///< Keyboard key released event

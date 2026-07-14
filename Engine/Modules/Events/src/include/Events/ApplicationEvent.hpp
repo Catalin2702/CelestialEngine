@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -143,6 +143,30 @@ public:
 public:
 	EVENT_CLASS_TYPE(AppRender)
 	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+};
+
+/**
+ * @class AppErrorEvent
+ * @brief Event triggered on each error
+ */
+class CE_API AppErrorEvent: public I_Event {
+public:
+	AppErrorEvent(int errorCode, const char* description, bool isMutable = false);
+
+public:
+	[[nodiscard]] int GetErrorCode() const { return _errorCode; }
+
+	[[nodiscard]] const char* GetDescription() const { return _description; }
+
+	[[nodiscard]] std::string ToString() const override;
+
+public:
+	EVENT_CLASS_TYPE(AppError)
+	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+private:
+	int _errorCode;
+	const char* _description;
 };
 
 }
