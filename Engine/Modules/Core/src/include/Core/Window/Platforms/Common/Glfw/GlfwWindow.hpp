@@ -30,21 +30,21 @@ namespace CE::Core {
 class GlfwWindowEventHandler {
 public:
 	struct GlfwWindowStateEvents {
-		UnicastEventDispatcher<int, int> onResizeDispatcher;
-		UnicastEventDispatcher<> onCloseDispatcher;
-		UnicastEventDispatcher<int, const char*> onErrorDispatcher;
+		UnicastDispatcher<int, int> onResizeDispatcher;
+		UnicastDispatcher<> onCloseDispatcher;
+		UnicastDispatcher<int, const char*> onErrorDispatcher;
 	};
 
 	struct GlfwKeyboardEvents {
-		UnicastEventDispatcher<int, int, int, int> onKeyDispatcher;
-		UnicastEventDispatcher<unsigned int> onCharDispatcher;
+		UnicastDispatcher<int, int, int, int> onKeyDispatcher;
+		UnicastDispatcher<unsigned int> onCharDispatcher;
 	};
 
 	struct GlfwMouseEvents {
-		UnicastEventDispatcher<int, int, int> onMouseButtonDispatcher;
-		UnicastEventDispatcher<double, double> onMousePositionDispatcher;
-		UnicastEventDispatcher<int, int, int, double, double> onMouseDraggedDispatcher;
-		UnicastEventDispatcher<double, double> onMouseWheelScrollDispatcher;
+		UnicastDispatcher<int, int, int> onMouseButtonDispatcher;
+		UnicastDispatcher<double, double> onMousePositionDispatcher;
+		UnicastDispatcher<int, int, int, double, double> onMouseDraggedDispatcher;
+		UnicastDispatcher<double, double> onMouseWheelScrollDispatcher;
 	};
 
 public:
