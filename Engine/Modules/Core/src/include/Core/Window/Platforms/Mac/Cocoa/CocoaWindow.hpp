@@ -22,7 +22,6 @@
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
-#include <memory>
 #include <utility>
 
 namespace CA {
