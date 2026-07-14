@@ -16,14 +16,6 @@
 
 namespace CE::Core {
 
-void GlfwEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	glfwApplicationEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	glfwApplicationEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
-}
-
 void GlfwEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
 	glfwApplicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
 }
@@ -36,7 +28,7 @@ void GlfwEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& appR
 	glfwApplicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
 }
 
-void GlfwEventHubDispatcher::DispatchAppErrorEvent(Events::AppErrorEvent& appErrorEvent) {
+void GlfwEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
 	glfwApplicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
 }
 
@@ -72,14 +64,12 @@ void GlfwEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelS
 	glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
 }
 
-void GlfwEventHubDispatcher::ReceiveWindowResizeEvent(const int width, const int height) {
-	Events::WindowResizeEvent windowResizeEvent{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
-	DispatchWindowResizeEvent(windowResizeEvent);
+void GlfwEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
+	glfwWindowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
 }
 
-void GlfwEventHubDispatcher::ReceiveWindowCloseEvent() {
-	Events::WindowCloseEvent windowCloseEvent;
-	DispatchWindowCloseEvent(windowCloseEvent);
+void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
+	glfwWindowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
 void GlfwEventHubDispatcher::ReceiveAppTickEvent() {
@@ -98,7 +88,7 @@ void GlfwEventHubDispatcher::ReceiveAppRenderEvent() {
 }
 
 void GlfwEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
-	Events::AppErrorEvent appErrorEvent{errorCode, description};
+	Events::ErrorEvent appErrorEvent{errorCode, description};
 	DispatchAppErrorEvent(appErrorEvent);
 }
 
@@ -158,6 +148,16 @@ void GlfwEventHubDispatcher::ReceiveMouseDraggedEvent(const int button, const in
 void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const double xOffset, const double yOffset) {
 	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveWindowResizeEvent(const int width, const int height) {
+	Events::WindowResizeEvent windowResizeEvent{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+	DispatchWindowResizeEvent(windowResizeEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveWindowCloseEvent() {
+	Events::WindowCloseEvent windowCloseEvent;
+	DispatchWindowCloseEvent(windowCloseEvent);
 }
 
 }

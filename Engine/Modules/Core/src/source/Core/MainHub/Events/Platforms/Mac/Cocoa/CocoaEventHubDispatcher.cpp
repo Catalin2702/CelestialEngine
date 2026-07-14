@@ -58,7 +58,7 @@ void CocoaEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& app
 	cocoaApplicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
 }
 
-void CocoaEventHubDispatcher::DispatchAppErrorEvent(Events::AppErrorEvent& appErrorEvent) {
+void CocoaEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
 	cocoaApplicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
 }
 
@@ -105,8 +105,23 @@ void CocoaEventHubDispatcher::ReceiveWindowResizeEvent(const unsigned int width,
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
-	Events::AppErrorEvent appErrorEvent{errorCode, description};
+	Events::ErrorEvent appErrorEvent{errorCode, description};
 	DispatchAppErrorEvent(appErrorEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveAppRenderEvent() {
+	Events::AppRenderEvent appRenderEvent;
+	DispatchAppRenderEvent(appRenderEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveAppTickEvent() {
+	Events::AppTickEvent appTickEvent;
+	DispatchAppTickEvent(appTickEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveAppUpdateEvent() {
+	Events::AppUpdateEvent appUpdateEvent;
+	DispatchAppUpdateEvent(appUpdateEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveKeyDownEvent(const NS::Event* event) {

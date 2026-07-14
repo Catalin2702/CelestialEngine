@@ -12,21 +12,27 @@
 #ifndef CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
 #define CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
 
-#include "Core/MainHub/Events/I_EventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_MouseEventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_WindowEventHubDispatcher.hpp"
 
 #include "Utility/Delegate/Dispatcher.hpp"
 
 namespace CE::Core {
 
-class GlfwEventHubDispatcher: public I_EventHubDispatcher {
+class GlfwEventHubDispatcher:
+	public I_ApplicationEventHubDispatcher,
+	public I_KeyboardEventHubDispatcher,
+	public I_MouseEventHubDispatcher,
+	public I_WindowEventHubDispatcher
+{
 public:
 	struct GlfwApplicationEventHub {
-		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
+		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
+		Utility::MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
 		Utility::MulticastDispatcher<Events::AppTickEvent&> onTickMulticastDispatcher;
 		Utility::MulticastDispatcher<Events::AppUpdateEvent&> onUpdateMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppErrorEvent&> onErrorMulticastDispatcher;
 	};
 
 	struct GlfwKeyboardEventHub {
@@ -43,28 +49,30 @@ public:
 		Utility::MulticastDispatcher<Events::MouseWheelScrolledEvent&> onWheelScrolledMulticastDispatcher;
 	};
 
+	struct GlfwWindowEventHub {
+		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
+		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
+	};
+
 public:
 	GlfwEventHubDispatcher() = default;
 	~GlfwEventHubDispatcher() override = default;
 
 public:
-#pragma region ApplicationEvent
-	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
-	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
-
+#pragma region DispatchApplicationEvent
 	void DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) override;
 	void DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) override;
 	void DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) override;
-	void DispatchAppErrorEvent(Events::AppErrorEvent& appErrorEvent) override;
+	void DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) override;
 #pragma endregion
 
-#pragma region KeyboardEvent
+#pragma region DispatchKeyboardEvent
 	void DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) override;
 	void DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) override;
 	void DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) override;
 #pragma endregion
 
-#pragma region MouseEvent
+#pragma region DispatchMouseEvent
 	void DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) override;
 	void DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) override;
 	void DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) override;
@@ -72,26 +80,41 @@ public:
 	void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) override;
 #pragma endregion
 
+#pragma region DispatchWindowEvent
+	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
+	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
+#pragma endregion
+
 public:
-	void ReceiveWindowResizeEvent(int width, int height);
-	void ReceiveWindowCloseEvent();
+#pragma region ReceiveApplicationEvent
+	void ReceiveAppErrorEvent(int errorCode, const char* description);
+	void ReceiveAppRenderEvent();
 	void ReceiveAppTickEvent();
 	void ReceiveAppUpdateEvent();
-	void ReceiveAppRenderEvent();
-	void ReceiveAppErrorEvent(int errorCode, const char* description);
+#pragma endregion
 
+#pragma region ReceiveKeyboardEvent
 	void ReceiveKeyEvent(int key, int action, int scancode, int mods);
 	void ReceiveCharEvent(unsigned int codepoint);
+#pragma endregion
 
+#pragma region ReceiveMouseEvent
 	void ReceiveMouseButtonEvent(int button, int action, int mods);
 	void ReceiveMousePositionEvent(double xPos, double yPos);
 	void ReceiveMouseDraggedEvent(int button, int action, int mods, double xPos, double yPos);
 	void ReceiveMouseWheelScrollEvent(double xOffset, double yOffset);
+#pragma endregion
+
+#pragma region ReceiveWindowEvent
+	void ReceiveWindowResizeEvent(int width, int height);
+	void ReceiveWindowCloseEvent();
+#pragma endregion
 
 public:
 	GlfwApplicationEventHub glfwApplicationEventHub;
 	GlfwKeyboardEventHub glfwKeyboardEventHub;
 	GlfwMouseEventHub glfwMouseEventHub;
+	GlfwWindowEventHub glfwWindowEventHub;
 };
 
 }
