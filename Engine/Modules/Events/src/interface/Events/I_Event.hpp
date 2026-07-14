@@ -33,6 +33,8 @@ namespace CE::Events {
 enum class EventType: uint8_t {
 	None = 0,
 
+	Error,											///< Error event
+
 	WindowClose,									///< Window close event
 	WindowResize,									///< Window resize event
 	WindowFocus,									///< Window gained focus event
@@ -42,7 +44,6 @@ enum class EventType: uint8_t {
 	AppTick,										///< Application tick event
 	AppUpdate,										///< Application update event
 	AppRender,										///< Application render event
-	AppError,										///< Application error event
 
 	KeyPressed,										///< Keyboard key pressed event
 	KeyReleased,									///< Keyboard key released event
