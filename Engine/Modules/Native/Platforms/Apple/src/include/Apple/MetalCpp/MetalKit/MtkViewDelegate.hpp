@@ -12,16 +12,15 @@
 #ifndef CE_NATIVE_APPLE_METALCPP_METALKIT_MTKVIEWDELEGATE_HPP
 #define CE_NATIVE_APPLE_METALCPP_METALKIT_MTKVIEWDELEGATE_HPP
 
-#include "MetalKit/MetalKit.hpp"
+#include "Define/DynamicLinker.hpp"
 
-#include <functional>
+#include "Utility/Delegate/Dispatcher.hpp"
 
-using ViewDelegateDrawInMtkViewCallback = std::function<void(MTK::View*)>;
-using ViewDelegateDrawableSizeWillChangeCallback = std::function<void(MTK::View*, CGSize)>;
+#include <MetalKit/MetalKit.hpp>
 
 namespace CE::Native {
 
-class MtkViewDelegate: public MTK::I_ViewDelegate {
+class CE_API MtkViewDelegate: public MTK::I_ViewDelegate {
 public:
 	MtkViewDelegate() = default;
 
@@ -32,12 +31,12 @@ public:
 	void drawableSizeWillChange(MTK::View* view, CGSize size) override;
 
 public:
-	void SetDrawInMtkViewCallback(ViewDelegateDrawInMtkViewCallback callback);
-	void SetDrawableSizeWillChange(ViewDelegateDrawableSizeWillChangeCallback callback);
+	void SetDrawInMtkViewDelegate(const EventDelegate<MTK::View*>& delegate);
+	void SetDrawableSizeWillChangeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate);
 
 private:
-	ViewDelegateDrawInMtkViewCallback _drawInMtkViewCallback;
-	ViewDelegateDrawableSizeWillChangeCallback _drawableSizeWillChangeCallback;
+	CallbackDispatcher<void, MTK::View*> _drawInMtkViewDispatcher;
+	CallbackDispatcher<void, MTK::View*, CGSize> _drawableSizeWillChangeDispatcher;
 };
 
 }

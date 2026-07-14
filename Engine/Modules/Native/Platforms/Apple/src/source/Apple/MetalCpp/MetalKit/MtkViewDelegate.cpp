@@ -9,26 +9,28 @@
 
 #include "Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp"
 
-#include <utility>
+#include <cassert>
 
 namespace CE::Native {
 
 void MtkViewDelegate::drawInMTKView(MTK::View* view) {
-	if (_drawInMtkViewCallback)
-		_drawInMtkViewCallback(view);
+	assert(_drawInMtkViewDispatcher.IsBound() and "MtkViewDelegate::drawInMTKView: The delegate is not bound.");
+	_drawInMtkViewDispatcher.Execute(view);
 }
 
-void MtkViewDelegate::drawableSizeWillChange(MTK::View* view, CGSize size) {
-	if (_drawableSizeWillChangeCallback)
-		_drawableSizeWillChangeCallback(view, size);
+void MtkViewDelegate::drawableSizeWillChange(MTK::View* view, const CGSize size) {
+	assert(_drawableSizeWillChangeDispatcher.IsBound() and "MtkViewDelegate::drawableSizeWillChange: The delegate is not bound.");
+	_drawableSizeWillChangeDispatcher.Execute(view, size);
 }
 
-void MtkViewDelegate::SetDrawInMtkViewCallback(ViewDelegateDrawInMtkViewCallback callback) {
-	_drawInMtkViewCallback = std::move(callback);
+void MtkViewDelegate::SetDrawInMtkViewDelegate(const EventDelegate<MTK::View*>& delegate) {
+	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawInMtkViewDelegate: The delegate is not valid");
+	_drawInMtkViewDispatcher.Bind(delegate);
 }
 
-void MtkViewDelegate::SetDrawableSizeWillChange(ViewDelegateDrawableSizeWillChangeCallback callback) {
-	_drawableSizeWillChangeCallback = std::move(callback);
+void MtkViewDelegate::SetDrawableSizeWillChangeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) {
+	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawableSizeWillChangeDelegate: The delegate is not valid");
+	_drawableSizeWillChangeDispatcher.Bind(delegate);
 }
 
 }

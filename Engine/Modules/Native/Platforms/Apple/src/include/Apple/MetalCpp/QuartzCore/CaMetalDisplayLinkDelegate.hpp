@@ -12,15 +12,15 @@
 #ifndef CE_NATIVE_APPLE_METALCPP_QUARTZCORE_CAMETALDISPLAYLINKDELEGATE_HPP
 #define CE_NATIVE_APPLE_METALCPP_QUARTZCORE_CAMETALDISPLAYLINKDELEGATE_HPP
 
+#include "Define/DynamicLinker.hpp"
+
+#include "Utility/Delegate/Dispatcher.hpp"
+
 #include <QuartzCore/CAMetalDisplayLink.hpp>
-
-#include <functional>
-
-using MetalDisplayLinkDelegateNeedsUpdateCallback = std::function<void(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*)>;
 
 namespace CE::Native {
 
-class CaMetalDisplayLinkDelegate: public CA::I_MetalDisplayLinkDelegate {
+class CE_API CaMetalDisplayLinkDelegate: public CA::I_MetalDisplayLinkDelegate {
 public:
 	CaMetalDisplayLinkDelegate() = default;
 
@@ -30,10 +30,10 @@ public:
 	void metalDisplayLinkNeedsUpdate(CA::MetalDisplayLink* metalDisplayLink, CA::MetalDisplayLinkUpdate* metalDisplayLinkUpdate) override;
 
 public:
-	void SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkDelegateNeedsUpdateCallback callback);
+	void SetMetalDisplayLinkNeedsUpdateDelegate(const EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>& delegate);
 
 private:
-	MetalDisplayLinkDelegateNeedsUpdateCallback _callback;
+	CallbackDispatcher<void, CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*> _metalDisplayLinkNeedsUpdateDispatcher;
 };
 
 }

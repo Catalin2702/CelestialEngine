@@ -172,14 +172,12 @@ private:
 }
 
 template<typename... Args>
-using UnicastEventDispatcher = CE::Utility::UnicastDispatcher<Args...>;
+using UnicastDispatcher = CE::Utility::UnicastDispatcher<Args...>;
 
-using VoidEventDelegate = EventDelegate<void>;
-using VoidUnicastEventDispatcher = CE::Utility::UnicastDispatcher<>;
-using VoidMulticastEventDispatcher = CE::Utility::MulticastDispatcher<>;
+template<typename R, typename... Args>
+using CallbackDispatcher = CE::Utility::CallbackDispatcher<R, Args...>;
 
-using BoolEventDelegate = EventDelegate<bool>;
-using BoolUnicastEventDispatcher = CE::Utility::UnicastDispatcher<bool>;
-using BoolMulticastEventDispatcher = CE::Utility::MulticastDispatcher<bool>;
+template<typename... Args>
+using MulticastDispatcher = CE::Utility::MulticastDispatcher<Args...>;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP

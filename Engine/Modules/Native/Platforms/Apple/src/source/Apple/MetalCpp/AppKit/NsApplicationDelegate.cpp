@@ -11,33 +11,35 @@
 
 #include <Foundation/Foundation.hpp>
 
-#include <utility>
+#include <cassert>
 
 namespace CE::Native {
 
 void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
-	if (_appDidFinishLaunchingCallback)
-		_appDidFinishLaunchingCallback(notification);
+	assert(_appDidFinishLaunchingDispatcher.IsBound() and "NsApplicationDelegate::applicationDidFinishLaunching: The delegate is not bound.");
+	_appDidFinishLaunchingDispatcher.Execute();
 }
 
 void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
-	if (_appWillFinishLaunchingCallback)
-		_appWillFinishLaunchingCallback(notification);
+	assert(_appWillFinishLaunchingDispatcher.IsBound() and "NsApplicationDelegate::applicationWillFinishLaunching: The delegate is not bound.");
+	_appWillFinishLaunchingDispatcher.Execute();
 }
 
 bool NsApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application*) {
 	return _appShouldTerminate;
 }
 
-void NsApplicationDelegate::SetApplicationDidFinishLaunchingCallback(AppDelegateCallback callback) {
-	_appDidFinishLaunchingCallback = std::move(callback);
+void NsApplicationDelegate::SetApplicationDidFinishLaunchingDelegate(const EventDelegate<>& delegate) {
+	assert(delegate.IsValid() and "NsApplicationDelegate::SetApplicationDidFinishLaunchingDelegate: The delegate is not valid");
+	_appDidFinishLaunchingDispatcher.Bind(delegate);
 }
 
-void NsApplicationDelegate::SetApplicationWillFinishLaunchingCallback(AppDelegateCallback callback) {
-	_appWillFinishLaunchingCallback = std::move(callback);
+void NsApplicationDelegate::SetApplicationWillFinishLaunchingDelegate(const EventDelegate<>& delegate) {
+	assert(delegate.IsValid() and "MNsApplicationDelegate::SetApplicationWillFinishLaunchingDelegate: The delegate is not valid");
+	_appWillFinishLaunchingDispatcher.Bind(delegate);
 }
 
-void NsApplicationDelegate::SetApplicationShouldTerminateAfterLastWindowClosed(bool should) {
+void NsApplicationDelegate::SetApplicationShouldTerminateAfterLastWindowClosed(const bool should) {
 	_appShouldTerminate = should;
 }
 

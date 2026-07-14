@@ -11,9 +11,10 @@
 
 #include "Define/DynamicLinker.hpp"
 
+#include "Utility/Delegate/Dispatcher.hpp"
+
 #include <AppKit/AppKit.hpp>
 
-#include <functional>
 
 #ifndef CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
 #define CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
@@ -22,8 +23,6 @@ namespace NS {
 	class Application;
 	class Notification;
 }
-
-using AppDelegateCallback = std::function<void(NS::Notification*)>;
 
 namespace CE::Native {
 
@@ -55,16 +54,16 @@ public:
 
 public:
 	/**
-	 * @brief Set the callback for the applicationDidFinishLaunching method
-	 * @param callback
+	 * @brief Set the delegate for the applicationDidFinishLaunching method
+	 * @param delegate
 	 */
-	void SetApplicationDidFinishLaunchingCallback(AppDelegateCallback callback);
+	void SetApplicationDidFinishLaunchingDelegate(const EventDelegate<>& delegate);
 
 	/**
-	 * @ Set the callback for the applicationWillFinishLaunching method
-	 * @param callback
+	 * @ Set the delegate for the applicationWillFinishLaunching method
+	 * @param delegate
 	 */
-	void SetApplicationWillFinishLaunchingCallback(AppDelegateCallback callback);
+	void SetApplicationWillFinishLaunchingDelegate(const EventDelegate<>& delegate);
 
 	/**
 	 * Set the value returned by applicationShouldTerminateAfterLastWindowClosed method
@@ -73,8 +72,8 @@ public:
 	void SetApplicationShouldTerminateAfterLastWindowClosed(bool should);
 
 private:
-	AppDelegateCallback _appDidFinishLaunchingCallback;
-	AppDelegateCallback _appWillFinishLaunchingCallback;
+	CallbackDispatcher<void> _appDidFinishLaunchingDispatcher;
+	CallbackDispatcher<void> _appWillFinishLaunchingDispatcher;
 	bool _appShouldTerminate = true;
 };
 

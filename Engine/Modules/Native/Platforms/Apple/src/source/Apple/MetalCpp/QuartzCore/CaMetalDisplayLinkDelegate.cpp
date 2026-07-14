@@ -9,17 +9,18 @@
 
 #include "Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp"
 
-#include <utility>
+#include <cassert>
 
 namespace CE::Native {
 
 void CaMetalDisplayLinkDelegate::metalDisplayLinkNeedsUpdate(CA::MetalDisplayLink* metalDisplayLink, CA::MetalDisplayLinkUpdate* metalDisplayLinkUpdate) {
-	if (_callback)
-		_callback(metalDisplayLink, metalDisplayLinkUpdate);
+	assert(_metalDisplayLinkNeedsUpdateDispatcher.IsBound() and "CaMetalDisplayLinkDelegate::metalDisplayLinkNeedsUpdate: The delegate is not bound.");
+	_metalDisplayLinkNeedsUpdateDispatcher.Execute(metalDisplayLink, metalDisplayLinkUpdate);
 }
 
-void CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateCallback(MetalDisplayLinkDelegateNeedsUpdateCallback callback) {
-	_callback = std::move(callback);
+void CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateDelegate(const EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>& delegate) {
+	assert(delegate.IsValid() and "CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateDelegate: The delegate is not valid");
+	_metalDisplayLinkNeedsUpdateDispatcher.Bind(delegate);
 }
 
 }
