@@ -39,9 +39,10 @@ namespace CE::Core {
 class CE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: std::size_t {
 		MouseMoved = 0,
+		MouseDragged,
 		MouseWheelScrolled,
 		MouseButtonPressed,
-		MouseButtonRelease,
+		MouseButtonReleased,
 		KeyboardKeyPressed,
 		KeyboardKeyReleased,
 		KeyboardCharTyped,
@@ -117,6 +118,7 @@ protected:
 	void _Shutdown() override;
 
 	void _OnMouseMoved(Events::MouseMovedEvent& event) const override;
+	void _OnMouseDragged(Events::MouseDraggedEvent& event) const override;
 	void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
 	void _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
 	void _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;

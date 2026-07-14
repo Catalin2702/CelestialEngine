@@ -144,7 +144,7 @@ void GlfwWindow::_SetIOEventCallbacks() {
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int scancode, const int action, const int mods) {
 		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
-			_this->windowEventHandler.DispatchKeyEvent(key, scancode, action, mods);
+			_this->windowEventHandler.DispatchKeyEvent(key, action, scancode, mods);
 		}
 	});
 

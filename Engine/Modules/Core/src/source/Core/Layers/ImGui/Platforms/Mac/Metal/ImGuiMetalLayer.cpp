@@ -68,6 +68,7 @@ void ImGuiMetalLayer::SubscribeToEventHub() {
 	_eventHub = dynamic_cast<CocoaApplication&>(I_Application::StGet()).eventHubDispatcher;
 
 	_eventHubHandles[MouseMoved] = _eventHub->get().cocoaMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseMoved>(this));
+	_eventHubHandles[MouseDragged] = _eventHub->get().cocoaMouseEventHub.onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseDragged>(this));
 	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseScrolled>(this));
 	_eventHubHandles[MouseButtonPressed] = _eventHub->get().cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonPressed>(this));
 	_eventHubHandles[MouseButtonRelease] = _eventHub->get().cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonReleased>(this));
@@ -82,6 +83,7 @@ void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 		return;
 
 	_eventHub->get().cocoaMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
+	_eventHub->get().cocoaMouseEventHub.onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseDragged]);
 	_eventHub->get().cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
 	_eventHub->get().cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
 	_eventHub->get().cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonRelease]);
@@ -196,6 +198,11 @@ void ImGuiMetalLayer::_Shutdown() {
 }
 
 void ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+	auto& io = ImGui::GetIO();
+	io.AddMousePosEvent(event.GetX(), event.GetY());
+}
+
+void ImGuiMetalLayer::_OnMouseDragged(Events::MouseDraggedEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 }

@@ -34,6 +34,10 @@ namespace MTL {
 	class RenderCommandEncoder;
 }
 
+namespace CE::Events {
+	class MouseDraggedEvent;
+}
+
 namespace CE::Core {
 
 class CocoaEventHubDispatcher;
@@ -41,6 +45,7 @@ class CocoaEventHubDispatcher;
 class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: std::size_t {
 		MouseMoved = 0,
+		MouseDragged,
 		MouseWheelScrolled,
 		MouseButtonPressed,
 		MouseButtonRelease,
@@ -88,6 +93,8 @@ protected:
 	void _Shutdown() override;
 
 	void _OnMouseMoved(Events::MouseMovedEvent& event) const override;
+
+	void _OnMouseDragged(Events::MouseDraggedEvent& event) const override;
 
 	void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
 

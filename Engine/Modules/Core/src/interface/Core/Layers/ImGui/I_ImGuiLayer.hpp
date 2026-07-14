@@ -16,6 +16,7 @@
 
 namespace CE::Events {
 	class MouseMovedEvent;
+	class MouseDraggedEvent;
 	class MouseWheelScrolledEvent;
 	class MouseButtonPressedEvent;
 	class MouseButtonReleasedEvent;
@@ -67,6 +68,14 @@ protected:
 	 *			mouse-moved multicast dispatcher (see the concrete layer's SubscribeToEventHub).
 	 */
 	virtual void _OnMouseMoved(Events::MouseMovedEvent& event) const = 0;
+
+	/**
+	 * @brief Feeds the cursor position to ImGui while a mouse button is held
+	 * @details macOS reports cursor movement as mouseDragged (not mouseMoved) while a button is down, so without this ImGui
+	 *			would not see the cursor move during a drag and windows could not be moved. Same coordinate space as
+	 *			_OnMouseMoved (top-left points).
+	 */
+	virtual void _OnMouseDragged(Events::MouseDraggedEvent& event) const = 0;
 
 	/**
 	 * @brief Handles mouse scrolled events for ImGui
