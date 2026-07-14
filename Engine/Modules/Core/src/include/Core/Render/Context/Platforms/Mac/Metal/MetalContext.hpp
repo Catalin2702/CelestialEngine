@@ -56,12 +56,14 @@ public:
 	void DispatchMetalContextInitialized() const;
 	void DispatchMetalContextWillShutdown() const;
 	void DispatchVSyncChanged(bool vsync) const;
+	void DispatchResizeEvent(unsigned int width, unsigned int height) const;
 
 public:
 	UnicastDispatcher<> metalContextCreatedDispatcher;
 	UnicastDispatcher<> metalContextDispatcher;
 	UnicastDispatcher<> metalContextWillShutdownDispatcher;
 	UnicastDispatcher<bool> vsyncChangedDispatcher;
+	UnicastDispatcher<unsigned int, unsigned int> onResizeDispatcher; ///< Drawable resize (backing pixels); bound to the hub by the application
 };
 
 /**
@@ -147,12 +149,6 @@ public:
 	 */
 	void SetDrawDelegate(const EventDelegate<MTK::View*>& delegate);
 
-	/**
-	 * Set the delegate for the view delegate drawableSizeWillChange method
-	 * @param delegate
-	 */
-	void SetDrawableResizeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) const;
-
 public:
 	/**
 	 * @brief Acquires the drawable to render the current frame into
@@ -171,6 +167,14 @@ public:
 
 private:
 	void _OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate* update);
+
+	/**
+	 * @brief Handles the MetalKit view's drawable-size change
+	 * @details Bound to the view delegate in _CreateView. Keeps the drawable in lockstep with the view (the view is paused
+	 *			and driven by the display link, so MetalKit does not auto-resize it) and fires the context's resize dispatcher
+	 *			(backing pixels), which the application routes to the event hub.
+	 */
+	void _OnDrawableResize(MTK::View*, CGSize size) const;
 
 private:
 	/**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Render.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
 struct GLFWwindow;
 
@@ -24,6 +25,26 @@ namespace CE::Types {
 }
 
 namespace CE::Core {
+
+/**
+ * @class OpenGlContextEventDispatcher
+ * @brief Owns the unicast dispatchers the OpenGL context fires for the events it originates
+ * @details The framebuffer-resize event (in backing pixels) is bound by the application to the event hub's
+ *			ReceiveWindowResizeEvent; the lifecycle signals mark the context's creation, initialization and shutdown.
+ */
+class CE_API OpenGlContextEventDispatcher {
+public:
+	void DispatchResizeEvent(int width, int height) const;
+	void DispatchContextCreated() const;
+	void DispatchContextInitialized() const;
+	void DispatchContextWillShutdown() const;
+
+public:
+	UnicastDispatcher<int, int> onResizeDispatcher;
+	UnicastDispatcher<> onCreatedDispatcher;
+	UnicastDispatcher<> onInitializedDispatcher;
+	UnicastDispatcher<> onWillShutdownDispatcher;
+};
 
 /**
  * @class OpenGlContext
@@ -83,6 +104,9 @@ public:
 	[[nodiscard]] bool IsVSyncEnabled() const override;
 
 RENDER_API_TYPE(OpenGL)
+
+public:
+	OpenGlContextEventDispatcher openGlContextEventDispatcher; ///< Fires the context's resize / lifecycle events
 
 private:
 	GLFWwindow* _window;							///< Pointer to the GLFW window associated with this OpenGL context

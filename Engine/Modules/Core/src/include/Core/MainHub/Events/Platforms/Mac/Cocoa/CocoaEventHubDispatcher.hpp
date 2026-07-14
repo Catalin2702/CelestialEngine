@@ -37,27 +37,30 @@ class CocoaEventHubDispatcher:
 {
 public:
 	struct CocoaApplicationEventHub {
-		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
-
-		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppTickEvent&> onTickMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppUpdateEvent&> onUpdateMulticastDispatcher;
+		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
+		MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
+		MulticastDispatcher<Events::AppTickEvent&> onTickMulticastDispatcher;
+		MulticastDispatcher<Events::AppUpdateEvent&> onUpdateMulticastDispatcher;
 	};
 
 	struct CocoaKeyboardEventHub {
-		Utility::MulticastDispatcher<Events::KeyPressedEvent&> onPressedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::KeyReleasedEvent&> onReleasedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::KeyTypedEvent&> onTypedMulticastDispatcher;
+		MulticastDispatcher<Events::KeyPressedEvent&> onPressedMulticastDispatcher;
+		MulticastDispatcher<Events::KeyReleasedEvent&> onReleasedMulticastDispatcher;
+		MulticastDispatcher<Events::KeyTypedEvent&> onTypedMulticastDispatcher;
 	};
 
 	struct CocoaMouseEventHub {
-		Utility::MulticastDispatcher<Events::MouseMovedEvent&> onMovedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseButtonPressedEvent&> onButtonPressedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseButtonReleasedEvent&> onButtonReleasedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseDraggedEvent&> onDraggedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseWheelScrolledEvent&> onWheelScrolledMulticastDispatcher;
+		MulticastDispatcher<Events::MouseMovedEvent&> onMovedMulticastDispatcher;
+		MulticastDispatcher<Events::MouseButtonPressedEvent&> onButtonPressedMulticastDispatcher;
+		MulticastDispatcher<Events::MouseButtonReleasedEvent&> onButtonReleasedMulticastDispatcher;
+		MulticastDispatcher<Events::MouseDraggedEvent&> onDraggedMulticastDispatcher;
+		MulticastDispatcher<Events::MouseWheelScrolledEvent&> onWheelScrolledMulticastDispatcher;
+	};
+
+	struct CocoaWindowEventHub {
+		MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
+		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
+		MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
 	};
 
 public:
@@ -74,9 +77,6 @@ public:
 
 public:
 #pragma region DispatchApplicationEvent
-	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
-	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
-
 	void DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) override;
 	void DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) override;
 	void DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) override;
@@ -97,11 +97,14 @@ public:
 	void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) override;
 #pragma endregion
 
+#pragma region DispatchWindowEvent
+	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
+	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
+	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
+#pragma endregion
+
 public:
 #pragma region ReceiveApplicationEvent
-	void ReceiveWindowWillCloseEvent(const NS::Notification* notification);
-	void ReceiveWindowResizeEvent(unsigned int width, unsigned int height);
-
 	void ReceiveAppErrorEvent(int errorCode, const char* description);
 	void ReceiveAppRenderEvent();
 	void ReceiveAppTickEvent();
@@ -121,10 +124,17 @@ public:
 	void ReceiveScrollWheelEvent(const NS::Event* event);
 #pragma endregion
 
+#pragma region ReceiveWindowEvent
+	void ReceiveWindowWillCloseEvent(const NS::Notification* notification);
+	void ReceiveWindowErrorEvent(int errorCode, const char* description);
+	void ReceiveWindowResizeEvent(unsigned int width, unsigned int height);
+#pragma endregion
+
 public:
 	CocoaApplicationEventHub cocoaApplicationEventHub;
 	CocoaKeyboardEventHub cocoaKeyboardEventHub;
 	CocoaMouseEventHub cocoaMouseEventHub;
+	CocoaWindowEventHub cocoaWindowEventHub;
 
 private:
 	MetalContext* _context = nullptr; ///< Non-owning; used to convert native mouse coordinates

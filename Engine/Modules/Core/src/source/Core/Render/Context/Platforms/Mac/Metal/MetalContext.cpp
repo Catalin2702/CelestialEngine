@@ -37,6 +37,10 @@ void MetalContextEventDispatcher::DispatchVSyncChanged(const bool vsync) const {
 	vsyncChangedDispatcher.Dispatch(vsync);
 }
 
+void MetalContextEventDispatcher::DispatchResizeEvent(const unsigned int width, const unsigned int height) const {
+	onResizeDispatcher.Dispatch(width, height);
+}
+
 MetalContext::MetalContext() {
 	metalContextEventDispatcher = std::make_unique<MetalContextEventDispatcher>();
 	metalContextEventDispatcher->metalContextCreatedDispatcher.Dispatch();
@@ -98,6 +102,9 @@ void MetalContext::_CreateView() {
 	_view->setEnableSetNeedsDisplay(false);
 
 	_viewDelegate = std::make_unique<Native::MtkViewDelegate>();
+	_viewDelegate->SetDrawableSizeWillChangeDelegate(
+		EventDelegate<MTK::View*, CGSize>::FromConstMethod<MetalContext, &MetalContext::_OnDrawableResize>(this)
+	);
 	_view->setDelegate(_viewDelegate.get());
 
 	_view->setEventDispatcher(metalContextEventDispatcher.get());
@@ -163,12 +170,11 @@ void MetalContext::_OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDispl
 	_displayLinkDrawable = nullptr;
 }
 
-void MetalContext::SetDrawableResizeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) const {
-	if (not _viewDelegate) {
-		CE_CORE_WARN("MetalContext::SetDrawableResizeDelegate: View delegate is not initialized. Call Init() first.");
-		return;
-	}
-	_viewDelegate->SetDrawableSizeWillChangeDelegate(delegate);
+void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
+	HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
+
+	// `size` is already in backing pixels; fire it to whoever the application wired to the context's resize dispatcher.
+	metalContextEventDispatcher->DispatchResizeEvent(static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height));
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {

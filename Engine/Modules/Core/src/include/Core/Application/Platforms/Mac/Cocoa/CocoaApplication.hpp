@@ -23,6 +23,7 @@
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 
+#include <array>
 #include <atomic>
 #include <memory>
 #include <thread>
@@ -46,6 +47,32 @@ namespace CE::Core {
 namespace CE::Core {
 
 /**
+ * @class CocoaApplicationEventHandler
+ * @brief Owns the unicast dispatchers the Cocoa application fires for its own lifecycle events
+ * @details AppTick/AppUpdate/AppRender are raised every frame from Tick(); AppError is raised when the application reports a
+ *			failure. The application binds these to the event hub's ReceiveApp* methods (see
+ *			CocoaApplication::SetEventHubDispatcher), so firing one flows into the hub and out to every subscriber.
+ */
+class CocoaApplicationEventHandler {
+public:
+	struct CocoaApplicationEvents {
+		UnicastDispatcher<int, const char*> onErrorDispatcher;
+		UnicastDispatcher<> onTickDispatcher;
+		UnicastDispatcher<> onUpdateDispatcher;
+		UnicastDispatcher<> onRenderDispatcher;
+	};
+
+public:
+	void DispatchErrorEvent(int errorCode, const char* description) const;
+	void DispatchTickEvent() const;
+	void DispatchUpdateEvent() const;
+	void DispatchRenderEvent() const;
+
+public:
+	CocoaApplicationEvents applicationEvents;
+};
+
+/**
  * @class CocoaApplication
  * @brief macOS-specific application implementation using Cocoa
  * @details Provides a macOS-specific implementation of the I_Application interface using Cocoa for application management.
@@ -53,6 +80,13 @@ namespace CE::Core {
  */
 class CE_API CocoaApplication: public I_Application {
 	friend class CocoaApplicationDelegate;
+
+	enum EventHubSubscription: std::size_t {
+		AppError = 0,
+		WindowClose = 1,
+		WindowError = 2,
+		_Count
+	};
 
 public:
 	/**
@@ -105,15 +139,6 @@ public:
 	 * @details Called every frame to update the application. Updates all layers in the layer stack.
 	 */
 	void Tick(float deltaTime) override;
-
-	/**
-	 * @brief Handles events
-	 * @param event Reference to the event to be processed
-	 * @details Dispatches events to the appropriate layers in the layer stack
-	 */
-	void OnEvent(Events::I_Event& /*event*/) override {}
-
-	void DispatchEventToLayers(Events::I_Event& event);
 
 	/**
      * @brief Initializes the application with window properties
@@ -182,9 +207,12 @@ public:
 
 public:
 	void SetEventHubDispatcher() override;
+	void SubscribeToHubDispatcher() override;
+	void UnsubscribeFromDispatcher() override;
 
 public:
 	CocoaEventHubDispatcher eventHubDispatcher; ///< Multicast event hub fed by the native view/window unicast dispatchers
+	CocoaApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
 
 private:
 	void _BindContextDelegates();
@@ -211,7 +239,6 @@ private:
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
-	void _OnDrawableResize(MTK::View*, CGSize size);
 	void _OnDraw(MTK::View*);
 
 private:
@@ -226,6 +253,8 @@ private:
 
 	std::thread _loopThread; ///< Thread for running the application loop
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
+
+	std::array<uint32_t, _Count> _eventHubHandlers{};
 
 public:
 	MTL::RenderPipelineState* defaultRenderPipelineState = nullptr;

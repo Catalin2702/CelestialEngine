@@ -14,10 +14,6 @@
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-#include "Events/ApplicationEvent.hpp"
-#include "Events/I_Event.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
@@ -40,8 +36,25 @@ static void OnQuitMenuItemSelected(void*, SEL, const NS::Object*) {
 	CocoaApplication::StGet().Quit();
 }
 
-static void LogError(Events::AppErrorEvent& appErrorEvent) {
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
+}
+
+void CocoaApplicationEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
+	applicationEvents.onErrorDispatcher.Dispatch(errorCode, description);
+}
+
+void CocoaApplicationEventHandler::DispatchTickEvent() const {
+	applicationEvents.onTickDispatcher.Dispatch();
+}
+
+void CocoaApplicationEventHandler::DispatchUpdateEvent() const {
+	applicationEvents.onUpdateDispatcher.Dispatch();
+}
+
+void CocoaApplicationEventHandler::DispatchRenderEvent() const {
+	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
 CocoaApplication::CocoaApplication() {
@@ -97,31 +110,26 @@ void CocoaApplication::Quit() {
 	);
 	_appCocoa->postEvent(dummyEvent, true);
 
+	UnsubscribeFromDispatcher();
+
 	I_Application::SetRunning(false);
 }
 
 void CocoaApplication::Tick(const float deltaTime) {
+	applicationEventHandler.DispatchTickEvent();
+
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
+	applicationEventHandler.DispatchUpdateEvent();
 
 	if (_imguiLayer) {
 		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
 			layer->OnRender();
+		applicationEventHandler.DispatchRenderEvent();
 
 		_imguiLayer->End();
-	}
-}
-
-void CocoaApplication::DispatchEventToLayers(Events::I_Event& event) {
-	if (event.IsHandled())
-		return;
-
-	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
-		(*--it)->OnEvent(event);
-		if (event.IsHandled())
-			break;
 	}
 }
 
@@ -156,15 +164,7 @@ void CocoaApplication::Init() {
 	InitInput(windowProps.windowApi);
 
 	SetEventHubDispatcher();
-
-	// App-level hub subscribers: quit on window close and log application errors. Input (mouse/keyboard/resize) is consumed
-	// by the ImGui layer, which subscribes itself to the hub in InitImGuiLayer/SetImGuiLayer.
-	eventHubDispatcher.cocoaApplicationEventHub.onCloseMulticastDispatcher.Subscribe(
-		EventDelegate<Events::WindowCloseEvent&>::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowClose>(this)
-	);
-	eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
-		EventDelegate<Events::AppErrorEvent&>::FromFunction<&LogError>()
-	);
+	SubscribeToHubDispatcher();
 
 	_BindContextDelegates();
 
@@ -203,7 +203,7 @@ void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 
 		_imguiLayer = metalLayer;
 		PushOverlay(_imguiLayer);
-		_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
+		_imguiLayer->SubscribeToEventHub();
 	}
 	else {
 		CE_CORE_ERROR("CocoaApplication::SetImGuiLayer: Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.");
@@ -255,7 +255,7 @@ void CocoaApplication::InitImGuiLayer() {
 	auto overlay = std::make_unique<ImGuiMetalLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
-	_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
+	_imguiLayer->SubscribeToEventHub();
 }
 
 void CocoaApplication::SetEventHubDispatcher() {
@@ -299,19 +299,45 @@ void CocoaApplication::SetEventHubDispatcher() {
 	_window->cocoaWindowEventDispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowWillCloseEvent>(&eventHubDispatcher)
 	);
+
+	// The render context owns the drawable-resize signal (backing pixels) → hub as a WindowResize.
+	_context->metalContextEventDispatcher->onResizeDispatcher.Bind(
+		EventDelegate<unsigned int, unsigned int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher)
+	);
+
+	// The application fires its own lifecycle events (tick/update/render each frame, plus errors) into the hub.
+	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onUpdateDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppUpdateEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onRenderDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppRenderEvent>(&eventHubDispatcher));
+}
+
+void CocoaApplication::SubscribeToHubDispatcher() {
+	_eventHubHandlers[AppError] = eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
+		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
+	);
+
+	_eventHubHandlers[WindowClose] = eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowCloseEvent&>::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowClose>(this)
+	);
+	_eventHubHandlers[WindowError] = eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Subscribe(
+		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
+	);
+}
+
+void CocoaApplication::UnsubscribeFromDispatcher() {
+	eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
+
+	eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
+	eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
 }
 
 void CocoaApplication::_BindContextDelegates() {
 	assert(_context && "CocoaApplication::_BindViewCallbacks: Render context must be initialized before binding callbacks");
 
-	// Keep the Metal drawable in lockstep with the view on resize, then translate it into a window resize event so layers
-	// (e.g. ImGui) can update their display size. The view is paused and driven by the display link, so MetalKit does not
-	// auto-resize the drawable for us: without this explicit update the drawable stays at its initial size and the layer
-	// stretches it across the new bounds, distorting the aspect ratio. `size` is already expressed in backing pixels.
-	_context->SetDrawableResizeDelegate(EventDelegate<MTK::View*, CGSize>::FromMethod<CocoaApplication, &CocoaApplication::_OnDrawableResize>(this));
-
 	// Drive a frame from the CAMetalDisplayLink. This is what paces rendering while VSync is enabled (the display link is
 	// unpaused in SetRunning); with VSync off the dedicated tick loop drives Tick instead and the display link stays paused.
+	// (Drawable resize is handled by the context itself and routed to the hub via its resize dispatcher.)
 	_context->SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
 }
 
@@ -361,13 +387,6 @@ void CocoaApplication::_CreateMenuBar() const {
 
 void CocoaApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
-}
-
-void CocoaApplication::_OnDrawableResize(MTK::View*, const CGSize size) {
-	_context->HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
-
-	const auto [width, height] = _window->GetFrameSize();
-	eventHubDispatcher.ReceiveWindowResizeEvent(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 }
 
 void CocoaApplication::_OnDraw(MTK::View*) {

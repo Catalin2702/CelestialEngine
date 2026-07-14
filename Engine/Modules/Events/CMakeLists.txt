@@ -21,7 +21,6 @@ set(INTERFACES
 
 set(SOURCES
 	src/source/Events/GenericEvent.cpp
-	src/source/Events/I_Event.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
 	src/source/Events/WindowEvent.cpp

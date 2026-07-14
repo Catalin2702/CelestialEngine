@@ -39,6 +39,17 @@ namespace CE::Core {
 class CocoaEventHubDispatcher;
 
 class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
+	enum EventHubSubscription: std::size_t {
+		MouseMoved = 0,
+		MouseWheelScrolled,
+		MouseButtonPressed,
+		MouseButtonRelease,
+		KeyboardKeyPressed,
+		KeyboardKeyReleased,
+		KeyboardCharTyped,
+		WindowResize,
+		_Count
+	};
 
 	struct MetalFrameContext {
 		CA::MetalDrawable* drawable = nullptr;			///< Pointer to the Metal drawable
@@ -54,8 +65,6 @@ public:
 public:
 	void OnRender() const override;
 
-	void OnEvent(Events::I_Event& event) override;
-
 	void Begin(float deltaTime) override;
 
 	void End() override;
@@ -63,16 +72,15 @@ public:
 public:
 	/**
 	 * @brief Subscribes this layer's input handlers to the Cocoa event hub
-	 * @param hub The application's event hub whose multicast dispatchers drive ImGui input
 	 * @details Input is delivered directly from the hub (no layer-stack traversal): each ImGui handler becomes a hub
 	 *			subscriber. Call UnsubscribeFromEventHub before the layer is destroyed to avoid dangling delegates.
 	 */
-	void SubscribeToEventHub(CocoaEventHubDispatcher& hub);
+	void SubscribeToEventHub() override;
 
 	/**
 	 * @brief Removes this layer's input handlers from the event hub it was subscribed to
 	 */
-	void UnsubscribeFromEventHub();
+	void UnsubscribeFromEventHub() override;
 
 protected:
 	void _Init() override;
@@ -98,12 +106,12 @@ protected:
 private:
 	std::optional<std::reference_wrapper<MetalContext>> _context;	///< Cached Metal context for rendering
 	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for event handling and context access
+	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
 
-	CocoaEventHubDispatcher* _eventHub = nullptr;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
-	std::array<uint32_t, 8> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<uint32_t, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

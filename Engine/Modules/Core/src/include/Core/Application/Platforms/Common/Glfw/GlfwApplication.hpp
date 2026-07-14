@@ -17,6 +17,7 @@
 #include "Core/Application/I_Application.hpp"
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 
+#include <array>
 #include <memory>
 
 namespace CE::Core {
@@ -30,12 +31,45 @@ namespace CE::Core {
 namespace CE::Core {
 
 /**
+ * @class GlfwApplicationEventHandler
+ * @brief Owns the unicast dispatchers the GLFW application fires for its own lifecycle events
+ * @details AppTick/AppUpdate/AppRender are raised every frame from Tick(); AppError is raised when the application reports a
+ *			failure. The application binds these to the event hub's ReceiveApp* methods (see
+ *			GlfwApplication::SetEventHubDispatcher), so firing one flows into the hub and out to every subscriber.
+ */
+class GlfwApplicationEventHandler {
+public:
+	struct GlfwApplicationEvents {
+		UnicastDispatcher<int, const char*> onErrorDispatcher;
+		UnicastDispatcher<> onTickDispatcher;
+		UnicastDispatcher<> onUpdateDispatcher;
+		UnicastDispatcher<> onRenderDispatcher;
+	};
+
+public:
+	void DispatchErrorEvent(int errorCode, const char* description) const;
+	void DispatchTickEvent() const;
+	void DispatchUpdateEvent() const;
+	void DispatchRenderEvent() const;
+
+public:
+	GlfwApplicationEvents applicationEvents;
+};
+
+/**
  * @class GlfwApplication
  * @brief GLFW-specific application implementation
  * @details Provides a GLFW-specific implementation of the I_Application interface for platforms that support GLFW.
  *			Manages the application lifecycle and event handling using GLFW for window management and input handling.
  */
 class CE_API GlfwApplication: public I_Application {
+	enum EventHubSubscription: std::size_t {
+		AppError = 0,
+		WindowClose = 1,
+		WindowError = 2,
+		_Count
+	};
+
 public:
 	/**
 	 * @brief Default constructor
@@ -89,13 +123,6 @@ public:
 	void Tick(float deltaTime) override;
 
 	/**
-	 * @brief Handles events
-	 * @param event Reference to the event to be processed
-	 * @details Dispatches events to the appropriate layers in the layer stack
-	 */
-	void OnEvent(Events::I_Event& event) override;
-
-	/**
 	 * @brief Initializes the application window
 	 * @details Creates the application window and sets up event callbacks based on the window properties set in Config::Config.
 	 *			Initializes the appropriate input system based on the window API.
@@ -125,11 +152,13 @@ public:
 	void RemoveImGuiLayer() override;
 
 	void SetEventHubDispatcher() override;
+	void SubscribeToHubDispatcher() override;
+	void UnsubscribeFromDispatcher() override;
 
 private:
 	/**
 	 * @brief Application-level reaction to a window close event dispatched by the event hub
-	 * @details Subscribed to GlfwEventHubDispatcher::glfwApplicationEventHub.onCloseMulticastDispatcher; quits the application.
+	 * @details Subscribed to GlfwEventHubDispatcher::glfwWindowEventHub.onCloseMulticastDispatcher; quits the application.
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
@@ -169,6 +198,7 @@ public:
 
 public:
 	GlfwEventHubDispatcher eventHubDispatcher;
+	GlfwApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
 
 private:
 	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
@@ -178,6 +208,8 @@ private:
 	ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 
 	uint32_t _vertexArrayId = 0, _vertexBufferId = 0, _indexBufferId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
+
+	std::array<uint32_t, _Count> _eventHubHandlers{}; ///< Handles of the app-level hub subscriptions, indexed by EventHubSubscription
 };
 
 }

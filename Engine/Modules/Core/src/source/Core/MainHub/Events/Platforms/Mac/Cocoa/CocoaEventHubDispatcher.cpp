@@ -22,7 +22,7 @@ namespace CE::Core {
 // Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
 // growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
 static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
-	if (not (event and context and context->GetView() and window))
+	if (not (context and context->GetView() and window))
 		return {0.0f, 0.0f};
 
 	const auto view = context->GetView();
@@ -36,14 +36,6 @@ static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context,
 void CocoaEventHubDispatcher::SetSources(MetalContext* context, CocoaWindow* window) {
 	_context = context;
 	_window = window;
-}
-
-void CocoaEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	cocoaApplicationEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	cocoaApplicationEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
@@ -94,14 +86,16 @@ void CocoaEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheel
 	cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveWindowWillCloseEvent(const NS::Notification*) {
-	Events::WindowCloseEvent windowCloseEvent{false};
-	DispatchWindowCloseEvent(windowCloseEvent);
+void CocoaEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
+	cocoaWindowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveWindowResizeEvent(const unsigned int width, const unsigned int height) {
-	Events::WindowResizeEvent windowResizeEvent{width, height};
-	DispatchWindowResizeEvent(windowResizeEvent);
+void CocoaEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
+	cocoaWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
+}
+
+void CocoaEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
+	cocoaWindowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
@@ -189,6 +183,21 @@ void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
 		static_cast<float>(event->scrollingDeltaY())
 	};
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowWillCloseEvent(const NS::Notification*) {
+	Events::WindowCloseEvent windowCloseEvent{false};
+	DispatchWindowCloseEvent(windowCloseEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowErrorEvent(int errorCode, const char* description) {
+	Events::ErrorEvent errorEvent{errorCode, description};
+	DispatchWindowErrorEvent(errorEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowResizeEvent(const unsigned int width, const unsigned int height) {
+	Events::WindowResizeEvent windowResizeEvent{width, height};
+	DispatchWindowResizeEvent(windowResizeEvent);
 }
 
 }

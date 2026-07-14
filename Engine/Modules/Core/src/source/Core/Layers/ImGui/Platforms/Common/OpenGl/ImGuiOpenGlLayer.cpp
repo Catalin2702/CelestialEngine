@@ -13,8 +13,6 @@
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Events/ApplicationEvent.hpp"
-#include "Events/I_Event.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
@@ -57,40 +55,36 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::ShowDemoWindow(&show);
 }
 
-void ImGuiOpenGlLayer::OnEvent(Events::I_Event&) {
-	// Input is delivered directly through the event hub (see SubscribeToEventHub), not the layer-stack OnEvent path.
-}
-
-void ImGuiOpenGlLayer::SubscribeToEventHub(GlfwEventHubDispatcher& hub) {
+void ImGuiOpenGlLayer::SubscribeToEventHub() {
 	if (_eventHub)
 		UnsubscribeFromEventHub();
 
-	_eventHub = &hub;
+	_eventHub = dynamic_cast<GlfwApplication&>(I_Application::StGet()).eventHubDispatcher;
 
-	_eventHubHandles[0] = hub.glfwMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
-	_eventHubHandles[1] = hub.glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
-	_eventHubHandles[2] = hub.glfwMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
-	_eventHubHandles[3] = hub.glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
-	_eventHubHandles[4] = hub.glfwKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
-	_eventHubHandles[5] = hub.glfwKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
-	_eventHubHandles[6] = hub.glfwKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
-	_eventHubHandles[7] = hub.glfwApplicationEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnWindowResized>(this));
+	_eventHubHandles[0] = _eventHub->get().glfwMouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
+	_eventHubHandles[1] = _eventHub->get().glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
+	_eventHubHandles[2] = _eventHub->get().glfwMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandles[3] = _eventHub->get().glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandles[4] = _eventHub->get().glfwKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
+	_eventHubHandles[5] = _eventHub->get().glfwKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
+	_eventHubHandles[6] = _eventHub->get().glfwKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
+	_eventHubHandles[7] = _eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnWindowResized>(this));
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
 	if (not _eventHub)
 		return;
 
-	_eventHub->glfwMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[0]);
-	_eventHub->glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[1]);
-	_eventHub->glfwMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[2]);
-	_eventHub->glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[3]);
-	_eventHub->glfwKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[4]);
-	_eventHub->glfwKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[5]);
-	_eventHub->glfwKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[6]);
-	_eventHub->glfwApplicationEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[7]);
+	_eventHub->get().glfwMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[0]);
+	_eventHub->get().glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[1]);
+	_eventHub->get().glfwMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[2]);
+	_eventHub->get().glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[3]);
+	_eventHub->get().glfwKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[4]);
+	_eventHub->get().glfwKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[5]);
+	_eventHub->get().glfwKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[6]);
+	_eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[7]);
 
-	_eventHub = nullptr;
+	_eventHub = std::nullopt;
 	_eventHubHandles = {};
 }
 
@@ -138,7 +132,11 @@ void ImGuiOpenGlLayer::_Init() {
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	// Multi-viewport (detaching ImGui windows into separate OS windows) is intentionally NOT enabled: on macOS a viewport
+	// window dragged out while the main window is fullscreen escapes into a new Space and makes GLFW abort in
+	// _glfwInputWindowContentScale (assert xscale > 0). Keeping windows inside the main window avoids it, and matches the
+	// Metal layer which never enabled viewports either.
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	const auto& app = GlfwApplication::StGet();
 

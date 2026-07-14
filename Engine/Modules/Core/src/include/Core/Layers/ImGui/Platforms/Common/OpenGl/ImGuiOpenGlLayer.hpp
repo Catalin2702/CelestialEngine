@@ -17,7 +17,6 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <array>
-#include <cstdint>
 #include <functional>
 #include <optional>
 
@@ -38,6 +37,18 @@ namespace CE::Core {
  *			and handles all input events through GLFW.
  */
 class CE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
+	enum EventHubSubscription: std::size_t {
+		MouseMoved = 0,
+		MouseWheelScrolled,
+		MouseButtonPressed,
+		MouseButtonRelease,
+		KeyboardKeyPressed,
+		KeyboardKeyReleased,
+		KeyboardCharTyped,
+		WindowResize,
+		_Count
+	};
+
 public:
 	/**
 	 * @brief Constructor
@@ -65,13 +76,6 @@ public:
 	void OnRender() const override;
 
 	/**
-	 * @brief Called when an event is received
-	 * @param event Reference to the event to be processed
-	 * @details Dispatches input events to ImGui for processing and updates ImGui's internal state accordingly. This allows ImGui to respond to user interactions such as mouse movement, clicks, keyboard input, and window resizing.
-	 */
-	void OnEvent(Events::I_Event& event) override;
-
-	/**
 	 * @brief Called at the beginning of the frame to set up ImGui state for OpenGL rendering
 	 * @details Prepares ImGui for a new frame by setting up the OpenGL rendering state and starting a new ImGui frame.
 	 * 			This is called before any ImGui rendering commands are issued each frame.
@@ -88,16 +92,15 @@ public:
 public:
 	/**
 	 * @brief Subscribes this layer's input handlers to the GLFW event hub
-	 * @param hub The application's event hub whose multicast dispatchers drive ImGui input
 	 * @details Input is delivered directly from the hub (no layer-stack traversal): each ImGui handler becomes a hub
 	 *			subscriber. Call UnsubscribeFromEventHub before the layer is destroyed to avoid dangling delegates.
 	 */
-	void SubscribeToEventHub(GlfwEventHubDispatcher& hub);
+	void SubscribeToEventHub() override;
 
 	/**
 	 * @brief Removes this layer's input handlers from the event hub it was subscribed to
 	 */
-	void UnsubscribeFromEventHub();
+	void UnsubscribeFromEventHub() override;
 
 protected:
 	/**
@@ -127,9 +130,9 @@ protected:
 private:
 	std::optional<std::reference_wrapper<OpenGlContext>> _context; ///< Cached OpenGL context pointer
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached OpenGL window pointer
+	std::optional<std::reference_wrapper<GlfwEventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
-	GlfwEventHubDispatcher* _eventHub = nullptr;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
-	std::array<uint32_t, 8> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<uint32_t, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

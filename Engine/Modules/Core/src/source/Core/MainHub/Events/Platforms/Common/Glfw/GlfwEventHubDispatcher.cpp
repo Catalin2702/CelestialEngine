@@ -72,6 +72,10 @@ void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& 
 	glfwWindowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
+void GlfwEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
+	glfwWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
+}
+
 void GlfwEventHubDispatcher::ReceiveAppTickEvent() {
 	Events::AppTickEvent appTickEvent;
 	DispatchAppTickEvent(appTickEvent);
@@ -158,6 +162,11 @@ void GlfwEventHubDispatcher::ReceiveWindowResizeEvent(const int width, const int
 void GlfwEventHubDispatcher::ReceiveWindowCloseEvent() {
 	Events::WindowCloseEvent windowCloseEvent;
 	DispatchWindowCloseEvent(windowCloseEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveWindowErrorEvent(const int errorCode, const char* description) {
+	Events::ErrorEvent errorEvent{errorCode, description};
+	DispatchWindowErrorEvent(errorEvent);
 }
 
 }

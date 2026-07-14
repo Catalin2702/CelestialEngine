@@ -22,7 +22,6 @@
 namespace CE::Events {
 
 	class I_Event;
-	class EventDispatcher;
 
 /**
  * @enum EventType
@@ -80,8 +79,6 @@ enum EventCategory {
  *			The event system uses a polling mechanism where events are processed immediately.
  */
 class CE_API I_Event {
-	friend class EventDispatcher;
-
 protected:
 	I_Event(const bool isMutable): _isMutable(isMutable) {}
 
@@ -152,50 +149,6 @@ public:
 protected:
 	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
 	const bool _isMutable;									///< Flag indicating whether the event is mutable. If not it can't be consumed
-};
-
-
-/**
- * @class EventDispatcher
- * @brief Helper class for dispatching events to type-specific handlers
- * @details The EventDispatcher uses the visitor pattern to dispatch events to
- *			appropriate handlers based on the event's concrete type. It ensures
- *			type safety by checking the event type at runtime before casting.
- */
-class CE_API EventDispatcher {
-template <typename T>
-using EventFn = std::function<bool(T&)>;
-
-public:
-	/**
-	 * @brief Constructor
-	 * @param event Reference to the event to be dispatched
-	 * @details Stores a reference to the event for later dispatching
-	 */
-	EventDispatcher(I_Event& event);
-
-public:
-	/**
-	 * @brief Dispatches the event to a type-specific handler
-	 * @tparam T The concrete event type to dispatch to
-	 * @param func Handler function that takes a reference to the event type
-	 * @return bool True if the event type matched and was dispatched
-	 * @details Checks if the event is of type T, and if so, casts it and calls
-	 *			the handler function. The event's handled flag is updated based
-	 *			on the handler's return value.
-	 */
-	template<typename T>
-	bool Dispatch(EventFn<T> func) {
-		if (_event.GetEventType() == T::GetStaticType()) {
-			if (func(static_cast<T&>(_event)))
-				_event.Consume();
-			return true;
-		}
-		return false;
-	}
-
-private:
-	I_Event& _event;								///< Reference to the event being dispatched
 };
 
 /**

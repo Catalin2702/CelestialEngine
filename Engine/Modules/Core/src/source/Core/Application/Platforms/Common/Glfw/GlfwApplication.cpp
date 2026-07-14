@@ -13,8 +13,6 @@
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Events/ApplicationEvent.hpp"
-#include "Events/I_Event.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Render/Shader.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
@@ -28,8 +26,25 @@
 
 namespace CE::Core {
 
-static void LogError(Events::AppErrorEvent& appErrorEvent) {
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
+}
+
+void GlfwApplicationEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
+	applicationEvents.onErrorDispatcher.Dispatch(errorCode, description);
+}
+
+void GlfwApplicationEventHandler::DispatchTickEvent() const {
+	applicationEvents.onTickDispatcher.Dispatch();
+}
+
+void GlfwApplicationEventHandler::DispatchUpdateEvent() const {
+	applicationEvents.onUpdateDispatcher.Dispatch();
+}
+
+void GlfwApplicationEventHandler::DispatchRenderEvent() const {
+	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
 GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
@@ -61,6 +76,7 @@ void GlfwApplication::Run() {
 }
 
 void GlfwApplication::Quit() {
+	UnsubscribeFromDispatcher();
 	ShutdownInput();
 	SetRunning(false);
 }
@@ -70,6 +86,8 @@ void GlfwApplication::Tick(const float deltaTime) {
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
 	assert(_shaderProgram && "GlfwApplication::Tick: Vertex shader must be initialized before ticking application");
 
+	applicationEventHandler.DispatchTickEvent();
+
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color);
 
 	_shaderProgram->Bind();
@@ -78,44 +96,20 @@ void GlfwApplication::Tick(const float deltaTime) {
 
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
+	applicationEventHandler.DispatchUpdateEvent();
 
 	if (_imguiLayer) {
 		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
 			layer->OnRender();
+		applicationEventHandler.DispatchRenderEvent();
 
 		_imguiLayer->End();
 	}
 
 	_window->OnUpdate();
 	_context->SwapBuffers();
-}
-
-void GlfwApplication::OnEvent(Events::I_Event& event) {
-	Events::EventDispatcher eventDispatcher{event};
-
-	switch (event.GetEventType()) {
-		case Events::EventType::WindowClose: {
-			eventDispatcher.Dispatch<Events::WindowCloseEvent>([this](const Events::WindowCloseEvent& e) {
-				Quit();
-				e.Consume();
-				return true;
-			});
-			break;
-		}
-		default:
-			break;
-	}
-
-	if (event.IsHandled())
-		return;
-
-	for (auto it = _layerStack.end(); it != _layerStack.begin(); ) {
-		(*--it)->OnEvent(event);
-		if (event.IsHandled())
-			break;
-	}
 }
 
 void GlfwApplication::Init() {
@@ -133,7 +127,7 @@ void GlfwApplication::InitImGuiLayer() {
 	auto overlay = std::make_unique<ImGuiOpenGlLayer>();
 	_imguiLayer = overlay.release();
 	PushOverlay(_imguiLayer);
-	_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
+	_imguiLayer->SubscribeToEventHub();
 }
 
 void GlfwApplication::_InitWindow() {
@@ -147,9 +141,7 @@ void GlfwApplication::_InitWindow() {
 
 	_window = std::make_unique<GlfwWindow>();
 	SetEventHubDispatcher();
-
-	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(EventDelegate<Events::AppErrorEvent&>::FromFunction<&LogError>());
-	eventHubDispatcher.glfwApplicationEventHub.onCloseMulticastDispatcher.Subscribe(EventDelegate<Events::WindowCloseEvent&>::FromMethod<GlfwApplication, &GlfwApplication::_OnWindowClose>(this));
+	SubscribeToHubDispatcher();
 
 	InitInput(windowProps.windowApi);
 }
@@ -160,6 +152,12 @@ void GlfwApplication::_InitRenderer() {
 
 	_context = std::make_unique<OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
 	_context->Init();
+
+	// The context is created after the window (and after SetEventHubDispatcher), so its resize dispatcher is bound to the hub
+	// here rather than in SetEventHubDispatcher.
+	_context->openGlContextEventDispatcher.onResizeDispatcher.Bind(
+		EventDelegate<int, int>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveWindowResizeEvent>(&eventHubDispatcher)
+	);
 
 	glGenVertexArrays(1, &_vertexArrayId);
 	glBindVertexArray(_vertexArrayId);
@@ -213,7 +211,7 @@ void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 
 		_imguiLayer = openGlLayer;
 		PushOverlay(_imguiLayer);
-		_imguiLayer->SubscribeToEventHub(eventHubDispatcher);
+		_imguiLayer->SubscribeToEventHub();
 	}
 	else {
 		CE_CORE_ERROR("GlfwApplication::SetImGuiLayer: Provided ImGui layer is not compatible with OpenGlContext. Expected ImGuiOpenGlLayer or derived class.");
@@ -240,9 +238,10 @@ void GlfwApplication::SetEventHubDispatcher() {
 	using hub = GlfwEventHubDispatcher;
 	auto& [windowStateEvents, keyboardEvents, mouseEvents] = _window->windowEventHandler;
 
-	windowStateEvents.onResizeDispatcher.Bind(EventDelegate<int, int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher));
+	// Window resize is fired by the render context (framebuffer size), not the window: see _InitRenderer. The window-size
+	// callback still runs to keep the window's cached size in sync, it just no longer feeds the hub.
 	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveWindowCloseEvent>(&eventHubDispatcher));
-	windowStateEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
+	windowStateEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveWindowErrorEvent>(&eventHubDispatcher));
 
 	keyboardEvents.onKeyDispatcher.Bind(EventDelegate<int, int, int, int>::FromMethod<hub, &hub::ReceiveKeyEvent>(&eventHubDispatcher));
 	keyboardEvents.onCharDispatcher.Bind(EventDelegate<unsigned int>::FromMethod<hub, &hub::ReceiveCharEvent>(&eventHubDispatcher));
@@ -251,6 +250,32 @@ void GlfwApplication::SetEventHubDispatcher() {
 	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMousePositionEvent>(&eventHubDispatcher));
 	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, double, double>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
 	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
+
+	// The application fires its own lifecycle events (tick/update/render each frame, plus errors) into the hub.
+	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onUpdateDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppUpdateEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onRenderDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppRenderEvent>(&eventHubDispatcher));
+}
+
+void GlfwApplication::SubscribeToHubDispatcher() {
+	_eventHubHandlers[AppError] = eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
+		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
+	);
+
+	_eventHubHandlers[WindowClose] = eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowCloseEvent&>::FromMethod<GlfwApplication, &GlfwApplication::_OnWindowClose>(this)
+	);
+	_eventHubHandlers[WindowError] = eventHubDispatcher.glfwWindowEventHub.onErrorMulticastDispatcher.Subscribe(
+		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
+	);
+}
+
+void GlfwApplication::UnsubscribeFromDispatcher() {
+	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
+
+	eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
+	eventHubDispatcher.glfwWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
 }
 
 void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {

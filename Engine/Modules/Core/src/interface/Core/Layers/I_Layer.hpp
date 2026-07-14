@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-14
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
-#include "Events/I_Event.hpp"
+#include <string>
 
 namespace CE::Core {
 
@@ -29,14 +29,10 @@ class CE_API I_Layer {
 protected:
 	/**
 	 * @brief Constructor
-	 * @param name Debug name for the layer (only used in debug builds)
-	 * @details Creates a layer with an optional debug name for identification
+	 * @param name Name for the layer
+	 * @details Creates a layer with an optional name for identification
 	 */
-	I_Layer([[maybe_unused]] const std::string& name = "Layer") {
-#ifdef CE_DEBUG
-		_debugName = name;
-#endif
-	}
+	I_Layer(const std::string& name = "Layer"): _name(name) {}
 
 public:
 	/**
@@ -68,15 +64,6 @@ public:
 	virtual void OnUpdate() = 0;
 
 	/**
-	 * @brief Called when an event occurs
-	 * @param event Reference to the event to be processed
-	 * @return bool True if the event was handled and should stop propagating
-	 * @details Pure virtual method for event handling. Events propagate through layers
-	 *			until one handles them. Return true to stop event propagation.
-	 */
-	virtual void OnEvent(Events::I_Event& event) = 0;
-
-	/**
 	 * @brief Pure virtual method for handling rendering logic
 	 */
 	virtual void OnRender() const = 0;
@@ -92,23 +79,22 @@ public:
 	 */
 	virtual void End() = 0;
 
-#ifdef CE_DEBUG
+	virtual void SubscribeToEventHub() {}
+	virtual void UnsubscribeFromEventHub() {}
+
 public:
 	/**
-	 * @brief Gets the debug name of the layer
-	 * @return const std::string& Reference to the layer's debug name
-	 * @details Only available in debug builds. Used for debugging and logging.
+	 * @brief Gets the name of the layer
+	 * @return const std::string& Reference to the layer's name
 	 */
-	[[nodiscard]] const std::string& GetDebugName() const { return _debugName; }
+	[[nodiscard]] const std::string& GetName() const { return _name; }
 
 protected:
-	std::string _debugName;							///< Debug name for the layer (debug builds only)
-#endif
+	std::string _name;							///< Name for the layer
 
 protected:
 	mutable float _deltaTime = 0.f;					///< Time accumulator for frame timing
 	bool _currentFrameStarted = false;				///< Flag to track if the current frame has started
-
 };
 
 }

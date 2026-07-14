@@ -74,12 +74,6 @@ public:
 	virtual void Tick(float deltaTime) = 0;
 
 	/**
-	 * @brief Virtual method to handle events
-	 * @param event Reference to the event to be processed
-	 */
-	virtual void OnEvent(Events::I_Event& event) = 0;
-
-	/**
      * @brief Virtual method to initialize the application with window properties
      */
 	virtual void Init() = 0;
@@ -184,6 +178,8 @@ public:
 	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
 
 	virtual void SetEventHubDispatcher() = 0;
+	virtual void SubscribeToHubDispatcher() {}
+	virtual void UnsubscribeFromDispatcher() {}
 
 protected:
 	static std::atomic<I_Application*> _stInstance; ///< Singleton application instance

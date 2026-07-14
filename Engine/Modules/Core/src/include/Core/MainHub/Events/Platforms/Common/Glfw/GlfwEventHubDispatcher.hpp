@@ -52,6 +52,7 @@ public:
 	struct GlfwWindowEventHub {
 		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
 		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
+		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
 	};
 
 public:
@@ -83,6 +84,7 @@ public:
 #pragma region DispatchWindowEvent
 	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
 	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
+	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
 #pragma endregion
 
 public:
@@ -108,6 +110,7 @@ public:
 #pragma region ReceiveWindowEvent
 	void ReceiveWindowResizeEvent(int width, int height);
 	void ReceiveWindowCloseEvent();
+	void ReceiveWindowErrorEvent(int errorCode, const char* description);
 #pragma endregion
 
 public:
