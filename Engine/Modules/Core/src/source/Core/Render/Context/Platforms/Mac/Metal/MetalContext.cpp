@@ -15,30 +15,31 @@
 #include "Foundation/Foundation.hpp"
 #include "QuartzCore/CAMetalLayer.hpp"
 
+#include <cassert>
 #include <stdexcept>
 #include <utility>
 
 namespace CE::Core {
 
-void MetalContextEventDispatcher::DispatchMetalContextCreated() {
-	metalContextCreatedMulticastDispatcher.Dispatch();
+void MetalContextEventDispatcher::DispatchMetalContextCreated() const {
+	metalContextCreatedDispatcher.Dispatch();
 }
 
-void MetalContextEventDispatcher::DispatchMetalContextInitialized() {
-	metalContextInitializedDispatcher.Dispatch();
+void MetalContextEventDispatcher::DispatchMetalContextInitialized() const {
+	metalContextDispatcher.Dispatch();
 }
 
-void MetalContextEventDispatcher::DispatchMetalContextWillShutdown() {
+void MetalContextEventDispatcher::DispatchMetalContextWillShutdown() const {
 	metalContextWillShutdownDispatcher.Dispatch();
 }
 
-void MetalContextEventDispatcher::DispatchVSyncChanged(bool vsync) {
-	vsyncChangedMulticastDispatcher.Dispatch(vsync);
+void MetalContextEventDispatcher::DispatchVSyncChanged(const bool vsync) const {
+	vsyncChangedDispatcher.Dispatch(vsync);
 }
 
 MetalContext::MetalContext() {
 	metalContextEventDispatcher = std::make_unique<MetalContextEventDispatcher>();
-	metalContextEventDispatcher->metalContextCreatedMulticastDispatcher.Dispatch();
+	metalContextEventDispatcher->metalContextCreatedDispatcher.Dispatch();
 }
 
 MetalContext::~MetalContext() {
@@ -65,7 +66,7 @@ void MetalContext::Init() {
 
 	_CreateView();
 	_CreateDisplayLink();
-	metalContextEventDispatcher->metalContextInitializedDispatcher.Dispatch();
+	metalContextEventDispatcher->metalContextDispatcher.Dispatch();
 }
 
 void MetalContext::_CreateView() {
@@ -108,17 +109,8 @@ void MetalContext::_CreateDisplayLink() {
 	}
 
 	_displayLinkDelegate = std::make_unique<Native::CaMetalDisplayLinkDelegate>();
-	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateCallback(
-		[this](CA::MetalDisplayLink*, const CA::MetalDisplayLinkUpdate* update) {
-			// Publish the drawable vended by this update so AcquireDrawable() hands it to the renderer, then drive the
-			// frame. The drawable is only valid for the duration of the callback, so it is cleared once the frame is done.
-			_displayLinkDrawable = update ? update->drawable() : nullptr;
-
-			if (_drawCallback)
-				_drawCallback(_view.get());
-
-			_displayLinkDrawable = nullptr;
-		}
+	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateDelegate(
+		EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>::FromMethod<MetalContext, &MetalContext::_OnMetalLinkNeedsUpdate>(this)
 	);
 	_displayLink->setDelegate(_displayLinkDelegate.get());
 
@@ -127,8 +119,9 @@ void MetalContext::_CreateDisplayLink() {
 	_displayLink->addToRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
 }
 
-void MetalContext::SetDrawCallback(std::function<void(MTK::View*)> callback) {
-	_drawCallback = std::move(callback);
+void MetalContext::SetDrawDelegate(const EventDelegate<MTK::View*>& delegate) {
+	assert(delegate.IsValid() and "MetalContext::SetDrawDelegate: The delegate is not valid!");
+	_drawDispatcher.Bind(delegate);
 }
 
 CA::MetalDrawable* MetalContext::AcquireDrawable() const {
@@ -153,12 +146,22 @@ void MetalContext::SetDisplayLinkPaused(const bool paused) const {
 	_displayLink->setPaused(paused);
 }
 
-void MetalContext::SetResizeCallback(std::function<void(MTK::View*, CGSize)> callback) const {
+// ReSharper disable once CppParameterMayBeConstPtrOrRef because it's needed for the callback
+void MetalContext::_OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate* update) {
+	assert(_drawDispatcher.IsBound() and "MetalContext::_OnMetalLinkNeedsUpdate:  The delegate is not bound.");
+	_displayLinkDrawable = update ? update->drawable() : nullptr;
+
+	_drawDispatcher.Execute(_view.get());
+
+	_displayLinkDrawable = nullptr;
+}
+
+void MetalContext::SetDrawableResizeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) const {
 	if (not _viewDelegate) {
-		CE_CORE_WARN("MetalContext::SetResizeCallback: View delegate is not initialized. Call Init() first.");
+		CE_CORE_WARN("MetalContext::SetDrawableResizeDelegate: View delegate is not initialized. Call Init() first.");
 		return;
 	}
-	_viewDelegate->SetDrawableSizeWillChange(std::move(callback));
+	_viewDelegate->SetDrawableSizeWillChangeDelegate(delegate);
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {
@@ -179,7 +182,7 @@ void MetalContext::SetVSync(const bool enabled) const {
 
 	const auto layer = _view->layer();
 	layer->setDisplaySyncEnabled(enabled);
-	metalContextEventDispatcher->vsyncChangedMulticastDispatcher.Dispatch(enabled);
+	metalContextEventDispatcher->vsyncChangedDispatcher.Dispatch(enabled);
 }
 
 bool MetalContext::IsVSyncEnabled() const {

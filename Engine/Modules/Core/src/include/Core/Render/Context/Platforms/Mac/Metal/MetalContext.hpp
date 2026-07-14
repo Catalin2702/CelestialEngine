@@ -13,6 +13,7 @@
 #define CE_CORE_RENDER_CONTEXT_METALCONTEXT_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Define/Render.hpp"
 
 #include "Core/Render/Context/I_Context.hpp"
 
@@ -20,7 +21,7 @@
 #include "Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp"
 #include "Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
-#include "Define/Render.hpp"
+#include "Utility/Delegate/Dispatcher.hpp"
 
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
@@ -51,16 +52,16 @@ struct CE_API MetalContextProps {
 
 class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
 public:
-	void DispatchMetalContextCreated();
-	void DispatchMetalContextInitialized();
-	void DispatchMetalContextWillShutdown();
-	void DispatchVSyncChanged(bool vsync);
+	void DispatchMetalContextCreated() const;
+	void DispatchMetalContextInitialized() const;
+	void DispatchMetalContextWillShutdown() const;
+	void DispatchVSyncChanged(bool vsync) const;
 
 public:
-	VoidMulticastEventDispatcher metalContextCreatedMulticastDispatcher;
-	VoidMulticastEventDispatcher metalContextInitializedDispatcher;
-	VoidMulticastEventDispatcher metalContextWillShutdownDispatcher;
-	BoolMulticastEventDispatcher vsyncChangedMulticastDispatcher;
+	UnicastDispatcher<> metalContextCreatedDispatcher;
+	UnicastDispatcher<> metalContextDispatcher;
+	UnicastDispatcher<> metalContextWillShutdownDispatcher;
+	UnicastDispatcher<bool> vsyncChangedDispatcher;
 };
 
 /**
@@ -140,17 +141,17 @@ public:
 
 public:
 	/**
-	 * @brief Sets the per-frame callback driven by the CAMetalDisplayLink
-	 * @param callback Invoked once per display-link update (on the main run loop), while the display-link-vended drawable
+	 * @brief Sets the per-frame delegate driven by the CAMetalDisplayLink
+	 * @param delegate Invoked once per display-link update (on the main run loop), while the display-link-vended drawable
 	 *		  is available through AcquireDrawable(). This is the render pace when the display link is running.
 	 */
-	void SetDrawCallback(std::function<void(MTK::View*)> callback);
+	void SetDrawDelegate(const EventDelegate<MTK::View*>& delegate);
 
 	/**
-	 * Set the callback for the view delegate drawableSizeWillChange method
-	 * @param callback
+	 * Set the delegate for the view delegate drawableSizeWillChange method
+	 * @param delegate
 	 */
-	void SetResizeCallback(std::function<void(MTK::View*, CGSize)> callback) const;
+	void SetDrawableResizeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) const;
 
 public:
 	/**
@@ -168,10 +169,8 @@ public:
 	 */
 	void SetDisplayLinkPaused(bool paused) const;
 
-public:
-	MetalContextProps props; ///< Properties for initializing the Metal context
-
-	std::unique_ptr<MetalContextEventDispatcher> metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
+private:
+	void _OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate* update);
 
 private:
 	/**
@@ -188,6 +187,11 @@ private:
 	 */
 	void _CreateDisplayLink();
 
+public:
+	MetalContextProps props; ///< Properties for initializing the Metal context
+
+	std::unique_ptr<MetalContextEventDispatcher> metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
+
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
@@ -200,7 +204,7 @@ private:
 	std::unique_ptr<Native::CaMetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
 
 	CA::MetalDrawable* _displayLinkDrawable = nullptr; ///< Drawable vended by the current display-link update; valid only for the duration of the frame callback
-	std::function<void(MTK::View*)> _drawCallback; ///< Invoked once per display-link update to render a frame
+	CallbackDispatcher<void, MTK::View*> _drawDispatcher; ///< Invoked once per display-link update to render a frame
 };
 
 }
