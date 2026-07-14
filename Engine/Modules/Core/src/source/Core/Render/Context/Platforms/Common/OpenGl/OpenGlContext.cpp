@@ -86,4 +86,15 @@ bool OpenGlContext::IsVSyncEnabled() const {
 	return false;
 }
 
+std::pair<float, float> OpenGlContext::GetContentScale() const {
+	if (not _window) {
+		CE_CORE_WARN("OpenGlContext::GetContentScale: Could not get content scale because the window is not set.");
+		return {1.0f, 1.0f};
+	}
+
+	float xScale = 1.0f, yScale = 1.0f;
+	glfwGetWindowContentScale(_window, &xScale, &yScale);
+	return {xScale, yScale};
+}
+
 }

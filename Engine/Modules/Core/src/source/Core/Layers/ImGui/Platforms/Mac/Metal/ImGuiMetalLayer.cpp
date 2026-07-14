@@ -172,18 +172,11 @@ void ImGuiMetalLayer::_Init() {
 
 		Native::ImGuiMetalInit(_context->get().GetDevice());
 
-		// Input is delivered exclusively through the engine event system: the MetalContext view dispatcher translates
-		// native events and they reach this layer via OnEvent(). The ImGui OSX platform backend is deliberately NOT
-		// initialized, because it installs its own event monitor that would capture the same input a second time.
-		// As a consequence this layer owns the platform-side state ImGui still needs: the display size (set here and
-		// refreshed in _OnWindowResized) and the delta time (set in Begin()).
-		if (const auto view = _context->get().GetView()) {
-			const auto [width, height] = _window->get().GetFrameSize();
-			const auto scale = static_cast<float>(view->layer() ? view->layer()->contentsScale() : 1.0);
+		const auto [width, height] = _window->get().GetFrameSize();
+		const auto [xScale, yScale] = _context->get().GetContentScale();
 
-			io.DisplaySize = ImVec2(width, height);
-			io.DisplayFramebufferScale = ImVec2(scale, scale);
-		}
+		io.DisplaySize = ImVec2(width, height);
+		io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 		_initialized = true;
 	}

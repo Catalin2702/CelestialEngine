@@ -18,6 +18,8 @@
 #include "Define/Render.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
+#include <utility>
+
 struct GLFWwindow;
 
 namespace CE::Types {
@@ -96,12 +98,9 @@ public:
 	static void ClearBuffers(Types::BufferBit mask);
 
 public:
-	/**
-	 * @brief Checks if VSync is currently enabled
-	 * @return bool True if VSync is enabled, false otherwise
-	 * @details Returns the current state of VSync in the OpenGL context. This method can be implemented to query the current VSync state based on the context's settings or platform-specific APIs.
-	 */
 	[[nodiscard]] bool IsVSyncEnabled() const override;
+
+	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 RENDER_API_TYPE(OpenGL)
 

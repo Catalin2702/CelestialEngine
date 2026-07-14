@@ -14,6 +14,8 @@
 
 #include "Types/Render/Render.hpp"
 
+#include <utility>
+
 namespace CE::Core {
 
 /**
@@ -53,6 +55,14 @@ public:
 	 *			This allows the application to query the context for its underlying graphics API, which can be useful for conditional rendering logic or debugging.
 	 */
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicsApi() const = 0;
+
+	/**
+	 * @brief Gets the window's content (DPI) scale
+	 * @return std::pair<float, float> The horizontal and vertical scale factors (e.g. {2, 2} on a Retina display)
+	 * @details Ratio between the current DPI and the platform's default DPI, as reported by glfwGetWindowContentScale. Use it
+	 *			to size backing-pixel content against logical points. Returns {1, 1} if the window is not set.
+	 */
+	[[nodiscard]] virtual std::pair<float, float> GetContentScale() const = 0;
 };
 
 }

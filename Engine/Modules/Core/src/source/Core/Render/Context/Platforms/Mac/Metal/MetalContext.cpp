@@ -112,14 +112,16 @@ void MetalContext::_CreateView() {
 
 void MetalContext::_CreateDisplayLink() {
 	if (not (_view and _view->layer())) {
-		CE_CORE_ERROR("MetalContext::_CreateDisplayLink: Cannot create display link because the view or its layer is not initialized.");
-		throw std::runtime_error("MetalContext::_CreateDisplayLink: Cannot create display link because the view or its layer is not initialized.");
+		const auto error = "MetalContext::_CreateDisplayLink: Cannot create display link because MTKView or its layer are not initialized.";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 
 	_displayLink = NS::TransferPtr(CA::MetalDisplayLink::alloc()->init(_view->layer()));
 	if (not _displayLink) {
-		CE_CORE_ERROR("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
-		throw std::runtime_error("MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink!");
+		const auto error = "MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink.";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 
 	_displayLinkDelegate = std::make_unique<Native::CaMetalDisplayLinkDelegate>();
@@ -134,7 +136,7 @@ void MetalContext::_CreateDisplayLink() {
 }
 
 void MetalContext::SetDrawDelegate(const EventDelegate<MTK::View*>& delegate) {
-	assert(delegate.IsValid() and "MetalContext::SetDrawDelegate: The delegate is not valid!");
+	assert(delegate.IsValid() and "MetalContext::SetDrawDelegate: The delegate is not valid.");
 	_drawDispatcher.Bind(delegate);
 }
 
@@ -145,7 +147,7 @@ CA::MetalDrawable* MetalContext::AcquireDrawable() const {
 		return _displayLinkDrawable;
 
 	if (not (_view and _view->layer())) {
-		CE_CORE_WARN("MetalContext::AcquireDrawable: Cannot acquire drawable because the view or its layer is not initialized.");
+		CE_CORE_WARN("MetalContext::AcquireDrawable: Cannot acquire drawable because MTKView or its layer are not initialized.");
 		return nullptr;
 	}
 
@@ -162,7 +164,7 @@ void MetalContext::SetDisplayLinkPaused(const bool paused) const {
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef because it's needed for the callback
 void MetalContext::_OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate* update) {
-	assert(_drawDispatcher.IsBound() and "MetalContext::_OnMetalLinkNeedsUpdate:  The delegate is not bound.");
+	assert(_drawDispatcher.IsBound() and "MetalContext::_OnMetalLinkNeedsUpdate: The delegate is not bound.");
 	_displayLinkDrawable = update ? update->drawable() : nullptr;
 
 	_drawDispatcher.Execute(_view.get());
@@ -179,7 +181,7 @@ void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {
 	if (not (_view and _view->layer())) {
-		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content size change because the view is not initialized or does not have a layer.");
+		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content size change because MTKView or its layer are not initialized.");
 		return;
 	}
 
@@ -189,7 +191,7 @@ void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) 
 
 void MetalContext::SetVSync(const bool enabled) const {
 	if (not (_view and _view->layer())) {
-		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because RenderView is not initialized or does not have a layer.");
+		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because MTKView or its layer are not initialized.");
 		return;
 	}
 
@@ -200,12 +202,21 @@ void MetalContext::SetVSync(const bool enabled) const {
 
 bool MetalContext::IsVSyncEnabled() const {
 	if (not (_view and _view->layer())) {
-		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get VSync state because RenderView is not initialized or does not have a layer.");
+		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get the VSync state because MTKView or its layer are not initialized.");
 		return false;
 	}
 
 	const auto layer = _view->layer();
 	return layer->displaySyncEnabled();
+}
+
+std::pair<float, float> MetalContext::GetContentScale() const {
+	if (not (_view and _view->layer())) {
+		CE_CORE_WARN("MetalContext::GetContentScale: Cannot get the content scale because MTKView or its layer are not initialized.");
+		return {1., 1.};
+	}
+	const auto scale = static_cast<float>(_view->layer()->contentsScale());
+	return {scale, scale};
 }
 
 }

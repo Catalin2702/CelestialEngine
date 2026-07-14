@@ -158,8 +158,10 @@ void ImGuiOpenGlLayer::_Init() {
 		}
 
 		const auto [width, height] = _window->get().GetFrameSize();
+		const auto [xScale, yScale] = _context->get().GetContentScale();
 
 		io.DisplaySize = ImVec2(width,height);
+		io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 
 		assert(_window->get().GetGlfwWindow() != nullptr);
 
@@ -252,8 +254,8 @@ void ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const 
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 
-	// const auto [xScale, yScale] = _window->get().GetContentScale();
-	// io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+	const auto [xScale, yScale] = _context->get().GetContentScale();
+	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
 }
 
 }

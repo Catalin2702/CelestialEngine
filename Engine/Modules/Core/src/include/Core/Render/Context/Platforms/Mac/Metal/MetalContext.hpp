@@ -107,12 +107,9 @@ public:
 	void SetVSync(bool enabled) const;
 
 public:
-	/**
-	 * @brief Checks if VSync is currently enabled
-	 * @return bool True if VSync is enabled, false otherwise
-	 * @details Returns the current state of VSync in the Metal context by checking the display sync setting of the Metal layer. This allows the application to query whether VSync is active and adjust rendering behavior accordingly.
-	 */
 	[[nodiscard]] bool IsVSyncEnabled() const override;
+
+	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 public:
 	/** @brief Gets the Metal command queue
