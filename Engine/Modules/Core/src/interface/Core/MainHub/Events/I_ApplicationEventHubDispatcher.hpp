@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Events/ApplicationEvent.hpp"
+#include "Events/GenericEvent.hpp"
 
 namespace CE::Core {
 
@@ -23,13 +24,10 @@ public:
 	virtual ~I_ApplicationEventHubDispatcher() = default;
 
 public:
-	virtual void DispatchWindowResizeEvent(Events::WindowResizeEvent&) {}
-	virtual void DispatchWindowCloseEvent(Events::WindowCloseEvent&) {}
-
+	virtual void DispatchAppErrorEvent(Events::ErrorEvent&) {}
+	virtual void DispatchAppRenderEvent(Events::AppRenderEvent&) {}
 	virtual void DispatchAppTickEvent(Events::AppTickEvent&) {}
 	virtual void DispatchAppUpdateEvent(Events::AppUpdateEvent&) {}
-	virtual void DispatchAppRenderEvent(Events::AppRenderEvent&) {}
-	virtual void DispatchAppErrorEvent(Events::AppErrorEvent&) {}
 };
 
 }
