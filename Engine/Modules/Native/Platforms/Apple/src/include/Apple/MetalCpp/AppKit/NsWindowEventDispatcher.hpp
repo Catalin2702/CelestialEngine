@@ -12,33 +12,35 @@
 #ifndef CE_NATIVE_APPLE_METALCPP_APPKIT_NSWINDOWEVENTDISPATCHER_HPP
 #define CE_NATIVE_APPLE_METALCPP_APPKIT_NSWINDOWEVENTDISPATCHER_HPP
 
-#include <AppKit/AppKit.hpp>
+#include "Define/DynamicLinker.hpp"
 
 #include "Utility/Delegate/Dispatcher.hpp"
 
+#include <AppKit/AppKit.hpp>
+
 namespace CE::Native {
 
-class NsWindowEventDispatcher: public NS::I_WindowEventDispatcher {
+class CE_API NsWindowEventDispatcher: public NS::I_WindowEventDispatcher {
 public:
-	struct NsWindowGeometryEvents {
-		UnicastEventDispatcher<const NS::Notification*> didResizeDispatcher;
-		UnicastEventDispatcher<const NS::Notification*> didMoveDispatcher;
+	struct CE_API NsWindowGeometryEvents {
+		UnicastDispatcher<const NS::Notification*> didResizeDispatcher;
+		UnicastDispatcher<const NS::Notification*> didMoveDispatcher;
 	};
 
-	struct NsWindowFocusEvents {
-		UnicastEventDispatcher<const NS::Notification*> didBecomeKeyDispatcher;
-		UnicastEventDispatcher<const NS::Notification*> didResignKeyDispatcher;
+	struct CE_API NsWindowFocusEvents {
+		UnicastDispatcher<const NS::Notification*> didBecomeKeyDispatcher;
+		UnicastDispatcher<const NS::Notification*> didResignKeyDispatcher;
 	};
 
-	struct NsWindowStateEvents {
-		UnicastEventDispatcher<const NS::Notification*> didMiniaturizeDispatcher;
-		UnicastEventDispatcher<const NS::Notification*> didDeminiaturizeDispatcher;
-		UnicastEventDispatcher<const NS::Notification*> didEnterFullScreenDispatcher;
-		UnicastEventDispatcher<const NS::Notification*> didExitFullScreenDispatcher;
+	struct CE_API NsWindowStateEvents {
+		UnicastDispatcher<const NS::Notification*> didMiniaturizeDispatcher;
+		UnicastDispatcher<const NS::Notification*> didDeminiaturizeDispatcher;
+		UnicastDispatcher<const NS::Notification*> didEnterFullScreenDispatcher;
+		UnicastDispatcher<const NS::Notification*> didExitFullScreenDispatcher;
 	};
 
-	struct NsWindowLifecycleEvents {
-		UnicastEventDispatcher<const NS::Notification*> willCloseDispatcher;
+	struct CE_API NsWindowLifecycleEvents {
+		UnicastDispatcher<const NS::Notification*> willCloseDispatcher;
 	};
 public:
 	NsWindowEventDispatcher() = default;

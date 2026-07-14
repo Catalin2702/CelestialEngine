@@ -21,8 +21,8 @@ void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification* noti
 }
 
 void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
-	assert(_appWillFinishLaunchingDispatcher.IsBound() and "NsApplicationDelegate::applicationWillFinishLaunching: The delegate is not bound.");
-	_appWillFinishLaunchingDispatcher.Execute();
+	if (_appWillFinishLaunchingDispatcher.IsBound())
+		_appWillFinishLaunchingDispatcher.Execute();
 }
 
 bool NsApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Application*) {
@@ -30,12 +30,12 @@ bool NsApplicationDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::
 }
 
 void NsApplicationDelegate::SetApplicationDidFinishLaunchingDelegate(const EventDelegate<>& delegate) {
-	assert(delegate.IsValid() and "NsApplicationDelegate::SetApplicationDidFinishLaunchingDelegate: The delegate is not valid");
+	assert(delegate.IsValid() and "NsApplicationDelegate::SetApplicationDidFinishLaunchingDelegate: The delegate is not valid!");
 	_appDidFinishLaunchingDispatcher.Bind(delegate);
 }
 
 void NsApplicationDelegate::SetApplicationWillFinishLaunchingDelegate(const EventDelegate<>& delegate) {
-	assert(delegate.IsValid() and "MNsApplicationDelegate::SetApplicationWillFinishLaunchingDelegate: The delegate is not valid");
+	assert(delegate.IsValid() and "MNsApplicationDelegate::SetApplicationWillFinishLaunchingDelegate: The delegate is not valid!");
 	_appWillFinishLaunchingDispatcher.Bind(delegate);
 }
 

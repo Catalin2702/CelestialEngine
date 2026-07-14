@@ -19,17 +19,17 @@ void MtkViewDelegate::drawInMTKView(MTK::View* view) {
 }
 
 void MtkViewDelegate::drawableSizeWillChange(MTK::View* view, const CGSize size) {
-	assert(_drawableSizeWillChangeDispatcher.IsBound() and "MtkViewDelegate::drawableSizeWillChange: The delegate is not bound.");
-	_drawableSizeWillChangeDispatcher.Execute(view, size);
+	if (_drawableSizeWillChangeDispatcher.IsBound())
+		_drawableSizeWillChangeDispatcher.Execute(view, size);
 }
 
 void MtkViewDelegate::SetDrawInMtkViewDelegate(const EventDelegate<MTK::View*>& delegate) {
-	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawInMtkViewDelegate: The delegate is not valid");
+	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawInMtkViewDelegate: The delegate is not valid!");
 	_drawInMtkViewDispatcher.Bind(delegate);
 }
 
 void MtkViewDelegate::SetDrawableSizeWillChangeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate) {
-	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawableSizeWillChangeDelegate: The delegate is not valid");
+	assert(delegate.IsValid() and "MtkViewDelegate::SetDrawableSizeWillChangeDelegate: The delegate is not valid!");
 	_drawableSizeWillChangeDispatcher.Bind(delegate);
 }
 

@@ -12,83 +12,83 @@
 namespace CE::Native {
 
 void NsViewEventDispatcher::DispatchMouseDown(NS::Event* event) {
-	mouseEvents.mouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseDownDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchMouseUp(NS::Event* event) {
-	mouseEvents.mouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseUpDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchMouseDragged(NS::Event* event) {
-	mouseEvents.mouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseDraggedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchRightMouseDown(NS::Event* event) {
-	mouseEvents.rightMouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseDownDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchRightMouseUp(NS::Event* event) {
-	mouseEvents.rightMouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseUpDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchRightMouseDragged(NS::Event* event) {
-	mouseEvents.rightMouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.rightMouseDraggedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchOtherMouseDown(NS::Event* event) {
-	mouseEvents.otherMouseDownMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseDownDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchOtherMouseUp(NS::Event* event) {
-	mouseEvents.otherMouseUpMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseUpDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchOtherMouseDragged(NS::Event* event) {
-	mouseEvents.otherMouseDraggedMulticastDispatcher.Dispatch(event);
+	mouseEvents.otherMouseDraggedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchMouseMoved(NS::Event* event) {
-	mouseEvents.mouseMovedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseMovedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchMouseEntered(NS::Event* event) {
-	mouseEvents.mouseEnteredMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseEnteredDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchMouseExited(NS::Event* event) {
-	mouseEvents.mouseExitedMulticastDispatcher.Dispatch(event);
+	mouseEvents.mouseExitedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchScrollWheel(NS::Event* event) {
-	mouseEvents.scrollWheelMulticastDispatcher.Dispatch(event);
+	mouseEvents.scrollWheelDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchKeyDown(NS::Event* event) {
-	keyboardEvents.keyDownMulticastDispatcher.Dispatch(event);
+	keyboardEvents.keyDownDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchKeyUp(NS::Event* event) {
-	keyboardEvents.keyUpMulticastDispatcher.Dispatch(event);
+	keyboardEvents.keyUpDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchFlagsChanged(NS::Event* event) {
-	keyboardEvents.flagsChangedMulticastDispatcher.Dispatch(event);
+	keyboardEvents.flagsChangedDispatcher.Dispatch(event);
 }
 
 void NsViewEventDispatcher::DispatchViewDidMoveToWindow() {
-	stateEvents.viewDidMoveToWindowMulticastDispatcher.Dispatch();
+	stateEvents.viewDidMoveToWindowDispatcher.Dispatch();
 }
 
 void NsViewEventDispatcher::DispatchViewDidMoveToSuperview() {
-	stateEvents.viewDidMoveToSuperviewMulticastDispatcher.Dispatch();
+	stateEvents.viewDidMoveToSuperviewDispatcher.Dispatch();
 }
 
 void NsViewEventDispatcher::DispatchViewDidLayout() {
-	stateEvents.viewDidLayoutMulticastDispatcher.Dispatch();
+	stateEvents.viewDidLayoutDispatcher.Dispatch();
 }
 
 void NsViewEventDispatcher::DispatchViewDidEndLiveResize() {
-	stateEvents.viewDidEndLiveResizeMulticastDispatcher.Dispatch();
+	stateEvents.viewDidEndLiveResizeDispatcher.Dispatch();
 }
 
 }

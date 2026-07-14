@@ -19,7 +19,7 @@ void CaMetalDisplayLinkDelegate::metalDisplayLinkNeedsUpdate(CA::MetalDisplayLin
 }
 
 void CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateDelegate(const EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>& delegate) {
-	assert(delegate.IsValid() and "CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateDelegate: The delegate is not valid");
+	assert(delegate.IsValid() and "CaMetalDisplayLinkDelegate::SetMetalDisplayLinkNeedsUpdateDelegate: The delegate is not valid!");
 	_metalDisplayLinkNeedsUpdateDispatcher.Bind(delegate);
 }
 

@@ -12,44 +12,43 @@
 #ifndef CE_NATIVE_APPLE_METALCPP_APPKIT_NSVIEWEVENTDISPATCHER_HPP
 #define CE_NATIVE_APPLE_METALCPP_APPKIT_NSVIEWEVENTDISPATCHER_HPP
 
-#include <AppKit/AppKit.hpp>
+#include "Define/DynamicLinker.hpp"
 
 #include "Utility/Delegate/Dispatcher.hpp"
 
-using NSEventDelegate = EventDelegate<const NS::Event*>;
-using NSEventMulticastDispatcher = CE::Utility::MulticastDispatcher<const NS::Event*>;
+#include <AppKit/AppKit.hpp>
 
 namespace CE::Native {
 
-class NsViewEventDispatcher: public NS::I_ViewEventDispatcher {
+class CE_API NsViewEventDispatcher: public NS::I_ViewEventDispatcher {
 public:
-	struct MouseEvents {
-		NSEventMulticastDispatcher mouseDownMulticastDispatcher;
-		NSEventMulticastDispatcher mouseUpMulticastDispatcher;
-		NSEventMulticastDispatcher mouseDraggedMulticastDispatcher;
-		NSEventMulticastDispatcher rightMouseDownMulticastDispatcher;
-		NSEventMulticastDispatcher rightMouseUpMulticastDispatcher;
-		NSEventMulticastDispatcher rightMouseDraggedMulticastDispatcher;
-		NSEventMulticastDispatcher otherMouseDownMulticastDispatcher;
-		NSEventMulticastDispatcher otherMouseUpMulticastDispatcher;
-		NSEventMulticastDispatcher otherMouseDraggedMulticastDispatcher;
-		NSEventMulticastDispatcher mouseMovedMulticastDispatcher;
-		NSEventMulticastDispatcher mouseEnteredMulticastDispatcher;
-		NSEventMulticastDispatcher mouseExitedMulticastDispatcher;
-		NSEventMulticastDispatcher scrollWheelMulticastDispatcher;
+	struct CE_API MouseEvents {
+		UnicastDispatcher<const NS::Event*> mouseDownDispatcher;
+		UnicastDispatcher<const NS::Event*> mouseUpDispatcher;
+		UnicastDispatcher<const NS::Event*> mouseDraggedDispatcher;
+		UnicastDispatcher<const NS::Event*> rightMouseDownDispatcher;
+		UnicastDispatcher<const NS::Event*> rightMouseUpDispatcher;
+		UnicastDispatcher<const NS::Event*> rightMouseDraggedDispatcher;
+		UnicastDispatcher<const NS::Event*> otherMouseDownDispatcher;
+		UnicastDispatcher<const NS::Event*> otherMouseUpDispatcher;
+		UnicastDispatcher<const NS::Event*> otherMouseDraggedDispatcher;
+		UnicastDispatcher<const NS::Event*> mouseMovedDispatcher;
+		UnicastDispatcher<const NS::Event*> mouseEnteredDispatcher;
+		UnicastDispatcher<const NS::Event*> mouseExitedDispatcher;
+		UnicastDispatcher<const NS::Event*> scrollWheelDispatcher;
 	};
 
-	struct KeyboardEvents {
-		NSEventMulticastDispatcher keyDownMulticastDispatcher;
-		NSEventMulticastDispatcher keyUpMulticastDispatcher;
-		NSEventMulticastDispatcher flagsChangedMulticastDispatcher;
+	struct CE_API KeyboardEvents {
+		UnicastDispatcher<const NS::Event*> keyDownDispatcher;
+		UnicastDispatcher<const NS::Event*> keyUpDispatcher;
+		UnicastDispatcher<const NS::Event*> flagsChangedDispatcher;
 	};
 
-	struct ViewStateEvents {
-		VoidMulticastEventDispatcher viewDidMoveToWindowMulticastDispatcher;
-		VoidMulticastEventDispatcher viewDidMoveToSuperviewMulticastDispatcher;
-		VoidMulticastEventDispatcher viewDidLayoutMulticastDispatcher;
-		VoidMulticastEventDispatcher viewDidEndLiveResizeMulticastDispatcher;
+	struct CE_API ViewStateEvents {
+		UnicastDispatcher<> viewDidMoveToWindowDispatcher;
+		UnicastDispatcher<> viewDidMoveToSuperviewDispatcher;
+		UnicastDispatcher<> viewDidLayoutDispatcher;
+		UnicastDispatcher<> viewDidEndLiveResizeDispatcher;
 	};
 
 public:
