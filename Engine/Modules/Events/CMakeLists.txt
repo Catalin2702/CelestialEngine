@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-13
+# Updated: 2026-07-14
 #
 
 set(HEADERS
 	src/include/Events/ApplicationEvent.hpp
+	src/include/Events/GenericEvent.hpp
 	src/include/Events/KeyEvent.hpp
 	src/include/Events/MouseEvent.hpp
 )
@@ -19,6 +20,7 @@ set(INTERFACES
 
 set(SOURCES
 	src/source/Events/ApplicationEvent.cpp
+	src/source/Events/GenericEvent.cpp
 	src/source/Events/I_Event.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
