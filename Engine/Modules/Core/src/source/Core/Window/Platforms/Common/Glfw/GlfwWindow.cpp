@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -120,7 +120,7 @@ bool GlfwWindow::IsVSync() const {
 	return _glfwVSync;
 }
 
-void GlfwWindow::SetSize(const unsigned int width, const unsigned int height) {
+void GlfwWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
 	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(width), static_cast<int>(height));
 }
 
@@ -196,7 +196,7 @@ void GlfwWindow::_SetWindowEventCallbacks() {
 	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
 		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
 			_this->windowEventHandler.DispatchResizeEvent(width, height);
-			_this->SetSize(width, height);
+			_this->SetWindowSize(width, height);
 		}
 	});
 

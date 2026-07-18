@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -155,7 +155,7 @@ public:
 	 * @details Convenience method to set both width and height at once. Updates the cached width and height values in _data. Note: this only updates
 	 *			the stored values, the actual window resize is handled by GLFW events
 	 */
-	void SetSize(unsigned int width, unsigned int height) override;
+	void SetWindowSize(unsigned int width, unsigned int height) override;
 
 	/**
 	 * @brief Enables or disables vertical synchronization (VSync)

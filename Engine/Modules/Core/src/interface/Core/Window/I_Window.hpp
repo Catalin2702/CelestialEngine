@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -111,7 +111,7 @@ public:
 	 * @details Convenience method to set both width and height at once. Updates the internal values in the _data structure. Note: this only updates
 	 *			the stored values, it does not actually resize the window
 	 */
-	virtual void SetSize(unsigned int width, unsigned int height) = 0;
+	virtual void SetWindowSize(unsigned int width, unsigned int height) = 0;
 
 	/**
 	 * @brief Enables or disables VSync

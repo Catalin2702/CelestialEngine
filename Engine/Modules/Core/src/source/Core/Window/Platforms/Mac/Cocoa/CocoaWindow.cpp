@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -61,14 +61,14 @@ std::pair<float, float> CocoaWindow::GetFrameSize() const {
 	return {static_cast<float>(size.width), static_cast<float>(size.height)};
 }
 
-void CocoaWindow::SetSize(const unsigned int width, const unsigned int height) {
+void CocoaWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
 	if (not _window)
 		return;
 
 	const auto [currentOrigin, currentSize] = _window->frame();
 	const CGRect frame = {
-		currentOrigin,
-		{static_cast<CGFloat>(width), static_cast<CGFloat>(height)}
+		.origin = currentOrigin,
+		.size = {.width = static_cast<CGFloat>(width), .height = static_cast<CGFloat>(height)}
 	};
 	_window->setFrame(frame, true, true);
 }
@@ -108,8 +108,8 @@ void CocoaWindow::Init() {
 void CocoaWindow::_InitWindow() {
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 	const CGRect frame = {
-		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
-		{static_cast<CGFloat>(windowProps.width), static_cast<CGFloat>(windowProps.height)}
+		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
+		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
 	};
 
 	NS::Window* rawWindow;
