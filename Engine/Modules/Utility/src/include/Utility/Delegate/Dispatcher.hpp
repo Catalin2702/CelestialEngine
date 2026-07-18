@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -84,7 +84,7 @@ public:
 
 	R Execute(Args... args) {
 		if (not IsBound()) {
-			const auto error = "CallbackDispatcher::Execute: Set the callback before trying to execute this method.";
+			constexpr auto error = "CallbackDispatcher::Execute: Set the callback before trying to execute this method.";
 			CE_CORE_ERROR(error);
 			throw std::runtime_error(error);
 		}
