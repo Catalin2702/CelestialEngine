@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -37,6 +37,7 @@ namespace NS {
 	class Application;
 	class Event;
 	class Notification;
+	class Menu;
 }
 
 namespace CE::Core {
@@ -223,14 +224,9 @@ private:
 	 *			that must happen after launch completes: promotes the process to a regular UI app, builds the main menu,
 	 *			activates the app and reveals the window.
 	 */
-	void _OnDidFinishLaunching() const;
+	void _OnDidFinishLaunching(NS::Notification* notification) const;
 
-	/**
-	 * @brief Builds and installs the application's main menu
-	 * @details Creates a minimal main menu with an application menu holding a standard "Quit" item wired to Cmd+Q, so the
-	 *			native menu bar and its keyboard shortcut work.
-	 */
-	void _CreateMenuBar() const;
+	void _OnWillFinishLaunching(NS::Notification* notification) const;
 
 	/**
 	 * @brief Application-level reaction to a window close event dispatched by the event hub

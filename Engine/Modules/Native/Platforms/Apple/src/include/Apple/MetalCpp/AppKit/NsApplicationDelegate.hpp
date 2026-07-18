@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -57,13 +57,13 @@ public:
 	 * @brief Set the delegate for the applicationDidFinishLaunching method
 	 * @param delegate
 	 */
-	void SetApplicationDidFinishLaunchingDelegate(const EventDelegate<>& delegate);
+	void SetApplicationDidFinishLaunchingDelegate(const EventDelegate<NS::Notification*>& delegate);
 
 	/**
 	 * @ Set the delegate for the applicationWillFinishLaunching method
 	 * @param delegate
 	 */
-	void SetApplicationWillFinishLaunchingDelegate(const EventDelegate<>& delegate);
+	void SetApplicationWillFinishLaunchingDelegate(const EventDelegate<NS::Notification*>& delegate);
 
 	/**
 	 * Set the value returned by applicationShouldTerminateAfterLastWindowClosed method
@@ -72,8 +72,8 @@ public:
 	void SetApplicationShouldTerminateAfterLastWindowClosed(bool should);
 
 private:
-	CallbackDispatcher<void> _appDidFinishLaunchingDispatcher;
-	CallbackDispatcher<void> _appWillFinishLaunchingDispatcher;
+	CallbackDispatcher<void, NS::Notification*> _appDidFinishLaunchingDispatcher;
+	CallbackDispatcher<void, NS::Notification*> _appWillFinishLaunchingDispatcher;
 	bool _appShouldTerminate = true;
 };
 

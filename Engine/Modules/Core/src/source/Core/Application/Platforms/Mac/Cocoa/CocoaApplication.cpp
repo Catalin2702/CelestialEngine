@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -26,9 +26,6 @@
 
 namespace CE::Core {
 
-static constexpr int MAX_FRAMES_IN_FLIGHT = 3;
-dispatch_semaphore_t _inFlightSemaphore = dispatch_semaphore_create(MAX_FRAMES_IN_FLIGHT);
-
 // Action invoked by the "Quit" menu item (and its Cmd+Q shortcut). The item has no explicit target, so AppKit sends the
 // action up the responder chain; metal-cpp installs this callback on NSObject, so it fires on the shared application.
 // Route it through the engine's clean shutdown path instead of NSApplication::terminate.
@@ -39,6 +36,32 @@ static void OnQuitMenuItemSelected(void*, SEL, const NS::Object*) {
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
+}
+
+static NS::Menu* CreateMenuBar() {
+	const auto mainMenu = NS::Menu::alloc()->init();
+
+	const auto appName = NS::RunningApplication::currentApplication()->localizedName();
+	const auto appNameString = std::string(appName->cString(NS::UTF8StringEncoding));
+
+#pragma region AppMenu
+	const auto appMenuItem = NS::MenuItem::alloc()->init();
+	const auto appMenu = NS::Menu::alloc()->init();
+
+#pragma region SectionQuit
+	const auto quitTitle = NS::String::string("Quit ", NS::UTF8StringEncoding)->stringByAppendingString(appName);
+	const auto quitSelector = NS::MenuItem::registerActionCallback((appNameString + "Quit").c_str(), OnQuitMenuItemSelected);
+	appMenu->addItem(quitTitle, quitSelector, NS::String::string("q", NS::UTF8StringEncoding));
+#pragma endregion
+
+	appMenuItem->setSubmenu(appMenu);
+	mainMenu->addItem(appMenuItem);
+
+	appMenu->release();
+	appMenuItem->release();
+#pragma endregion
+
+	return mainMenu->autorelease();
 }
 
 void CocoaApplicationEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
@@ -142,7 +165,11 @@ void CocoaApplication::Init() {
 	// App-level launch setup (activation policy, menu bar, activation, window reveal) is deferred to the run loop via the
 	// applicationDidFinishLaunching hook, the canonical Cocoa place for it.
 	_appDelegate.SetApplicationDidFinishLaunchingDelegate(
-		EventDelegate<>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnDidFinishLaunching>(this)
+		EventDelegate<NS::Notification*>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnDidFinishLaunching>(this)
+	);
+
+	_appDelegate.SetApplicationWillFinishLaunchingDelegate(
+		EventDelegate<NS::Notification*>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnWillFinishLaunching>(this)
 	);
 
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
@@ -341,48 +368,27 @@ void CocoaApplication::_BindContextDelegates() {
 	_context->SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
 }
 
-void CocoaApplication::_OnDidFinishLaunching() const {
-	// Promote the process to a regular UI app so it gets a Dock icon, can own the menu bar and hold a key window. This must
-	// happen after launch: doing it here (rather than before run()) follows the standard Cocoa lifecycle.
+void CocoaApplication::_OnDidFinishLaunching(NS::Notification*) const {
+	// Bring the app to the foreground and reveal the window now that the run loop is active.
+	_appCocoa->activateIgnoringOtherApps(true);
+	_window->Show();
+}
+
+void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
+	if (not _appCocoa) {
+		constexpr auto error = "CocoaApplication::_OnWillFinishLaunching: The cocoa application is not initialized";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+	const auto mainMenu = CreateMenuBar();
+	_appCocoa->setMainMenu(mainMenu);
+
 	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
 		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
 			CE_CORE_ERROR("CocoaApplication::_OnDidFinishLaunching: Failed to set activation policy for the application");
 			throw std::runtime_error("Failed to set activation policy for the application");
 		}
 	}
-
-	_CreateMenuBar();
-
-	// Bring the app to the foreground and reveal the window now that the run loop is active.
-	_appCocoa->activateIgnoringOtherApps(true);
-	_window->Show();
-}
-
-void CocoaApplication::_CreateMenuBar() const {
-	// AppKit expects the first item of the main menu to carry the application submenu (its own title is ignored, AppKit uses
-	// the process name). A minimal app menu with a Quit item is enough to get the native menu bar and the Cmd+Q shortcut.
-	const auto mainMenu = NS::Menu::alloc()->init();
-
-	const auto appMenuItem = NS::MenuItem::alloc()->init();
-	mainMenu->addItem(appMenuItem);
-
-	const auto appMenu = NS::Menu::alloc()->init();
-
-	const auto appName = NS::RunningApplication::currentApplication()->localizedName();
-	const auto quitTitle = NS::String::string("Quit ", NS::UTF8StringEncoding)->stringByAppendingString(appName);
-
-	const auto quitSelector = NS::MenuItem::registerActionCallback("celestialQuit", OnQuitMenuItemSelected);
-	appMenu->addItem(quitTitle, quitSelector, NS::String::string("q", NS::UTF8StringEncoding));
-
-	appMenuItem->setSubmenu(appMenu);
-
-	_appCocoa->setMainMenu(mainMenu);
-
-	// AppKit retains the menus once installed, so release the ownership taken by alloc/init. The strings above are
-	// autoreleased (not owned), so they are left alone.
-	appMenu->release();
-	appMenuItem->release();
-	mainMenu->release();
 }
 
 void CocoaApplication::_OnWindowClose(Events::WindowCloseEvent&) {
