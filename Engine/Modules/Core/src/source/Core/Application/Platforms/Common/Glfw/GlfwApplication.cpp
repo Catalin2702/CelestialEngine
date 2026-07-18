@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -230,7 +230,7 @@ void GlfwApplication::RemoveImGuiLayer() {
 
 void GlfwApplication::SetEventHubDispatcher() {
 	if (not _window) {
-		const auto error = "GlfwApplication::SetEventHubDispatcher: Window must be initialized before setting up the event hub dispatcher";
+		constexpr auto error = "GlfwApplication::SetEventHubDispatcher: Window must be initialized before setting up the event hub dispatcher";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}

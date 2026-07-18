@@ -219,7 +219,7 @@ void GlfwWindow::Init() {
 void GlfwWindow::_InitWindow() {
 	if (not _st_GLFWInitialized) {
 		if (const int success = glfwInit(); not success) {
-			const auto error = "GlfwWindow::_InitWindow: Could not initialize GLFW!";
+			constexpr auto error = "GlfwWindow::_InitWindow: Could not initialize GLFW!";
 			windowEventHandler.DispatchErrorEvent(-1, error);
 			throw std::runtime_error(error);
 		}
@@ -246,7 +246,7 @@ void GlfwWindow::_InitWindow() {
 	));
 
 	if (not _glfwWindow) {
-		const auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";
+		constexpr auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";
 		windowEventHandler.DispatchErrorEvent(-1, error);
 		throw std::runtime_error(error);
 	}

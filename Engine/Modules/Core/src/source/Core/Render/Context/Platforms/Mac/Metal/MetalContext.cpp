@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -22,35 +22,31 @@
 namespace CE::Core {
 
 void MetalContextEventDispatcher::DispatchMetalContextCreated() const {
-	metalContextCreatedDispatcher.Dispatch();
+	metalContextLifeCycleEvents.onCreatedDispatcher.Dispatch();
 }
 
 void MetalContextEventDispatcher::DispatchMetalContextInitialized() const {
-	metalContextDispatcher.Dispatch();
+	metalContextLifeCycleEvents.onInitializedDispatcher.Dispatch();
 }
 
 void MetalContextEventDispatcher::DispatchMetalContextWillShutdown() const {
-	metalContextWillShutdownDispatcher.Dispatch();
+	metalContextLifeCycleEvents.onWillShutdownDispatcher.Dispatch();
 }
 
 void MetalContextEventDispatcher::DispatchVSyncChanged(const bool vsync) const {
-	vsyncChangedDispatcher.Dispatch(vsync);
+	metalContextLifeCycleEvents.onVsyncChangedDispatcher.Dispatch(vsync);
 }
 
 void MetalContextEventDispatcher::DispatchResizeEvent(const unsigned int width, const unsigned int height) const {
-	onResizeDispatcher.Dispatch(width, height);
+	metalContextLifeCycleEvents.onResizeDispatcher.Dispatch(width, height);
 }
 
 MetalContext::MetalContext() {
-	metalContextEventDispatcher = std::make_unique<MetalContextEventDispatcher>();
-	metalContextEventDispatcher->metalContextCreatedDispatcher.Dispatch();
+	metalContextEventDispatcher.DispatchMetalContextCreated();
 }
 
 MetalContext::~MetalContext() {
-	if (_displayLink) {
-		_displayLink->removeFromRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
-		_displayLink->invalidate();
-	}
+	_DestroyDisplayLink();
 }
 
 void MetalContext::Init() {
@@ -70,14 +66,11 @@ void MetalContext::Init() {
 
 	_CreateView();
 
-	// Only attach a CAMetalDisplayLink when VSync is on: it is what paces frames in that mode. With VSync off the tick loop
-	// drives frames and pulls drawables via CAMetalLayer::nextDrawable(), which Core Animation forbids once a display link
-	// exists for the layer (`-nextDrawable should not be called when using CAMetalDisplayLink`). So leave the layer
-	// display-link-free in that mode.
-	if (Utility::Config::Config::StGetWindowProps().VSync)
-		_CreateDisplayLink();
-
-	metalContextEventDispatcher->metalContextDispatcher.Dispatch();
+	// The CAMetalDisplayLink is created lazily by SetVSync (which the application calls after wiring up the draw delegate),
+	// and only when VSync is on: it is what paces frames in that mode. With VSync off the tick loop drives frames and pulls
+	// drawables via CAMetalLayer::nextDrawable(), which Core Animation forbids once a display link exists for the layer
+	// (`-nextDrawable should not be called when using CAMetalDisplayLink`), so the layer is left display-link-free.
+	metalContextEventDispatcher.DispatchMetalContextInitialized();
 }
 
 void MetalContext::_CreateView() {
@@ -107,19 +100,19 @@ void MetalContext::_CreateView() {
 	);
 	_view->setDelegate(_viewDelegate.get());
 
-	_view->setEventDispatcher(metalContextEventDispatcher.get());
+	_view->setEventDispatcher(&metalContextEventDispatcher);
 }
 
 void MetalContext::_CreateDisplayLink() {
 	if (not (_view and _view->layer())) {
-		const auto error = "MetalContext::_CreateDisplayLink: Cannot create display link because MTKView or its layer are not initialized.";
+		constexpr auto error = "MetalContext::_CreateDisplayLink: Cannot create display link because MTKView or its layer are not initialized.";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
 	_displayLink = NS::TransferPtr(CA::MetalDisplayLink::alloc()->init(_view->layer()));
 	if (not _displayLink) {
-		const auto error = "MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink.";
+		constexpr auto error = "MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink.";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -133,6 +126,19 @@ void MetalContext::_CreateDisplayLink() {
 	// Start paused: the application unpauses it in SetRunning once the app is actually running.
 	_displayLink->setPaused(true);
 	_displayLink->addToRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
+}
+
+void MetalContext::_DestroyDisplayLink() {
+	if (not _displayLink)
+		return;
+
+	_displayLink->setPaused(true);
+	_displayLink->removeFromRunLoop(NS::RunLoop::mainRunLoop(), NS::RunLoop::defaultMode());
+	_displayLink->invalidate();
+	_displayLink.reset();
+
+	_displayLinkDelegate.reset();
+	_displayLinkDrawable = nullptr;
 }
 
 void MetalContext::SetDrawDelegate(const EventDelegate<MTK::View*>& delegate) {
@@ -176,7 +182,7 @@ void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
 	HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
 
 	// `size` is already in backing pixels; fire it to whoever the application wired to the context's resize dispatcher.
-	metalContextEventDispatcher->DispatchResizeEvent(static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height));
+	metalContextEventDispatcher.DispatchResizeEvent(static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height));
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {
@@ -189,15 +195,25 @@ void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) 
 	_view->layer()->setDrawableSize(CGSizeMake(width, height));
 }
 
-void MetalContext::SetVSync(const bool enabled) const {
+void MetalContext::SetVSync(const bool enabled) {
 	if (not (_view and _view->layer())) {
-		CE_CORE_WARN("MetalContext::HandleVSyncChange: Cannot handle VSync change because MTKView or its layer are not initialized.");
+		CE_CORE_WARN("MetalContext::SetVSync: Cannot handle VSync change because MTKView or its layer are not initialized.");
 		return;
 	}
 
 	const auto layer = _view->layer();
 	layer->setDisplaySyncEnabled(enabled);
-	metalContextEventDispatcher->vsyncChangedDispatcher.Dispatch(enabled);
+
+	// Keep the display link in lockstep with the VSync state: it paces frames when VSync is on and must not exist when it is
+	// off, otherwise CAMetalLayer::nextDrawable() (used by the VSync-off tick loop) is rejected by Core Animation.
+	if (enabled) {
+		if (not _displayLink)
+			_CreateDisplayLink();
+	}
+	else
+		_DestroyDisplayLink();
+
+	metalContextEventDispatcher.DispatchVSyncChanged(enabled);
 }
 
 bool MetalContext::IsVSyncEnabled() const {

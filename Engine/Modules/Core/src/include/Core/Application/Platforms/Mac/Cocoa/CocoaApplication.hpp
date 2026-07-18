@@ -212,11 +212,34 @@ public:
 	void UnsubscribeFromDispatcher() override;
 
 public:
-	CocoaEventHubDispatcher eventHubDispatcher; ///< Multicast event hub fed by the native view/window unicast dispatchers
-	CocoaApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
+	static void StOnQuitMenuCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnToggleVSyncCallback(void*, SEL selector, const NS::Object* sender);
 
 private:
 	void _BindContextDelegates();
+
+	/**
+	 * @brief Starts the tick loop thread that paces frames while VSync is off
+	 * @details No-op if the thread is already running. The thread dispatches Tick onto the main queue; each dispatched block
+	 *			re-checks IsRunning() and the loop flag before ticking, so stale blocks left over from a mode switch are dropped.
+	 */
+	void _StartTickLoop();
+
+	/**
+	 * @brief Signals the tick loop thread to stop and joins it
+	 * @details Safe to call from the main thread: the thread only dispatches asynchronously, so the join never deadlocks.
+	 *			No-op if the thread is not running.
+	 */
+	void _StopTickLoop();
+
+	/**
+	 * @brief Applies a VSync mode change at runtime, swapping the frame-pacing mechanism
+	 * @param enabled The desired VSync state
+	 * @details Must be called on the main thread. When enabling, stops the tick loop before the context builds the display
+	 *			link (so no stale frame calls nextDrawable() while a display link exists) and resumes the link if running. When
+	 *			disabling, the context tears down the display link and the tick loop takes over pacing while the app is running.
+	 */
+	void _ApplyVSync(bool enabled);
 
 	/**
 	 * @brief Handles the application's did-finish-launching lifecycle event
@@ -237,6 +260,10 @@ private:
 
 	void _OnDraw(MTK::View*);
 
+public:
+	CocoaEventHubDispatcher eventHubDispatcher; ///< Multicast event hub fed by the native view/window unicast dispatchers
+	CocoaApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
+
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance
 
@@ -247,7 +274,8 @@ private:
 
 	Native::NsApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
 
-	std::thread _loopThread; ///< Thread for running the application loop
+	std::thread _loopThread; ///< Thread for running the application loop (only while VSync is off)
+	std::atomic<bool> _loopThreadRunning{false}; ///< Controls the tick loop thread lifetime independently of the app-running state
 	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
 
 	std::array<uint32_t, _Count> _eventHubHandlers{};

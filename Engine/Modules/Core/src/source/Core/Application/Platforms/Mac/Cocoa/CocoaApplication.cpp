@@ -22,16 +22,10 @@
 
 #include <cassert>
 #include <stdexcept>
+#include <string>
 
 
 namespace CE::Core {
-
-// Action invoked by the "Quit" menu item (and its Cmd+Q shortcut). The item has no explicit target, so AppKit sends the
-// action up the responder chain; metal-cpp installs this callback on NSObject, so it fires on the shared application.
-// Route it through the engine's clean shutdown path instead of NSApplication::terminate.
-static void OnQuitMenuItemSelected(void*, SEL, const NS::Object*) {
-	CocoaApplication::StGet().Quit();
-}
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
@@ -50,7 +44,7 @@ static NS::Menu* CreateMenuBar() {
 
 #pragma region SectionQuit
 	const auto quitTitle = NS::String::string("Quit ", NS::UTF8StringEncoding)->stringByAppendingString(appName);
-	const auto quitSelector = NS::MenuItem::registerActionCallback((appNameString + "Quit").c_str(), OnQuitMenuItemSelected);
+	const auto quitSelector = NS::MenuItem::registerActionCallback((appNameString + "Quit").c_str(), CocoaApplication::StOnQuitMenuCallback);
 	appMenu->addItem(quitTitle, quitSelector, NS::String::string("q", NS::UTF8StringEncoding));
 #pragma endregion
 
@@ -59,6 +53,23 @@ static NS::Menu* CreateMenuBar() {
 
 	appMenu->release();
 	appMenuItem->release();
+#pragma endregion
+
+#pragma region WindowMenu
+	const auto windowMenuItem = NS::MenuItem::alloc()->init();
+	const auto windowMenu = NS::Menu::alloc()->init(NS::String::string("Window", NS::UTF8StringEncoding));
+
+#pragma region SectionVSync
+	const auto vsyncTitle = NS::String::string("Toggle VSync", NS::UTF8StringEncoding);
+	const auto vsyncSelector = NS::MenuItem::registerActionCallback((appNameString + "ToggleVSync").c_str(), CocoaApplication::StOnToggleVSyncCallback);
+	windowMenu->addItem(vsyncTitle, vsyncSelector, NS::String::string("", NS::UTF8StringEncoding));
+#pragma endregion
+
+	windowMenuItem->setSubmenu(windowMenu);
+	mainMenu->addItem(windowMenuItem);
+
+	windowMenu->release();
+	windowMenuItem->release();
 #pragma endregion
 
 	return mainMenu->autorelease();
@@ -95,9 +106,7 @@ CocoaApplication::~CocoaApplication() {
 
 	ShutdownInput();
 
-	if (_loopThread.joinable()) {
-		_loopThread.join();
-	}
+	_StopTickLoop();
 
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
@@ -175,8 +184,9 @@ void CocoaApplication::Init() {
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
 	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
-		CE_CORE_ERROR("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
-		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
+		const auto error = fmt::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 
 	_context = std::make_unique<MetalContext>();
@@ -207,9 +217,9 @@ void CocoaApplication::Init() {
 	NS::Error* pipelineError = nullptr;
 	defaultRenderPipelineState = _context->GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
 	if (not defaultRenderPipelineState) {
-		const auto errorMsg = "CocoaApplication::Init: Failed to create default render pipeline state. Error: " + std::string(pipelineError->localizedDescription()->utf8String());
-		CE_CORE_ERROR(errorMsg);
-		throw std::runtime_error(errorMsg);
+		const auto error = fmt::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 
 	renderPipelineDescriptor->release();
@@ -233,8 +243,9 @@ void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 		_imguiLayer->SubscribeToEventHub();
 	}
 	else {
-		CE_CORE_ERROR("CocoaApplication::SetImGuiLayer: Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.");
-		throw std::runtime_error("Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.");
+		constexpr auto error = "CocoaApplication::SetImGuiLayer: Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 }
 
@@ -251,26 +262,70 @@ void CocoaApplication::SetRunning(const bool running) {
 	I_Application::SetRunning(running);
 
 	if (not Utility::Config::Config::StGetWindowProps().VSync) {
-		if (running && not _loopThread.joinable()) {
-			_loopThread = std::thread([this] {
-				while (_isRunning.load(std::memory_order_acquire)) {
-					if (not _tickPending.exchange(true)) {
-						dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
-							if (const auto app = static_cast<CocoaApplication*>(context)) {
-								app->_tickPending.store(false, std::memory_order_release);
-								if (app->IsRunning()) {
-									app->Tick(app->GetDeltaTime());
-								}
-							}
-						});
-					}
-				}
-			});
-		}
+		// VSync off: a dedicated thread paces frames by dispatching Tick onto the main queue.
+		if (running)
+			_StartTickLoop();
+		else
+			_StopTickLoop();
 	}
 	else {
 		// VSync on: the CAMetalDisplayLink paces rendering. Pausing it stops frame delivery when the app is not running.
 		_context->SetDisplayLinkPaused(not running);
+	}
+}
+
+void CocoaApplication::_StartTickLoop() {
+	if (_loopThread.joinable())
+		return;
+
+	_loopThreadRunning.store(true, std::memory_order_release);
+	_loopThread = std::thread([this] {
+		while (_loopThreadRunning.load(std::memory_order_acquire)) {
+			if (not _tickPending.exchange(true)) {
+				dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
+					if (const auto app = static_cast<CocoaApplication*>(context)) {
+						app->_tickPending.store(false, std::memory_order_release);
+						// Drop the frame if the app stopped or the loop was torn down (e.g. VSync was switched on) between
+						// the dispatch and now, so no stale Tick calls nextDrawable() once a display link exists.
+						if (app->IsRunning() and app->_loopThreadRunning.load(std::memory_order_acquire))
+							app->Tick(app->GetDeltaTime());
+					}
+				});
+			}
+		}
+	});
+}
+
+void CocoaApplication::_StopTickLoop() {
+	_loopThreadRunning.store(false, std::memory_order_release);
+	if (_loopThread.joinable())
+		_loopThread.join();
+
+	// Clear the in-flight flag so a later restart is not stuck thinking a tick is still pending.
+	_tickPending.store(false, std::memory_order_release);
+}
+
+void CocoaApplication::_ApplyVSync(const bool enabled) {
+	assert(_context && "CocoaApplication::_ApplyVSync: Render context must be initialized");
+
+	// Runs on the main thread (menu action). Nothing to do if the layer is already in the requested mode.
+	if (_context->IsVSyncEnabled() == enabled)
+		return;
+
+	if (enabled) {
+		// Tick loop → display link: stop the loop first so no stale frame calls CAMetalLayer::nextDrawable() once the
+		// display link exists, then let the context build the link and resume it if the app is running.
+		_StopTickLoop();
+		_context->SetVSync(true);
+		if (IsRunning())
+			_context->SetDisplayLinkPaused(false);
+	}
+	else {
+		// Display link → tick loop: the context tears down the display link (re-enabling nextDrawable), then the tick loop
+		// takes over pacing while the app is running.
+		_context->SetVSync(false);
+		if (IsRunning())
+			_StartTickLoop();
 	}
 }
 
@@ -287,22 +342,19 @@ void CocoaApplication::InitImGuiLayer() {
 
 void CocoaApplication::SetEventHubDispatcher() {
 	if (not (_context and _window)) {
-		const auto error = "CocoaApplication::SetEventHubDispatcher: Context and window must be initialized before setting up the event hub dispatcher";
+		constexpr auto error = "CocoaApplication::SetEventHubDispatcher: Context and window must be initialized before setting up the event hub dispatcher";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
-
-	assert(_context->metalContextEventDispatcher && "CocoaApplication::SetEventHubDispatcher: View event dispatcher must be initialized");
 
 	// The hub needs the render view and window to convert native (bottom-left) mouse coordinates into engine space.
 	eventHubDispatcher.SetSources(_context.get(), _window.get());
 
 	using hub = CocoaEventHubDispatcher;
 
-	// Native view input → hub. Left/right/other button variants all fold into the same button events (the engine keys off
-	// the event's buttonNumber), mirroring how GLFW routes every button through one callback.
-	auto& mouseEvents = _context->metalContextEventDispatcher->mouseEvents;
-	auto& keyboardEvents = _context->metalContextEventDispatcher->keyboardEvents;
+#pragma region MouseEvents
+	auto& mouseEvents = _context->metalContextEventDispatcher.mouseEvents;
+
 
 	mouseEvents.mouseDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveMouseButtonDownEvent>(&eventHubDispatcher));
 	mouseEvents.rightMouseDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveMouseButtonDownEvent>(&eventHubDispatcher));
@@ -318,25 +370,32 @@ void CocoaApplication::SetEventHubDispatcher() {
 
 	mouseEvents.mouseMovedDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveMouseMovedEvent>(&eventHubDispatcher));
 	mouseEvents.scrollWheelDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveScrollWheelEvent>(&eventHubDispatcher));
+#pragma endregion
 
+#pragma region KeyboardEvents
+	auto& keyboardEvents = _context->metalContextEventDispatcher.keyboardEvents;
 	keyboardEvents.keyDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyDownEvent>(&eventHubDispatcher));
 	keyboardEvents.keyUpDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyUpEvent>(&eventHubDispatcher));
+#pragma endregion
 
-	// Native window lifecycle → hub.
+#pragma region WindowEvents
 	_window->cocoaWindowEventDispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowWillCloseEvent>(&eventHubDispatcher)
 	);
+#pragma endregion
 
-	// The render context owns the drawable-resize signal (backing pixels) → hub as a WindowResize.
-	_context->metalContextEventDispatcher->onResizeDispatcher.Bind(
+#pragma region RenderContextEvents
+	_context->metalContextEventDispatcher.metalContextLifeCycleEvents.onResizeDispatcher.Bind(
 		EventDelegate<unsigned int, unsigned int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher)
 	);
+#pragma endregion
 
-	// The application fires its own lifecycle events (tick/update/render each frame, plus errors) into the hub.
+#pragma region ApplicationEvents
 	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onUpdateDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppUpdateEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onRenderDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppRenderEvent>(&eventHubDispatcher));
+#pragma endregion
 }
 
 void CocoaApplication::SubscribeToHubDispatcher() {
@@ -357,6 +416,19 @@ void CocoaApplication::UnsubscribeFromDispatcher() {
 
 	eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
 	eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
+}
+
+void CocoaApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
+	StGet().Quit();
+}
+
+void CocoaApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
+	Types::WindowProps windowProps = Utility::Config::StGetWindowProps();
+	windowProps.VSync = !windowProps.VSync;
+	Utility::Config::StSetWindowProps(windowProps);
+
+	// Menu actions fire on the main thread, so it is safe to swap the frame-pacing mechanism here.
+	StGet()._ApplyVSync(windowProps.VSync);
 }
 
 void CocoaApplication::_BindContextDelegates() {
@@ -385,8 +457,9 @@ void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
 
 	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
 		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
-			CE_CORE_ERROR("CocoaApplication::_OnDidFinishLaunching: Failed to set activation policy for the application");
-			throw std::runtime_error("Failed to set activation policy for the application");
+			constexpr auto error = "CocoaApplication::_OnDidFinishLaunching: Failed to set activation policy for the application";
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
 		}
 	}
 }

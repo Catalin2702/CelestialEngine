@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-18
 //
 
 #pragma once
@@ -51,6 +51,13 @@ struct CE_API MetalContextProps {
 };
 
 class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
+	struct MetalContextLifeCycleEvents {
+		UnicastDispatcher<> onCreatedDispatcher;
+		UnicastDispatcher<> onInitializedDispatcher;
+		UnicastDispatcher<> onWillShutdownDispatcher;
+		UnicastDispatcher<bool> onVsyncChangedDispatcher;
+		UnicastDispatcher<unsigned int, unsigned int> onResizeDispatcher;
+	};
 public:
 	void DispatchMetalContextCreated() const;
 	void DispatchMetalContextInitialized() const;
@@ -59,11 +66,7 @@ public:
 	void DispatchResizeEvent(unsigned int width, unsigned int height) const;
 
 public:
-	UnicastDispatcher<> metalContextCreatedDispatcher;
-	UnicastDispatcher<> metalContextDispatcher;
-	UnicastDispatcher<> metalContextWillShutdownDispatcher;
-	UnicastDispatcher<bool> vsyncChangedDispatcher;
-	UnicastDispatcher<unsigned int, unsigned int> onResizeDispatcher; ///< Drawable resize (backing pixels); bound to the hub by the application
+	MetalContextLifeCycleEvents metalContextLifeCycleEvents;
 };
 
 /**
@@ -102,9 +105,12 @@ public:
 	/**
 	 * @brief Changes VSync state
 	 * @param enabled
-	 * @details Updates the Metal layer's display sync setting based on the new VSync state. This method should be called when the VSync state changes to ensure that rendering is synchronized with the monitor's refresh rate if VSync is enabled.
+	 * @details Updates the Metal layer's display-sync setting and, in lockstep, creates or tears down the CAMetalDisplayLink:
+	 *			it must exist while VSync is on (it paces frames) and must not exist while VSync is off (Core Animation forbids
+	 *			CAMetalLayer::nextDrawable(), used by the VSync-off tick loop, once a display link exists for the layer). This
+	 *			makes the state safe to swap at runtime. Fires the VSync-changed dispatcher afterwards.
 	 */
-	void SetVSync(bool enabled) const;
+	void SetVSync(bool enabled);
 
 public:
 	[[nodiscard]] bool IsVSyncEnabled() const override;
@@ -188,10 +194,17 @@ private:
 	 */
 	void _CreateDisplayLink();
 
+	/**
+	 * @brief Pauses, removes from the run loop, invalidates and releases the CAMetalDisplayLink (and its delegate)
+	 * @details No-op when the display link does not exist. After this the layer is display-link-free, so
+	 *			CAMetalLayer::nextDrawable() (the VSync-off frame path) is allowed again.
+	 */
+	void _DestroyDisplayLink();
+
 public:
 	MetalContextProps props; ///< Properties for initializing the Metal context
 
-	std::unique_ptr<MetalContextEventDispatcher> metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
+	MetalContextEventDispatcher metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
 
 private:
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
