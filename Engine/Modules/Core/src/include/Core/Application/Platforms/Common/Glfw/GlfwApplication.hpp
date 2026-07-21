@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -20,6 +20,12 @@
 #include <array>
 #include <memory>
 
+// On macOS GLFW still creates a real NSApplication, so the GLFW backend reuses the native menu bar. SEL and NS::Object are only
+// needed for the menu callbacks, which exist on macOS alone; elsewhere GLFW has no native menu bar.
+#ifdef CE_PLATFORM_MACOS
+	#include <objc/objc.h>
+#endif
+
 namespace CE::Core {
 	class OpenGlContext;
 	class OpenGlShaderProgram;
@@ -27,6 +33,12 @@ namespace CE::Core {
 	class ImGuiOpenGlLayer;
 	class GlfwWindow;
 }
+
+#ifdef CE_PLATFORM_MACOS
+namespace NS {
+	class Object;
+}
+#endif
 
 namespace CE::Core {
 
@@ -154,6 +166,18 @@ public:
 	void SetEventHubDispatcher() override;
 	void SubscribeToHubDispatcher() override;
 	void UnsubscribeFromDispatcher() override;
+
+public:
+	[[nodiscard]] static GlfwApplication& StGet();
+
+#ifdef CE_PLATFORM_MACOS
+	// Native macOS menu-bar callbacks. GLFW creates the NSApplication, so the same menu (built by CreateMenuBar) drives these.
+	static void StOnQuitMenuCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnToggleVSyncCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnMiniaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnDeminiaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnToggleFullscreenCallback(void*, SEL selector, const NS::Object* sender);
+#endif
 
 private:
 	/**

@@ -25,6 +25,13 @@
 #include <cassert>
 #include <format>
 
+// On macOS GLFW hosts a real NSApplication, so the GLFW backend reuses the shared native menu bar built by CreateMenuBar.
+#ifdef CE_PLATFORM_MACOS
+	#include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
+
+	#include <AppKit/AppKit.hpp>
+#endif
+
 namespace CE::Core {
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
@@ -118,7 +125,44 @@ void GlfwApplication::Init() {
 	_InitRenderer();
 
 	_context->SetVSync(Utility::Config::Config::StGetWindowProps().VSync);
+
+#ifdef CE_PLATFORM_MACOS
+	// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
+	NS::Application::sharedApplication()->setMainMenu(CreateMenuBar<GlfwApplication>());
+#endif
 }
+
+GlfwApplication& GlfwApplication::StGet() {
+	return dynamic_cast<GlfwApplication&>(I_Application::StGet());
+}
+
+#ifdef CE_PLATFORM_MACOS
+void GlfwApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
+	StGet().Quit();
+}
+
+void GlfwApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
+	Types::WindowProps windowProps = Utility::Config::Config::StGetWindowProps();
+	windowProps.VSync = !windowProps.VSync;
+	Utility::Config::Config::StSetWindowProps(windowProps);
+
+	// The menu action fires on the main thread during glfwPollEvents, where the GL context is current, so swapping the swap
+	// interval here is safe.
+	StGet().GetOpenGlContext().SetVSync(windowProps.VSync);
+}
+
+void GlfwApplication::StOnMiniaturizeCallback(void*, SEL, const NS::Object*) {
+	StGet().GetGlfwWindow().Miniaturize();
+}
+
+void GlfwApplication::StOnDeminiaturizeCallback(void*, SEL, const NS::Object*) {
+	StGet().GetGlfwWindow().Deminiaturize();
+}
+
+void GlfwApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object*) {
+	StGet().GetGlfwWindow().ToggleFullScreen();
+}
+#endif
 
 void GlfwApplication::InitImGuiLayer() {
 	assert(_window && "GlfwApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");

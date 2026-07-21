@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-14
+# Updated: 2026-07-21
 #
 
 set(APPLICATION_HEADERS
@@ -12,6 +12,7 @@ set(APPLICATION_HEADERS
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp
+		src/include/Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp
 	>
 )
 

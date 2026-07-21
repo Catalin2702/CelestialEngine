@@ -16,6 +16,15 @@
 
 #include <GLFW/glfw3.h>
 
+// On macOS GLFW hosts a real NSWindow, so fullscreen defers to the native (Spaces) toggleFullScreen instead of GLFW's
+// exclusive monitor fullscreen (which hides the title-bar controls).
+#ifdef CE_PLATFORM_MACOS
+	#define GLFW_EXPOSE_NATIVE_COCOA
+	#include <GLFW/glfw3native.h>
+
+	#include <AppKit/AppKit.hpp>
+#endif
+
 #include <stdexcept>
 #include <utility>
 
@@ -185,12 +194,68 @@ void GlfwWindow::Init() {
 }
 
 void GlfwWindow::Miniaturize() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("GlfwWindow::Miniaturize: Cannot miniaturize because window is not initialized");
+		return;
+	}
+
+	glfwIconifyWindow(_glfwWindow.get());
 }
 
 void GlfwWindow::Deminiaturize() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("GlfwWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
+		return;
+	}
+
+	glfwRestoreWindow(_glfwWindow.get());
 }
 
 void GlfwWindow::ToggleFullScreen() const {
+	if (not _glfwWindow) {
+		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
+		return;
+	}
+
+#ifdef CE_PLATFORM_MACOS
+	// GLFW hosts a real NSWindow on macOS: use the native (Spaces) fullscreen so the transition animates and keeps the
+	// title-bar controls, instead of the exclusive glfwSetWindowMonitor fullscreen that covers them and hides the traffic lights.
+	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(_glfwWindow.get()));
+	if (not nsWindow) {
+		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because the native Cocoa window is unavailable");
+		return;
+	}
+
+	// Opt the window into native fullscreen so toggleFullScreen animates into its own Space.
+	nsWindow->setCollectionBehavior(nsWindow->collectionBehavior() | NS::WindowCollectionBehaviorFullScreenPrimary);
+	nsWindow->toggleFullScreen(nullptr);
+#else
+	const auto window = _glfwWindow.get();
+
+	// Already fullscreen (the window is attached to a monitor): restore the saved windowed placement.
+	if (glfwGetWindowMonitor(window)) {
+		glfwSetWindowMonitor(window, nullptr, _windowedX, _windowedY, _windowedWidth, _windowedHeight, GLFW_DONT_CARE);
+		return;
+	}
+
+	// Going fullscreen: remember the current windowed placement so it can be restored on the next toggle.
+	glfwGetWindowPos(window, &_windowedX, &_windowedY);
+	glfwGetWindowSize(window, &_windowedWidth, &_windowedHeight);
+
+	const auto monitor = glfwGetPrimaryMonitor();
+	if (not monitor) {
+		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot enter fullscreen because no monitor is available");
+		return;
+	}
+
+	const auto mode = glfwGetVideoMode(monitor);
+	if (not mode) {
+		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot enter fullscreen because the monitor video mode is unavailable");
+		return;
+	}
+
+	glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+#endif
 }
 
 void GlfwWindow::_InitWindow() {

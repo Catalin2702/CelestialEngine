@@ -9,6 +9,7 @@
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 
+#include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
 #include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -31,67 +32,6 @@ namespace CE::Core {
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
-}
-
-static NS::Menu* CreateMenuBar() {
-	const auto mainMenu = NS::Menu::alloc()->init();
-
-	const auto appName = NS::RunningApplication::currentApplication()->localizedName();
-	const auto appNameString = std::string(appName->cString(NS::UTF8StringEncoding));
-
-#pragma region AppMenu
-	const auto appMenuItem = NS::MenuItem::alloc()->init();
-	const auto appMenu = NS::Menu::alloc()->init();
-
-#pragma region SectionQuit
-	const auto quitTitle = NS::String::string("Quit ", NS::UTF8StringEncoding)->stringByAppendingString(appName);
-	const auto quitSelector = NS::MenuItem::registerActionCallback((appNameString + "Quit").c_str(), CocoaApplication::StOnQuitMenuCallback);
-	appMenu->addItem(quitTitle, quitSelector, NS::String::string("q", NS::UTF8StringEncoding));
-#pragma endregion
-
-	appMenuItem->setSubmenu(appMenu);
-	mainMenu->addItem(appMenuItem);
-
-	appMenu->release();
-	appMenuItem->release();
-#pragma endregion
-
-#pragma region WindowMenu
-	const auto windowMenuItem = NS::MenuItem::alloc()->init();
-	const auto windowMenu = NS::Menu::alloc()->init(NS::String::string("Window", NS::UTF8StringEncoding));
-
-#pragma region SectionMiniaturize
-	const auto miniaturizeTitle = NS::String::string("Miniaturize", NS::UTF8StringEncoding);
-	const auto miniaturizeSelector = NS::MenuItem::registerActionCallback((appNameString + "Miniaturize").c_str(), CocoaApplication::StOnMiniaturizeCallback);
-	windowMenu->addItem(miniaturizeTitle, miniaturizeSelector, NS::String::string("", NS::UTF8StringEncoding));
-#pragma endregion
-
-#pragma region SectionDeminiaturize
-	const auto deminiaturizeTitle = NS::String::string("Deminiaturize", NS::UTF8StringEncoding);
-	const auto deminiaturizeSelector = NS::MenuItem::registerActionCallback((appNameString + "Deminiaturize").c_str(), CocoaApplication::StOnDeminiaturizeCallback);
-	windowMenu->addItem(deminiaturizeTitle, deminiaturizeSelector, NS::String::string("", NS::UTF8StringEncoding));
-#pragma endregion
-
-#pragma region SectionFullscreen
-	const auto toggleFullscreenTitle = NS::String::string("Toggle Fullscreen", NS::UTF8StringEncoding);
-	const auto toggleFullscreenSelector = NS::MenuItem::registerActionCallback((appNameString + "ToggleFullscreen").c_str(), CocoaApplication::StOnToggleFullscreenCallback);
-	windowMenu->addItem(toggleFullscreenTitle, toggleFullscreenSelector, NS::String::string("", NS::UTF8StringEncoding));
-#pragma endregion
-
-#pragma region SectionVSync
-	const auto vsyncTitle = NS::String::string("Toggle VSync", NS::UTF8StringEncoding);
-	const auto vsyncSelector = NS::MenuItem::registerActionCallback((appNameString + "ToggleVSync").c_str(), CocoaApplication::StOnToggleVSyncCallback);
-	windowMenu->addItem(vsyncTitle, vsyncSelector, NS::String::string("", NS::UTF8StringEncoding));
-#pragma endregion
-
-	windowMenuItem->setSubmenu(windowMenu);
-	mainMenu->addItem(windowMenuItem);
-
-	windowMenu->release();
-	windowMenuItem->release();
-#pragma endregion
-
-	return mainMenu->autorelease();
 }
 
 void CocoaApplicationEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
@@ -498,7 +438,7 @@ void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
-	const auto mainMenu = CreateMenuBar();
+	const auto mainMenu = CreateMenuBar<CocoaApplication>();
 	_appCocoa->setMainMenu(mainMenu);
 
 	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {

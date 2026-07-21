@@ -198,6 +198,16 @@ private:
 
 	/// @brief Latest keyboard modifier flags reported by the mouse button callback, forwarded with synthesized drag events.
 	int _lastMouseMods = 0;
+
+#ifndef CE_PLATFORM_MACOS
+	/// @brief Windowed-mode placement saved when entering fullscreen, so ToggleFullScreen can restore it on exit.
+	/// @details Only used by the glfwSetWindowMonitor fullscreen path; macOS defers to the native NSWindow fullscreen instead.
+	///			 Mutable because ToggleFullScreen is const yet must cache the pre-fullscreen rect (position and size).
+	mutable int _windowedX = 0;
+	mutable int _windowedY = 0;
+	mutable int _windowedWidth = 0;
+	mutable int _windowedHeight = 0;
+#endif
 };
 
 }
