@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -12,11 +12,10 @@
 
 #include <Metal/Metal.hpp>
 
+#include <format>
 #include <ranges>
 
 namespace CE::Core {
-
-namespace {
 
 // Relative fallback, resolved against the current working directory. Only used
 // when the app is not running from a bundle (e.g. some test harnesses).
@@ -25,7 +24,7 @@ constexpr auto relativeLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
 // Resolves the shader library to an absolute path based on the app bundle's
 // Resources directory, so loading is independent of the current working
 // directory (fixes launches from IDEs/debuggers such as CLion and Xcode).
-std::string ResolveDefaultLibraryPath() {
+static std::string ResolveDefaultLibraryPath() {
 	if (const auto bundle = NS::Bundle::mainBundle()) {
 		if (const auto resourcePath = bundle->resourcePath()) {
 			return std::string(resourcePath->utf8String()) + "/Shaders/Metal/Main.metallib";
@@ -34,9 +33,7 @@ std::string ResolveDefaultLibraryPath() {
 	return relativeLibraryPath;
 }
 
-}
-
-std::string defaultLibraryPath = relativeLibraryPath;
+static std::string defaultLibraryPath = relativeLibraryPath;
 
 MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path): _device(NS::RetainPtr(device)) {
 	defaultLibraryPath = path.empty() ? ResolveDefaultLibraryPath() : path;
@@ -91,9 +88,9 @@ void MetalShaderLibrary::_LoadLibrary() {
 	NS::Error* error = nullptr;
 	const auto library = _device->newLibrary(url, &error);
 	if (not library) {
-		const auto errorMessage = "Failed to load Metal shader library from path: " + defaultLibraryPath + ". Error: " + (error ? error->localizedDescription()->utf8String() : "Unknown error");
-		CE_CORE_ERROR("MetalShaderLibrary::_LoadLibrary: {0}", errorMessage);
-		throw std::runtime_error("MetalShaderLibrary::_LoadLibrary: " + errorMessage);
+		const auto errorMessage = std::format("MetalShaderLibrary::_LoadLibrary: Failed to load Metal shader library from path: {}. Error: {}", defaultLibraryPath, error ? error->localizedDescription()->utf8String() : "Unknown error");
+		CE_CORE_ERROR(errorMessage);
+		throw std::runtime_error(errorMessage);
 	}
 	_library = NS::RetainPtr(library);
 
@@ -106,7 +103,9 @@ void MetalShaderLibrary::_LoadLibrary() {
 			_functions[functionNameStr] = function;
 		}
 		else {
-			CE_CORE_ERROR("MetalShaderLibrary::_LoadLibrary: Failed to load shader function '{}' from library.", functionNameStr);
+			const auto errorMessage = std::format("MetalShaderLibrary::_LoadLibrary: Failed to load shader function '{}' from library.", functionNameStr);
+			CE_CORE_ERROR(errorMessage);
+			throw std::runtime_error(errorMessage);
 		}
 	}
 }
