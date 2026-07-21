@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -54,7 +54,7 @@ public:
 
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
-private:
+protected:
 	float _x, _y;									///< Mouse cursor position in window coordinates
 };
 

@@ -9,7 +9,7 @@
 
 #include "Events/WindowEvent.hpp"
 
-#include <sstream>
+#include <format>
 
 namespace CE::Events {
 
@@ -17,9 +17,7 @@ WindowResizeEvent::WindowResizeEvent(const unsigned int width, const unsigned in
 	I_Event(isMutable), _width(width), _height(height) {}
 
 std::string WindowResizeEvent::ToString() const {
-	std::stringstream ss;
-	ss << GetName() << ": " << _width << ", " << _height;
-	return ss.str();
+	return std::format("{0}: {1}, {2}", GetName(), _width, _height);
 }
 
 }

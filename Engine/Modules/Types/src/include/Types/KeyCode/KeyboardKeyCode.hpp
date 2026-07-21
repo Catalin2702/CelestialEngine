@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
+#include <format>
 #include <ostream>
 #include <string>
 
@@ -143,27 +144,21 @@ CE_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
  */
 CE_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
-/**
- *  @brief Formats a KeyboardKeyCode enum value as a string
- * @param keycode The KeyboardKeyCode to format as a string
- * @return std::string A string representation of the KeyboardKeyCode
- * @details Provides a convenient way to get a string representation of a KeyboardKeyCode enum value.
- *			This can be useful for logging, debugging, or displaying key names in the user interface.
- *			The function simply calls ToString to get the string representation of the key code and returns it as a std::string
- *			for easier use in C++ contexts where std::string is preferred over const char*.
- */
-inline std::string format_as(const KeyboardKeyCode keycode) {
-	return ToString(keycode);
 }
 
-inline std::ostream& operator<<(std::ostream& os, const KeyboardKeyCode keycode) {
-	return os << std::string(ToString(keycode));
-}
-
-inline auto operator<=>(const unsigned lhs, const KeyboardKeyCode rhs) {
-	return lhs <=> ToUInt(rhs);
+template <>
+struct std::formatter<CE::Types::KeyboardKeyCode>: std::formatter<std::string_view> {
+	auto format(const CE::Types::KeyboardKeyCode value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
+	}
 };
 
+inline std::ostream& operator<<(std::ostream& os, const CE::Types::KeyboardKeyCode keycode) {
+	return os << std::string(CE::Types::ToString(keycode));
 }
+
+inline auto operator<=>(const unsigned lhs, const CE::Types::KeyboardKeyCode rhs) {
+	return lhs <=> CE::Types::ToUInt(rhs);
+};
 
 #endif //CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP

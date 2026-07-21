@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-14
+# Updated: 2026-07-21
 #
 
 set(HEADERS
@@ -12,6 +12,7 @@ set(HEADERS
 	src/include/Events/GenericEvent.hpp
 	src/include/Events/KeyEvent.hpp
 	src/include/Events/MouseEvent.hpp
+	src/include/Events/RenderEvent.hpp
 	src/include/Events/WindowEvent.hpp
 )
 
@@ -23,6 +24,7 @@ set(SOURCES
 	src/source/Events/GenericEvent.cpp
 	src/source/Events/KeyEvent.cpp
 	src/source/Events/MouseEvent.cpp
+	src/source/Events/RenderEvent.cpp
 	src/source/Events/WindowEvent.cpp
 )
 

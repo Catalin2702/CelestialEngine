@@ -9,7 +9,7 @@
 
 #include "Events/GenericEvent.hpp"
 
-#include <sstream>
+#include <format>
 
 namespace CE::Events {
 
@@ -17,9 +17,7 @@ ErrorEvent::ErrorEvent(const int errorCode, const char* description, const bool 
 	I_Event(isMutable), _errorCode(errorCode), _description(description) {}
 
 std::string ErrorEvent::ToString() const {
-	std::stringstream ss;
-	ss << GetName() << ": " << "ErrorCode: " << _errorCode << ". Description: " << _description;
-	return ss.str();
+	return std::format("{0}: ErrorCode: {1}. Description: {2}", GetName(), _errorCode, _description);
 }
 
 }

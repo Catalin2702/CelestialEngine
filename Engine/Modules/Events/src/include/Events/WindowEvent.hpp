@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -60,7 +60,7 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(WindowResize)
-	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	EVENT_CLASS_CATEGORY(EventCategoryWindow)
 
 private:
 	unsigned int _width, _height;					///< New window dimensions in pixels
@@ -83,7 +83,7 @@ public:
 
 public:
 	EVENT_CLASS_TYPE(WindowClose)
-	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	EVENT_CLASS_CATEGORY(EventCategoryWindow)
 };
 
 }

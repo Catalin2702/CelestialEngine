@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Events/MouseEvent.hpp"
 
-#include <sstream>
+#include <format>
 
 namespace CE::Events {
 
@@ -20,18 +20,14 @@ MouseMovedEvent::MouseMovedEvent(const float x, const float y, const bool isMuta
 	I_MouseMovedEvent(x, y, isMutable) {}
 
 std::string MouseMovedEvent::ToString() const {
-	std::stringstream ss;
-	ss << "MouseMovedEvent: " << GetX() << ", " << GetY();
-	return ss.str();
+	return std::format("{0}: {1}, {2}", GetName(), _x, _y);
 }
 
 MouseWheelScrolledEvent::MouseWheelScrolledEvent(const float xOffset, const float yOffset, const bool isMutable):
 	I_Event(isMutable), _xOffset(xOffset), _yOffset(yOffset) {}
 
 std::string MouseWheelScrolledEvent::ToString() const {
-	std::stringstream ss;
-	ss << "MouseWheelScrolledEvent: " << _xOffset << ", " << _yOffset;
-	return ss.str();
+	return std::format("{0}: {1}, {2}", GetName(), _xOffset, _yOffset);
 }
 
 I_MouseButtonEvent::I_MouseButtonEvent(const Types::MouseButtonCode button, const bool isMutable):
@@ -41,27 +37,21 @@ MouseButtonPressedEvent::MouseButtonPressedEvent(const Types::MouseButtonCode bu
 	I_MouseButtonEvent(button, isMutable) {}
 
 std::string MouseButtonPressedEvent::ToString() const {
-	std::stringstream ss;
-	ss << "MouseButtonPressedEvent: " << _button;
-	return ss.str();
+	return std::format("{0}: {1}", GetName(), _button);
 }
 
 MouseButtonReleasedEvent::MouseButtonReleasedEvent(const Types::MouseButtonCode button, const bool isMutable):
 	I_MouseButtonEvent(button, isMutable) {}
 
 std::string MouseButtonReleasedEvent::ToString() const {
-	std::stringstream ss;
-	ss << "MouseButtonReleasedEvent: " << _button;
-	return ss.str();
+	return std::format("{0}: {1}", GetName(), _button);
 }
 
 MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const float x, const float y, const bool isMutable):
 	I_MouseMovedEvent(x, y, isMutable), _button(button)  {}
 
 std::string MouseDraggedEvent::ToString() const {
-	std::stringstream ss;
-	ss << "MouseDraggedEvent: " << GetX() << ", " << GetY() << " with button " << GetMouseButton();
-	return ss.str();
+	return std::format("{0}: {1}, {2} with button {3}", GetName(), _x, _y, _button);
 }
 
 }

@@ -34,6 +34,8 @@ enum class EventType: uint8_t {
 
 	Error,											///< Error event
 
+	VSyncChange,									///< VSync change event
+
 	WindowClose,									///< Window close event
 	WindowResize,									///< Window resize event
 	WindowFocus,									///< Window gained focus event
@@ -69,6 +71,8 @@ enum EventCategory {
 	EventCategoryKeyboard = BIT(2),					///< Keyboard-specific events
 	EventCategoryMouse = BIT(3),					///< Mouse-specific events
 	EventCategoryMouseButton = BIT(4),				///< Mouse button-specific events
+	EventCategoryRender = BIT(5),					///< Render-related events
+	EventCategoryWindow = BIT(6),					///< Window-related events
 };
 
 /**

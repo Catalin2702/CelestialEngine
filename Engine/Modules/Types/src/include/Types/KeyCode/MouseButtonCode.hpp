@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
+#include <format>
 #include <ostream>
 #include <string>
 
@@ -115,27 +116,21 @@ CE_API MouseButtonCode MouseButtonKeyCodeFromCocoa(long buttonNumber);
  */
 CE_API int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
 
-/**
- * @brief Converts a MouseButton enum value to its string representation
- * @param buttonCode The MouseButton enum value to convert
- * @return std::string A string representation of the MouseButton
- * @details This function provides a way to get a human-readable name for each MouseButton enum value as a std::string.
- *			It uses the ToString function to get the C-style string and then constructs a std::string from it.
- *			This can be useful for logging, debugging, or displaying mouse button names in the user interface where a std::string
- *			is more convenient to work with than a const char*.
- */
-inline std::string format_as(const MouseButtonCode buttonCode) {
-	return ToString(buttonCode);
 }
 
-inline std::ostream& operator<<(std::ostream& os, const MouseButtonCode buttonCode) {
-	return os << std::string(ToString(buttonCode));
+template <>
+struct std::formatter<CE::Types::MouseButtonCode>: std::formatter<std::string_view> {
+	auto format(const CE::Types::MouseButtonCode value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& os, const CE::Types::MouseButtonCode buttonCode) {
+	return os << std::string(CE::Types::ToString(buttonCode));
 }
 
-inline auto operator<=>(const unsigned lhs, const MouseButtonCode rhs) {
-	return lhs <=> ToUInt(rhs);
-}
-
+inline auto operator<=>(const unsigned lhs, const CE::Types::MouseButtonCode rhs) {
+	return lhs <=> CE::Types::ToUInt(rhs);
 }
 
 #endif //CE_TYPES_KEYCODE_MOUSEKEYS_HPP
