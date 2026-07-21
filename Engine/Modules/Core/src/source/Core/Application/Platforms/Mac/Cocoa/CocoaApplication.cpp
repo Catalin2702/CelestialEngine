@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -21,6 +21,7 @@
 #include <AppKit/AppKit.hpp>
 
 #include <cassert>
+#include <format>
 #include <stdexcept>
 #include <string>
 
@@ -58,6 +59,24 @@ static NS::Menu* CreateMenuBar() {
 #pragma region WindowMenu
 	const auto windowMenuItem = NS::MenuItem::alloc()->init();
 	const auto windowMenu = NS::Menu::alloc()->init(NS::String::string("Window", NS::UTF8StringEncoding));
+
+#pragma region SectionMiniaturize
+	const auto miniaturizeTitle = NS::String::string("Miniaturize", NS::UTF8StringEncoding);
+	const auto miniaturizeSelector = NS::MenuItem::registerActionCallback((appNameString + "Miniaturize").c_str(), CocoaApplication::StOnMiniaturizeCallback);
+	windowMenu->addItem(miniaturizeTitle, miniaturizeSelector, NS::String::string("", NS::UTF8StringEncoding));
+#pragma endregion
+
+#pragma region SectionDeminiaturize
+	const auto deminiaturizeTitle = NS::String::string("Deminiaturize", NS::UTF8StringEncoding);
+	const auto deminiaturizeSelector = NS::MenuItem::registerActionCallback((appNameString + "Deminiaturize").c_str(), CocoaApplication::StOnDeminiaturizeCallback);
+	windowMenu->addItem(deminiaturizeTitle, deminiaturizeSelector, NS::String::string("", NS::UTF8StringEncoding));
+#pragma endregion
+
+#pragma region SectionFullscreen
+	const auto toggleFullscreenTitle = NS::String::string("Toggle Fullscreen", NS::UTF8StringEncoding);
+	const auto toggleFullscreenSelector = NS::MenuItem::registerActionCallback((appNameString + "ToggleFullscreen").c_str(), CocoaApplication::StOnToggleFullscreenCallback);
+	windowMenu->addItem(toggleFullscreenTitle, toggleFullscreenSelector, NS::String::string("", NS::UTF8StringEncoding));
+#pragma endregion
 
 #pragma region SectionVSync
 	const auto vsyncTitle = NS::String::string("Toggle VSync", NS::UTF8StringEncoding);
@@ -98,6 +117,9 @@ CocoaApplication::CocoaApplication() {
 	I_Application::SetRunning(false);
 
 	_appCocoa = NS::RetainPtr(NS::Application::sharedApplication());
+
+	// Starts empty (count 0): the tick loop posts a frame, then waits here until the main thread signals completion.
+	_tickSemaphore = dispatch_semaphore_create(0);
 }
 
 CocoaApplication::~CocoaApplication() {
@@ -117,6 +139,11 @@ CocoaApplication::~CocoaApplication() {
 	_context.reset();
 
 	_appCocoa.reset();
+
+	if (_tickSemaphore) {
+		dispatch_release(_tickSemaphore);
+		_tickSemaphore = nullptr;
+	}
 }
 
 void CocoaApplication::Run() {
@@ -184,7 +211,7 @@ void CocoaApplication::Init() {
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
 	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
-		const auto error = fmt::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+		const auto error = std::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -217,7 +244,7 @@ void CocoaApplication::Init() {
 	NS::Error* pipelineError = nullptr;
 	defaultRenderPipelineState = _context->GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
 	if (not defaultRenderPipelineState) {
-		const auto error = fmt::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
+		const auto error = std::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -278,31 +305,38 @@ void CocoaApplication::_StartTickLoop() {
 	if (_loopThread.joinable())
 		return;
 
+	// Drain any permit left over from a previous run (the stop signal or a late tick block) so the loop starts balanced.
+	while (dispatch_semaphore_wait(_tickSemaphore, DISPATCH_TIME_NOW) == 0) {}
+
 	_loopThreadRunning.store(true, std::memory_order_release);
 	_loopThread = std::thread([this] {
 		while (_loopThreadRunning.load(std::memory_order_acquire)) {
-			if (not _tickPending.exchange(true)) {
-				dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
-					if (const auto app = static_cast<CocoaApplication*>(context)) {
-						app->_tickPending.store(false, std::memory_order_release);
-						// Drop the frame if the app stopped or the loop was torn down (e.g. VSync was switched on) between
-						// the dispatch and now, so no stale Tick calls nextDrawable() once a display link exists.
-						if (app->IsRunning() and app->_loopThreadRunning.load(std::memory_order_acquire))
-							app->Tick(app->GetDeltaTime());
-					}
-				});
-			}
+			// Pace against the main thread instead of busy-spinning: post exactly one Tick, then block until it completes.
+			dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
+				if (const auto app = static_cast<CocoaApplication*>(context)) {
+					// Drop the frame if the app stopped or the loop was torn down (e.g. VSync was switched on) between
+					// the dispatch and now, so no stale Tick calls nextDrawable() once a display link exists.
+					if (app->IsRunning() and app->_loopThreadRunning.load(std::memory_order_acquire))
+						app->Tick(app->GetDeltaTime());
+					// Release the loop thread to schedule the next frame.
+					dispatch_semaphore_signal(app->_tickSemaphore);
+				}
+			});
+
+			dispatch_semaphore_wait(_tickSemaphore, DISPATCH_TIME_FOREVER);
 		}
 	});
 }
 
 void CocoaApplication::_StopTickLoop() {
 	_loopThreadRunning.store(false, std::memory_order_release);
+
+	// Signal before joining: this runs on the main thread while the loop thread may be blocked waiting for a main-queue tick
+	// block that can no longer run (the main thread is stuck in join). Waking the loop thread here avoids that deadlock.
+	dispatch_semaphore_signal(_tickSemaphore);
+
 	if (_loopThread.joinable())
 		_loopThread.join();
-
-	// Clear the in-flight flag so a later restart is not stuck thinking a tick is still pending.
-	_tickPending.store(false, std::memory_order_release);
 }
 
 void CocoaApplication::_ApplyVSync(const bool enabled) {
@@ -429,6 +463,18 @@ void CocoaApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
 
 	// Menu actions fire on the main thread, so it is safe to swap the frame-pacing mechanism here.
 	StGet()._ApplyVSync(windowProps.VSync);
+}
+
+void CocoaApplication::StOnMiniaturizeCallback(void*, SEL, const NS::Object*) {
+	StGet().GetCocoaWindow().Miniaturize();
+}
+
+void CocoaApplication::StOnDeminiaturizeCallback(void*, SEL, const NS::Object*) {
+	StGet().GetCocoaWindow().Deminiaturize();
+}
+
+void CocoaApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object*) {
+	StGet().GetCocoaWindow().ToggleFullScreen();
 }
 
 void CocoaApplication::_BindContextDelegates() {

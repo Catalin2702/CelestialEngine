@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -32,12 +32,6 @@ static bool _st_GLFWInitialized = false;
  * @details Used to determine when to call glfwTerminate() (when count reaches 0)
  */
 static int _st_GLFWWindowCount = 0;
-
-/**
- * @brief Flag to track the current VSync state
- * @details Updated by SetVSync() and returned by IsVSync()
- */
-bool _glfwVSync = false;
 
 void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int height) const {
 	windowStateEvents.onResizeDispatcher.Dispatch(width, height);
@@ -87,14 +81,6 @@ void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 }
 
-void GlfwWindow::GetReady(const bool VSync) {
-	if (not _st_GLFWInitialized) {
-		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
-		return;
-	}
-	SetVSync(VSync);
-}
-
 std::pair<float, float> GlfwWindow::GetWindowSize() const {
 	int width = 0, height = 0;
 	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
@@ -111,26 +97,8 @@ std::pair<float, float> GlfwWindow::GetFrameSize() const {
 	return {width, height};
 }
 
-bool GlfwWindow::IsVSync() const {
-	if (not _glfwWindow) {
-		CE_CORE_WARN("GlfwWindow::IsVSync: Could not get VSync state because window is not initialized.");
-		return false;
-	}
-
-	return _glfwVSync;
-}
-
 void GlfwWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
 	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(width), static_cast<int>(height));
-}
-
-void GlfwWindow::SetVSync(const bool enabled) {
-	if (not _st_GLFWInitialized) {
-		CE_CORE_WARN("Could not set VSync because GLFW is not initialized.");
-		return;
-	}
-	_glfwVSync = enabled;
-	glfwSwapInterval(_glfwVSync ? 1 : 0);
 }
 
 void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
@@ -214,6 +182,15 @@ void GlfwWindow::Init() {
 	_SetWindowEventCallbacks();
 
 	_st_GLFWWindowCount++;
+}
+
+void GlfwWindow::Miniaturize() const {
+}
+
+void GlfwWindow::Deminiaturize() const {
+}
+
+void GlfwWindow::ToggleFullScreen() const {
 }
 
 void GlfwWindow::_InitWindow() {

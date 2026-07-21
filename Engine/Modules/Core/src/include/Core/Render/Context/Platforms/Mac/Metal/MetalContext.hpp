@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -110,7 +110,7 @@ public:
 	 *			CAMetalLayer::nextDrawable(), used by the VSync-off tick loop, once a display link exists for the layer). This
 	 *			makes the state safe to swap at runtime. Fires the VSync-changed dispatcher afterwards.
 	 */
-	void SetVSync(bool enabled);
+	void SetVSync(bool enabled) override;
 
 public:
 	[[nodiscard]] bool IsVSyncEnabled() const override;

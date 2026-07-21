@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -101,14 +101,11 @@ public:
 	 */
 	void Init() override;
 
-	/**
-	 * @brief Prepares the window for rendering
-	 * @param VSync True to enable VSync, false to disable
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
-	 *			In this implementation, it sets the VSync state according to the configuration in _data.
-	 */
-	void GetReady(bool VSync) override;
+	void Miniaturize() const override;
+
+	void Deminiaturize() const override;
+
+	void ToggleFullScreen() const override;
 
 public:
 	/**
@@ -123,13 +120,6 @@ public:
 	 * @details The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior. This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
 	[[nodiscard]] std::pair<float, float> GetFrameSize() const override;
-
-	/**
-	 * @brief Checks if VSync is enabled
-	 * @return bool True if VSync is enabled, false otherwise
-	 * @details Inline getter that returns the VSync state from _data
-	 */
-	[[nodiscard]] bool IsVSync() const override;
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
@@ -156,16 +146,6 @@ public:
 	 *			the stored values, the actual window resize is handled by GLFW events
 	 */
 	void SetWindowSize(unsigned int width, unsigned int height) override;
-
-	/**
-	 * @brief Enables or disables vertical synchronization (VSync)
-	 * @param enabled True to enable VSync, false to disable
-	 * @details When enabled, limits the frame rate to the monitor's refresh rate to
-	 *			prevent screen tearing. Uses glfwSwapInterval(1) to enable and
-	 *			glfwSwapInterval(0) to disable. If GLFW is not initialized, prints
-	 *			a warning and returns without making changes.
-	 */
-	void SetVSync(bool enabled) override;
 
 	/**
 	 * @brief Prepares the window for rendering

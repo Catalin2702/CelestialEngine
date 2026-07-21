@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -22,6 +22,8 @@
 
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
+
+#include <dispatch/dispatch.h>
 
 #include <array>
 #include <atomic>
@@ -214,6 +216,9 @@ public:
 public:
 	static void StOnQuitMenuCallback(void*, SEL selector, const NS::Object* sender);
 	static void StOnToggleVSyncCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnMiniaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnDeminiaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	static void StOnToggleFullscreenCallback(void*, SEL selector, const NS::Object* sender);
 
 private:
 	void _BindContextDelegates();
@@ -276,7 +281,7 @@ private:
 
 	std::thread _loopThread; ///< Thread for running the application loop (only while VSync is off)
 	std::atomic<bool> _loopThreadRunning{false}; ///< Controls the tick loop thread lifetime independently of the app-running state
-	std::atomic<bool> _tickPending; ///< Flag to indicate if a tick is pending for the next frame
+	dispatch_semaphore_t _tickSemaphore = nullptr; ///< Paces the tick loop against main-thread frame completions (avoids busy-spinning)
 
 	std::array<uint32_t, _Count> _eventHubHandlers{};
 

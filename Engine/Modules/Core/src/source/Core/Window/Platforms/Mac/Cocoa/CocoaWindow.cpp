@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -103,6 +103,33 @@ void CocoaWindow::Show() const {
 void CocoaWindow::Init() {
 	_InitWindow();
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
+}
+
+void CocoaWindow::Miniaturize() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::Miniaturize: Cannot miniaturize because window is not initialized");
+		return;
+	}
+
+	_window->miniaturize(nullptr);
+}
+
+void CocoaWindow::Deminiaturize() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
+		return;
+	}
+
+	_window->deminiaturize(nullptr);
+}
+
+void CocoaWindow::ToggleFullScreen() const {
+	if (not _window) {
+		CE_CORE_WARN("CocoaWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
+		return;
+	}
+
+	_window->toggleFullScreen(nullptr);
 }
 
 void CocoaWindow::_InitWindow() {

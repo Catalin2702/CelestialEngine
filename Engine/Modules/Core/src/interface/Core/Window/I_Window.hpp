@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -55,14 +55,12 @@ public:
 	 */
 	virtual void Init() = 0;
 
-	/**
-	 * @brief Prepares the window for rendering
-	 * @param VSync True to enable VSync, false to disable
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to set the callbacks to their initial states, ensure that the window is properly configured, or perform any other necessary initialization before rendering begins.
-	 *			Derived classes can override this method to implement any specific setup required for their window implementation before the rendering loop starts.
-	 */
-	virtual void GetReady(bool /*VSync*/) {}
+public:
+	virtual void Miniaturize() const = 0;
+
+	virtual void Deminiaturize() const = 0;
+
+	virtual void ToggleFullScreen() const = 0;
 
 public:
 	/**
@@ -82,12 +80,6 @@ public:
 	 *			This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
 	[[nodiscard]] virtual std::pair<float, float> GetFrameSize() const = 0;
-
-	/**
-	 * @brief Checks if VSync is enabled
-	 * @return bool True if VSync is enabled, false otherwise
-	 */
-	[[nodiscard]] virtual bool IsVSync() const { return false; }
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
@@ -112,13 +104,6 @@ public:
 	 *			the stored values, it does not actually resize the window
 	 */
 	virtual void SetWindowSize(unsigned int width, unsigned int height) = 0;
-
-	/**
-	 * @brief Enables or disables VSync
-	 * @param enabled True to enable VSync, false to disable
-	 * @details VSync synchronizes rendering with the monitor's refresh rate
-	 */
-	virtual void SetVSync(bool /*enabled*/) {}
 
 protected:
 	/**

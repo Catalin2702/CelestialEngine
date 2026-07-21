@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -23,6 +23,7 @@
 #include <glad/glad.h>
 
 #include <cassert>
+#include <format>
 
 namespace CE::Core {
 
@@ -116,7 +117,7 @@ void GlfwApplication::Init() {
 	_InitWindow();
 	_InitRenderer();
 
-	_window->GetReady(Utility::Config::Config::StGetWindowProps().VSync);
+	_context->SetVSync(Utility::Config::Config::StGetWindowProps().VSync);
 }
 
 void GlfwApplication::InitImGuiLayer() {
@@ -135,8 +136,9 @@ void GlfwApplication::_InitWindow() {
 	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
 
 	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
-		CE_CORE_ERROR("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {0}, Window API: {1}", windowProps.graphicsApi, windowProps.windowApi);
-		throw std::runtime_error("Incompatible graphics API and window API specified in window properties");
+		const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 
 	_window = std::make_unique<GlfwWindow>();

@@ -4,10 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #include <CelestialEngine.hpp>
+
+#include <format>
 #include <memory>
 
 std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, const char* argv[]) {
@@ -26,8 +28,9 @@ std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, con
 		}
 #endif
 		default: {
-			CE_CORE_ERROR("Application::CreateApplication: Unsupported window API specified in window properties. Window API: {0}", windowProps.windowApi);
-			throw std::runtime_error("Unsupported window API specified in window properties");
+			const auto error = std::format("Application::CreateApplication: Unsupported window API specified in window properties. Window API: {}", windowProps.windowApi);
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
 		}
 	}
 	app->Init();

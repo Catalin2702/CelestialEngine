@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -87,6 +87,13 @@ public:
 	 * @brief Initializes the window with the provided Metal device
 	 */
 	void Init() override;
+
+public:
+	void Miniaturize() const override;
+
+	void Deminiaturize() const override;
+
+	void ToggleFullScreen() const override;
 
 public:
 	/**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -93,6 +93,9 @@ public:
 	 */
 	void SwapBuffers() const;
 
+	void SetVSync(bool enabled) override;
+
+public:
 	static void SetViewport(int x, int y, int width, int height);
 
 	static void ClearBuffers(Types::BufferBit mask);

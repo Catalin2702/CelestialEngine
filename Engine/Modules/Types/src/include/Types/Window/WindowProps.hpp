@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -15,9 +15,11 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Render/Render.hpp"
 
+#include <format>
 #include <functional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 
 namespace CE::Events {
@@ -74,25 +76,27 @@ struct CE_API WindowProps {
 	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
 };
 
-inline std::string format_as(const WindowApi& event) {
-	switch (event) {
-	case WindowApi::None:
-		return "None";
-	case WindowApi::GLFW:
-		return "GLFW";
-	case WindowApi::Win32:
-		return "Win32";
-	case WindowApi::X11:
-		return "X11";
-	case WindowApi::Cocoa:
-		return "Cocoa";
-	default:
-		return "Unknown Window API";
-	}
 }
 
+template <>
+struct std::formatter<CE::Types::WindowApi> : std::formatter<std::string_view> {
+	auto format(const CE::Types::WindowApi value, std::format_context& ctx) const {
+		using CE::Types::WindowApi;
+		switch (value) {
+			case WindowApi::None:  return std::formatter<std::string_view>::format("None", ctx);
+			case WindowApi::GLFW:  return std::formatter<std::string_view>::format("GLFW", ctx);
+			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
+			case WindowApi::X11:   return std::formatter<std::string_view>::format("X11", ctx);
+			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
+			default:               return std::formatter<std::string_view>::format("Unknown Window API", ctx);
+		}
+	}
+};
+
+namespace CE::Types {
+
 inline std::ostream& operator<<(std::ostream& os, const WindowApi& event) {
-	return os << format_as(event);
+	return os << std::format("{}", event);
 }
 
 /**

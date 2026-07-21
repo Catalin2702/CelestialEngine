@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -72,6 +72,10 @@ void OpenGlContext::Init() {
 
 void OpenGlContext::SwapBuffers() const {
 	glfwSwapBuffers(_window);
+}
+
+void OpenGlContext::SetVSync(const bool enabled) {
+	glfwSwapInterval(enabled ? 1 : 0);
 }
 
 void OpenGlContext::SetViewport(const int x, const int y, const int width, const int height) {

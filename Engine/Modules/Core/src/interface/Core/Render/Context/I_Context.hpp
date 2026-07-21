@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -38,6 +38,8 @@ public:
 	 *			and prepares it for rendering. Must be implemented by derived classes.
 	 */
 	virtual void Init() = 0;
+
+	virtual void SetVSync(bool enabled) = 0;
 
 public:
 	/**

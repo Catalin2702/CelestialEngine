@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -14,8 +14,9 @@
 
 // ReSharper disable CppUnusedIncludeDirective
 #include <cstdint>
+#include <format>
 #include <ostream>
-#include <string>
+#include <string_view>
 
 namespace CE::Types {
 
@@ -43,27 +44,28 @@ enum class GraphicsApi: uint8_t {
  */
 bool IsGraphicsApiSupported(const GraphicsApi& api);
 
-inline std::string format_as(const GraphicsApi& event) {
-	switch (event) {
-		case GraphicsApi::None:
-			return "None";
-		case GraphicsApi::OpenGL:
-			return "OpenGL";
-		case GraphicsApi::Metal:
-			return "Metal";
-		case GraphicsApi::Vulkan:
-			return "Vulkan";
-		case GraphicsApi::DirectX11:
-			return "DirectX11";
-		case GraphicsApi::DirectX12:
-			return "DirectX12";
-		default:
-			return "Unknown Graphics API";
-	}
 }
 
+template <>
+struct std::formatter<CE::Types::GraphicsApi> : std::formatter<std::string_view> {
+	auto format(const CE::Types::GraphicsApi value, std::format_context& ctx) const {
+		using CE::Types::GraphicsApi;
+		switch (value) {
+			case GraphicsApi::None:      return std::formatter<std::string_view>::format("None", ctx);
+			case GraphicsApi::OpenGL:    return std::formatter<std::string_view>::format("OpenGL", ctx);
+			case GraphicsApi::Metal:     return std::formatter<std::string_view>::format("Metal", ctx);
+			case GraphicsApi::Vulkan:    return std::formatter<std::string_view>::format("Vulkan", ctx);
+			case GraphicsApi::DirectX11: return std::formatter<std::string_view>::format("DirectX11", ctx);
+			case GraphicsApi::DirectX12: return std::formatter<std::string_view>::format("DirectX12", ctx);
+			default:                     return std::formatter<std::string_view>::format("Unknown Graphics API", ctx);
+		}
+	}
+};
+
+namespace CE::Types {
+
 inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
-	return os << format_as(event);
+	return os << std::format("{}", event);
 }
 
 }
