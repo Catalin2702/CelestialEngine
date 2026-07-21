@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -107,7 +107,7 @@ public:
 public:
 	Handle Subscribe(DelegateType delegate) {
 		const auto handle = _handle++;
-		Entry entry{handle, delegate};
+		Entry entry{.handle = handle, .delegate = delegate};
 
 		if (_isDispatching)
 			_pendingAdds.push_back(entry);
