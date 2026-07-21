@@ -86,6 +86,7 @@ set(MAINHUB_INTERFACES
 	src/interface/Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp
 	src/interface/Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp
 	src/interface/Core/MainHub/Events/I_MouseEventHubDispatcher.hpp
+	src/interface/Core/MainHub/Events/I_RenderContextEventHubDispatcher.hpp
 	src/interface/Core/MainHub/Events/I_WindowEventHubDispatcher.hpp
 )
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -42,7 +42,7 @@ int main(const int argc, const char* argv[]) {
 #endif
 			Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
 			const auto app = Core::CreateApplication(argc, argv);
-			app->Run();
+			app->Start();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
 			CE_CORE_ERROR("Runtime error: {0}", _err.what());
 			code = 1;

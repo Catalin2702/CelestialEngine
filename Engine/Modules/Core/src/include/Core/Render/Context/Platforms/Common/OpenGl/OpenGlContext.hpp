@@ -35,17 +35,22 @@ namespace CE::Core {
  *			ReceiveWindowResizeEvent; the lifecycle signals mark the context's creation, initialization and shutdown.
  */
 class CE_API OpenGlContextEventDispatcher {
+	struct OpenGlContextLifeCycle {
+		UnicastDispatcher<> onCreatedDispatcher;
+		UnicastDispatcher<> onInitializedDispatcher;
+		UnicastDispatcher<> onWillShutdownDispatcher;
+		UnicastDispatcher<bool> onVSyncChangedDispatcher;
+		UnicastDispatcher<int, int> onResizeDispatcher;
+	};
 public:
-	void DispatchResizeEvent(int width, int height) const;
 	void DispatchContextCreated() const;
 	void DispatchContextInitialized() const;
 	void DispatchContextWillShutdown() const;
+	void DispatchVSyncChanged(bool VSync) const;
+	void DispatchResizeEvent(int width, int height) const;
 
 public:
-	UnicastDispatcher<int, int> onResizeDispatcher;
-	UnicastDispatcher<> onCreatedDispatcher;
-	UnicastDispatcher<> onInitializedDispatcher;
-	UnicastDispatcher<> onWillShutdownDispatcher;
+	OpenGlContextLifeCycle openGlContextLifeCycle;
 };
 
 /**

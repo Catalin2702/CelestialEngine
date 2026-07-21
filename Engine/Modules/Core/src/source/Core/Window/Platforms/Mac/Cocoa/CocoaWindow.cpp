@@ -15,11 +15,43 @@
 #include <AppKit/AppKit.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include <objc/message.h>
+#include <objc/runtime.h>
+
 #include <stdexcept>
 #include <utility>
 
 
 namespace CE::Core {
+
+namespace {
+
+// metal-cpp exposes no NSUserDefaults wrapper, so the fullscreen flag is persisted through the Obj-C runtime directly. This
+// mirrors what setFrameAutosaveName already does for the windowed frame, but for the native-fullscreen state (which AppKit only
+// restores through the separate state-restoration machinery the engine does not opt into).
+
+NS::String* FullScreenDefaultsKey(const NS::Window* window) {
+	return window->title()->stringByAppendingString(NS::String::string(".fullscreen", NS::UTF8StringEncoding));
+}
+
+bool IsWindowFullScreen(const NS::Window* window) {
+	return (static_cast<NS::UInteger>(window->styleMask()) & NS::WindowStyleMaskFullScreen) != 0;
+}
+
+void SaveFullScreenFlag(NS::String* key, const bool value) {
+	const auto defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
+	reinterpret_cast<void (*)(id, SEL, BOOL, id)>(objc_msgSend)(defaults, sel_registerName("setBool:forKey:"), value, reinterpret_cast<id>(key));
+	// The engine stops the run loop and returns from main instead of going through NSApplication's normal termination, so force
+	// the write to disk now rather than relying on the periodic flush.
+	reinterpret_cast<void (*)(id, SEL)>(objc_msgSend)(defaults, sel_registerName("synchronize"));
+}
+
+bool LoadFullScreenFlag(NS::String* key) {
+	const auto defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
+	return reinterpret_cast<BOOL (*)(id, SEL, id)>(objc_msgSend)(defaults, sel_registerName("boolForKey:"), reinterpret_cast<id>(key));
+}
+
+}
 
 void CocoaWindowEventHandler::DispatchCocoaWindowCreated() const {
 	cocoaWindowStateEvents.cocoaWindowCreatedDispatcher.Dispatch();
@@ -98,6 +130,11 @@ void CocoaWindow::Show() const {
 	}
 
 	_window->makeKeyAndOrderFront(nullptr);
+
+	// Restore the native fullscreen state saved on the previous shutdown (the windowed frame itself is restored by the frame
+	// autosave). Done after the window is on screen so toggleFullScreen animates into its own Space.
+	if (LoadFullScreenFlag(FullScreenDefaultsKey(_window.get())) and not IsWindowFullScreen(_window.get()))
+		_window->toggleFullScreen(nullptr);
 }
 
 void CocoaWindow::Init() {
@@ -133,7 +170,7 @@ void CocoaWindow::ToggleFullScreen() const {
 }
 
 void CocoaWindow::_InitWindow() {
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 	const CGRect frame = {
 		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
@@ -175,6 +212,9 @@ void CocoaWindow::_InitWindow() {
 void CocoaWindow::_Shutdown() {
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
 	if (_window) {
+		// Persist the native fullscreen state so Show() can restore it on the next launch (mirrors the frame autosave).
+		SaveFullScreenFlag(FullScreenDefaultsKey(_window.get()), IsWindowFullScreen(_window.get()));
+
 		_window->close();
 		_window = nullptr;
 	}

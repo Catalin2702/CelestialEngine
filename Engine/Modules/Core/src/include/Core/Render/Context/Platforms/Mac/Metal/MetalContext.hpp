@@ -55,15 +55,15 @@ class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
 		UnicastDispatcher<> onCreatedDispatcher;
 		UnicastDispatcher<> onInitializedDispatcher;
 		UnicastDispatcher<> onWillShutdownDispatcher;
-		UnicastDispatcher<bool> onVsyncChangedDispatcher;
-		UnicastDispatcher<unsigned int, unsigned int> onResizeDispatcher;
+		UnicastDispatcher<bool> onVSyncChangedDispatcher;
+		UnicastDispatcher<CGFloat, CGFloat> onResizeDispatcher;
 	};
 public:
 	void DispatchMetalContextCreated() const;
 	void DispatchMetalContextInitialized() const;
 	void DispatchMetalContextWillShutdown() const;
 	void DispatchVSyncChanged(bool vsync) const;
-	void DispatchResizeEvent(unsigned int width, unsigned int height) const;
+	void DispatchResizeEvent(CGFloat width, CGFloat height) const;
 
 public:
 	MetalContextLifeCycleEvents metalContextLifeCycleEvents;

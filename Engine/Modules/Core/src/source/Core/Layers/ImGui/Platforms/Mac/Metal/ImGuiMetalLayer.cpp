@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -72,10 +72,12 @@ void ImGuiMetalLayer::SubscribeToEventHub() {
 	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseScrolled>(this));
 	_eventHubHandles[MouseButtonPressed] = _eventHub->get().cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonPressed>(this));
 	_eventHubHandles[MouseButtonRelease] = _eventHub->get().cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonReleased>(this));
+
 	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().cocoaKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyPressed>(this));
 	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().cocoaKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyReleased>(this));
 	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().cocoaKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyTyped>(this));
-	_eventHubHandles[WindowResize] = _eventHub->get().cocoaWindowEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnWindowResized>(this));
+
+	_eventHubHandles[ViewResize] = _eventHub->get().metalRenderContextEventHub.onResizeViewDispatcher.Subscribe(EventDelegate<Events::ViewResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnViewResized>(this));
 }
 
 void ImGuiMetalLayer::UnsubscribeFromEventHub() {
@@ -87,10 +89,12 @@ void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 	_eventHub->get().cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
 	_eventHub->get().cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
 	_eventHub->get().cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonRelease]);
+
 	_eventHub->get().cocoaKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
 	_eventHub->get().cocoaKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
 	_eventHub->get().cocoaKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardCharTyped]);
-	_eventHub->get().cocoaWindowEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[WindowResize]);
+
+	_eventHub->get().metalRenderContextEventHub.onResizeViewDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
 
 	_eventHub = std::nullopt;
 	_eventHubHandles = {};
@@ -252,7 +256,7 @@ void ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	ImGui::GetIO().AddInputCharacter(codepoint);
 }
 
-void ImGuiMetalLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+void ImGuiMetalLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 
 	// The context reports the resize in backing pixels (the drawable size). ImGui expects DisplaySize in logical points and

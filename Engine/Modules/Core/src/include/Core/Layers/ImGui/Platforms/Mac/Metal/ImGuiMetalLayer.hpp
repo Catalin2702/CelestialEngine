@@ -52,7 +52,7 @@ class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 		KeyboardKeyPressed,
 		KeyboardKeyReleased,
 		KeyboardCharTyped,
-		WindowResize,
+		ViewResize,
 		_Count
 	};
 
@@ -108,7 +108,7 @@ protected:
 
 	void _OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
-	void _OnWindowResized(Events::WindowResizeEvent& event) const override;
+	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:
 	std::optional<std::reference_wrapper<MetalContext>> _context;	///< Cached Metal context for rendering

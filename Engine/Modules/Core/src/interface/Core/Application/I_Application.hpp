@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -58,9 +58,9 @@ public:
 
 public:
 	/**
-	 * @brief Virtual method to run the application
+	 * @brief Virtual method to start the application
 	 */
-	virtual void Run() = 0;
+	virtual void Start() = 0;
 
 	/**
 	 * @brief Virtual method to quit the application

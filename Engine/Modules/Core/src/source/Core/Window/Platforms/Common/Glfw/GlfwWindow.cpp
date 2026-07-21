@@ -96,6 +96,21 @@ std::pair<float, float> GlfwWindow::GetWindowSize() const {
 	return {static_cast<float>(width), static_cast<float>(height)};
 }
 
+unsigned int GlfwWindow::GetRefreshRate() const {
+	if (not _glfwWindow)
+		return 0;
+
+	// When fullscreen the window owns a monitor; otherwise fall back to the primary monitor.
+	auto monitor = glfwGetWindowMonitor(_glfwWindow.get());
+	if (not monitor)
+		monitor = glfwGetPrimaryMonitor();
+	if (not monitor)
+		return 0;
+
+	const auto mode = glfwGetVideoMode(monitor);
+	return mode ? static_cast<unsigned int>(mode->refreshRate) : 0;
+}
+
 std::pair<float, float> GlfwWindow::GetFrameSize() const {
 	if (not _glfwWindow) {
 		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
@@ -277,7 +292,7 @@ void GlfwWindow::_InitWindow() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 
 	_glfwWindow.reset(glfwCreateWindow(
 		static_cast<int>(windowProps.width),

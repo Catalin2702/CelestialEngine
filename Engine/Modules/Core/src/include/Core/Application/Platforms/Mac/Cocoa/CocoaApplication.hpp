@@ -86,8 +86,9 @@ class CE_API CocoaApplication: public I_Application {
 
 	enum EventHubSubscription: std::size_t {
 		AppError = 0,
-		WindowClose = 1,
-		WindowError = 2,
+		VSyncChange = 1,
+		WindowClose = 2,
+		WindowError = 3,
 		_Count
 	};
 
@@ -125,10 +126,10 @@ public:
 
 public:
 	/**
-	 * @brief Runs the application
+	 * @brief Starts the application
 	 * @details Starts the AppKit Cocoa application loop
 	 */
-	void Run() override;
+	void Start() override;
 
 	/**
 	 * @brief Quits the application
@@ -221,6 +222,10 @@ public:
 	static void StOnToggleFullscreenCallback(void*, SEL selector, const NS::Object* sender);
 
 private:
+	void _Run();
+
+	void _Pause();
+
 	void _BindContextDelegates();
 
 	/**
@@ -238,15 +243,6 @@ private:
 	void _StopTickLoop();
 
 	/**
-	 * @brief Applies a VSync mode change at runtime, swapping the frame-pacing mechanism
-	 * @param enabled The desired VSync state
-	 * @details Must be called on the main thread. When enabling, stops the tick loop before the context builds the display
-	 *			link (so no stale frame calls nextDrawable() while a display link exists) and resumes the link if running. When
-	 *			disabling, the context tears down the display link and the tick loop takes over pacing while the app is running.
-	 */
-	void _ApplyVSync(bool enabled);
-
-	/**
 	 * @brief Handles the application's did-finish-launching lifecycle event
 	 * @details Bound to NsApplicationDelegate and invoked once the AppKit run loop has started. Performs the app-level setup
 	 *			that must happen after launch completes: promotes the process to a regular UI app, builds the main menu,
@@ -262,6 +258,8 @@ private:
 	 *			through the engine's clean shutdown path.
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
+
+	void _OnVSyncChange(Events::VSyncChangeEvent& event);
 
 	void _OnDraw(MTK::View*);
 

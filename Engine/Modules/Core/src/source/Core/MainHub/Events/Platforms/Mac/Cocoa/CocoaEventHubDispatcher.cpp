@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -84,6 +84,14 @@ void CocoaEventHubDispatcher::DispatchMouseDraggedEvent(Events::MouseDraggedEven
 
 void CocoaEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) {
 	cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
+}
+
+void CocoaEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) {
+	metalRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
+}
+
+void CocoaEventHubDispatcher::DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent) {
+	metalRenderContextEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
@@ -185,12 +193,21 @@ void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
 }
 
+void CocoaEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
+	Events::VSyncChangeEvent VSyncChangeEvent{state};
+	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveContextResizeViewEvent(const double width, const double height) {
+	Events::ViewResizeEvent viewResizeEvent{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+	DispatchRenderContextResizeViewEvent(viewResizeEvent);
+}
 void CocoaEventHubDispatcher::ReceiveWindowWillCloseEvent(const NS::Notification*) {
 	Events::WindowCloseEvent windowCloseEvent{false};
 	DispatchWindowCloseEvent(windowCloseEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveWindowErrorEvent(int errorCode, const char* description) {
+void CocoaEventHubDispatcher::ReceiveWindowErrorEvent(const int errorCode, const char* description) {
 	Events::ErrorEvent errorEvent{errorCode, description};
 	DispatchWindowErrorEvent(errorEvent);
 }

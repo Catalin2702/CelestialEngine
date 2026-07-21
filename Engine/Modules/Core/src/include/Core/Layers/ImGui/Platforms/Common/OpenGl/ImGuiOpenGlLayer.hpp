@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -46,7 +46,7 @@ class CE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
 		KeyboardKeyPressed,
 		KeyboardKeyReleased,
 		KeyboardCharTyped,
-		WindowResize,
+		ViewResize,
 		_Count
 	};
 
@@ -127,7 +127,7 @@ protected:
 	void _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
 	void _OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
-	void _OnWindowResized(Events::WindowResizeEvent& event) const override;
+	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:
 	std::optional<std::reference_wrapper<OpenGlContext>> _context; ///< Cached OpenGL context pointer

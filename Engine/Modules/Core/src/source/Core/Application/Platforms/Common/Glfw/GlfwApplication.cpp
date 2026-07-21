@@ -23,7 +23,9 @@
 #include <glad/glad.h>
 
 #include <cassert>
+#include <chrono>
 #include <format>
+#include <thread>
 
 // On macOS GLFW hosts a real NSApplication, so the GLFW backend reuses the shared native menu bar built by CreateMenuBar.
 #ifdef CE_PLATFORM_MACOS
@@ -33,6 +35,8 @@
 #endif
 
 namespace CE::Core {
+
+static unsigned int _st_TargetFPS = 0;
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
@@ -74,12 +78,27 @@ GlfwApplication::~GlfwApplication() {
 	_window.reset();
 }
 
-void GlfwApplication::Run() {
+void GlfwApplication::Start() {
 	SetRunning(true);
 
 	ResetDeltaTime();
+
+	const auto& windowProps = Utility::Config::StGetWindowProps();
+	_st_TargetFPS = windowProps.VSync ? _window->GetRefreshRate() : windowProps.refreshRate;
+
+	auto nextFrame = std::chrono::steady_clock::now();
 	while (IsRunning()) {
 		Tick(GetDeltaTime());
+
+		if (_st_TargetFPS == 0)
+			continue;
+
+		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / _st_TargetFPS));
+		if (const auto now = std::chrono::steady_clock::now(); nextFrame > now)
+			std::this_thread::sleep_until(nextFrame);
+		else
+			// Fell behind (long frame or a mode switch): resync so we do not burst-render to catch up.
+			nextFrame = now;
 	}
 }
 
@@ -124,7 +143,7 @@ void GlfwApplication::Init() {
 	_InitWindow();
 	_InitRenderer();
 
-	_context->SetVSync(Utility::Config::Config::StGetWindowProps().VSync);
+	_context->SetVSync(Utility::Config::StGetWindowProps().VSync);
 
 #ifdef CE_PLATFORM_MACOS
 	// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
@@ -142,9 +161,9 @@ void GlfwApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
 }
 
 void GlfwApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
-	Types::WindowProps windowProps = Utility::Config::Config::StGetWindowProps();
+	Types::WindowProps windowProps = Utility::Config::StGetWindowProps();
 	windowProps.VSync = !windowProps.VSync;
-	Utility::Config::Config::StSetWindowProps(windowProps);
+	Utility::Config::StSetWindowProps(windowProps);
 
 	// The menu action fires on the main thread during glfwPollEvents, where the GL context is current, so swapping the swap
 	// interval here is safe.
@@ -177,7 +196,7 @@ void GlfwApplication::InitImGuiLayer() {
 
 void GlfwApplication::_InitWindow() {
 	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 
 	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
@@ -201,8 +220,11 @@ void GlfwApplication::_InitRenderer() {
 
 	// The context is created after the window (and after SetEventHubDispatcher), so its resize dispatcher is bound to the hub
 	// here rather than in SetEventHubDispatcher.
-	_context->openGlContextEventDispatcher.onResizeDispatcher.Bind(
+	_context->openGlContextEventDispatcher.openGlContextLifeCycle.onResizeDispatcher.Bind(
 		EventDelegate<int, int>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveWindowResizeEvent>(&eventHubDispatcher)
+	);
+	_context->openGlContextEventDispatcher.openGlContextLifeCycle.onVSyncChangedDispatcher.Bind(
+		EventDelegate<bool>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
 
 	glGenVertexArrays(1, &_vertexArrayId);
@@ -309,6 +331,10 @@ void GlfwApplication::SubscribeToHubDispatcher() {
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
+	_eventHubHandlers[VSyncChange] = eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
+		EventDelegate<Events::VSyncChangeEvent&>::FromConstMethod<GlfwApplication, &GlfwApplication::_OnVSyncChange>(this)
+	);
+
 	_eventHubHandlers[WindowClose] = eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<GlfwApplication, &GlfwApplication::_OnWindowClose>(this)
 	);
@@ -320,12 +346,19 @@ void GlfwApplication::SubscribeToHubDispatcher() {
 void GlfwApplication::UnsubscribeFromDispatcher() {
 	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
 
+	eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
+
 	eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
 	eventHubDispatcher.glfwWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
 }
 
 void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
+}
+
+void GlfwApplication::_OnVSyncChange(Events::VSyncChangeEvent& event) const {
+	const auto& windowProps = Utility::Config::StGetWindowProps();
+	_st_TargetFPS = event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate;
 }
 
 I_Window& GlfwApplication::GetWindow() const {

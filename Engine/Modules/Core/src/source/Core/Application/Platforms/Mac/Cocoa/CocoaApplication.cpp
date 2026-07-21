@@ -86,7 +86,7 @@ CocoaApplication::~CocoaApplication() {
 	}
 }
 
-void CocoaApplication::Run() {
+void CocoaApplication::Start() {
 	ResetDeltaTime();
 	SetRunning(true);
 
@@ -148,7 +148,7 @@ void CocoaApplication::Init() {
 		EventDelegate<NS::Notification*>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnWillFinishLaunching>(this)
 	);
 
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 
 	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
 		const auto error = std::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
@@ -228,17 +228,12 @@ void CocoaApplication::RemoveImGuiLayer() {
 void CocoaApplication::SetRunning(const bool running) {
 	I_Application::SetRunning(running);
 
-	if (not Utility::Config::Config::StGetWindowProps().VSync) {
-		// VSync off: a dedicated thread paces frames by dispatching Tick onto the main queue.
-		if (running)
-			_StartTickLoop();
-		else
-			_StopTickLoop();
-	}
-	else {
-		// VSync on: the CAMetalDisplayLink paces rendering. Pausing it stops frame delivery when the app is not running.
-		_context->SetDisplayLinkPaused(not running);
-	}
+	assert(_context && "CocoaApplication::SetRunning: Render context must be initialized");
+
+	if (running)
+		_Run();
+	else
+		_Pause();
 }
 
 void CocoaApplication::_StartTickLoop() {
@@ -277,30 +272,6 @@ void CocoaApplication::_StopTickLoop() {
 
 	if (_loopThread.joinable())
 		_loopThread.join();
-}
-
-void CocoaApplication::_ApplyVSync(const bool enabled) {
-	assert(_context && "CocoaApplication::_ApplyVSync: Render context must be initialized");
-
-	// Runs on the main thread (menu action). Nothing to do if the layer is already in the requested mode.
-	if (_context->IsVSyncEnabled() == enabled)
-		return;
-
-	if (enabled) {
-		// Tick loop → display link: stop the loop first so no stale frame calls CAMetalLayer::nextDrawable() once the
-		// display link exists, then let the context build the link and resume it if the app is running.
-		_StopTickLoop();
-		_context->SetVSync(true);
-		if (IsRunning())
-			_context->SetDisplayLinkPaused(false);
-	}
-	else {
-		// Display link → tick loop: the context tears down the display link (re-enabling nextDrawable), then the tick loop
-		// takes over pacing while the app is running.
-		_context->SetVSync(false);
-		if (IsRunning())
-			_StartTickLoop();
-	}
 }
 
 void CocoaApplication::InitImGuiLayer() {
@@ -360,7 +331,10 @@ void CocoaApplication::SetEventHubDispatcher() {
 
 #pragma region RenderContextEvents
 	_context->metalContextEventDispatcher.metalContextLifeCycleEvents.onResizeDispatcher.Bind(
-		EventDelegate<unsigned int, unsigned int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher)
+		EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveContextResizeViewEvent>(&eventHubDispatcher)
+	);
+	_context->metalContextEventDispatcher.metalContextLifeCycleEvents.onVSyncChangedDispatcher.Bind(
+		EventDelegate<bool>::FromMethod<hub, &hub::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
 #pragma endregion
 
@@ -373,12 +347,18 @@ void CocoaApplication::SetEventHubDispatcher() {
 }
 
 void CocoaApplication::SubscribeToHubDispatcher() {
+	using app = CocoaApplication;
+
 	_eventHubHandlers[AppError] = eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
+	_eventHubHandlers[VSyncChange] = eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
+		EventDelegate<Events::VSyncChangeEvent&>::FromMethod<app, &app::_OnVSyncChange>(this)
+	);
+
 	_eventHubHandlers[WindowClose] = eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Subscribe(
-		EventDelegate<Events::WindowCloseEvent&>::FromMethod<CocoaApplication, &CocoaApplication::_OnWindowClose>(this)
+		EventDelegate<Events::WindowCloseEvent&>::FromMethod<app, &app::_OnWindowClose>(this)
 	);
 	_eventHubHandlers[WindowError] = eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
@@ -387,6 +367,8 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 
 void CocoaApplication::UnsubscribeFromDispatcher() {
 	eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
+
+	eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
 
 	eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
 	eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
@@ -401,8 +383,7 @@ void CocoaApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
 	windowProps.VSync = !windowProps.VSync;
 	Utility::Config::StSetWindowProps(windowProps);
 
-	// Menu actions fire on the main thread, so it is safe to swap the frame-pacing mechanism here.
-	StGet()._ApplyVSync(windowProps.VSync);
+	StGet().GetMetalContext().SetVSync(windowProps.VSync);
 }
 
 void CocoaApplication::StOnMiniaturizeCallback(void*, SEL, const NS::Object*) {
@@ -417,11 +398,30 @@ void CocoaApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object
 	StGet().GetCocoaWindow().ToggleFullScreen();
 }
 
+void CocoaApplication::_Run() {
+	if (Utility::Config::StGetWindowProps().VSync) {
+		// VSync on: the CAMetalDisplayLink paces rendering. Tear down the tick loop first so no stale frame calls
+		// CAMetalLayer::nextDrawable() once a display link exists for the layer, then build/resume the link.
+		_StopTickLoop();
+		_context->SetDisplayLinkPaused(false);
+	}
+	else {
+		_StartTickLoop();
+	}
+}
+
+void CocoaApplication::_Pause() {
+	if (_context->IsVSyncEnabled())
+		_context->SetDisplayLinkPaused(true);
+	else
+		_StopTickLoop();
+}
+
 void CocoaApplication::_BindContextDelegates() {
 	assert(_context && "CocoaApplication::_BindViewCallbacks: Render context must be initialized before binding callbacks");
 
 	// Drive a frame from the CAMetalDisplayLink. This is what paces rendering while VSync is enabled (the display link is
-	// unpaused in SetRunning); with VSync off the dedicated tick loop drives Tick instead and the display link stays paused.
+	// unpaused in SetRunning(); with VSync off the dedicated tick loop drives Tick instead and the display link stays paused.
 	// (Drawable resize is handled by the context itself and routed to the hub via its resize dispatcher.)
 	_context->SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
 }
@@ -452,6 +452,12 @@ void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
 
 void CocoaApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
+}
+
+void CocoaApplication::_OnVSyncChange(Events::VSyncChangeEvent&) {
+	_Pause();
+	if (IsRunning())
+		_Run();
 }
 
 void CocoaApplication::_OnDraw(MTK::View*) {

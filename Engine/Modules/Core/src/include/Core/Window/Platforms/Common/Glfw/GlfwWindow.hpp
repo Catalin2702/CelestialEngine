@@ -122,6 +122,14 @@ public:
 	[[nodiscard]] std::pair<float, float> GetFrameSize() const override;
 
 	/**
+	 * @brief Gets the refresh rate of the monitor the window is on
+	 * @return unsigned int Refresh rate in Hz, or 0 if it cannot be determined
+	 * @details Returns the video mode refresh rate of the window's monitor when fullscreen, otherwise the primary monitor.
+	 *			Used to drive the frame limiter at the real display rate while VSync is on.
+	 */
+	[[nodiscard]] unsigned int GetRefreshRate() const;
+
+	/**
 	 * @brief Gets the underlying GLFW window pointer
 	 * @return GLFWwindow* Raw pointer to the GLFW window
 	 * @details Provides access to the GLFW window for platform-specific operations.

@@ -21,20 +21,26 @@
 
 namespace CE::Core {
 
-void OpenGlContextEventDispatcher::DispatchResizeEvent(const int width, const int height) const {
-	onResizeDispatcher.Dispatch(width, height);
-}
+static bool _st_VSync = false;
 
 void OpenGlContextEventDispatcher::DispatchContextCreated() const {
-	onCreatedDispatcher.Dispatch();
+	openGlContextLifeCycle.onCreatedDispatcher.Dispatch();
 }
 
 void OpenGlContextEventDispatcher::DispatchContextInitialized() const {
-	onInitializedDispatcher.Dispatch();
+	openGlContextLifeCycle.onInitializedDispatcher.Dispatch();
 }
 
 void OpenGlContextEventDispatcher::DispatchContextWillShutdown() const {
-	onWillShutdownDispatcher.Dispatch();
+	openGlContextLifeCycle.onWillShutdownDispatcher.Dispatch();
+}
+
+void OpenGlContextEventDispatcher::DispatchVSyncChanged(const bool VSync) const {
+	openGlContextLifeCycle.onVSyncChangedDispatcher.Dispatch(VSync);
+}
+
+void OpenGlContextEventDispatcher::DispatchResizeEvent(const int width, const int height) const {
+	openGlContextLifeCycle.onResizeDispatcher.Dispatch(width, height);
 }
 
 OpenGlContext::OpenGlContext(GLFWwindow* window): _window(window) {
@@ -63,7 +69,7 @@ void OpenGlContext::Init() {
 	// keeps the separate window-size callback (points) for its own cached size. Resolve the context through the running
 	// application, mirroring how GlfwWindow reaches the app from its own C callbacks.
 	glfwSetFramebufferSizeCallback(_window, [](GLFWwindow*, const int width, const int height) {
-		auto& context = dynamic_cast<GlfwApplication&>(I_Application::StGet()).GetOpenGlContext();
+		const auto& context = dynamic_cast<GlfwApplication&>(I_Application::StGet()).GetOpenGlContext();
 		context.openGlContextEventDispatcher.DispatchResizeEvent(width, height);
 	});
 
@@ -76,6 +82,8 @@ void OpenGlContext::SwapBuffers() const {
 
 void OpenGlContext::SetVSync(const bool enabled) {
 	glfwSwapInterval(enabled ? 1 : 0);
+	_st_VSync = enabled;
+	openGlContextEventDispatcher.DispatchVSyncChanged(enabled);
 }
 
 void OpenGlContext::SetViewport(const int x, const int y, const int width, const int height) {
@@ -87,7 +95,7 @@ void OpenGlContext::ClearBuffers(const Types::BufferBit mask) {
 }
 
 bool OpenGlContext::IsVSyncEnabled() const {
-	return false;
+	return _st_VSync;
 }
 
 std::pair<float, float> OpenGlContext::GetContentScale() const {

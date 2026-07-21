@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-07-21
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -34,10 +34,10 @@ void MetalContextEventDispatcher::DispatchMetalContextWillShutdown() const {
 }
 
 void MetalContextEventDispatcher::DispatchVSyncChanged(const bool vsync) const {
-	metalContextLifeCycleEvents.onVsyncChangedDispatcher.Dispatch(vsync);
+	metalContextLifeCycleEvents.onVSyncChangedDispatcher.Dispatch(vsync);
 }
 
-void MetalContextEventDispatcher::DispatchResizeEvent(const unsigned int width, const unsigned int height) const {
+void MetalContextEventDispatcher::DispatchResizeEvent(const CGFloat width, const CGFloat height) const {
 	metalContextLifeCycleEvents.onResizeDispatcher.Dispatch(width, height);
 }
 
@@ -74,7 +74,7 @@ void MetalContext::Init() {
 }
 
 void MetalContext::_CreateView() {
-	const auto& windowProps = Utility::Config::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::StGetWindowProps();
 	const CGRect frame = {
 		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
 		{static_cast<CGFloat>(windowProps.width), static_cast<CGFloat>(windowProps.height)}
@@ -182,7 +182,7 @@ void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
 	HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
 
 	// `size` is already in backing pixels; fire it to whoever the application wired to the context's resize dispatcher.
-	metalContextEventDispatcher.DispatchResizeEvent(static_cast<unsigned int>(size.width), static_cast<unsigned int>(size.height));
+	metalContextEventDispatcher.DispatchResizeEvent(size.width, size.height);
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {

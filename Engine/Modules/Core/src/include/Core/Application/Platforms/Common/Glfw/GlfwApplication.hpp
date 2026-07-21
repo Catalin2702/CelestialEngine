@@ -77,8 +77,9 @@ public:
 class CE_API GlfwApplication: public I_Application {
 	enum EventHubSubscription: std::size_t {
 		AppError = 0,
-		WindowClose = 1,
-		WindowError = 2,
+		VSyncChange = 1,
+		WindowClose = 2,
+		WindowError = 3,
 		_Count
 	};
 
@@ -116,10 +117,10 @@ public:
 
 public:
 	/**
-	 * @brief Runs the application
+	 * @brief Starts the application
 	 * @details Starts the GLFW application loop
 	 */
-	void Run() override;
+	void Start() override;
 
 	/**
 	 * @brief Quits the application
@@ -185,6 +186,8 @@ private:
 	 * @details Subscribed to GlfwEventHubDispatcher::glfwWindowEventHub.onCloseMulticastDispatcher; quits the application.
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
+
+	void _OnVSyncChange(Events::VSyncChangeEvent& event) const;
 
 protected:
 	/**

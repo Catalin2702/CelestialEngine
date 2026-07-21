@@ -66,6 +66,8 @@ private:
 	unsigned int _width, _height;					///< New window dimensions in pixels
 };
 
+using ViewResizeEvent = WindowResizeEvent;
+
 /**
  * @class WindowCloseEvent
  * @brief Event triggered when the application window is closed

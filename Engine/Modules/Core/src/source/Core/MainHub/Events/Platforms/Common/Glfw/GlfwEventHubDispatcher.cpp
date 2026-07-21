@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
@@ -74,6 +74,10 @@ void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& 
 
 void GlfwEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
 	glfwWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
+}
+
+void GlfwEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) {
+	openGlRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
 }
 
 void GlfwEventHubDispatcher::ReceiveAppTickEvent() {
@@ -152,6 +156,11 @@ void GlfwEventHubDispatcher::ReceiveMouseDraggedEvent(const int button, const in
 void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const double xOffset, const double yOffset) {
 	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
+	Events::VSyncChangeEvent VSyncChangeEvent{state};
+	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
 }
 
 void GlfwEventHubDispatcher::ReceiveWindowResizeEvent(const int width, const int height) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-21
 //
 
 #include "Utility/CMD/Window.hpp"
@@ -22,6 +22,7 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	unsigned int width = 1280;
 	unsigned int height = 720;
 	auto VSync = true;
+	unsigned int refreshRate = 0;
 	auto graphicsApi = Types::GraphicsApi::OpenGL;
 	auto windowApi = Types::WindowApi::GLFW;
 
@@ -62,6 +63,19 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 		else if ((arg == "--vsync" or arg == "-v") and i + 1 < argc) {
 			const std::string vsyncArg = ToLowerCase(argv[++i]);
 			VSync = (vsyncArg == "true" || vsyncArg == "1");
+		}
+		else if ((arg == "--refresh" or arg == "-r") and i + 1 < argc) {
+			try {
+				refreshRate = static_cast<unsigned int>(std::stoi(argv[++i]));
+			}
+			catch (const std::invalid_argument& invalidArgument) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], invalidArgument.what());
+				throw std::runtime_error("Invalid refresh parameter: " + std::string(argv[i]));
+			}
+			catch (const std::out_of_range& ofRange) {
+				CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, argv[i], ofRange.what());
+				throw std::runtime_error("Refresh parameter out of range: " + std::string(argv[i]));
+			}
 		}
 		else if ((arg == "--graphics-api" or arg == "-g") and i + 1 < argc) {
 			// ReSharper disable once CppTooWideScopeInitStatement
@@ -110,7 +124,7 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
 		}
 	}
-	return {title, width, height, VSync, graphicsApi, windowApi};
+	return {title, width, height, VSync, refreshRate, graphicsApi, windowApi};
 }
 
 }

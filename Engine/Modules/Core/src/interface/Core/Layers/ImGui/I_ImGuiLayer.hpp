@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -124,7 +124,7 @@ protected:
 	 * @param event Window resize event
 	 * @details Pure virtual method for updating ImGui window when window is resized
 	 */
-	virtual void _OnWindowResized(Events::WindowResizeEvent& event) const = 0;
+	virtual void _OnViewResized(Events::WindowResizeEvent& event) const = 0;
 
 protected:
 	bool _initialized = false;						///< Flag to track if ImGui Metal backend was successfully initialized

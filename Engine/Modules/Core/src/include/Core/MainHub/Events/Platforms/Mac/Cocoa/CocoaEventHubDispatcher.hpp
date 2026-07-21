@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_MouseEventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_RenderContextEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_WindowEventHubDispatcher.hpp"
 
 #include "Utility/Delegate/Dispatcher.hpp"
@@ -33,6 +34,7 @@ class CocoaEventHubDispatcher:
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,
+	public I_RenderContextEventHubDispatcher,
 	public I_WindowEventHubDispatcher
 {
 public:
@@ -61,6 +63,11 @@ public:
 		MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
 		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
 		MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
+	};
+
+	struct MetalRenderContextEventHub {
+		MulticastDispatcher<Events::VSyncChangeEvent&> onChangeVSyncDispatcher;
+		MulticastDispatcher<Events::ViewResizeEvent&> onResizeViewDispatcher;
 	};
 
 public:
@@ -97,6 +104,11 @@ public:
 	void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) override;
 #pragma endregion
 
+#pragma region DispatchRenderContextEvent
+	void DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) override;
+	void DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent);
+#pragma endregion
+
 #pragma region DispatchWindowEvent
 	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
 	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
@@ -124,6 +136,11 @@ public:
 	void ReceiveScrollWheelEvent(const NS::Event* event);
 #pragma endregion
 
+#pragma region ReceiveRenderContextEvent
+	void ReceiveContextChangeVSyncEvent(bool state);
+	void ReceiveContextResizeViewEvent(double width, double height);
+#pragma endregion
+
 #pragma region ReceiveWindowEvent
 	void ReceiveWindowWillCloseEvent(const NS::Notification* notification);
 	void ReceiveWindowErrorEvent(int errorCode, const char* description);
@@ -135,6 +152,7 @@ public:
 	CocoaKeyboardEventHub cocoaKeyboardEventHub;
 	CocoaMouseEventHub cocoaMouseEventHub;
 	CocoaWindowEventHub cocoaWindowEventHub;
+	MetalRenderContextEventHub metalRenderContextEventHub;
 
 private:
 	MetalContext* _context = nullptr; ///< Non-owning; used to convert native mouse coordinates

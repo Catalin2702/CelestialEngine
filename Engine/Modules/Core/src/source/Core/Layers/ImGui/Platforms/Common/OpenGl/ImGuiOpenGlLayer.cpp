@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -66,10 +66,12 @@ void ImGuiOpenGlLayer::SubscribeToEventHub() {
 	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
 	_eventHubHandles[MouseButtonPressed] = _eventHub->get().glfwMouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
 	_eventHubHandles[MouseButtonReleased] = _eventHub->get().glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+
 	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().glfwKeyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
 	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().glfwKeyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
 	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().glfwKeyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
-	_eventHubHandles[WindowResize] = _eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnWindowResized>(this));
+
+	_eventHubHandles[ViewResize] = _eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
@@ -81,10 +83,12 @@ void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
 	_eventHub->get().glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
 	_eventHub->get().glfwMouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
 	_eventHub->get().glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonReleased]);
+
 	_eventHub->get().glfwKeyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
 	_eventHub->get().glfwKeyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
 	_eventHub->get().glfwKeyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
-	_eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[WindowResize]);
+
+	_eventHub->get().glfwWindowEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
 
 	_eventHub = std::nullopt;
 	_eventHubHandles = {};
@@ -257,7 +261,7 @@ void ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	ImGui::GetIO().AddInputCharacter(codepoint);
 }
 
-void ImGuiOpenGlLayer::_OnWindowResized(Events::WindowResizeEvent& event) const {
+void ImGuiOpenGlLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
 

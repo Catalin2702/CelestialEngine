@@ -53,6 +53,7 @@ struct CE_API WindowProps {
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
 	bool VSync = false;								///< Vertical synchronization enabled/disabled
+	unsigned int refreshRate = 0;					///< Target frame rate used when VSync is off (0 = uncapped). When VSync is on, the display's actual refresh rate is used instead.
 	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
 	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management (GLFW, Win32, X11, Cocoa)
 
@@ -68,36 +69,14 @@ struct CE_API WindowProps {
 	 * @param width Window width in pixels
 	 * @param height Window height in pixels
 	 * @param VSync Enable or disable vertical synchronization
+	 * @param refreshRate Refresh rate
 	 * @param graphicsApi Graphics API to use for rendering
 	 * @param windowApi Windowing API to use for window management
 	 * @details Initializes the WindowProps structure with the provided values.
 	 *			This structure is used to pass configuration parameters when creating a window.
 	 */
-	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, GraphicsApi graphicsApi, WindowApi windowApi);
+	WindowProps(const std::string& title, unsigned int width, unsigned int height, bool VSync, unsigned int refreshRate, GraphicsApi graphicsApi, WindowApi windowApi);
 };
-
-}
-
-template <>
-struct std::formatter<CE::Types::WindowApi> : std::formatter<std::string_view> {
-	auto format(const CE::Types::WindowApi value, std::format_context& ctx) const {
-		using CE::Types::WindowApi;
-		switch (value) {
-			case WindowApi::None:  return std::formatter<std::string_view>::format("None", ctx);
-			case WindowApi::GLFW:  return std::formatter<std::string_view>::format("GLFW", ctx);
-			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
-			case WindowApi::X11:   return std::formatter<std::string_view>::format("X11", ctx);
-			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
-			default:               return std::formatter<std::string_view>::format("Unknown Window API", ctx);
-		}
-	}
-};
-
-namespace CE::Types {
-
-inline std::ostream& operator<<(std::ostream& os, const WindowApi& event) {
-	return os << std::format("{}", event);
-}
 
 /**
  * @brief Checks if the specified window API is supported on the current platform
@@ -118,6 +97,25 @@ CE_API bool IsWindowApiSupported(const WindowApi& api);
  */
 CE_API bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
+}
+
+template <>
+struct std::formatter<CE::Types::WindowApi>: std::formatter<std::string_view> {
+	auto format(const CE::Types::WindowApi value, std::format_context& ctx) const {
+		using CE::Types::WindowApi;
+		switch (value) {
+			case WindowApi::None:  return std::formatter<std::string_view>::format("None", ctx);
+			case WindowApi::GLFW:  return std::formatter<std::string_view>::format("GLFW", ctx);
+			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
+			case WindowApi::X11:   return std::formatter<std::string_view>::format("X11", ctx);
+			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
+			default:               return std::formatter<std::string_view>::format("Unknown Window API", ctx);
+		}
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& os, const CE::Types::WindowApi& event) {
+	return os << std::format("{}", event);
 }
 
 #endif //CE_TYPES_WINDOW_WINDOWPROPS_HPP

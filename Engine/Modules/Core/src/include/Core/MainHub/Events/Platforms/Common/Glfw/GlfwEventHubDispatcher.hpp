@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-21
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_MouseEventHubDispatcher.hpp"
+#include "Core/MainHub/Events/I_RenderContextEventHubDispatcher.hpp"
 #include "Core/MainHub/Events/I_WindowEventHubDispatcher.hpp"
 
 #include "Utility/Delegate/Dispatcher.hpp"
@@ -25,6 +26,7 @@ class GlfwEventHubDispatcher:
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,
+	public I_RenderContextEventHubDispatcher,
 	public I_WindowEventHubDispatcher
 {
 public:
@@ -53,6 +55,10 @@ public:
 		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
 		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
 		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
+	};
+
+	struct OpenGlRenderContextEventHub {
+		Utility::MulticastDispatcher<Events::VSyncChangeEvent&> onChangeVSyncDispatcher;
 	};
 
 public:
@@ -87,6 +93,10 @@ public:
 	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
 #pragma endregion
 
+#pragma region DispatchRenderContextEvent
+	void DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) override;
+#pragma endregion
+
 public:
 #pragma region ReceiveApplicationEvent
 	void ReceiveAppErrorEvent(int errorCode, const char* description);
@@ -107,6 +117,10 @@ public:
 	void ReceiveMouseWheelScrollEvent(double xOffset, double yOffset);
 #pragma endregion
 
+#pragma region ReceiveRenderContextEvent
+	void ReceiveContextChangeVSyncEvent(bool state);
+#pragma endregion
+
 #pragma region ReceiveWindowEvent
 	void ReceiveWindowResizeEvent(int width, int height);
 	void ReceiveWindowCloseEvent();
@@ -118,6 +132,7 @@ public:
 	GlfwKeyboardEventHub glfwKeyboardEventHub;
 	GlfwMouseEventHub glfwMouseEventHub;
 	GlfwWindowEventHub glfwWindowEventHub;
+	OpenGlRenderContextEventHub openGlRenderContextEventHub;
 };
 
 }
