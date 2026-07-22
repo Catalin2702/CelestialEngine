@@ -33,7 +33,7 @@ public:
 		UnicastDispatcher<int, int> onResizeDispatcher;
 		UnicastDispatcher<> onCloseDispatcher;
 		UnicastDispatcher<int, const char*> onErrorDispatcher;
-		UnicastDispatcher<int> onFocusDispatcher;
+		UnicastDispatcher<int> onFocusDispatcher;	///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
 	};
 
 	struct GlfwKeyboardEvents {
@@ -49,17 +49,48 @@ public:
 	};
 
 public:
+	/**
+	 * @brief Forwards the resize callback to the bound listener
+	 */
 	void DispatchResizeEvent(int width, int height) const;
+	/**
+	 * @brief Forwards the close callback to the bound listener
+	 */
 	void DispatchCloseEvent() const;
+	/**
+	 * @brief Forwards the error callback to the bound listener
+	 */
 	void DispatchErrorEvent(int errorCode, const char* description) const;
+	/**
+	 * @brief Forwards a window focus change to the bound listener (the event hub)
+	 * @param focused GLFW_TRUE when the window gained input focus, GLFW_FALSE when it lost it
+	 */
 	void DispatchFocusEvent(int focused) const;
 
+	/**
+	 * @brief Forwards the key callback to the bound listener
+	 */
 	void DispatchKeyEvent(int key, int action, int scancode, int mods) const;
+	/**
+	 * @brief Forwards the char callback to the bound listener
+	 */
 	void DispatchCharEvent(unsigned int codepoint) const;
 
+	/**
+	 * @brief Forwards the mouse button callback to the bound listener
+	 */
 	void DispatchMouseButtonEvent(int button, int action, int mods) const;
+	/**
+	 * @brief Forwards the mouse position callback to the bound listener
+	 */
 	void DispatchMousePositionEvent(double xPos, double yPos) const;
+	/**
+	 * @brief Forwards the mouse dragged callback to the bound listener
+	 */
 	void DispatchMouseDraggedEvent(int button, int action, int mods, double xPos, double yPos) const;
+	/**
+	 * @brief Forwards the mouse wheel scroll callback to the bound listener
+	 */
 	void DispatchMouseWheelScrollEvent(double xOffset, double yOffset) const;
 
 public:
@@ -103,10 +134,19 @@ public:
 	 */
 	void Init() override;
 
+	/**
+	 * @brief Minimizes the window via glfwIconifyWindow
+	 */
 	void Miniaturize() const override;
 
+	/**
+	 * @brief Restores the window via glfwRestoreWindow
+	 */
 	void Deminiaturize() const override;
 
+	/**
+	 * @brief Toggles fullscreen by moving the window on/off the monitor video mode
+	 */
 	void ToggleFullScreen() const override;
 
 public:

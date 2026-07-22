@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -59,10 +59,25 @@ class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
 		UnicastDispatcher<CGFloat, CGFloat> onResizeDispatcher;
 	};
 public:
+	/**
+	 * @brief Forwards the metal context created callback to the bound listener
+	 */
 	void DispatchMetalContextCreated() const;
+	/**
+	 * @brief Forwards the metal context initialized callback to the bound listener
+	 */
 	void DispatchMetalContextInitialized() const;
+	/**
+	 * @brief Forwards the metal context will shutdown callback to the bound listener
+	 */
 	void DispatchMetalContextWillShutdown() const;
+	/**
+	 * @brief Forwards the v sync changed callback to the bound listener
+	 */
 	void DispatchVSyncChanged(bool vsync) const;
+	/**
+	 * @brief Forwards the resize callback to the bound listener
+	 */
 	void DispatchResizeEvent(CGFloat width, CGFloat height) const;
 
 public:
@@ -78,6 +93,9 @@ public:
  */
 class CE_API MetalContext final: public I_Context {
 public:
+	/**
+	 * @brief Default constructor
+	 */
 	MetalContext();
 
 	/**
@@ -113,8 +131,14 @@ public:
 	void SetVSync(bool enabled) override;
 
 public:
+	/**
+	 * @brief Checks whether vertical synchronization is currently enabled
+	 */
 	[[nodiscard]] bool IsVSyncEnabled() const override;
 
+	/**
+	 * @brief Gets the content scale (drawable pixels per point, e.g. 2.0 on Retina)
+	 */
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 public:
@@ -169,6 +193,9 @@ public:
 	void SetDisplayLinkPaused(bool paused) const;
 
 private:
+	/**
+	 * @brief Display link callback: renders one frame while VSync pacing is active
+	 */
 	void _OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate* update);
 
 	/**

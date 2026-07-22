@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -53,8 +53,17 @@ class CocoaWindowEventHandler: public Native::NsWindowEventDispatcher {
 	};
 
 public:
+	/**
+	 * @brief Forwards the cocoa window created callback to the bound listener
+	 */
 	void DispatchCocoaWindowCreated() const;
+	/**
+	 * @brief Forwards the cocoa window initialized callback to the bound listener
+	 */
 	void DispatchCocoaWindowInitialized() const;
+	/**
+	 * @brief Forwards the cocoa window will shutdown callback to the bound listener
+	 */
 	void DispatchCocoaWindowWillShutdown() const;
 
 public:
@@ -89,10 +98,19 @@ public:
 	void Init() override;
 
 public:
+	/**
+	 * @brief Minimizes the window to the dock
+	 */
 	void Miniaturize() const override;
 
+	/**
+	 * @brief Restores the window from the dock
+	 */
 	void Deminiaturize() const override;
 
+	/**
+	 * @brief Toggles the native macOS fullscreen mode
+	 */
 	void ToggleFullScreen() const override;
 
 public:

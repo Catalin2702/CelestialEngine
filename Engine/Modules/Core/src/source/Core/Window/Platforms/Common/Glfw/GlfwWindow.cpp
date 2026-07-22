@@ -30,16 +30,10 @@
 
 namespace CE::Core {
 
-/**
- * @brief Static flag to track if GLFW has already been initialized
- * @details Ensures that glfwInit() is called only once during program execution
- */
+// Ensures glfwInit() is called only once during program execution
 static bool _st_GLFWInitialized = false;
 
-/**
- * @brief Static counter to track the number of active windows
- * @details Used to determine when to call glfwTerminate() (when count reaches 0)
- */
+// Tracks the number of active windows to determine when to call glfwTerminate() (when count reaches 0)
 static int _st_GLFWWindowCount = 0;
 
 void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int height) const {

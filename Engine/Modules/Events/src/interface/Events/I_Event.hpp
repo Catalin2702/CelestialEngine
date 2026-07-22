@@ -38,7 +38,7 @@ enum class EventType: uint8_t {
 
 	WindowClose,									///< Window close event
 	WindowResize,									///< Window resize event
-	WindowFocus,									///< Window gained focus event
+	WindowFocus,									///< Window focus change event (carries whether focus was gained or lost)
 	WindowMoved,									///< Window moved event
 
 	AppTick,										///< Application tick event
@@ -83,6 +83,10 @@ enum EventCategory {
  */
 class CE_API I_Event {
 protected:
+	/**
+	 * @brief Protected constructor
+	 * @param isMutable Whether handlers may consume the event (an immutable event can never be marked handled)
+	 */
 	I_Event(const bool isMutable): _isMutable(isMutable) {}
 
 public:
@@ -138,6 +142,9 @@ public:
 	 */
 	[[nodiscard]] bool IsHandled() const { return _handled; }
 
+	/**
+	 * @brief Checks whether handlers are allowed to consume this event
+	 */
 	[[nodiscard]] bool IsMutable() const { return _isMutable; }
 
 	/**

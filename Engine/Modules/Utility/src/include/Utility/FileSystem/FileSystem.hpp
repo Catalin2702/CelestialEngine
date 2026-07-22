@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -90,8 +90,14 @@ public:
 	 */
 	static void StSave(const File& file);
 
+	/**
+	 * @brief Checks whether the given path exists on disk
+	 */
 	static bool StExists(const fs::path& path);
 
+	/**
+	 * @brief Checks whether the given file exists on disk
+	 */
 	static bool StExists(const File& file);
 
 public:

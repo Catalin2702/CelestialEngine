@@ -59,9 +59,21 @@ public:
 	};
 
 public:
+	/**
+	 * @brief Fires the application's error event into the event hub
+	 */
 	void DispatchErrorEvent(int errorCode, const char* description) const;
+	/**
+	 * @brief Fires the application's tick event into the event hub
+	 */
 	void DispatchTickEvent() const;
+	/**
+	 * @brief Fires the application's update event into the event hub
+	 */
 	void DispatchUpdateEvent() const;
+	/**
+	 * @brief Fires the application's render event into the event hub
+	 */
 	void DispatchRenderEvent() const;
 
 public:
@@ -164,19 +176,47 @@ public:
 	 */
 	void RemoveImGuiLayer() override;
 
+	/**
+	 * @brief Binds every raw source (window callbacks, application events, render context) to the event hub's Receive* methods
+	 */
 	void SetEventHubDispatcher() override;
+	/**
+	 * @brief Subscribes the application-level handlers to the hub
+	 * @details The input state subscribes FIRST (before any other subscriber), then error logging, VSync and window close handlers.
+	 */
 	void SubscribeToHubDispatcher() override;
+	/**
+	 * @brief Removes the input state and the application-level handlers from the hub
+	 */
 	void UnsubscribeFromDispatcher() override;
 
 public:
+	/**
+	 * @brief Gets the application singleton downcast to GlfwApplication
+	 */
 	[[nodiscard]] static GlfwApplication& StGet();
 
 #ifdef CE_PLATFORM_MACOS
 	// Native macOS menu-bar callbacks. GLFW creates the NSApplication, so the same menu (built by CreateMenuBar) drives these.
+	/**
+	 * @brief Menu callback: quits the application
+	 */
 	static void StOnQuitMenuCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: toggles VSync in the config and applies it to the render context
+	 */
 	static void StOnToggleVSyncCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: minimizes the window
+	 */
 	static void StOnMiniaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: restores the window from the dock
+	 */
 	static void StOnDeminiaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: toggles fullscreen mode
+	 */
 	static void StOnToggleFullscreenCallback(void*, SEL selector, const NS::Object* sender);
 #endif
 
@@ -187,6 +227,11 @@ private:
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
+	/**
+	 * @brief Application-level reaction to a VSync change dispatched by the event hub
+	 * @details Subscribed to GlfwEventHubDispatcher::openGlRenderContextEventHub.onChangeVSyncDispatcher. Updates the
+	 *			frame limiter target: monitor refresh rate with VSync on, the configured refresh rate with VSync off.
+	 */
 	void _OnVSyncChange(Events::VSyncEvent& event) const;
 
 protected:
@@ -212,6 +257,9 @@ public:
 	 */
 	[[nodiscard]] I_Window& GetWindow() const override;
 
+	/**
+	 * @brief Gets the GLFW-specific window for platform-specific operations
+	 */
 	[[nodiscard]] GlfwWindow& GetGlfwWindow() const;
 
 	/**
@@ -221,6 +269,9 @@ public:
 	 */
 	I_Context& GetRenderContext() const override;
 
+	/**
+	 * @brief Gets the OpenGL-specific rendering context for platform-specific operations
+	 */
 	OpenGlContext& GetOpenGlContext() const;
 
 public:

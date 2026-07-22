@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -39,12 +39,25 @@ namespace CE::Core {
  */
 class I_ImGuiLayer: public I_Layer {
 public:
+	/**
+	 * @brief Constructor
+	 * @param name Debug name of the layer
+	 */
 	I_ImGuiLayer([[maybe_unused]] const std::string& name = "ImGuiLayer"): I_Layer(name) {}
 
+	/**
+	 * @brief Initializes the ImGui backend when the layer is attached
+	 */
 	void OnAttach() override { _Init(); }
+	/**
+	 * @brief Shuts down the ImGui backend when the layer is detached
+	 */
 	void OnDetach() override { _Shutdown(); }
 
 public:
+	/**
+	 * @brief No-op: ImGui layers render through Begin/OnRender/End instead
+	 */
 	void OnUpdate() override {}
 
 protected:

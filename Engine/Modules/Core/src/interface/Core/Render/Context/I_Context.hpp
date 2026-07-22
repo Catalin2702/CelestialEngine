@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -39,6 +39,10 @@ public:
 	 */
 	virtual void Init() = 0;
 
+	/**
+	 * @brief Switches vertical synchronization on or off
+	 * @details Implementations fire a VSyncEvent through the hub after the swap behaviour has actually changed.
+	 */
 	virtual void SetVSync(bool enabled) = 0;
 
 public:

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -157,6 +157,9 @@ public:
 	 */
 	[[nodiscard]] virtual I_Context& GetRenderContext() const = 0;
 
+	/**
+	 * @brief Checks whether the application loop is currently running
+	 */
 	[[nodiscard]] bool IsRunning() const { return _isRunning.load(); }
 
 	/**
@@ -164,11 +167,21 @@ public:
 	 */
 	virtual void RemoveImGuiLayer() = 0;
 
+	/**
+	 * @brief Gets the time elapsed since the previous frame, in seconds
+	 * @details Also advances the internal frame timestamp: call once per frame.
+	 */
 	float GetDeltaTime() const;
 
+	/**
+	 * @brief Resets the frame timestamp so the next GetDeltaTime does not include a pause (e.g. startup)
+	 */
 	void ResetDeltaTime() const;
 
 public:
+	/**
+	 * @brief Sets the running state of the application loop
+	 */
 	virtual void SetRunning(const bool running) { _isRunning.store(running); }
 
 	/**
@@ -177,8 +190,17 @@ public:
 	 */
 	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
 
+	/**
+	 * @brief Binds every raw platform source to the event hub's Receive* methods (backend-specific)
+	 */
 	virtual void SetEventHubDispatcher() = 0;
+	/**
+	 * @brief Subscribes the application-level handlers (input state first) to the event hub
+	 */
 	virtual void SubscribeToHubDispatcher() {}
+	/**
+	 * @brief Removes the application-level handlers from the event hub
+	 */
 	virtual void UnsubscribeFromDispatcher() {}
 
 protected:

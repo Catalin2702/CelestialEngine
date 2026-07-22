@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -63,15 +63,28 @@ class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	};
 
 public:
+	/**
+	 * @brief Default constructor
+	 */
 	ImGuiMetalLayer();
 
 	~ImGuiMetalLayer() override;
 
 public:
+	/**
+	 * @brief Renders the layer's ImGui widgets (called between Begin and End)
+	 */
 	void OnRender() const override;
 
+	/**
+	 * @brief Starts a new ImGui frame on the Metal backend
+	 * @param deltaTime Time elapsed since the previous frame, fed to the ImGui IO
+	 */
 	void Begin(float deltaTime) override;
 
+	/**
+	 * @brief Finalizes the ImGui frame and encodes its draw data into the current Metal render pass
+	 */
 	void End() override;
 
 public:
@@ -88,26 +101,59 @@ public:
 	void UnsubscribeFromEventHub() override;
 
 protected:
+	/**
+	 * @brief Initializes the ImGui context and its Metal/OSX backends
+	 */
 	void _Init() override;
 
+	/**
+	 * @brief Shuts down the ImGui backends and destroys the context
+	 */
 	void _Shutdown() override;
 
+	/**
+	 * @brief Feeds the cursor position to ImGui
+	 */
 	void _OnMouseMoved(Events::MouseMovedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the cursor position to ImGui during a drag
+	 */
 	void _OnMouseDragged(Events::MouseDraggedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the scroll wheel offsets to ImGui
+	 */
 	void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
 
+	/**
+	 * @brief Feeds the button press to ImGui and consumes the event when ImGui wants the mouse
+	 */
 	void _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the button release to ImGui
+	 */
 	void _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the key press to ImGui and consumes the event when ImGui wants the keyboard
+	 */
 	void _OnKeyPressed(Events::KeyPressedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the key release to ImGui
+	 */
 	void _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the typed character to ImGui text input
+	 */
 	void _OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
+	/**
+	 * @brief Updates ImGui's display size on view resize
+	 */
 	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:

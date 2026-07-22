@@ -19,14 +19,33 @@
 
 namespace CE::Core {
 
+/**
+ * @class I_WindowEventHubDispatcher
+ * @brief Interface for the hub side that multicasts window events
+ * @details Implemented by the platform event hub dispatchers. Each Dispatch* hook forwards a window event
+ *			(resize/close/error/focus) to every subscriber of the matching multicast dispatcher. Defaults are no-ops so an
+ *			implementation only overrides the events it actually routes.
+ */
 class CE_API I_WindowEventHubDispatcher {
 public:
 	virtual ~I_WindowEventHubDispatcher() = default;
 
 public:
+	/**
+	 * @brief Hook multicasting the window resize event to the hub subscribers (no-op by default)
+	 */
 	virtual void DispatchWindowResizeEvent(Events::WindowResizeEvent&) {}
+	/**
+	 * @brief Hook multicasting the window close event to the hub subscribers (no-op by default)
+	 */
 	virtual void DispatchWindowCloseEvent(Events::WindowCloseEvent&) {}
+	/**
+	 * @brief Hook multicasting the window error event to the hub subscribers (no-op by default)
+	 */
 	virtual void DispatchWindowErrorEvent(Events::ErrorEvent&) {}
+	/**
+	 * @brief Hook multicasting the window focus event to the hub subscribers (no-op by default)
+	 */
 	virtual void DispatchWindowFocusEvent(Events::WindowFocusEvent&) {}
 };
 

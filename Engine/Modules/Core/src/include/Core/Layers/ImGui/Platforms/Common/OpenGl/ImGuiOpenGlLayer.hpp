@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -117,16 +117,43 @@ protected:
 	 */
 	void _Shutdown() override;
 
+	/**
+	 * @brief Feeds the cursor position to ImGui
+	 */
 	void _OnMouseMoved(Events::MouseMovedEvent& event) const override;
+	/**
+	 * @brief Feeds the cursor position to ImGui during a drag
+	 */
 	void _OnMouseDragged(Events::MouseDraggedEvent& event) const override;
+	/**
+	 * @brief Feeds the scroll wheel offsets to ImGui
+	 */
 	void _OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const override;
+	/**
+	 * @brief Feeds the button press to ImGui and consumes the event when ImGui wants the mouse
+	 */
 	void _OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const override;
+	/**
+	 * @brief Feeds the button release to ImGui
+	 */
 	void _OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const override;
 
+	/**
+	 * @brief Feeds the key press to ImGui and consumes the event when ImGui wants the keyboard
+	 */
 	void _OnKeyPressed(Events::KeyPressedEvent& event) const override;
+	/**
+	 * @brief Feeds the key release to ImGui
+	 */
 	void _OnKeyReleased(Events::KeyReleasedEvent& event) const override;
+	/**
+	 * @brief Feeds the typed character to ImGui text input
+	 */
 	void _OnKeyTyped(Events::KeyTypedEvent& event) const override;
 
+	/**
+	 * @brief Updates ImGui's display size on view resize
+	 */
 	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:

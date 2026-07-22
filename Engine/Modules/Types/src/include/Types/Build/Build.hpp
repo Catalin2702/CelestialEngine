@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-22
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -18,12 +18,20 @@
 
 namespace CE::Types {
 
+/**
+ * @brief Enumeration of the engine build configurations
+ * @details Mirrors the CMake configurations: Debug (CE_DEBUG), Release (CE_RELEASE) and Dist (CE_DIST).
+ */
 enum class BuildType {
 	Debug,
 	Release,
 	Dist
 };
 
+/**
+ * @brief Gets the build configuration the engine was compiled with
+ * @return BuildType The current build type, resolved at compile time from the CE_DEBUG/CE_RELEASE/CE_DIST macros
+ */
 // NOLINTNEXTLINE
 inline BuildType GetCurrentBuildType() {
 #if defined(CE_DEBUG)
@@ -38,7 +46,17 @@ inline BuildType GetCurrentBuildType() {
 
 }
 
+/**
+ * @brief Converts a BuildType to its human-readable name
+ * @param type The build type to convert
+ * @return std::string "Debug", "Release" or "Dist"
+ */
 CE_API std::string GetBuildTypeString(BuildType type);
+
+/**
+ * @brief Gets the human-readable name of the current build configuration
+ * @return std::string "Debug", "Release" or "Dist"
+ */
 CE_API std::string GetCurrentBuildTypeString();
 
 }

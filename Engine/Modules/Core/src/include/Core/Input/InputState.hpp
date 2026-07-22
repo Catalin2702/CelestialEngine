@@ -201,13 +201,37 @@ private:
 	}
 
 private:
+	/**
+	 * @brief Marks the key as held (and just-pressed unless it is an OS key repeat)
+	 */
 	void _OnKeyPressed(const Events::KeyPressedEvent& event);
+	/**
+	 * @brief Marks the key as released and just-released
+	 */
 	void _OnKeyReleased(const Events::KeyReleasedEvent& event);
+	/**
+	 * @brief Updates the cached cursor position
+	 */
 	void _OnMouseMoved(const Events::MouseMovedEvent& event);
+	/**
+	 * @brief Marks the mouse button as held and just-pressed
+	 */
 	void _OnMouseButtonPressed(const Events::MouseButtonPressedEvent& event);
+	/**
+	 * @brief Marks the mouse button as released and just-released
+	 */
 	void _OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& event);
+	/**
+	 * @brief Updates the cached cursor position during a drag (Cocoa sends no mouseMoved while a button is held)
+	 */
 	void _OnMouseDragged(const Events::MouseDraggedEvent& event);
+	/**
+	 * @brief Accumulates the scroll offsets into the per-frame deltas
+	 */
 	void _OnMouseWheelScrolled(const Events::MouseWheelScrolledEvent& event);
+	/**
+	 * @brief Resets every held key/button when the window loses focus (their release events would go to another window)
+	 */
 	void _OnWindowFocus(const Events::WindowFocusEvent& event);
 
 private:

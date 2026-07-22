@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -20,6 +20,13 @@
 
 namespace CE::Native {
 
+/**
+ * @class NsWindowEventDispatcher
+ * @brief Forwards the native NSWindow notifications to per-event unicast dispatchers
+ * @details Installed as the window's delegate: geometry (resize/move), focus (become/resign key), state
+ *			(miniaturize/fullscreen) and lifecycle (will close) notifications are re-emitted on the matching
+ *			UnicastDispatcher, which the application binds to the event hub's Receive* methods.
+ */
 class CE_API NsWindowEventDispatcher: public NS::I_WindowEventDispatcher {
 public:
 	struct CE_API NsWindowGeometryEvents {
@@ -48,14 +55,41 @@ public:
 	~NsWindowEventDispatcher() override = default;
 
 public:
+	/**
+	 * @brief Re-emits the native window did resize callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidResize(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did move callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidMove(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did become key callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidBecomeKey(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did resign key callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidResignKey(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did miniaturize callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidMiniaturize(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did deminiaturize callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidDeminiaturize(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did enter full screen callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidEnterFullScreen(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window did exit full screen callback on its unicast dispatcher
+	 */
 	void DispatchWindowDidExitFullScreen(NS::Notification* notification) override;
+	/**
+	 * @brief Re-emits the native window will close callback on its unicast dispatcher
+	 */
 	void DispatchWindowWillClose(NS::Notification* notification) override;
 
 public:

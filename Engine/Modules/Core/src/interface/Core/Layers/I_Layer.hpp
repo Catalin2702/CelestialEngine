@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -79,7 +79,13 @@ public:
 	 */
 	virtual void End() = 0;
 
+	/**
+	 * @brief Subscribes the layer's handlers to the event hub (no-op by default)
+	 */
 	virtual void SubscribeToEventHub() {}
+	/**
+	 * @brief Removes the layer's handlers from the event hub (no-op by default)
+	 */
 	virtual void UnsubscribeFromEventHub() {}
 
 public:

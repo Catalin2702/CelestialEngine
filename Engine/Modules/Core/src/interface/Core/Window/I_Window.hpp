@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -56,10 +56,19 @@ public:
 	virtual void Init() = 0;
 
 public:
+	/**
+	 * @brief Minimizes the window to the dock/taskbar
+	 */
 	virtual void Miniaturize() const = 0;
 
+	/**
+	 * @brief Restores the window from the minimized state
+	 */
 	virtual void Deminiaturize() const = 0;
 
+	/**
+	 * @brief Toggles the window between fullscreen and windowed mode
+	 */
 	virtual void ToggleFullScreen() const = 0;
 
 public:

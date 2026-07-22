@@ -58,7 +58,7 @@
 // ---- Convenient namespace aliases -------------
 namespace Core = CE::Core;		///< Application framework
 namespace Events = CE::Events;						///< Event system
-namespace Tools = CE::Tools;
+namespace Tools = CE::Tools;						///< Logging and tooling
 namespace Utility = CE::Utility;					///< Utility
 // -----------------------------------------------
 

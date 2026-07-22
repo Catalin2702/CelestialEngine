@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -22,8 +22,20 @@ namespace CE::Types {
 
 namespace CE::Core {
 
+/**
+ * @class OpenGlShaderCompiler
+ * @brief Stateless helper that compiles GLSL source into an OpenGL shader object
+ */
 class CE_API OpenGlShaderCompiler {
 public:
+	/**
+	 * @brief Compiles GLSL source code into an OpenGL shader object
+	 * @param shader Null-terminated GLSL source code
+	 * @param type The shader stage to compile (vertex, fragment, ...)
+	 * @return uint32_t The OpenGL shader object id, or 0 on compilation failure
+	 * @details Compilation errors are logged; the caller owns the returned shader object and must delete it
+	 *			(or attach it to a program) once linked.
+	 */
 	static uint32_t Compile(const char* shader, Types::ShaderType type);
 };
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -43,10 +43,25 @@ class CE_API OpenGlContextEventDispatcher {
 		UnicastDispatcher<int, int> onResizeDispatcher;
 	};
 public:
+	/**
+	 * @brief Forwards the context created callback to the bound listener
+	 */
 	void DispatchContextCreated() const;
+	/**
+	 * @brief Forwards the context initialized callback to the bound listener
+	 */
 	void DispatchContextInitialized() const;
+	/**
+	 * @brief Forwards the context will shutdown callback to the bound listener
+	 */
 	void DispatchContextWillShutdown() const;
+	/**
+	 * @brief Forwards the v sync changed callback to the bound listener
+	 */
 	void DispatchVSyncChanged(bool VSync) const;
+	/**
+	 * @brief Forwards the resize callback to the bound listener
+	 */
 	void DispatchResizeEvent(int width, int height) const;
 
 public:
@@ -98,16 +113,31 @@ public:
 	 */
 	void SwapBuffers() const;
 
+	/**
+	 * @brief Sets the swap interval and fires a VSyncEvent through the hub
+	 */
 	void SetVSync(bool enabled) override;
 
 public:
+	/**
+	 * @brief Sets the OpenGL viewport rectangle
+	 */
 	static void SetViewport(int x, int y, int width, int height);
 
+	/**
+	 * @brief Clears the selected framebuffer attachments
+	 */
 	static void ClearBuffers(Types::BufferBit mask);
 
 public:
+	/**
+	 * @brief Checks whether vertical synchronization is currently enabled
+	 */
 	[[nodiscard]] bool IsVSyncEnabled() const override;
 
+	/**
+	 * @brief Gets the content scale (framebuffer pixels per screen coordinate, e.g. 2.0 on Retina)
+	 */
 	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
 
 RENDER_API_TYPE(OpenGL)

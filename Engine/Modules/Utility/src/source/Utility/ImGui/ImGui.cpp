@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #include "Utility/ImGui/ImGui.hpp"
@@ -13,20 +13,6 @@
 
 namespace CE::Utility {
 
-/**
- * @brief Converts GLFW key code to ImGui key code
- * @param key GLFW key code
- * @return ImGuiKey Corresponding ImGui key code, or ImGuiKey_None if not mapped
- * @details Maps GLFW key codes to ImGui key codes for proper input handling.
- *			Includes mappings for:
- *			- Navigation keys (arrows, home, end, page up/down)
- *			- Editing keys (backspace, delete, insert)
- *			- Function keys (F1-F12)
- *			- Alphanumeric keys (0-9, A-Z)
- *			- Special keys (space, enter, tab, escape)
- *			- Modifier keys (shift, ctrl, alt, super)
- *			- Keypad keys
- */
 ImGuiKey GlfwKeyToImGuiKey(const int key) {
 	switch (key) {
 		case GLFW_KEY_TAB: return ImGuiKey_Tab;

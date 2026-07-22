@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -227,6 +227,9 @@ public:
 	 */
 	[[nodiscard]] bool IsSaved() const { return _isSaved; }
 
+	/**
+	 * @brief Checks whether the file exists on disk
+	 */
 	[[nodiscard]] bool Exists() const;
 
 private:

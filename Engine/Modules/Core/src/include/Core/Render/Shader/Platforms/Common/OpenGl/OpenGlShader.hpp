@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -87,7 +87,13 @@ public:
 	OpenGlShader& operator=(OpenGlShader&& other) noexcept;
 
 public:
+	/**
+	 * @brief Gets the OpenGL shader object id
+	 */
 	[[nodiscard]] uint32_t GetShaderId() const override;
+	/**
+	 * @brief Gets the shader stage this shader belongs to
+	 */
 	[[nodiscard]] Types::ShaderType GetType() const override;
 
 private:

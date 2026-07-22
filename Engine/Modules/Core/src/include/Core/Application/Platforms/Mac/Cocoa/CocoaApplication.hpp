@@ -66,9 +66,21 @@ public:
 	};
 
 public:
+	/**
+	 * @brief Fires the application's error event into the event hub
+	 */
 	void DispatchErrorEvent(int errorCode, const char* description) const;
+	/**
+	 * @brief Fires the application's tick event into the event hub
+	 */
 	void DispatchTickEvent() const;
+	/**
+	 * @brief Fires the application's update event into the event hub
+	 */
 	void DispatchUpdateEvent() const;
+	/**
+	 * @brief Fires the application's render event into the event hub
+	 */
 	void DispatchRenderEvent() const;
 
 public:
@@ -171,11 +183,21 @@ public:
 	 */
 	void RemoveImGuiLayer() override;
 
+	/**
+	 * @brief Sets the running state and reconciles the frame pacing with it
+	 * @details Running starts the pacing (_Run: tick loop or display link, depending on VSync); stopping pauses it (_Pause).
+	 */
 	void SetRunning(bool running) override;
 
 protected:
+	/**
+	 * @brief No-op: window creation happens in Init(), interleaved with the Metal context setup
+	 */
 	void _InitWindow() override {}
 
+	/**
+	 * @brief No-op: renderer creation happens in Init(), interleaved with the window setup
+	 */
 	void _InitRenderer() override {}
 
 public:
@@ -207,25 +229,63 @@ public:
 	 */
 	[[nodiscard]] MetalContext& GetMetalContext() const { return *_context; }
 
+	/**
+	 * @brief Gets the application singleton downcast to CocoaApplication
+	 */
 	[[nodiscard]] static CocoaApplication& StGet() { return dynamic_cast<CocoaApplication&>(I_Application::StGet()); }
 
 public:
+	/**
+	 * @brief Binds every raw source (view/window dispatchers, application events, render context) to the event hub's Receive* methods
+	 */
 	void SetEventHubDispatcher() override;
+	/**
+	 * @brief Subscribes the application-level handlers to the hub
+	 * @details The input state subscribes FIRST (before any other subscriber), then error logging, VSync and window close handlers.
+	 */
 	void SubscribeToHubDispatcher() override;
+	/**
+	 * @brief Removes the input state and the application-level handlers from the hub
+	 */
 	void UnsubscribeFromDispatcher() override;
 
 public:
+	/**
+	 * @brief Menu callback: quits the application
+	 */
 	static void StOnQuitMenuCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: toggles VSync in the config and applies it to the render context
+	 */
 	static void StOnToggleVSyncCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: minimizes the window
+	 */
 	static void StOnMiniaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: restores the window from the dock
+	 */
 	static void StOnDeminiaturizeCallback(void*, SEL selector, const NS::Object* sender);
+	/**
+	 * @brief Menu callback: toggles fullscreen mode
+	 */
 	static void StOnToggleFullscreenCallback(void*, SEL selector, const NS::Object* sender);
 
 private:
+	/**
+	 * @brief Starts the frame pacing that matches the current VSync state
+	 * @details VSync on: resumes the CAMetalDisplayLink; VSync off: starts the dedicated tick loop thread.
+	 */
 	void _Run();
 
+	/**
+	 * @brief Stops the active frame pacing (display link or tick loop)
+	 */
 	void _Pause();
 
+	/**
+	 * @brief Binds the Metal context's view delegates (frame draw, display link) to the application
+	 */
 	void _BindContextDelegates();
 
 	/**
@@ -250,6 +310,9 @@ private:
 	 */
 	void _OnDidFinishLaunching(NS::Notification* notification) const;
 
+	/**
+	 * @brief AppKit will-finish-launching hook (pre-run-loop setup)
+	 */
 	void _OnWillFinishLaunching(NS::Notification* notification) const;
 
 	/**
@@ -259,8 +322,16 @@ private:
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
+	/**
+	 * @brief Application-level reaction to a VSync change dispatched by the event hub
+	 * @details Subscribed to CocoaEventHubDispatcher::metalRenderContextEventHub.onChangeVSyncDispatcher. Reconciles the
+	 *			frame pacing with the new state via a stop/start of the run loop (tick loop vs CAMetalDisplayLink).
+	 */
 	void _OnVSyncChange(Events::VSyncEvent& event);
 
+	/**
+	 * @brief Per-frame draw callback from the MetalKit view: runs one Tick
+	 */
 	void _OnDraw(MTK::View*);
 
 public:
