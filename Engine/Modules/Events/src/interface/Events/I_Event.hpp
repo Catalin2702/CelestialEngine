@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -39,7 +39,6 @@ enum class EventType: uint8_t {
 	WindowClose,									///< Window close event
 	WindowResize,									///< Window resize event
 	WindowFocus,									///< Window gained focus event
-	WindowLostFocus,								///< Window lost focus event
 	WindowMoved,									///< Window moved event
 
 	AppTick,										///< Application tick event

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -15,20 +15,23 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
-#include "Types/Window/WindowProps.hpp"
 
 #include <utility>
 
 namespace CE::Core {
 
+class InputState;
+
 /**
  * @class I_Input
  * @brief Interface for input handling
- * @details Provides a platform-agnostic interface for querying input states such as keyboard keys and mouse buttons. This class is designed to be inherited by platform-specific implementations (e.g., MetalInput for macOS). It uses the singleton pattern to allow static access to input queries throughout the application without needing to pass around an instance.
+ * @details Provides a platform-agnostic interface for querying input states such as keyboard keys and mouse buttons.
+ *			Pure interface: the concrete implementation (Input) owns the event-driven InputState and answers every query
+ *			from it. It uses the singleton pattern to allow static access to input queries throughout the application
+ *			without needing to pass around an instance.
  */
 class CE_API I_Input {
-	friend void InitInput(Types::WindowApi windowApi);
-	friend void ShutdownInput();
+	friend class Input;								///< The concrete implementation manages the singleton via Input::Init/Shutdown
 public:
 	/**
 	 * @brief Virtual destructor
@@ -89,6 +92,16 @@ public:
 	 */
 	static I_Input* Get();
 
+public:
+	/**
+	 * @brief Gets the event-driven input state owned by the concrete input instance
+	 * @return InputState& Reference to the input state
+	 * @details The state is fed by the event hub (the application subscribes it as the FIRST hub subscriber) and read
+	 *			by the query implementations. The application also calls its EndFrame() once per tick to clear the
+	 *			per-frame transitions.
+	 */
+	[[nodiscard]] virtual InputState& GetState() = 0;
+
 protected:
 	/**
 	 * @brief Implementation of key press check
@@ -126,9 +139,6 @@ protected:
 private:
 	static I_Input* _instance;						///< Singleton instance of the I_Input class
 };
-
-void InitInput(Types::WindowApi windowApi);
-void ShutdownInput();
 
 }
 

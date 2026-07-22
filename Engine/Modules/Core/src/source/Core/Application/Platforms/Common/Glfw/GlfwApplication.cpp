@@ -4,11 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
-#include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
+#include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -104,7 +104,7 @@ void GlfwApplication::Start() {
 
 void GlfwApplication::Quit() {
 	UnsubscribeFromDispatcher();
-	ShutdownInput();
+	Input::Shutdown();
 	SetRunning(false);
 }
 
@@ -134,6 +134,10 @@ void GlfwApplication::Tick(const float deltaTime) {
 
 		_imguiLayer->End();
 	}
+
+	// Clear per-frame input transitions BEFORE polling: the glfwPollEvents call below delivers the events that belong
+	// to the next frame, so they must land on a clean transition state.
+	I_Input::Get()->GetState().EndFrame();
 
 	_window->OnUpdate();
 	_context->SwapBuffers();
@@ -205,10 +209,12 @@ void GlfwApplication::_InitWindow() {
 	}
 
 	_window = std::make_unique<GlfwWindow>();
+
+	// Input must exist before SubscribeToHubDispatcher: the input state it owns is the hub's first subscriber.
+	Input::Init();
+
 	SetEventHubDispatcher();
 	SubscribeToHubDispatcher();
-
-	InitInput(windowProps.windowApi);
 }
 
 void GlfwApplication::_InitRenderer() {
@@ -319,6 +325,9 @@ void GlfwApplication::SetEventHubDispatcher() {
 	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, double, double>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
 	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
 
+	// Focus changes feed the hub so input state can reset held keys when the window stops receiving events.
+	windowStateEvents.onFocusDispatcher.Bind(EventDelegate<int>::FromMethod<hub, &hub::ReceiveWindowFocusEvent>(&eventHubDispatcher));
+
 	// The application fires its own lifecycle events (tick/update/render each frame, plus errors) into the hub.
 	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
@@ -327,12 +336,20 @@ void GlfwApplication::SetEventHubDispatcher() {
 }
 
 void GlfwApplication::SubscribeToHubDispatcher() {
+	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
+	// the same event. Requires Input::Init to have run (it has: _InitWindow calls it right before this method).
+	I_Input::Get()->GetState().SubscribeToHub(
+		eventHubDispatcher.glfwKeyboardEventHub,
+		eventHubDispatcher.glfwMouseEventHub,
+		eventHubDispatcher.glfwWindowEventHub
+	);
+
 	_eventHubHandlers[AppError] = eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
 	_eventHubHandlers[VSyncChange] = eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
-		EventDelegate<Events::VSyncChangeEvent&>::FromConstMethod<GlfwApplication, &GlfwApplication::_OnVSyncChange>(this)
+		EventDelegate<Events::VSyncEvent&>::FromConstMethod<GlfwApplication, &GlfwApplication::_OnVSyncChange>(this)
 	);
 
 	_eventHubHandlers[WindowClose] = eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Subscribe(
@@ -344,6 +361,12 @@ void GlfwApplication::SubscribeToHubDispatcher() {
 }
 
 void GlfwApplication::UnsubscribeFromDispatcher() {
+	I_Input::Get()->GetState().UnsubscribeFromHub(
+		eventHubDispatcher.glfwKeyboardEventHub,
+		eventHubDispatcher.glfwMouseEventHub,
+		eventHubDispatcher.glfwWindowEventHub
+	);
+
 	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
 
 	eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
@@ -356,7 +379,7 @@ void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
 }
 
-void GlfwApplication::_OnVSyncChange(Events::VSyncChangeEvent& event) const {
+void GlfwApplication::_OnVSyncChange(Events::VSyncEvent& event) const {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 	_st_TargetFPS = event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate;
 }

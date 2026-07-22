@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -52,6 +52,10 @@ void GlfwWindowEventHandler::DispatchCloseEvent() const {
 
 void GlfwWindowEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
 	windowStateEvents.onErrorDispatcher.Dispatch(errorCode, description);
+}
+
+void GlfwWindowEventHandler::DispatchFocusEvent(const int focused) const {
+	windowStateEvents.onFocusDispatcher.Dispatch(focused);
 }
 
 void GlfwWindowEventHandler::DispatchKeyEvent(const int key, const int action, const int scancode, const int mods) const {
@@ -195,6 +199,12 @@ void GlfwWindow::_SetWindowEventCallbacks() {
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
 		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
 			_this->windowEventHandler.DispatchCloseEvent();
+		}
+	});
+
+	glfwSetWindowFocusCallback(_glfwWindow.get(), [](GLFWwindow* window, const int focused) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+			_this->windowEventHandler.DispatchFocusEvent(focused);
 		}
 	});
 }

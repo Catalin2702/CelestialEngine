@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-21
+# Updated: 2026-07-22
 #
 
 set(APPLICATION_HEADERS
@@ -17,11 +17,7 @@ set(APPLICATION_HEADERS
 )
 
 set(INPUT_HEADERS
-	src/include/Core/Input/Platforms/Common/Glfw/GlfwInput.hpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/include/Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp
-	>
+	src/include/Core/Input/Input.hpp
 )
 
 set(LAYERS_HEADERS
@@ -74,6 +70,7 @@ set(APPLICATION_INTERFACES
 
 set(INPUT_INTERFACES
 	src/interface/Core/Input/I_Input.hpp
+	src/interface/Core/Input/InputState.hpp
 )
 
 set(LAYERS_INTERFACES
@@ -115,13 +112,9 @@ set(APPLICATION_SOURCES
 )
 
 set(INPUT_SOURCES
+	src/source/Core/Input/Input.cpp
 	src/source/Core/Input/InputImpl.cpp
-
-	src/source/Core/Input/Platforms/Common/Glfw/GlfwInput.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/source/Core/Input/Platforms/Mac/Cocoa/CocoaInput.cpp
-	>
+	src/source/Core/Input/InputState.cpp
 )
 
 set(LAYERS_SOURCES

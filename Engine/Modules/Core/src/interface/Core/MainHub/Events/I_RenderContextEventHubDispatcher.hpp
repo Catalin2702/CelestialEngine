@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -23,7 +23,7 @@ public:
 	virtual ~I_RenderContextEventHubDispatcher() = default;
 
 public:
-	virtual void DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent&) {}
+	virtual void DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent&) {}
 };
 
 }

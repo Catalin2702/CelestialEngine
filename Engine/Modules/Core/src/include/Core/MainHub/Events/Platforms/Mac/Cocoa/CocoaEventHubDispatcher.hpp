@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -63,10 +63,11 @@ public:
 		MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
 		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
 		MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
+		MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher;
 	};
 
 	struct MetalRenderContextEventHub {
-		MulticastDispatcher<Events::VSyncChangeEvent&> onChangeVSyncDispatcher;
+		MulticastDispatcher<Events::VSyncEvent&> onChangeVSyncDispatcher;
 		MulticastDispatcher<Events::ViewResizeEvent&> onResizeViewDispatcher;
 	};
 
@@ -105,7 +106,7 @@ public:
 #pragma endregion
 
 #pragma region DispatchRenderContextEvent
-	void DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) override;
+	void DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) override;
 	void DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent);
 #pragma endregion
 
@@ -113,6 +114,7 @@ public:
 	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
 	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
 	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
+	void DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) override;
 #pragma endregion
 
 public:
@@ -126,6 +128,7 @@ public:
 #pragma region ReceiveKeyboardEvent
 	void ReceiveKeyDownEvent(const NS::Event* event);
 	void ReceiveKeyUpEvent(const NS::Event* event);
+	void ReceiveFlagsChangedEvent(const NS::Event* event);
 #pragma endregion
 
 #pragma region ReceiveMouseEvent
@@ -145,6 +148,8 @@ public:
 	void ReceiveWindowWillCloseEvent(const NS::Notification* notification);
 	void ReceiveWindowErrorEvent(int errorCode, const char* description);
 	void ReceiveWindowResizeEvent(unsigned int width, unsigned int height);
+	void ReceiveWindowDidBecomeKeyEvent(const NS::Notification* notification);
+	void ReceiveWindowDidResignKeyEvent(const NS::Notification* notification);
 #pragma endregion
 
 public:

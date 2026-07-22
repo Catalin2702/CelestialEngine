@@ -4,18 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #include "Core/Input/I_Input.hpp"
-
-#include "Types/Window/WindowProps.hpp"
-
-#include "Core/Input/Platforms/Common/Glfw/GlfwInput.hpp"
-
-#ifdef CE_PLATFORM_MACOS
-#include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
-#endif
 
 #include <cassert>
 
@@ -44,27 +36,8 @@ std::pair<float, float> I_Input::GetMouseXY() {
 }
 
 I_Input* I_Input::Get() {
-	assert(_instance &&  "I_Input::Get: Input system not initialized! Call InitInput() before using.");
+	assert(_instance &&  "I_Input::Get: Input system not initialized! Call Input::Init() before using.");
 	return _instance;
-}
-
-void InitInput(const Types::WindowApi windowApi) {
-	if (I_Input::_instance) {
-		return;
-	}
-	if (windowApi == Types::WindowApi::GLFW)
-		I_Input::_instance = new GlfwInput();
-#ifdef CE_PLATFORM_MACOS
-	if (windowApi == Types::WindowApi::Cocoa)
-		I_Input::_instance = new CocoaInput();
-#endif
-}
-
-void ShutdownInput() {
-	if (I_Input::_instance) {
-		delete I_Input::_instance;
-		I_Input::_instance = nullptr;
-	}
 }
 
 }

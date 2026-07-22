@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
@@ -76,7 +76,11 @@ void GlfwEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorE
 	glfwWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
 }
 
-void GlfwEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) {
+void GlfwEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
+	glfwWindowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
+}
+
+void GlfwEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
 	openGlRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
 }
 
@@ -159,7 +163,7 @@ void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const double xOffset, 
 }
 
 void GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
-	Events::VSyncChangeEvent VSyncChangeEvent{state};
+	Events::VSyncEvent VSyncChangeEvent{state};
 	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
 }
 
@@ -176,6 +180,11 @@ void GlfwEventHubDispatcher::ReceiveWindowCloseEvent() {
 void GlfwEventHubDispatcher::ReceiveWindowErrorEvent(const int errorCode, const char* description) {
 	Events::ErrorEvent errorEvent{errorCode, description};
 	DispatchWindowErrorEvent(errorEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveWindowFocusEvent(const int focused) {
+	Events::WindowFocusEvent windowFocusEvent{focused == GLFW_TRUE};
+	DispatchWindowFocusEvent(windowFocusEvent);
 }
 
 }

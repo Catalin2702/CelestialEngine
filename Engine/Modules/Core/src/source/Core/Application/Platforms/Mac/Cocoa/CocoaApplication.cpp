@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
 
 #include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
-#include "Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp"
+#include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -66,7 +66,7 @@ CocoaApplication::~CocoaApplication() {
 	if (IsRunning())
 		CocoaApplication::Quit();
 
-	ShutdownInput();
+	Input::Shutdown();
 
 	_StopTickLoop();
 
@@ -130,6 +130,10 @@ void CocoaApplication::Tick(const float deltaTime) {
 
 		_imguiLayer->End();
 	}
+
+	// Clear per-frame input transitions (just pressed/released, scroll deltas) now that every layer had a chance to
+	// query them. Native events pumped by the run loop between this tick and the next fill the next frame's transitions.
+	I_Input::Get()->GetState().EndFrame();
 }
 
 void CocoaApplication::Init() {
@@ -165,7 +169,7 @@ void CocoaApplication::Init() {
 	// Attach the render context's MetalKit view to the window and wire it into the engine.
 	_window->SetContentView(_context->GetView());
 
-	InitInput(windowProps.windowApi);
+	Input::Init();
 
 	SetEventHubDispatcher();
 	SubscribeToHubDispatcher();
@@ -321,11 +325,20 @@ void CocoaApplication::SetEventHubDispatcher() {
 	auto& keyboardEvents = _context->metalContextEventDispatcher.keyboardEvents;
 	keyboardEvents.keyDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyDownEvent>(&eventHubDispatcher));
 	keyboardEvents.keyUpDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyUpEvent>(&eventHubDispatcher));
+	// Modifier keys (Shift/Ctrl/Alt/Cmd) never arrive as keyDown/keyUp: AppKit reports them via flagsChanged.
+	keyboardEvents.flagsChangedDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveFlagsChangedEvent>(&eventHubDispatcher));
 #pragma endregion
 
 #pragma region WindowEvents
 	_window->cocoaWindowEventDispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowWillCloseEvent>(&eventHubDispatcher)
+	);
+	// Focus changes feed the hub so input state can reset held keys when the window stops receiving events.
+	_window->cocoaWindowEventDispatcher.nsWindowFocusEvents.didBecomeKeyDispatcher.Bind(
+		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowDidBecomeKeyEvent>(&eventHubDispatcher)
+	);
+	_window->cocoaWindowEventDispatcher.nsWindowFocusEvents.didResignKeyDispatcher.Bind(
+		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowDidResignKeyEvent>(&eventHubDispatcher)
 	);
 #pragma endregion
 
@@ -349,12 +362,20 @@ void CocoaApplication::SetEventHubDispatcher() {
 void CocoaApplication::SubscribeToHubDispatcher() {
 	using app = CocoaApplication;
 
+	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
+	// the same event. Requires Input::Init to have run (it has: Init calls it right before this method).
+	I_Input::Get()->GetState().SubscribeToHub(
+		eventHubDispatcher.cocoaKeyboardEventHub,
+		eventHubDispatcher.cocoaMouseEventHub,
+		eventHubDispatcher.cocoaWindowEventHub
+	);
+
 	_eventHubHandlers[AppError] = eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
 	_eventHubHandlers[VSyncChange] = eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
-		EventDelegate<Events::VSyncChangeEvent&>::FromMethod<app, &app::_OnVSyncChange>(this)
+		EventDelegate<Events::VSyncEvent&>::FromMethod<app, &app::_OnVSyncChange>(this)
 	);
 
 	_eventHubHandlers[WindowClose] = eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Subscribe(
@@ -366,6 +387,12 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 }
 
 void CocoaApplication::UnsubscribeFromDispatcher() {
+	I_Input::Get()->GetState().UnsubscribeFromHub(
+		eventHubDispatcher.cocoaKeyboardEventHub,
+		eventHubDispatcher.cocoaMouseEventHub,
+		eventHubDispatcher.cocoaWindowEventHub
+	);
+
 	eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
 
 	eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
@@ -454,7 +481,7 @@ void CocoaApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
 }
 
-void CocoaApplication::_OnVSyncChange(Events::VSyncChangeEvent&) {
+void CocoaApplication::_OnVSyncChange(Events::VSyncEvent&) {
 	_Pause();
 	if (IsRunning())
 		_Run();

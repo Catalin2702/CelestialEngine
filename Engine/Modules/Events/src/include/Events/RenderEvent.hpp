@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -21,9 +21,9 @@
 
 namespace CE::Events {
 
-class CE_API VSyncChangeEvent: public I_Event {
+class CE_API VSyncEvent: public I_Event {
 public:
-	VSyncChangeEvent(const bool state, const bool isMutable = true): I_Event(isMutable), _state(state) {}
+	VSyncEvent(const bool state, const bool isMutable = true): I_Event(isMutable), _state(state) {}
 
 public:
 	[[nodiscard]] bool GetState() const { return _state; }

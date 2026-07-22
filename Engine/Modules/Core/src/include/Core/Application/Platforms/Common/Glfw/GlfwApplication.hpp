@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -187,7 +187,7 @@ private:
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
-	void _OnVSyncChange(Events::VSyncChangeEvent& event) const;
+	void _OnVSyncChange(Events::VSyncEvent& event) const;
 
 protected:
 	/**

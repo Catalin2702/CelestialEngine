@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -33,6 +33,7 @@ public:
 		UnicastDispatcher<int, int> onResizeDispatcher;
 		UnicastDispatcher<> onCloseDispatcher;
 		UnicastDispatcher<int, const char*> onErrorDispatcher;
+		UnicastDispatcher<int> onFocusDispatcher;
 	};
 
 	struct GlfwKeyboardEvents {
@@ -51,6 +52,7 @@ public:
 	void DispatchResizeEvent(int width, int height) const;
 	void DispatchCloseEvent() const;
 	void DispatchErrorEvent(int errorCode, const char* description) const;
+	void DispatchFocusEvent(int focused) const;
 
 	void DispatchKeyEvent(int key, int action, int scancode, int mods) const;
 	void DispatchCharEvent(unsigned int codepoint) const;

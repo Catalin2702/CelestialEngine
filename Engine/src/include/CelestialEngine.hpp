@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -31,12 +31,7 @@
 // -----------------------------------------------
 
 // ---- Input ------------------------------------
-#include <Core/Input/I_Input.hpp>
-#include <Core/Input/Platforms/Common/Glfw/GlfwInput.hpp>
-
-#ifdef CE_PLATFORM_MACOS
-	#include <Core/Input/Platforms/Mac/Cocoa/CocoaInput.hpp>
-#endif
+#include <Core/Input/Input.hpp>
 // -----------------------------------------------
 
 // ---- Layer ------------------------------------

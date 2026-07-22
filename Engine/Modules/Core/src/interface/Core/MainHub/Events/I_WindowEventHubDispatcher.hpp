@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #pragma once
@@ -27,6 +27,7 @@ public:
 	virtual void DispatchWindowResizeEvent(Events::WindowResizeEvent&) {}
 	virtual void DispatchWindowCloseEvent(Events::WindowCloseEvent&) {}
 	virtual void DispatchWindowErrorEvent(Events::ErrorEvent&) {}
+	virtual void DispatchWindowFocusEvent(Events::WindowFocusEvent&) {}
 };
 
 }

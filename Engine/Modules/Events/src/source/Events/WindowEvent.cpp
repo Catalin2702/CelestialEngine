@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-07-22
 //
 
 #include "Events/WindowEvent.hpp"
@@ -18,6 +18,13 @@ WindowResizeEvent::WindowResizeEvent(const unsigned int width, const unsigned in
 
 std::string WindowResizeEvent::ToString() const {
 	return std::format("{0}: {1}, {2}", GetName(), _width, _height);
+}
+
+WindowFocusEvent::WindowFocusEvent(const bool focused, const bool isMutable):
+	I_Event(isMutable), _focused(focused) {}
+
+std::string WindowFocusEvent::ToString() const {
+	return std::format("{0}: {1}", GetName(), _focused ? "gained" : "lost");
 }
 
 }

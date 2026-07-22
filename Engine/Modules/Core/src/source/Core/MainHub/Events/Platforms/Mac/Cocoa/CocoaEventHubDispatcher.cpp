@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-07-22
 //
 
 #include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -86,7 +86,7 @@ void CocoaEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheel
 	cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
 }
 
-void CocoaEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncChangeEvent& VSyncChangeEvent) {
+void CocoaEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
 	metalRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
 }
 
@@ -104,6 +104,10 @@ void CocoaEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& error
 
 void CocoaEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
 	cocoaWindowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
+}
+
+void CocoaEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
+	cocoaWindowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
@@ -146,6 +150,43 @@ void CocoaEventHubDispatcher::ReceiveKeyUpEvent(const NS::Event* event) {
 
 	Events::KeyReleasedEvent keyReleasedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode())};
 	DispatchKeyReleasedEvent(keyReleasedEvent);
+}
+
+// AppKit does not send keyDown/keyUp for modifier keys: they arrive as a single flagsChanged event. The event's keyCode
+// identifies which modifier changed, and the device-dependent modifier bits (IOKit NX_DEVICE*KEYMASK values, set by AppKit
+// in modifierFlags alongside the device-independent masks) tell whether that specific left/right key is now down — the
+// device-independent masks cannot, since e.g. releasing LeftShift while RightShift is held keeps the generic Shift bit set.
+static NS::UInteger DeviceMaskForModifierKey(const Types::KeyboardKeyCode keyCode) {
+	switch (keyCode) {
+		case Types::KeyboardKeyCode::LeftControl: return 0x00000001;	// NX_DEVICELCTLKEYMASK
+		case Types::KeyboardKeyCode::LeftShift: return 0x00000002;		// NX_DEVICELSHIFTKEYMASK
+		case Types::KeyboardKeyCode::RightShift: return 0x00000004;		// NX_DEVICERSHIFTKEYMASK
+		case Types::KeyboardKeyCode::LeftSuper: return 0x00000008;		// NX_DEVICELCMDKEYMASK
+		case Types::KeyboardKeyCode::RightSuper: return 0x00000010;		// NX_DEVICERCMDKEYMASK
+		case Types::KeyboardKeyCode::LeftAlt: return 0x00000020;		// NX_DEVICELALTKEYMASK
+		case Types::KeyboardKeyCode::RightAlt: return 0x00000040;		// NX_DEVICERALTKEYMASK
+		case Types::KeyboardKeyCode::RightControl: return 0x00002000;	// NX_DEVICERCTLKEYMASK
+		default: return 0;
+	}
+}
+
+void CocoaEventHubDispatcher::ReceiveFlagsChangedEvent(const NS::Event* event) {
+	if (not event)
+		return;
+
+	const auto keyCode = Types::KeyboardKeyCodeFromCocoa(event->keyCode());
+	const auto deviceMask = DeviceMaskForModifierKey(keyCode);
+	if (deviceMask == 0)
+		return; // Not a modifier we track (e.g. CapsLock, Fn)
+
+	if (event->modifierFlags() & deviceMask) {
+		Events::KeyPressedEvent keyPressedEvent{keyCode, 0};
+		DispatchKeyPressedEvent(keyPressedEvent);
+	}
+	else {
+		Events::KeyReleasedEvent keyReleasedEvent{keyCode};
+		DispatchKeyReleasedEvent(keyReleasedEvent);
+	}
 }
 
 void CocoaEventHubDispatcher::ReceiveMouseButtonDownEvent(const NS::Event* event) {
@@ -194,7 +235,7 @@ void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
 }
 
 void CocoaEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
-	Events::VSyncChangeEvent VSyncChangeEvent{state};
+	Events::VSyncEvent VSyncChangeEvent{state};
 	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
 }
 
@@ -215,6 +256,16 @@ void CocoaEventHubDispatcher::ReceiveWindowErrorEvent(const int errorCode, const
 void CocoaEventHubDispatcher::ReceiveWindowResizeEvent(const unsigned int width, const unsigned int height) {
 	Events::WindowResizeEvent windowResizeEvent{width, height};
 	DispatchWindowResizeEvent(windowResizeEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowDidBecomeKeyEvent(const NS::Notification*) {
+	Events::WindowFocusEvent windowFocusEvent{true};
+	DispatchWindowFocusEvent(windowFocusEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowDidResignKeyEvent(const NS::Notification*) {
+	Events::WindowFocusEvent windowFocusEvent{false};
+	DispatchWindowFocusEvent(windowFocusEvent);
 }
 
 }
