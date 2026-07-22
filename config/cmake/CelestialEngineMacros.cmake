@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-02
+# Updated: 2026-07-22
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -54,7 +54,10 @@ if (NOT TARGET CE_Config)
 	)
 
 	target_compile_options(CE_Config INTERFACE
-		$<$<AND:$<CXX_COMPILER_ID:Clang>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
+		# Match both Homebrew LLVM (ID "Clang") and the Xcode toolchain (ID "AppleClang"): with only "Clang" the Apple
+		# toolchain got NO optimization flags at all, leaving the custom Dist config (whose CMAKE_CXX_FLAGS_DIST default
+		# is empty, unlike Release) at -O0.
+		$<$<AND:$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
 			$<$<CONFIG:Debug>:
 				-O0
 				-g
