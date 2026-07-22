@@ -133,7 +133,7 @@ void CocoaApplication::Tick(const float deltaTime) {
 
 	// Clear per-frame input transitions (just pressed/released, scroll deltas) now that every layer had a chance to
 	// query them. Native events pumped by the run loop between this tick and the next fill the next frame's transitions.
-	I_Input::Get()->GetState().EndFrame();
+	Input::EndFrame();
 }
 
 void CocoaApplication::Init() {
@@ -364,7 +364,7 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 
 	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
 	// the same event. Requires Input::Init to have run (it has: Init calls it right before this method).
-	I_Input::Get()->GetState().SubscribeToHub(
+	Input::SubscribeToHub(
 		eventHubDispatcher.cocoaKeyboardEventHub,
 		eventHubDispatcher.cocoaMouseEventHub,
 		eventHubDispatcher.cocoaWindowEventHub
@@ -387,7 +387,7 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 }
 
 void CocoaApplication::UnsubscribeFromDispatcher() {
-	I_Input::Get()->GetState().UnsubscribeFromHub(
+	Input::UnsubscribeFromHub(
 		eventHubDispatcher.cocoaKeyboardEventHub,
 		eventHubDispatcher.cocoaMouseEventHub,
 		eventHubDispatcher.cocoaWindowEventHub

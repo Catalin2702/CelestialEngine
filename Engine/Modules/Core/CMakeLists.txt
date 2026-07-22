@@ -18,6 +18,7 @@ set(APPLICATION_HEADERS
 
 set(INPUT_HEADERS
 	src/include/Core/Input/Input.hpp
+	src/include/Core/Input/InputState.hpp
 )
 
 set(LAYERS_HEADERS
@@ -68,11 +69,6 @@ set(APPLICATION_INTERFACES
 	src/interface/Core/Application/I_Application.hpp
 )
 
-set(INPUT_INTERFACES
-	src/interface/Core/Input/I_Input.hpp
-	src/interface/Core/Input/InputState.hpp
-)
-
 set(LAYERS_INTERFACES
 	src/interface/Core/Layers/I_Layer.hpp
 	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
@@ -113,7 +109,6 @@ set(APPLICATION_SOURCES
 
 set(INPUT_SOURCES
 	src/source/Core/Input/Input.cpp
-	src/source/Core/Input/InputImpl.cpp
 	src/source/Core/Input/InputState.cpp
 )
 
@@ -172,7 +167,6 @@ set(HEADERS
 
 set(INTERFACES
 	${APPLICATION_INTERFACES}
-	${INPUT_INTERFACES}
 	${LAYERS_INTERFACES}
 	${MAINHUB_INTERFACES}
 	${RENDER_INTERFACES}

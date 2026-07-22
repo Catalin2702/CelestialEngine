@@ -9,41 +9,78 @@
 
 #include "Core/Input/Input.hpp"
 
+#include <cassert>
+
 namespace CE::Core {
 
+Input* Input::_instance = nullptr;
+
 void Input::Init() {
-	if (I_Input::_instance)
+	if (_instance)
 		return;
 
-	I_Input::_instance = new Input();
+	_instance = new Input();
 }
 
 void Input::Shutdown() {
-	if (not I_Input::_instance)
+	if (not _instance)
 		return;
 
-	delete I_Input::_instance;
-	I_Input::_instance = nullptr;
+	delete _instance;
+	_instance = nullptr;
 }
 
-bool Input::_IsKeyPressedImpl(const Types::KeyboardKeyCode keyCode) {
-	return _state.IsKeyDown(keyCode);
+Input& Input::Get() {
+	assert(_instance && "Input::Get: Input system not initialized! Call Input::Init() before using.");
+	return *_instance;
 }
 
-bool Input::_IsMouseButtonPressedImpl(const Types::MouseButtonCode buttonCode) {
-	return _state.IsMouseButtonDown(buttonCode);
+bool Input::IsKeyPressed(const Types::KeyboardKeyCode keyCode) {
+	return _instance->_state.IsKeyDown(keyCode);
 }
 
-float Input::_GetMouseXImpl() {
-	return _state.GetMouseX();
+bool Input::IsKeyJustPressed(const Types::KeyboardKeyCode keyCode) {
+	return _instance->_state.IsKeyJustPressed(keyCode);
 }
 
-float Input::_GetMouseYImpl() {
-	return _state.GetMouseY();
+bool Input::IsKeyJustReleased(const Types::KeyboardKeyCode keyCode) {
+	return _instance->_state.IsKeyJustReleased(keyCode);
 }
 
-std::pair<float, float> Input::_GetMouseXYImpl() {
-	return _state.GetMouseXY();
+bool Input::IsMouseButtonPressed(const Types::MouseButtonCode buttonCode) {
+	return _instance->_state.IsMouseButtonDown(buttonCode);
+}
+
+bool Input::IsMouseButtonJustPressed(const Types::MouseButtonCode buttonCode) {
+	return _instance->_state.IsMouseButtonJustPressed(buttonCode);
+}
+
+bool Input::IsMouseButtonJustReleased(const Types::MouseButtonCode buttonCode) {
+	return _instance->_state.IsMouseButtonJustReleased(buttonCode);
+}
+
+float Input::GetMouseX() {
+	return _instance->_state.GetMouseX();
+}
+
+float Input::GetMouseY() {
+	return _instance->_state.GetMouseY();
+}
+
+std::pair<float, float> Input::GetMouseXY() {
+	return _instance->_state.GetMouseXY();
+}
+
+float Input::GetScrollDeltaX() {
+	return _instance->_state.GetScrollDeltaX();
+}
+
+float Input::GetScrollDeltaY() {
+	return _instance->_state.GetScrollDeltaY();
+}
+
+void Input::EndFrame() {
+	_instance->_state.EndFrame();
 }
 
 }

@@ -32,8 +32,9 @@ namespace CE::Core {
  * @brief Event-driven snapshot of the keyboard and mouse state
  * @details Fed by the event hub: it subscribes to the keyboard/mouse/window multicast dispatchers and mirrors every event
  *			into a per-frame snapshot (held keys/buttons, cursor position, scroll deltas and just-pressed/just-released
- *			transitions). Owned by the I_Input singleton instance: platform I_Input implementations answer their queries
- *			from this state instead of polling the OS, which keeps every query focus-correct and consistent within a frame.
+ *			transitions). Owned by the Input singleton, its ONLY interface (friend): every member is private and exposed
+ *			to the rest of the engine through Input's static methods. Answering queries from this state instead of
+ *			polling the OS keeps them focus-correct and consistent within a frame.
  *			The state must be the FIRST subscriber on the hub so it is already up to date when any other subscriber
  *			(layers, ImGui) handles the same event, and the application must call EndFrame() once at the end of each tick,
  *			before the next batch of native events is pumped, to clear the per-frame transitions.
@@ -41,6 +42,8 @@ namespace CE::Core {
  *			window and the keys would remain stuck as "down".
  */
 class CE_API InputState {
+	friend class Input;										///< Sole interface to the state: exposes its members as static methods
+
 	enum HubSubscription: std::size_t {
 		KeyPressed = 0,
 		KeyReleased,
@@ -57,7 +60,7 @@ public:
 	static constexpr std::size_t stMaxKeys = 512;			///< KeyboardKeyCode values are GLFW-based; the highest one (RightSuper) is 347
 	static constexpr std::size_t stMaxMouseButtons = 16;	///< MouseButtonCode buttons are 0-7 (wheel pseudo-buttons 8-9 are not tracked as buttons)
 
-public:
+private:
 	/**
 	 * @brief Checks if a key is currently held down
 	 * @param keyCode The key to check
@@ -125,7 +128,7 @@ public:
 	 */
 	[[nodiscard]] float GetScrollDeltaY() const { return _scrollDeltaY; }
 
-public:
+private:
 	/**
 	 * @brief Clears the per-frame transitions (just pressed/released, scroll deltas)
 	 * @details Must be called once at the end of each application tick, after every layer had the chance to query the
@@ -142,7 +145,7 @@ public:
 	 */
 	void Reset();
 
-public:
+private:
 	/**
 	 * @brief Subscribes the state to the event hub's keyboard/mouse/window multicast dispatchers
 	 * @details Both platform hubs (Cocoa and GLFW) expose the same dispatcher member names, so the hub structs are taken

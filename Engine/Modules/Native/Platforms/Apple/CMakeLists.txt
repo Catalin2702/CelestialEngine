@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-14
+# Updated: 2026-07-22
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -14,9 +14,6 @@ set(INTERFACE src/interface/Apple)
 set(SOURCE src/source/Apple)
 
 set(BRIDGE_HEADERS
-	# AppKit
-	${INCLUDE}/Bridge/AppKit/Window/WindowBridge.h
-
 	# ImGui
 	${INCLUDE}/Bridge/ImGui/ImGuiBridge.h
 )
@@ -35,9 +32,6 @@ set(METALCPP_HEADERS
 )
 
 set(BRIDGE_SOURCES
-	# AppKit
-	${SOURCE}/Bridge/AppKit/Window/WindowBridge.mm
-
 	# ImGui
 	${SOURCE}/Bridge/ImGui/ImGuiBridge.mm
 )

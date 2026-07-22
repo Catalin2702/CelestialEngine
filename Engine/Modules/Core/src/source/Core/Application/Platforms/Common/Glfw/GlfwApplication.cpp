@@ -137,7 +137,7 @@ void GlfwApplication::Tick(const float deltaTime) {
 
 	// Clear per-frame input transitions BEFORE polling: the glfwPollEvents call below delivers the events that belong
 	// to the next frame, so they must land on a clean transition state.
-	I_Input::Get()->GetState().EndFrame();
+	Input::EndFrame();
 
 	_window->OnUpdate();
 	_context->SwapBuffers();
@@ -338,7 +338,7 @@ void GlfwApplication::SetEventHubDispatcher() {
 void GlfwApplication::SubscribeToHubDispatcher() {
 	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
 	// the same event. Requires Input::Init to have run (it has: _InitWindow calls it right before this method).
-	I_Input::Get()->GetState().SubscribeToHub(
+	Input::SubscribeToHub(
 		eventHubDispatcher.glfwKeyboardEventHub,
 		eventHubDispatcher.glfwMouseEventHub,
 		eventHubDispatcher.glfwWindowEventHub
@@ -361,7 +361,7 @@ void GlfwApplication::SubscribeToHubDispatcher() {
 }
 
 void GlfwApplication::UnsubscribeFromDispatcher() {
-	I_Input::Get()->GetState().UnsubscribeFromHub(
+	Input::UnsubscribeFromHub(
 		eventHubDispatcher.glfwKeyboardEventHub,
 		eventHubDispatcher.glfwMouseEventHub,
 		eventHubDispatcher.glfwWindowEventHub
