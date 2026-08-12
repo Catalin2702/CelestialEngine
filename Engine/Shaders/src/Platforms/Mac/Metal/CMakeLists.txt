@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-16
+# Updated: 2026-08-12
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -17,33 +17,37 @@ set(SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Vertex.metal"
 )
 
-set(AIRS "")
+set(IRS "")
 
-set(MAIN_AIRS "")
+set(MAIN_IRS "")
 
 set(MAIN_LIB "Main.metallib" CACHE INTERNAL "")
 
-set(MAIN_LIB_PATH "${BUILD_DIR}/${MAIN_LIB}")
+set(MAIN_LIB_PATH "${BUILD_DIR}/${MAIN_LIB}" CACHE INTERNAL "")
 
 # Compile vertex shaders
 foreach (SOURCE IN LISTS SOURCES)
 	get_filename_component(FILENAME ${SOURCE} NAME_WE)
-	set(AIR "${BUILD_DIR}/${FILENAME}.air")
+	set(IR "${BUILD_DIR}/${FILENAME}.ir")
 
+	# -MMD/-MF makes the Metal compiler emit a Make-style dependency file listing
+	# every header the shader pulled in; DEPFILE hands it to the generator so that
+	# editing an included header rebuilds the shader, exactly like .cpp/.hpp pairs.
 	add_custom_command(
-		OUTPUT ${AIR}
-		COMMAND xcrun -sdk macosx metal -c ${SOURCE} -I ${SHADERS_INCLUDE_DIR} -o ${AIR}
+		OUTPUT ${IR}
+		COMMAND xcrun -sdk macosx metal -c ${SOURCE} -I ${SHADERS_INCLUDE_DIR} -MMD -MF ${IR}.d -o ${IR}
 		DEPENDS ${SOURCE}
+		DEPFILE ${IR}.d
 		COMMENT "Compiling ${FILENAME}.metal"
 	)
-	list(APPEND AIRS ${AIR})
+	list(APPEND IRS ${IR})
 endforeach ()
-list(APPEND MAIN_AIRS ${AIRS})
+list(APPEND MAIN_IRS ${IRS})
 
 add_custom_command(
 	OUTPUT ${MAIN_LIB_PATH}
-	COMMAND xcrun -sdk macosx metallib ${MAIN_AIRS} -o ${MAIN_LIB_PATH}
-	DEPENDS ${MAIN_AIRS}
+	COMMAND xcrun -sdk macosx metallib ${MAIN_IRS} -o ${MAIN_LIB_PATH}
+	DEPENDS ${MAIN_IRS}
 	COMMENT "Linking ${MAIN_LIB}"
 )
 

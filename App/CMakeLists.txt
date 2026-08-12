@@ -18,8 +18,34 @@ set(SOURCES
 )
 
 if (APPLE)
+	# Shaders are listed as bundle resources instead of being copied in POST_BUILD
+	# steps: that way they are real build dependencies of CE_App, so editing a
+	# shader re-copies it into the bundle without needing a relink.
+	set_source_files_properties(${CE_METAL_SHADERS_LIB_PATH} PROPERTIES
+		GENERATED TRUE
+		MACOSX_PACKAGE_LOCATION "Resources/Shaders/Metal"
+	)
+
+	# GLSL is loaded and compiled at runtime, so the .glsl files are bundled as-is.
+	set_source_files_properties(${CE_OPENGL_SHADERS_SOURCES} PROPERTIES
+		MACOSX_PACKAGE_LOCATION "Resources/Shaders/OpenGL"
+	)
+
 	add_executable(CE_App MACOSX_BUNDLE
 		${SOURCES}
+		${CE_METAL_SHADERS_LIB_PATH}
+		${CE_OPENGL_SHADERS_SOURCES}
+	)
+
+	add_dependencies(CE_App CE_MetalShaders CE_OpenGLShaders)
+
+	# Treating the shaders as link dependencies forces CE_App to relink when they
+	# change, which is what re-runs the POST_BUILD steps below (code signing and the
+	# copy to Binaries/Last). Without it the freshly built shaders would land in the
+	# bundle but never reach Binaries/Last, and the ad-hoc signature would still
+	# seal the previous ones.
+	set_property(TARGET CE_App APPEND PROPERTY
+		LINK_DEPENDS ${CE_METAL_SHADERS_LIB_PATH} ${CE_OPENGL_SHADERS_SOURCES}
 	)
 else ()
 	add_executable(CE_App
@@ -64,22 +90,6 @@ if(APPLE)
 			--app-icon AppIcon
 			--output-partial-info-plist "${CMAKE_CURRENT_BINARY_DIR}/AppIcon-Info.plist"
 		COMMENT "Compiling Asset Catalog"
-	)
-
-	# Copy the compiled Metal shader library to the bundle
-	add_custom_command(TARGET CE_App POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-		${CE_METAL_SHADERS_LIB_PATH}
-		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/Shaders/Metal/${CE_METAL_MAIN_LIB}"
-		COMMENT "Copying Metal shader library to bundle"
-	)
-
-	# Copy the compiled OpenGL shader library to the bundle
-	add_custom_command(TARGET CE_App POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CE_OPENGL_SHADERS_LIB_PATH}
-		"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/Shaders/OpenGL/"
-		COMMENT "Copying OpenGL shader library to bundle"
 	)
 
 	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-16
+# Updated: 2026-08-12
 #
 
 cmake_minimum_required(VERSION 3.21)
@@ -19,9 +19,14 @@ endif ()
 
 add_library(CE_Shaders INTERFACE)
 
+# NOTE: add_dependencies() does not evaluate generator expressions, so the
+# platform-specific shader target has to be added with a plain if().
 add_dependencies(CE_Shaders
 	CE_OpenGLShaders
-	$<$<PLATFORM_ID:Darwin>:
-		CE_MetalShaders
-	>
 )
+
+if (APPLE)
+	add_dependencies(CE_Shaders
+		CE_MetalShaders
+	)
+endif ()
