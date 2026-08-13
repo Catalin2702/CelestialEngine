@@ -4,13 +4,17 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-12
+# Updated: 2026-08-13
 #
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4.1)
 
 set(BUILD_DIR  ${CMAKE_CURRENT_BINARY_DIR})
 set(SHADERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+set(HEADERS
+	"${SHADERS_INCLUDE_DIR}/Common.h"
+)
 
 set(SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Fragment.metal"
@@ -51,8 +55,15 @@ add_custom_command(
 	COMMENT "Linking ${MAIN_LIB}"
 )
 
+# The shaders are attached to the target through SOURCES, the custom-target
+# counterpart of listing HEADERS/SOURCES in add_library(): they are never fed to
+# the C++ compiler, they just make the files belong to a target so that IDEs stop
+# treating them as loose files. The build itself is driven by DEPENDS.
 add_custom_target(CE_MetalShaders ALL
 	DEPENDS ${MAIN_LIB_PATH}
+	SOURCES
+		${HEADERS}
+		${SOURCES}
 )
 
 

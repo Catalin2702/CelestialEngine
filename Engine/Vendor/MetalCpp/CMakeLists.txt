@@ -4,10 +4,10 @@
 # Created by: Catalin Chirosca
 # Created: 2026-07-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-03
+# Updated: 2026-08-13
 #
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4.1)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Engine/Submodules/MetalCpp MetalCpp)
 

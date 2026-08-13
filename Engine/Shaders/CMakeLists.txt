@@ -4,10 +4,10 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-12
+# Updated: 2026-08-13
 #
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4.1)
 
 set(SUBDIRECTORY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src")
 

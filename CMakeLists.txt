@@ -4,10 +4,17 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-02
+# Updated: 2026-08-13
 #
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4.1)
+
+# Point non-Apple compilers (e.g. Homebrew LLVM) at the macOS SDK BEFORE project(): once the Darwin platform module has
+# run, CMAKE_OSX_SYSROOT is already defined-but-empty and setting it here would be both too late and skipped. CMake
+# resolves the "macosx" SDK name through xcrun, so no absolute path is baked in.
+if(APPLE AND NOT CMAKE_OSX_SYSROOT)
+	set(CMAKE_OSX_SYSROOT "macosx" CACHE STRING "")
+endif()
 
 # Configure vcpkg triplet based on build type BEFORE project()
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")
