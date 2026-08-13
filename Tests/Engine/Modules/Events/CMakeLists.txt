@@ -4,14 +4,17 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-08-13
 #
 
 set(SOURCES
 	src/Events/ApplicationEventTests.cpp
 	src/Events/EventTests.cpp
+	src/Events/GenericEventTests.cpp
 	src/Events/KeyEventTests.cpp
 	src/Events/MouseEventTests.cpp
+	src/Events/RenderEventTests.cpp
+	src/Events/WindowEventTests.cpp
 )
 
 add_executable(CE_TestsEvents

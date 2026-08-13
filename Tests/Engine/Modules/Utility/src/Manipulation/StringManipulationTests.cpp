@@ -4,14 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-08-13
 //
 
 #include <Utility/Manipulation/String.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Utility::Manipulation;
+using namespace CE::Utility;
+
+namespace {
 
 /**
  * @brief Test fixture for String Manipulation tests
@@ -22,6 +24,8 @@ protected:
 
 	void TearDown() override {}
 };
+
+}
 
 /**
  * @brief Test that uppercase letters are converted to lowercase

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-13
 //
 
 #pragma once
@@ -53,12 +53,7 @@ public:
 	 * @param delegate Optional replacement delegate; default-constructed (invalid) clears the binding
 	 */
 	void Unbind(const DelegateType& delegate = {}) {
-		if (delegate)
-			_delegate = delegate;
-		else {
-			_delegate._context = nullptr;
-			_delegate._stub = nullptr;
-		}
+		_delegate = delegate.IsValid() ? delegate : DelegateType{};
 	}
 
 	/**
@@ -115,12 +110,7 @@ public:
 	 * @param callback Optional replacement callback; default-constructed (invalid) clears the binding
 	 */
 	void Unbind(const CallbackType& callback = {}) {
-		if (callback)
-			_callback = callback;
-		else {
-			_callback._context = nullptr;
-			_callback._stub = nullptr;
-		}
+		_callback = callback.IsValid() ? callback : CallbackType{};
 	}
 
 	/**
@@ -204,6 +194,7 @@ public:
 		for (size_t i = 0; i < count; ++i) {
 			_callbacks[i].delegate(args...);
 		}
+		_isDispatching = false;
 		FlushPending();
 	}
 

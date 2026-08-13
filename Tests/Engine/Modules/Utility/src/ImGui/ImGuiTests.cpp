@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-08-13
 //
 
 #include <Utility/ImGui/ImGui.hpp>
@@ -12,7 +12,9 @@
 #include <GLFW/glfw3.h>
 #include <gtest/gtest.h>
 
-using namespace CE::Utility::ImGui;
+using namespace CE::Utility;
+
+namespace {
 
 /**
  * @brief Test fixture for ImGui tests
@@ -27,6 +29,8 @@ protected:
 		// Cleanup code if needed
 	}
 };
+
+}
 
 /**
  * @brief Test navigation keys mapping

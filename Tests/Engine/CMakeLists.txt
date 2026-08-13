@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-25
+# Updated: 2026-08-13
 #
 
 add_subdirectory(Modules/Core)
@@ -12,6 +12,7 @@ add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
 add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Tools)
+add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
 
 # Target personalizzato per eseguire tutti i test di Engine

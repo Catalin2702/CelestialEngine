@@ -4,16 +4,20 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-29
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-08-13
 #
 
 enable_testing()
 
 set(SOURCES
-	src/Time/ChronometerTests.cpp
+	src/CMD/WindowCMDTests.cpp
+	src/Config/ConfigTests.cpp
+	src/Delegate/DelegateTests.cpp
+	src/Delegate/DispatcherTests.cpp
+	src/FileSystem/FileSystemTests.cpp
 	src/ImGui/ImGuiTests.cpp
 	src/Manipulation/StringManipulationTests.cpp
-	src/CMD/WindowCMDTests.cpp
+	src/Time/ChronometerTests.cpp
 )
 
 add_executable(CE_TestsUtility

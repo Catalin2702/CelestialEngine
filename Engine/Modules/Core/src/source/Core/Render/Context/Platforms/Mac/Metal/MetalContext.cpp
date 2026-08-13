@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-13
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -76,8 +76,8 @@ void MetalContext::Init() {
 void MetalContext::_CreateView() {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 	const CGRect frame = {
-		{static_cast<CGFloat>(0), static_cast<CGFloat>(0)},
-		{static_cast<CGFloat>(windowProps.width), static_cast<CGFloat>(windowProps.height)}
+		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
+		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
 	};
 
 	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _device.get()));

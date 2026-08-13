@@ -4,14 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-04
+// Updated: 2026-08-13
 //
 
 #include <Tools/Log/Log.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Tools::Log;
+using namespace CE::Tools;
+
+namespace {
 
 /**
  * @brief Test fixture for Log tests
@@ -22,6 +24,8 @@ protected:
 
 	void TearDown() override {}
 };
+
+}
 
 /**
  * @brief Test that Log can be initialized and shutdown without errors

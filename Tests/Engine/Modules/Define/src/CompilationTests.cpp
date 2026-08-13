@@ -4,14 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-03
+// Updated: 2026-08-13
 //
 
 // Include the macros we want to test
 #include <Define/Bind.hpp>
 #include <Define/Event.hpp>
+#include <Define/Render.hpp>
 #include <Define/Type.hpp>
+#include <Define/Window.hpp>
 #include <Events/I_Event.hpp>
+#include <Types/Render/Render.hpp>
+#include <Types/Window/WindowProps.hpp>
 
 #include <functional>
 #include <type_traits>
@@ -19,17 +23,46 @@
 
 using namespace CE::Events;
 
+namespace {
+
 // Mock Event Classes for testing
 class TestWindowCloseEvent : public I_Event {
 public:
+	explicit TestWindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
+
 	EVENT_CLASS_TYPE(WindowClose)
 	EVENT_CLASS_CATEGORY(EventCategoryApplication)
 };
 
 class TestKeyPressedEvent : public I_Event {
 public:
+	explicit TestKeyPressedEvent(const bool isMutable = true): I_Event(isMutable) {}
+
 	EVENT_CLASS_TYPE(KeyPressed)
 	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
+};
+
+// Mock render/window classes exercising the API identification macros
+class TestRenderContext {
+public:
+	virtual ~TestRenderContext() = default;
+	[[nodiscard]] virtual CE::Types::GraphicsApi GetGraphicsApi() const = 0;
+};
+
+class TestOpenGlContext final: public TestRenderContext {
+public:
+	RENDER_API_TYPE(OpenGL)
+};
+
+class TestWindow {
+public:
+	virtual ~TestWindow() = default;
+	[[nodiscard]] virtual CE::Types::WindowApi GetWindowApi() const = 0;
+};
+
+class TestGlfwWindow final: public TestWindow {
+public:
+	WINDOW_API_TYPE(GLFW)
 };
 
 // Mock class for testing BIND_FN macros
@@ -71,6 +104,8 @@ public:
 		return BIND_FN_ONE_PARAM(OneParamCallback);
 	}
 };
+
+}
 
 /**
  * @brief Compilation Tests for Define Module Macros
@@ -280,6 +315,74 @@ TEST(DefineCompilationTests, TypeTraits_VerifyConstexprContext) {
 	constexpr auto flags = compute_flags();
 	static_assert(flags == (1 | 8 | 32), "Should be usable in constexpr context");
 	EXPECT_EQ(flags, 41);
+}
+
+// ============================================================================
+// RENDER_API_TYPE / WINDOW_API_TYPE Macro Compilation Tests
+// ============================================================================
+
+TEST(DefineCompilationTests, RENDER_API_TYPE_Macro_GeneratesStaticAndVirtualMethods) {
+	using CE::Types::GraphicsApi;
+
+	EXPECT_EQ(TestOpenGlContext::GetStaticType(), GraphicsApi::OpenGL);
+
+	const TestOpenGlContext context;
+	EXPECT_EQ(context.GetGraphicsApi(), GraphicsApi::OpenGL);
+
+	// The override must be reachable through the base class
+	const TestRenderContext* basePtr = &context;
+	EXPECT_EQ(basePtr->GetGraphicsApi(), GraphicsApi::OpenGL);
+}
+
+TEST(DefineCompilationTests, WINDOW_API_TYPE_Macro_GeneratesStaticAndVirtualMethods) {
+	using CE::Types::WindowApi;
+
+	EXPECT_EQ(TestGlfwWindow::GetStaticType(), WindowApi::GLFW);
+
+	const TestGlfwWindow window;
+	EXPECT_EQ(window.GetWindowApi(), WindowApi::GLFW);
+
+	// The override must be reachable through the base class
+	const TestWindow* basePtr = &window;
+	EXPECT_EQ(basePtr->GetWindowApi(), WindowApi::GLFW);
+}
+
+// ============================================================================
+// BIND_FN_ANY_PARAMS / BIND_FN_*_ON Macro Compilation Tests
+// ============================================================================
+
+TEST(DefineCompilationTests, BIND_FN_ANY_PARAMS_Macro_ForwardsEveryArgument) {
+	class MultiParamClass {
+	public:
+		int sum = 0;
+
+		void Add(const int a, const int b, const int c) { sum = a + b + c; }
+
+		auto GetBoundCallback() { return BIND_FN_ANY_PARAMS(Add); }
+	};
+
+	MultiParamClass obj;
+	const auto callback = obj.GetBoundCallback();
+
+	callback(1, 2, 3);
+	EXPECT_EQ(obj.sum, 6);
+}
+
+TEST(DefineCompilationTests, BIND_FN_ONE_PARAM_ON_Macro_BindsToForeignInstance) {
+	TestCallbackClass obj;
+	const auto callback = BIND_FN_ONE_PARAM_ON(&obj, &TestCallbackClass::OneParamCallback);
+
+	EXPECT_EQ(obj.value, 0);
+	EXPECT_TRUE(callback(7));
+	EXPECT_EQ(obj.value, 7);
+}
+
+TEST(DefineCompilationTests, BIND_FN_ANY_PARAMS_ON_Macro_BindsToForeignInstance) {
+	TestCallbackClass obj;
+	const auto callback = BIND_FN_ANY_PARAMS_ON(&obj, &TestCallbackClass::OneParamCallback);
+
+	EXPECT_TRUE(callback(15));
+	EXPECT_EQ(obj.value, 15);
 }
 
 }

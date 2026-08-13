@@ -4,56 +4,79 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-04-20
+// Updated: 2026-08-13
 //
 
 #include <Core/Layers/I_Layer.hpp>
-#include <Events/ApplicationEvent.hpp>
-#include <Events/KeyEvent.hpp>
-#include <Events/MouseEvent.hpp>
-#include <Types/KeyCode/KeyboardKeyCode.hpp>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Core::Layers;
-using namespace CE::Events;
-using namespace CE::KeyCode;
+#include <string>
 
+using CE::Core::I_Layer;
+
+namespace {
 
 /**
- * @brief Mock Layer implementation for testing
+ * @brief Mock layer recording every lifecycle call it receives
+ * @details Layers no longer receive events through an OnEvent method: they subscribe to the event hub instead, so
+ *			the layer contract is the lifecycle (attach/detach), the per-frame calls (update/render, begin/end) and
+ *			the hub subscription hooks.
  */
 class MockLayer: public I_Layer {
 public:
 	explicit MockLayer(const std::string& name = "MockLayer"): I_Layer(name) {}
 
 	void OnAttach() override {
-		_attached = true;
+		attached = true;
+		++attachCount;
 	}
 
 	void OnDetach() override {
-		_attached = false;
+		attached = false;
+		++detachCount;
 	}
 
-	void OnEvent([[maybe_unused]] I_Event& event) override {
-		_eventCount++;
+	void OnUpdate() override { ++updateCount; }
+
+	void OnRender() const override { ++renderCount; }
+
+	void Begin(const float deltaTime) override {
+		++beginCount;
+		lastDeltaTime = deltaTime;
 	}
 
-	void OnUpdate() override {
-		_updateCount++;
-	}
+	void End() override { ++endCount; }
 
-	// Test helper methods
-	[[nodiscard]] bool IsAttached() const { return _attached; }
-	[[nodiscard]] int GetUpdateCount() const { return _updateCount; }
-	[[nodiscard]] int GetEventCount() const { return _eventCount; }
-	void SetShouldHandleEvent(const bool value) { _shouldHandleEvent = value; }
+	void SubscribeToEventHub() override { subscribed = true; }
 
-private:
-	bool _attached = false;
-	mutable int _updateCount = 0;
-	mutable int _eventCount = 0;
-	bool _shouldHandleEvent = false;
+	void UnsubscribeFromEventHub() override { subscribed = false; }
+
+public:
+	bool attached = false;
+	bool subscribed = false;
+	int attachCount = 0;
+	int detachCount = 0;
+	int updateCount = 0;
+	mutable int renderCount = 0;
+	int beginCount = 0;
+	int endCount = 0;
+	float lastDeltaTime = 0.0f;
+};
+
+/**
+ * @brief Layer that does not override the optional hub hooks
+ */
+class MinimalLayer final: public I_Layer {
+public:
+	MinimalLayer(): I_Layer("MinimalLayer") {}
+
+	void OnAttach() override {}
+	void OnDetach() override {}
+	void OnUpdate() override {}
+	void OnRender() const override {}
+	void Begin(float) override {}
+	void End() override {}
 };
 
 /**
@@ -61,170 +84,162 @@ private:
  */
 class LayerTest: public ::testing::Test {};
 
+}
+
+// ============================================================================
+// Naming Tests
+// ============================================================================
+
 /**
- * @brief Test Layer construction
+ * @brief Test that the layer keeps the name it was constructed with
  */
-TEST_F(LayerTest, Construction) {
+TEST_F(LayerTest, GetName_ReturnsConstructionName) {
 	const MockLayer layer{"TestLayer"};
 
-	EXPECT_FALSE(layer.IsAttached());
-	EXPECT_EQ(layer.GetUpdateCount(), 0);
-	EXPECT_EQ(layer.GetEventCount(), 0);
-
-#ifdef CE_DEBUG
-	EXPECT_EQ(layer.GetDebugName(), "TestLayer");
-#endif
+	EXPECT_EQ(layer.GetName(), "TestLayer");
 }
 
 /**
- * @brief Test Layer construction with default name
+ * @brief Test that a layer built without a name falls back to the default
  */
-TEST_F(LayerTest, ConstructionDefaultName) {
+TEST_F(LayerTest, GetName_DefaultsToLayerName) {
 	const MockLayer layer;
 
-	EXPECT_FALSE(layer.IsAttached());
+	EXPECT_EQ(layer.GetName(), "MockLayer");
+}
 
-#ifdef CE_DEBUG
-	EXPECT_EQ(layer.GetDebugName(), "MockLayer");
-#endif
+// ============================================================================
+// Lifecycle Tests
+// ============================================================================
+
+/**
+ * @brief Test that a freshly constructed layer is not attached
+ */
+TEST_F(LayerTest, Construction_LeavesLayerDetached) {
+	const MockLayer layer{"TestLayer"};
+
+	EXPECT_FALSE(layer.attached);
+	EXPECT_EQ(layer.attachCount, 0);
+	EXPECT_EQ(layer.updateCount, 0);
 }
 
 /**
- * @brief Test Layer OnAttach
+ * @brief Test that OnAttach marks the layer attached
  */
-TEST_F(LayerTest, OnAttach) {
+TEST_F(LayerTest, OnAttach_MarksLayerAttached) {
 	MockLayer layer{"TestLayer"};
-
-	EXPECT_FALSE(layer.IsAttached());
 
 	layer.OnAttach();
 
-	EXPECT_TRUE(layer.IsAttached());
+	EXPECT_TRUE(layer.attached);
+	EXPECT_EQ(layer.attachCount, 1);
 }
 
 /**
- * @brief Test Layer OnDetach
+ * @brief Test that OnDetach marks the layer detached
  */
-TEST_F(LayerTest, OnDetach) {
+TEST_F(LayerTest, OnDetach_MarksLayerDetached) {
 	MockLayer layer{"TestLayer"};
 
 	layer.OnAttach();
-	EXPECT_TRUE(layer.IsAttached());
-
 	layer.OnDetach();
-	EXPECT_FALSE(layer.IsAttached());
+
+	EXPECT_FALSE(layer.attached);
+	EXPECT_EQ(layer.detachCount, 1);
 }
 
-/**
- * @brief Test Layer OnUpdate
- */
-TEST_F(LayerTest, OnUpdate) {
-	MockLayer layer{"TestLayer"};
+// ============================================================================
+// Frame Tests
+// ============================================================================
 
-	EXPECT_EQ(layer.GetUpdateCount(), 0);
+/**
+ * @brief Test that OnUpdate is counted on every call
+ */
+TEST_F(LayerTest, OnUpdate_IsCalledEveryTime) {
+	MockLayer layer;
 
 	layer.OnUpdate();
-	EXPECT_EQ(layer.GetUpdateCount(), 1);
-
-	layer.OnUpdate();
-	EXPECT_EQ(layer.GetUpdateCount(), 2);
-
-	layer.OnUpdate();
-	EXPECT_EQ(layer.GetUpdateCount(), 3);
-}
-
-/**
- * @brief Test Layer OnEvent without handling
- */
-TEST_F(LayerTest, OnEventNotHandled) {
-	MockLayer layer{"TestLayer"};
-	layer.SetShouldHandleEvent(false);
-
-	KeyPressedEvent event{KeyboardKeyCode::A, 0}; // 'A' key
-
-	EXPECT_EQ(layer.GetEventCount(), 0);
-	layer.OnEvent(event);
-	EXPECT_EQ(layer.GetEventCount(), 1);
-}
-
-/**
- * @brief Test Layer OnEvent with handling
- */
-TEST_F(LayerTest, OnEventHandled) {
-	MockLayer layer{"TestLayer"};
-	layer.SetShouldHandleEvent(true);
-
-	KeyPressedEvent event{KeyboardKeyCode::A, 0};
-
-	EXPECT_EQ(layer.GetEventCount(), 0);
-	layer.OnEvent(event);
-	EXPECT_EQ(layer.GetEventCount(), 1);
-}
-
-/**
- * @brief Test Layer receiving multiple events
- */
-TEST_F(LayerTest, MultipleEvents) {
-	MockLayer layer{"TestLayer"};
-	layer.SetShouldHandleEvent(false);
-
-	KeyPressedEvent keyEvent{KeyboardKeyCode::A, 0};
-	MouseMovedEvent mouseEvent{100.0f, 200.0f};
-	WindowResizeEvent resizeEvent{800, 600};
-
-	EXPECT_EQ(layer.GetEventCount(), 0);
-
-	layer.OnEvent(keyEvent);
-	EXPECT_EQ(layer.GetEventCount(), 1);
-
-	layer.OnEvent(mouseEvent);
-	EXPECT_EQ(layer.GetEventCount(), 2);
-
-	layer.OnEvent(resizeEvent);
-	EXPECT_EQ(layer.GetEventCount(), 3);
-}
-
-/**
- * @brief Test Layer lifecycle
- */
-TEST_F(LayerTest, LayerLifecycle) {
-	MockLayer layer{"TestLayer"};
-
-	// Initial state
-	EXPECT_FALSE(layer.IsAttached());
-	EXPECT_EQ(layer.GetUpdateCount(), 0);
-	EXPECT_EQ(layer.GetEventCount(), 0);
-
-	// Attach
-	layer.OnAttach();
-	EXPECT_TRUE(layer.IsAttached());
-
-	// Update
 	layer.OnUpdate();
 	layer.OnUpdate();
-	EXPECT_EQ(layer.GetUpdateCount(), 2);
 
-	// Event
-	KeyPressedEvent event{KeyboardKeyCode::A, 0};
-	layer.OnEvent(event);
-	EXPECT_EQ(layer.GetEventCount(), 1);
-
-	// Detach
-	layer.OnDetach();
-	EXPECT_FALSE(layer.IsAttached());
+	EXPECT_EQ(layer.updateCount, 3);
 }
 
-#ifdef CE_DEBUG
 /**
- * @brief Test Layer debug name
+ * @brief Test that OnRender is callable on a const layer
+ * @details The render pass runs over const layers, so OnRender must not require a mutable layer.
  */
-TEST_F(LayerTest, DebugName) {
-	const MockLayer layer1{"Layer1"};
-	const MockLayer layer2{"Layer2"};
-	const MockLayer layer3;
+TEST_F(LayerTest, OnRender_IsCallableOnConstLayer) {
+	const MockLayer layer;
 
-	EXPECT_EQ(layer1.GetDebugName(), "Layer1");
-	EXPECT_EQ(layer2.GetDebugName(), "Layer2");
-	EXPECT_EQ(layer3.GetDebugName(), "MockLayer");
+	layer.OnRender();
+
+	EXPECT_EQ(layer.renderCount, 1);
 }
-#endif
+
+/**
+ * @brief Test that Begin receives the frame delta time and End closes the frame
+ */
+TEST_F(LayerTest, BeginEnd_FrameBracketReceivesDeltaTime) {
+	MockLayer layer;
+
+	layer.Begin(0.016f);
+	layer.End();
+
+	EXPECT_EQ(layer.beginCount, 1);
+	EXPECT_EQ(layer.endCount, 1);
+	EXPECT_FLOAT_EQ(layer.lastDeltaTime, 0.016f);
+}
+
+// ============================================================================
+// Event Hub Hook Tests
+// ============================================================================
+
+/**
+ * @brief Test that the hub subscription hooks are honoured by an overriding layer
+ */
+TEST_F(LayerTest, EventHubHooks_AreCalledOnOverridingLayer) {
+	MockLayer layer;
+
+	EXPECT_FALSE(layer.subscribed);
+
+	layer.SubscribeToEventHub();
+	EXPECT_TRUE(layer.subscribed);
+
+	layer.UnsubscribeFromEventHub();
+	EXPECT_FALSE(layer.subscribed);
+}
+
+/**
+ * @brief Test that the hub subscription hooks are optional
+ * @details A layer that ignores the event hub must not be forced to implement the hooks.
+ */
+TEST_F(LayerTest, EventHubHooks_AreOptional) {
+	MinimalLayer layer;
+
+	EXPECT_NO_THROW(layer.SubscribeToEventHub());
+	EXPECT_NO_THROW(layer.UnsubscribeFromEventHub());
+}
+
+/**
+ * @brief Test that a layer is usable through a base-class pointer
+ */
+TEST_F(LayerTest, LayerLifecycle_ThroughBasePointer) {
+	MockLayer layer{"TestLayer"};
+	I_Layer* base = &layer;
+
+	base->OnAttach();
+	base->Begin(0.033f);
+	base->OnUpdate();
+	base->OnRender();
+	base->End();
+	base->OnDetach();
+
+	EXPECT_EQ(layer.attachCount, 1);
+	EXPECT_EQ(layer.beginCount, 1);
+	EXPECT_EQ(layer.updateCount, 1);
+	EXPECT_EQ(layer.renderCount, 1);
+	EXPECT_EQ(layer.endCount, 1);
+	EXPECT_EQ(layer.detachCount, 1);
+	EXPECT_FALSE(layer.attached);
+}

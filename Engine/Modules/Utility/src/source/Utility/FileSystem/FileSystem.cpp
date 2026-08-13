@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-13
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -56,7 +56,7 @@ File FileSystem::StNew(const fs::path& path, const std::string& content, const b
 
 File FileSystem::StLoad(const fs::path& path, const bool autoSave) {
 	const auto fullPath = _rootDirectory / path;
-	if (not StExists(fullPath)) {
+	if (not StExists(path)) {
 		const auto errorMessage = "FileSystem::StLoad: Cannot load file because it does not exist at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
@@ -104,16 +104,20 @@ void FileSystem::StSave(const File& file) {
 		throw std::runtime_error(errorMessage);
 	}
 
-	std::ofstream outputFile(file._path, std::ios::binary);
+	// A File keeps the path it was created with, which is relative to the root directory: resolve it here as every
+	// other operation does, otherwise a relative path would be written next to the working directory instead
+	const auto fullPath = _rootDirectory / file._path;
+
+	std::ofstream outputFile{fullPath, std::ios::binary};
 	if (not outputFile) {
-		const auto errorMessage = "FileSystem::StSave: Failed to open file for writing at path: " + file._path.string();
+		const auto errorMessage = "FileSystem::StSave: Failed to open file for writing at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}
 
 	outputFile.write(reinterpret_cast<const char*>(file._content.data()), static_cast<std::streamsize>(file._content.size()));
 	if (not outputFile) {
-		const auto errorMessage = "FileSystem::StSave: Failed to write content to file at path: " + file._path.string();
+		const auto errorMessage = "FileSystem::StSave: Failed to write content to file at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}

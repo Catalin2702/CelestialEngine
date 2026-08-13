@@ -4,48 +4,31 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-25
+# Updated: 2026-08-13
 #
 
-set(APPLICATION_SOURCES
-	src/Core/Application/Platforms/Common/Glfw/GlfwApplicationTests.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/Core/Application/Platforms/Mac/Cocoa/CocoaApplicationTests.cpp
-	>
-)
-
 set(INPUT_SOURCES
-	src/Core/Input/Platforms/Common/Glfw/GlfwInputTests.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/Core/Input/Platforms/Mac/Metal/MetalInputTests.cpp
-	>
+	src/Core/Input/InputTests.cpp
 )
 
 set(LAYERS_SOURCES
-	src/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayerTests.cpp
 	src/Core/Layers/LayerStackTests.cpp
 	src/Core/Layers/LayerTests.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayerTests.cpp
-	>
 )
 
-set(WINDOW_SOURCES
-	src/Core/Window/Platforms/Common/Glfw/GlfwWindowTests.cpp
+set(MAINHUB_SOURCES
+	# Events
+	src/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Core/Window/Platforms/Mac/Cocoa/CocoaWindowTests.cpp
+		src/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcherTests.cpp
 	>
 )
 
 add_executable(CE_TestsCore
-	${APPLICATION_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
-	${WINDOW_SOURCES}
+	${MAINHUB_SOURCES}
 )
 
 set_target_properties(CE_TestsCore PROPERTIES

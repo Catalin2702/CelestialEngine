@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-13
 //
 
 #include "Utility/Time/Chronometer.hpp"
@@ -23,20 +23,29 @@ Chronometer::~Chronometer() {
 }
 
 void Chronometer::Start() {
-	_start = std::chrono::high_resolution_clock::now();
+	_start = Clock::now();
 }
 
 void Chronometer::Stop() {
-	_end = std::chrono::high_resolution_clock::now();
+	if (_isStopped)
+		return;
+
+	_end = Clock::now();
+	_isStopped = true;
+}
+
+std::chrono::nanoseconds Chronometer::GetElapsed() const {
+	const auto end = _isStopped ? _end : Clock::now();
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(end - _start);
+}
+
+double Chronometer::GetElapsedMilliseconds() const {
+	return std::chrono::duration<double, std::milli>(GetElapsed()).count();
 }
 
 void Chronometer::PrintResult() const {
 #ifdef CE_DEBUG
-	const auto start = std::chrono::time_point_cast<std::chrono::milliseconds>(_start).time_since_epoch().count();
-	const auto end = std::chrono::time_point_cast<std::chrono::milliseconds>(_end).time_since_epoch().count();
-	const auto duration = end - start;
-
-	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", duration * .001);
+	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", GetElapsedMilliseconds() * .001);
 #endif
 }
 

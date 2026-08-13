@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-29
+// Updated: 2026-08-13
 //
 
 #include <Utility/CMD/Window.hpp>
@@ -15,10 +15,11 @@
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 
-using namespace CE::Utility::CMD;
-using namespace CE::Tools::Log;
-using namespace CE::Types::Render;
-using namespace CE::Types::Window;
+using namespace CE::Utility;
+using namespace CE::Tools;
+using namespace CE::Types;
+
+namespace {
 
 /**
  * @brief Test fixture for Window CMD tests
@@ -33,6 +34,8 @@ protected:
 		Log::Shutdown();
 	}
 };
+
+}
 
 /**
  * @brief Test default window properties with no arguments
@@ -574,4 +577,66 @@ TEST_F(WindowCMDTest, GetWindowProps_UnrecognizedArguments_Ignored) {
 	const WindowProps props = GetWindowProps(argc, argv);
 
 	EXPECT_EQ(props.width, 1024);
+}
+
+// ============================================================================
+// Refresh Rate Tests
+// ============================================================================
+
+/**
+ * @brief Test that the refresh rate defaults to 0 (uncapped)
+ */
+TEST_F(WindowCMDTest, GetWindowProps_NoRefreshArgument_DefaultsToUncapped) {
+	const char* argv[] = {"program"};
+	constexpr int argc = 1;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.refreshRate, 0);
+}
+
+/**
+ * @brief Test the refresh rate argument in long form
+ */
+TEST_F(WindowCMDTest, GetWindowProps_RefreshLongForm_SetsRefreshRate) {
+	const char* argv[] = {
+		"program",
+		"--refresh",
+		"144"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.refreshRate, 144);
+}
+
+/**
+ * @brief Test the refresh rate argument in short form
+ */
+TEST_F(WindowCMDTest, GetWindowProps_RefreshShortForm_SetsRefreshRate) {
+	const char* argv[] = {
+		"program",
+		"-r",
+		"60"
+	};
+	constexpr int argc = 3;
+
+	const WindowProps props = GetWindowProps(argc, argv);
+
+	EXPECT_EQ(props.refreshRate, 60);
+}
+
+/**
+ * @brief Test that an invalid refresh rate throws
+ */
+TEST_F(WindowCMDTest, GetWindowProps_InvalidRefresh_ThrowsException) {
+	const char* argv[] = {
+		"program",
+		"--refresh",
+		"fast"
+	};
+	constexpr int argc = 3;
+
+	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
 }

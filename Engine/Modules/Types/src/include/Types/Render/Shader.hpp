@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-13
 //
 
 #pragma once
@@ -41,21 +41,22 @@ enum class ShaderType: uint8_t {
 
 /**
  * @brief Converts a ShaderType enum value to its string representation
- * @param graphicsApi The GraphicsApi for which the shader type is being converted (used for context-specific string formatting if needed)
  * @param shaderType The ShaderType to convert to a string
  * @return const char* A string representation of the ShaderType
  * @details Provides a human-readable string representation of the ShaderType enum value. This is useful for debugging, logging, or displaying shader type names in the user interface.
  *			The function uses a switch statement to map each ShaderType value to its corresponding string name. If the ShaderType does not match any known value, it returns "Unknown".
  */
-CE_API const char* ToString(GraphicsApi graphicsApi, ShaderType shaderType);
+CE_API const char* ToString(ShaderType shaderType);
 
 /**
- * @brief Checks if the specified shader type is supported on the current platform
- * @param type Shader type to check
+ * @brief Checks if the specified shader type is supported by the given graphics API
+ * @param graphicsApi Graphics API the shader type must run on
+ * @param shaderType Shader type to check
  * @return bool True if the shader type is supported, false otherwise
- * @details This function checks if the given shader type is supported on the current platform. For example, some platforms may only support vertex and fragment shaders, while others may support additional types like geometry or compute shaders.
+ * @details Each API exposes a different stage set: OpenGL has the geometry and tessellation stages but no mesh or
+ *			ray-tracing ones, Metal has mesh/amplification/ray generation but no geometry or tessellation stages.
  */
-CE_API bool IsShaderTypeSupported(ShaderType type);
+CE_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shaderType);
 
 /**
  * @brief Converts a ShaderType enum value to the corresponding OpenGL shader type constant

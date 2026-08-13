@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-08-13
 #
 
 enable_testing()
@@ -13,7 +13,10 @@ set(SOURCES
 	src/native.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Apple/Metal/Bridge/ImGui/ImGuiBridgeTests.cpp
+		src/Apple/Bridge/ImGui/ImGuiBridgeTests.cpp
+		src/Apple/MetalCpp/AppKit/NsViewEventDispatcherTests.cpp
+		src/Apple/MetalCpp/AppKit/NsWindowEventDispatcherTests.cpp
+		src/Apple/MetalCpp/MetalKit/MtkViewDelegateTests.cpp
 	>
 )
 

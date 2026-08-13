@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-13
 //
 
 #pragma once
@@ -21,11 +21,15 @@ namespace CE::Utility {
 /**
  * @class Chronometer
  * @brief RAII-style timing utility for measuring code execution time
- * @details Automatically starts timing on construction and stops on destruction,
- *			printing the elapsed time. Only active in debug builds for performance
- *			profiling without impacting release builds.
+ * @details Automatically starts timing on construction and stops on destruction, printing the elapsed time (the
+ *			printing only happens in debug builds, so a chronometer left in the code costs two clock reads in
+ *			Release/Dist). The measure can also be read while the chronometer is alive, or frozen early with Stop().
  */
 class CE_API Chronometer {
+public:
+	using Clock = std::chrono::high_resolution_clock;
+	using TimePoint = std::chrono::time_point<Clock>;
+
 public:
 	/**
 	 * @brief Constructor - starts the timer
@@ -39,6 +43,34 @@ public:
 	 */
 	~Chronometer();
 
+public:
+	/**
+	 * @brief Stops the chronometer, freezing the measured duration
+	 * @details Calling it is optional: the destructor stops the chronometer anyway. Stopping an already stopped
+	 *			chronometer does nothing, so an early Stop() is never overwritten by the destructor.
+	 */
+	void Stop();
+
+public:
+	/**
+	 * @brief Gets the measured duration
+	 * @return std::chrono::nanoseconds Time between the start and the stop, or between the start and now while the
+	 *			chronometer is still running
+	 */
+	[[nodiscard]] std::chrono::nanoseconds GetElapsed() const;
+
+	/**
+	 * @brief Gets the measured duration in milliseconds
+	 * @return double Same measure as GetElapsed(), expressed in milliseconds with the sub-millisecond fraction
+	 */
+	[[nodiscard]] double GetElapsedMilliseconds() const;
+
+	/**
+	 * @brief Checks whether the chronometer has been stopped
+	 * @return bool True once the duration is frozen, false while it is still running
+	 */
+	[[nodiscard]] bool IsStopped() const { return _isStopped; }
+
 private:
 	/**
 	 * @brief Starts the chronometer
@@ -47,20 +79,15 @@ private:
 	void Start();
 
 	/**
-	 * @brief Stops the chronometer
-	 * @details Records the current time as the end point
-	 */
-	void Stop();
-
-	/**
 	 * @brief Prints the measured time duration
 	 * @details Calculates and outputs the elapsed time between start and stop
 	 */
 	void PrintResult() const;
 
 private:
-	std::chrono::time_point<std::chrono::high_resolution_clock> _start;	///< Start time point
-	std::chrono::time_point<std::chrono::high_resolution_clock> _end;	///< End time point
+	TimePoint _start;								///< Start time point
+	TimePoint _end;									///< End time point, meaningful only once the chronometer is stopped
+	bool _isStopped = false;						///< True once Stop() froze the measure, so the destructor does not overwrite it
 };
 
 }
