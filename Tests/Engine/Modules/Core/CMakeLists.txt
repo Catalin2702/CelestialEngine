@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-17
 #
 
 set(INPUT_SOURCES
@@ -50,7 +50,7 @@ target_link_libraries(CE_TestsCore PRIVATE
 
 add_test(NAME CoreTests
 	COMMAND CE_TestsCore
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>
 )
 
 set_tests_properties(CoreTests PROPERTIES

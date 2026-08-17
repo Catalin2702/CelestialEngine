@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-17
 #
 
 enable_testing()
@@ -42,7 +42,7 @@ target_link_libraries(CE_TestsNative PRIVATE
 
 add_test(NAME NativeTests
 	COMMAND CE_TestsNative
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>
 )
 
 set_tests_properties(NativeTests PROPERTIES

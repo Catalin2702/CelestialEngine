@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-05-15
+# Updated: 2026-08-17
 #
 
 enable_testing()
@@ -35,7 +35,7 @@ target_link_libraries(CE_TestsTools PRIVATE
 
 add_test(NAME ToolsTests
 	COMMAND CE_TestsTools
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>
 )
 
 set_tests_properties(ToolsTests PROPERTIES

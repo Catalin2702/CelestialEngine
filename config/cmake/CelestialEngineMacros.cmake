@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-22
+# Updated: 2026-08-17
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -13,8 +13,15 @@ endif()
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/$<CONFIG>")
+# Binaries/ subfolder keeping one toolchain's artifacts from overwriting another's. Set by
+# every configure preset; falling back to the compiler ID means a bare "cmake -B ..." still
+# lands somewhere sane instead of in "Binaries//<Config>".
+if(NOT CE_TOOLCHAIN_NAME)
+	set(CE_TOOLCHAIN_NAME "${CMAKE_CXX_COMPILER_ID}" CACHE STRING "Binaries/ subfolder identifying this toolchain")
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>")
 set(CE_LAST_BUILD_DIR "${CMAKE_SOURCE_DIR}/Binaries/Last")
 
 set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
