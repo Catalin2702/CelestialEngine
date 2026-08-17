@@ -11,11 +11,11 @@
 		"Created by: Catalin Chirosca",
 		"Created: 2026-08-13",
 		"Updated by: Catalin Chirosca",
-		"Updated: 2026-08-13"
+		"Updated: 2026-08-17"
 	],
 	"configurePresets": [
 		{
-			"name": "base",
+			"name": "config-preset-base",
 			"hidden": true,
 			"binaryDir": "${sourceDir}/.build/${presetName}",
 			"toolchainFile": "$env{CMAKE_TOOLCHAIN_FILE}",
@@ -24,9 +24,9 @@
 			}
 		},
 		{
-			"name": "clang",
+			"name": "config-preset-clang",
 			"hidden": true,
-			"inherits": "base",
+			"inherits": "config-preset-base",
 			"generator": "Ninja",
 			"cacheVariables": {
 				"CMAKE_C_COMPILER": "$env{CLANG_CMAKE_C_COMPILER}",
@@ -34,9 +34,9 @@
 			}
 		},
 		{
-			"name": "apple-clang",
+			"name": "config-preset-appleclang",
 			"hidden": true,
-			"inherits": "base",
+			"inherits": "config-preset-base",
 			"generator": "Ninja",
 			"condition": {
 				"type": "equals",
@@ -49,9 +49,9 @@
 			}
 		},
 		{
-			"name": "xcode",
-			"displayName": "XCODE (multi-config)",
-			"inherits": "base",
+			"name": "config-preset-xcode-multi",
+			"displayName": "Config-Preset Xcode-Multi",
+			"inherits": "config-preset-base",
 			"generator": "Xcode",
 			"condition": {
 				"type": "equals",
@@ -64,49 +64,49 @@
 			}
 		},
 		{
-			"name": "debug-clang",
-			"displayName": "Debug",
-			"inherits": "clang",
+			"name": "config-preset-clang-debug",
+			"displayName": "Config-Preset Clang-Debug",
+			"inherits": "config-preset-clang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug"
 			}
 		},
 		{
-			"name": "release-clang",
-			"displayName": "Release",
-			"inherits": "clang",
+			"name": "config-preset-clang-release",
+			"displayName": "Config-Preset Clang-Release",
+			"inherits": "config-preset-clang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release"
 			}
 		},
 		{
-			"name": "dist-clang",
-			"displayName": "Dist",
-			"inherits": "clang",
+			"name": "config-preset-clang-dist",
+			"displayName": "Config-Preset Clang-Dist",
+			"inherits": "config-preset-clang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Dist"
 			}
 		},
 		{
-			"name": "debug-apple-clang",
-			"displayName": "Debug",
-			"inherits": "apple-clang",
+			"name": "config-preset-appleclang-debug",
+			"displayName": "Config-Preset AppleClang-Debug",
+			"inherits": "config-preset-appleclang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug"
 			}
 		},
 		{
-			"name": "release-apple-clang",
-			"displayName": "Release",
-			"inherits": "apple-clang",
+			"name": "config-preset-appleclang-release",
+			"displayName": "Config-Preset AppleClang-Release",
+			"inherits": "config-preset-appleclang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release"
 			}
 		},
 		{
-			"name": "dist-apple-clang",
-			"displayName": "Dist",
-			"inherits": "apple-clang",
+			"name": "config-preset-appleclang-dist",
+			"displayName": "Config-Preset AppleClang-Dist",
+			"inherits": "config-preset-appleclang",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Dist"
 			}
@@ -114,71 +114,70 @@
 	],
 	"buildPresets": [
 		{
-			"name": "build-base",
-			"hidden": true,
-			"verbose": true
+			"name": "build-preset-base",
+			"hidden": true
 		},
 		{
-			"name": "debug-clang",
-			"displayName": "Debug-Clang",
-			"inherits": "build-base",
-			"configurePreset": "debug-clang"
+			"name": "build-preset-clang-debug",
+			"displayName": "Build-Preset Clang-Debug",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-clang-debug"
 		},
 		{
-			"name": "release-clang",
-			"displayName": "Release-Clang",
-			"inherits": "build-base",
-			"configurePreset": "release-clang"
+			"name": "build-preset-clang-release",
+			"displayName": "Build-Preset Clang-Release",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-clang-release"
 		},
 		{
-			"name": "dist-clang",
-			"displayName": "Dist-Clang",
-			"inherits": "build-base",
-			"configurePreset": "dist-clang"
+			"name": "build-preset-clang-dist",
+			"displayName": "Build-Preset Clang-Dist",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-clang-dist"
 		},
 		{
-			"name": "debug-apple-clang",
-			"displayName": "Debug-AppleClang",
-			"inherits": "build-base",
-			"configurePreset": "debug-apple-clang"
+			"name": "build-preset-appleclang-debug",
+			"displayName": "Build-Preset AppleClang-Debug",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-appleclang-debug"
 		},
 		{
-			"name": "release-apple-clang",
-			"displayName": "Release-AppleClang",
-			"inherits": "build-base",
-			"configurePreset": "release-apple-clang"
+			"name": "build-preset-appleclang-release",
+			"displayName": "Build-Preset AppleClang-Release",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-appleclang-release"
 		},
 		{
-			"name": "dist-apple-clang",
-			"displayName": "Dist-AppleClang",
-			"inherits": "build-base",
-			"configurePreset": "dist-apple-clang"
+			"name": "build-preset-appleclang-dist",
+			"displayName": "Build-Preset AppleClang-Dist",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-appleclang-dist"
 		},
 		{
-			"name": "debug-xcode",
-			"inherits": "build-base",
-			"displayName": "Debug-XCODE",
-			"configurePreset": "xcode",
+			"name": "build-preset-xcode-debug",
+			"displayName": "Build-Preset Xcode-Debug",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Debug"
 		},
 		{
-			"name": "release-xcode",
-			"inherits": "build-base",
-			"displayName": "Release-XCODE",
-			"configurePreset": "xcode",
+			"name": "build-preset-xcode-release",
+			"displayName": "Build-Preset Xcode-Release",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Release"
 		},
 		{
-			"name": "dist-xcode",
-			"inherits": "build-base",
-			"displayName": "Dist-XCODE",
-			"configurePreset": "xcode",
+			"name": "build-preset-xcodedist",
+			"displayName": "Build-Preset Xcode-Dist",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Dist"
 		}
 	],
 	"testPresets": [
 		{
-			"name": "test-base",
+			"name": "base-test-preset",
 			"hidden": true,
 			"output": {
 				"outputOnFailure": true
@@ -189,60 +188,60 @@
 			}
 		},
 		{
-			"name": "debug-clang",
-			"displayName": "Debug-Clang",
-			"inherits": "test-base",
-			"configurePreset": "debug-clang"
+			"name": "test-preset-clang-debug",
+			"displayName": "Test-Preset Clang-Debug",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-clang-debug"
 		},
 		{
-			"name": "release-clang",
-			"displayName": "Release-Clang",
-			"inherits": "test-base",
-			"configurePreset": "release-clang"
+			"name": "test-preset-clang-release",
+			"displayName": "Test-Preset Clang-Release",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-clang-release"
 		},
 		{
-			"name": "dist-clang",
-			"displayName": "Dist-Clang",
-			"inherits": "test-base",
-			"configurePreset": "dist-clang"
+			"name": "test-preset-clang-dist",
+			"displayName": "Test-Preset Clang-Dist",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-clang-dist"
 		},
 		{
-			"name": "debug-apple-clang",
-			"displayName": "Debug-AppleClang",
-			"inherits": "test-base",
-			"configurePreset": "debug-apple-clang"
+			"name": "test-preset-appleclang-debug",
+			"displayName": "Test-Preset AppleClang-Debug",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-appleclang-debug"
 		},
 		{
-			"name": "release-apple-clang",
-			"displayName": "Release-AppleClang",
-			"inherits": "test-base",
-			"configurePreset": "release-apple-clang"
+			"name": "test-preset-appleclang-release",
+			"displayName": "Test-Preset AppleClang-Release",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-appleclang-release"
 		},
 		{
-			"name": "dist-apple-clang",
-			"displayName": "Dist-AppleClang",
-			"inherits": "test-base",
-			"configurePreset": "dist-apple-clang"
+			"name": "test-preset-appleclang-dist",
+			"displayName": "Test-Preset AppleClang-Dist",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-appleclang-dist"
 		},
 		{
-			"name": "debug-xcode",
-			"displayName": "Debug-XCODE",
-			"inherits": "test-base",
-			"configurePreset": "xcode",
+			"name": "test-preset-xcode-debug",
+			"displayName": "Test-Preset Xcode-Debug",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Debug"
 		},
 		{
-			"name": "release-xcode",
-			"displayName": "Release-XCODE",
-			"inherits": "test-base",
-			"configurePreset": "xcode",
+			"name": "test-preset-xcode-release",
+			"displayName": "Test-Preset Xcode-Release",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Release"
 		},
 		{
-			"name": "dist-xcode",
-			"displayName": "Dist-XCODE",
-			"inherits": "test-base",
-			"configurePreset": "xcode",
+			"name": "test-preset-xcode-dist",
+			"displayName": "Test-Preset Xcode-Dist",
+			"inherits": "base-test-preset",
+			"configurePreset": "config-preset-xcode-multi",
 			"configuration": "Dist"
 		}
 	]
