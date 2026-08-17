@@ -106,6 +106,5 @@ target_link_libraries(CE_App PRIVATE
 	CE_Engine
 )
 
-# Copy to Binaries/Last folder
+# Copy to Binaries/Last folder (no-op unless CE_COPY_LAST is enabled)
 ce_copy_to_last(CE_App)
-

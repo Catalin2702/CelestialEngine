@@ -24,6 +24,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>")
 set(CE_LAST_BUILD_DIR "${CMAKE_SOURCE_DIR}/Binaries/Last")
 
+# Declared as an option() so it shows up in the CMake settings UI / ccmake with a defined
+# default, instead of being an undeclared variable that is only ever truthy by accident.
+# Enable it per profile with -DCE_COPY_LAST=ON or a preset cacheVariable: it is read at
+# configure time (it decides whether the POST_BUILD copies are generated at all), so
+# flipping it needs a re-configure, not just a rebuild.
+option(CE_COPY_LAST "Copy build artifacts to Binaries/Last" OFF)
+
 set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
@@ -117,9 +124,18 @@ if (NOT TARGET CE_Config)
 	)
 endif ()
 
-# Macro to copy targets to the Binaries/Last folder
+# Copies a target to the Binaries/Last folder, if CE_COPY_LAST is enabled
 # Usage: ce_copy_to_last(target_name)
-macro(ce_copy_to_last TARGET_NAME)
+#
+# A function rather than a macro: the CE_COPY_LAST guard lives here so the ~16 call sites
+# do not have to repeat it, and only a function can bail out with return() (in a macro
+# return() would exit the *calling* CMakeLists.txt, skipping whatever follows the call).
+# The own scope is a bonus - TARGET_TYPE and IS_BUNDLE no longer leak into the caller.
+function(ce_copy_to_last TARGET_NAME)
+	if (NOT CE_COPY_LAST)
+		return()
+	endif ()
+
 	# Create the Binaries/Last directory if it doesn't exist
 	file(MAKE_DIRECTORY "${CE_LAST_BUILD_DIR}")
 
@@ -152,4 +168,4 @@ macro(ce_copy_to_last TARGET_NAME)
 			)
 		endif()
 	endif()
-endmacro()
+endfunction()

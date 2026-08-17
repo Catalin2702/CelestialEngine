@@ -80,7 +80,8 @@ echo ""
 # Verify that the Binaries/Last folder exists
 if [ ! -d "${BINARIES_DIR}" ]; then
 	echo "${RED}Error: The folder ${BINARIES_DIR} does not exist!${NC}"
-	echo "${YELLOW}Please compile the project with CMake first${NC}"
+	echo "${YELLOW}Please compile the project with CMake first, configuring with${NC}"
+	echo "${YELLOW}-DCE_COPY_LAST=ON: nothing is copied to Binaries/Last without it${NC}"
 	exit 1
 fi
 
