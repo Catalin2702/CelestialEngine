@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 
 #include <string>
+
 
 namespace CE::Events {
 
@@ -69,7 +70,7 @@ using KeyCharType = unsigned int;	///< Unicode code point of a typed character (
  *			this event may be generated multiple times with incrementing repeat counts.
  *			A repeat count of 0 indicates the initial press, values > 0 indicate repeats.
  */
-class CE_API KeyPressedEvent: public I_KeyEvent<KeyType> {
+class CE_EVENTS_API KeyPressedEvent: public I_KeyEvent<KeyType> {
 public:
 	/**
 	 * @brief Constructor
@@ -104,7 +105,7 @@ private:
  * @details Contains the key code of the released key. This event is generated
  *			when the user releases a previously pressed key.
  */
-class CE_API KeyReleasedEvent: public I_KeyEvent<KeyType> {
+class CE_EVENTS_API KeyReleasedEvent: public I_KeyEvent<KeyType> {
 public:
 	/**
 	 * @brief Constructor
@@ -131,7 +132,7 @@ public:
  *			of the typed character. Unlike KeyPressedEvent, this handles character
  *			input after keyboard layout processing and is suitable for text entry.
  */
-class CE_API KeyTypedEvent: public I_KeyEvent<KeyCharType> {
+class CE_EVENTS_API KeyTypedEvent: public I_KeyEvent<KeyCharType> {
 public:
 	/**
 	 * @brief Constructor

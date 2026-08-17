@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 
 #include <string>
 
+
 namespace CE::Events {
 
 /**
@@ -28,7 +29,7 @@ namespace CE::Events {
  *			application) and multicast through the event hub; immutable by default so no handler can consume it and
  *			hide the error from later subscribers.
  */
-class CE_API ErrorEvent: public I_Event {
+class CE_EVENTS_API ErrorEvent: public I_Event {
 public:
 	/**
 	 * @brief Constructor

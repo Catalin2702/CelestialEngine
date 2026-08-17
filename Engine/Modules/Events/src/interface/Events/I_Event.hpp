@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 #include <functional>
 #include <ostream>
 #include <string>
+
 
 namespace CE::Events {
 
@@ -81,7 +82,7 @@ enum EventCategory {
  *			Events are immutable once created and can be dispatched to handlers.
  *			The event system uses a polling mechanism where events are processed immediately.
  */
-class CE_API I_Event {
+class CE_EVENTS_API I_Event {
 protected:
 	/**
 	 * @brief Protected constructor
@@ -160,17 +161,6 @@ protected:
 	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
 	const bool _isMutable;									///< Flag indicating whether the event is mutable. If not it can't be consumed
 };
-
-/**
- * @brief Stream output operator for events
- * @param os Output stream
- * @param event Event to output
- * @return std::ostream& Reference to the output stream
- * @details Allows events to be printed to output streams using the ToString() method
- */
-inline std::ostream& operator<<(std::ostream& os, const I_Event& event) {
-	return os << event.ToString();
-}
 
 /**
  * @brief Format function for events (for use with formatting libraries)

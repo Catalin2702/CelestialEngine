@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <cstdint>
 
+
 namespace CE::Types {
 	enum class ShaderType: uint8_t;
 }
@@ -26,7 +27,7 @@ namespace CE::Core {
  * @class OpenGlShaderCompiler
  * @brief Stateless helper that compiles GLSL source into an OpenGL shader object
  */
-class CE_API OpenGlShaderCompiler {
+class CE_CORE_API OpenGlShaderCompiler {
 public:
 	/**
 	 * @brief Compiles GLSL source code into an OpenGL shader object

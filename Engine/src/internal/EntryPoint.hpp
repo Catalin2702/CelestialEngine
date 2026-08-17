@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -14,7 +14,6 @@
 
 #include <stdexcept>
 
-#ifdef CE_API
 
 /**
  * @brief Main entry point for Celestial Engine applications
@@ -28,7 +27,6 @@
  *			4. Runs the main application loop
  *			5. Cleans up and terminates logging
  *			Catches and handles exceptions thrown during initialization or runtime.
- *			The function is only defined when CE_API is defined (in engine builds).
  *			Client applications should not define their own main function.
  */
 int main(const int argc, const char* argv[]) {
@@ -58,7 +56,5 @@ int main(const int argc, const char* argv[]) {
 
 	return code;
 }
-
-#endif
 
 #endif //CE_ENTRYPOINT_HPP

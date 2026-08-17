@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <imgui.h>
 
+
 namespace CE::Utility {
 
 /**
@@ -26,7 +27,7 @@ namespace CE::Utility {
  *			It includes mappings for common keys such as navigation keys, editing keys, function keys, alphanumeric keys,
  *			special keys, modifier keys, and keypad keys. If a GLFW key code does not have a corresponding ImGui key code, the function returns ImGuiKey_None.
  */
-CE_API ImGuiKey GlfwKeyToImGuiKey(int key);
+CE_UTILITY_API ImGuiKey GlfwKeyToImGuiKey(int key);
 
 }
 

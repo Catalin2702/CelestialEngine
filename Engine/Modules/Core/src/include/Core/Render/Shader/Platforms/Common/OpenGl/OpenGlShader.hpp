@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Core/Render/Shader/I_Shader.hpp"
+
 
 namespace CE {
 namespace Types {
@@ -34,7 +35,7 @@ namespace CE::Core {
  * @details Provides an OpenGL-specific implementation of the I_Shader interface for managing individual shaders (vertex, fragment, etc.) in an OpenGL context.
  *			Handles shader compilation, resource management, and provides access to the underlying OpenGL shader ID for use in shader programs.
  */
-class CE_API OpenGlShader: public I_Shader {
+class CE_CORE_API OpenGlShader: public I_Shader {
 public:
 	/**
 	 * @brief Constructs an OpenGlShader from shader source code

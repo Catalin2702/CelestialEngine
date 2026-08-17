@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+
 namespace MTL {
 	class CommandQueue;
 	class Device;
@@ -46,7 +47,7 @@ namespace CE::Core {
 
 	class CocoaWindow;
 
-struct CE_API MetalContextProps {
+struct CE_CORE_API MetalContextProps {
 	MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 };
 
@@ -91,7 +92,7 @@ public:
  *			Manages Metal resources such as the device, command queue, and render layer. This class is designed
  *			for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CE_API MetalContext final: public I_Context {
+class CE_CORE_API MetalContext final: public I_Context {
 public:
 	/**
 	 * @brief Default constructor

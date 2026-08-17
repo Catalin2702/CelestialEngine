@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
+
 
 namespace CE::Utility {
 
@@ -32,7 +33,7 @@ namespace CE::Utility {
  *			- --window-api / -wa : Windowing API (e.g. cocoa, glfw)
  *			Unrecognized or valueless flags are ignored and the corresponding defaults are kept.
  */
-CE_API Types::WindowProps GetWindowProps(int argc, const char* argv[]);
+CE_UTILITY_API Types::WindowProps GetWindowProps(int argc, const char* argv[]);
 
 }
 

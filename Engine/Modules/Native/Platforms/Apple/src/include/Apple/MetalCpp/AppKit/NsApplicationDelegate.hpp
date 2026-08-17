@@ -4,10 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-08-18
 //
 
 #pragma once
+
+#ifndef CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
+#define CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -16,9 +19,6 @@
 #include <AppKit/AppKit.hpp>
 
 
-#ifndef CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
-#define CE_NATIVE_APPLE_METALCPP_APPKIT_NSAPPLICATIONDELEGATE_HPP
-
 namespace NS {
 	class Application;
 	class Notification;
@@ -26,7 +26,7 @@ namespace NS {
 
 namespace CE::Native {
 
-class CE_API NsApplicationDelegate: public NS::I_ApplicationDelegate {
+class CE_APPLE_API NsApplicationDelegate: public NS::I_ApplicationDelegate {
 public:
 	NsApplicationDelegate() = default;
 

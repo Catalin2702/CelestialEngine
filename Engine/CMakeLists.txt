@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-18
 #
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -27,8 +27,12 @@ add_subdirectory(Vendor/Glad)
 add_subdirectory(Vendor/Glfw)
 add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
-add_subdirectory(Vendor/MetalCpp)
 add_subdirectory(Vendor/SpdLog)
+
+# Apple vendor libraries
+if (APPLE)
+	add_subdirectory(Vendor/MetalCpp)
+endif ()
 
 # Module libraries
 add_subdirectory(Modules/Core)
@@ -78,10 +82,6 @@ target_link_libraries(CE_Engine PUBLIC
 target_include_directories(CE_Engine PUBLIC
 	src/include
 	src/internal
-)
-
-target_compile_definitions(CE_Engine PRIVATE
-	CE_DEFINE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 
 #include <MetalKit/MetalKit.hpp>
 
+
 namespace CE::Native {
 
 /**
@@ -27,7 +28,7 @@ namespace CE::Native {
  *			display link) and drawableSizeWillChange reports drawable resizes. Each callback forwards to the delegate
  *			set via the matching Set* method.
  */
-class CE_API MtkViewDelegate: public MTK::I_ViewDelegate {
+class CE_APPLE_API MtkViewDelegate: public MTK::I_ViewDelegate {
 public:
 	MtkViewDelegate() = default;
 

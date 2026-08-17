@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <spdlog/fmt/ostr.h>
 
+
 namespace CE::Tools {
 
 /**
@@ -29,7 +30,7 @@ namespace CE::Tools {
  *			Built on top of spdlog library for high-performance logging with formatting support.
  *			Must be initialized with Init() before use and terminated with Terminate() on shutdown.
  */
-class CE_API Log {
+class CE_TOOLS_API Log {
 public:
 	/**
 	 * @brief Initializes the logging system

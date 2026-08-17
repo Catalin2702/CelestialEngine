@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <memory>
 
+
 struct GLFWwindow;
 
 namespace CE::Types {
@@ -26,7 +27,7 @@ namespace CE::Types {
  * @details Provides proper cleanup for GLFW windows when used with std::unique_ptr.
  *			Ensures that glfwDestroyWindow is called when the window goes out of scope.
  */
-struct CE_API GlfwWindowDestructor {
+struct CE_TYPES_API GlfwWindowDestructor {
 	/**
 	 * @brief Destroys the GLFW window
 	 * @param window Pointer to the GLFW window to destroy

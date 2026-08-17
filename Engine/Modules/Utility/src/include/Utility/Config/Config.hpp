@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 
 #include <atomic>
 
+
 namespace CE::Utility {
 
 /**
@@ -25,7 +26,7 @@ namespace CE::Utility {
  * @details Static-access singleton holding the runtime configuration (currently the window properties parsed from
  *			the command line). Not instantiable by clients: everything is reached through the St* static methods.
  */
-class CE_API Config {
+class CE_UTILITY_API Config {
 	/**
 	 * @brief Private constructor
 	 * @details Only StGet() can create the singleton instance

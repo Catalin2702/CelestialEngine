@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <chrono>
 
+
 namespace CE::Utility {
 
 /**
@@ -25,7 +26,7 @@ namespace CE::Utility {
  *			printing only happens in debug builds, so a chronometer left in the code costs two clock reads in
  *			Release/Dist). The measure can also be read while the chronometer is alive, or frozen early with Stop().
  */
-class CE_API Chronometer {
+class CE_UTILITY_API Chronometer {
 public:
 	using Clock = std::chrono::high_resolution_clock;
 	using TimePoint = std::chrono::time_point<Clock>;

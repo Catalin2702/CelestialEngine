@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 #include <array>
 #include <functional>
 #include <optional>
+
 
 namespace CE::Core {
 	class OpenGlContext;
@@ -36,7 +37,7 @@ namespace CE::Core {
  *			on Windows, Linux, and macOS. It integrates ImGui with OpenGL windows
  *			and handles all input events through GLFW.
  */
-class CE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
+class CE_CORE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: std::size_t {
 		MouseMoved = 0,
 		MouseDragged,

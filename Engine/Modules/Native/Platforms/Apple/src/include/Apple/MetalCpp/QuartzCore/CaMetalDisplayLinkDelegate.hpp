@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -13,10 +13,10 @@
 #define CE_NATIVE_APPLE_METALCPP_QUARTZCORE_CAMETALDISPLAYLINKDELEGATE_HPP
 
 #include "Define/DynamicLinker.hpp"
-
 #include "Utility/Delegate/Dispatcher.hpp"
 
 #include <QuartzCore/CAMetalDisplayLink.hpp>
+
 
 namespace CE::Native {
 
@@ -26,7 +26,7 @@ namespace CE::Native {
  * @details Installed on the display link that paces frames while VSync is on: every metalDisplayLinkNeedsUpdate
  *			callback forwards to the delegate set via SetMetalDisplayLinkNeedsUpdateDelegate.
  */
-class CE_API CaMetalDisplayLinkDelegate: public CA::I_MetalDisplayLinkDelegate {
+class CE_APPLE_API CaMetalDisplayLinkDelegate: public CA::I_MetalDisplayLinkDelegate {
 public:
 	CaMetalDisplayLinkDelegate() = default;
 

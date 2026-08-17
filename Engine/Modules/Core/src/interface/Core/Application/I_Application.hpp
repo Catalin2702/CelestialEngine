@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+
 
 namespace CE {
 namespace Events {
@@ -45,7 +46,7 @@ namespace CE::Core {
  * @details Defines the main application lifecycle methods, event handling, and layer management functions.
  *			Client applications should implement this interface and provide a factory function to create an instance of their application.
  */
-class CE_API I_Application {
+class CE_CORE_API I_Application {
 public:
 	using Clock = std::chrono::steady_clock;
 	using TimePoint = std::chrono::time_point<Clock>;

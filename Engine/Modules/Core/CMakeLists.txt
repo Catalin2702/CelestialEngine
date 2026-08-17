@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-07-22
+# Updated: 2026-08-18
 #
 
 set(APPLICATION_HEADERS
@@ -218,7 +218,7 @@ target_include_directories(CE_Core PUBLIC
 )
 
 target_compile_definitions(CE_Core PRIVATE
-	CE_DEFINE_EXPORTS
+	CE_CORE_EXPORTS
 )
 
 # Copy to Binaries/Last folder

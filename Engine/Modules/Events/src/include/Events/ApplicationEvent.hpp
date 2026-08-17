@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -12,12 +12,9 @@
 #ifndef CE_EVENTS_APPLICATIONEVENT_HPP
 #define CE_EVENTS_APPLICATIONEVENT_HPP
 
+#include "Define/Event.hpp"
 #include "Events/I_Event.hpp"
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Event.hpp"
-
-#include <string>
 
 namespace CE::Events {
 
@@ -28,7 +25,7 @@ namespace CE::Events {
  *			to run at regular intervals. The tick rate is typically independent of
  *			the frame rate.
  */
-class CE_API AppTickEvent: public I_Event {
+class AppTickEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
@@ -48,7 +45,7 @@ public:
  *			update logic, animations, and state management. Update frequency
  *			is typically tied to the frame rate.
  */
-class CE_API AppUpdateEvent: public I_Event {
+class AppUpdateEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
@@ -68,7 +65,7 @@ public:
  *			Handlers can use this event to submit rendering commands or update
  *			rendering-related state.
  */
-class CE_API AppRenderEvent: public I_Event {
+class AppRenderEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor

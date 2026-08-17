@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -20,9 +20,10 @@
 
 #include "Utility/Delegate/Dispatcher.hpp"
 
+
 namespace CE::Core {
 
-class GlfwEventHubDispatcher:
+class CE_CORE_API GlfwEventHubDispatcher:
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -24,6 +24,7 @@
 #include <optional>
 #include <semaphore>
 
+
 namespace CA {
 	class MetalDrawable;
 	class MetalLayer;
@@ -42,7 +43,7 @@ namespace CE::Core {
 
 class CocoaEventHubDispatcher;
 
-class CE_API ImGuiMetalLayer final: public I_ImGuiLayer {
+class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: std::size_t {
 		MouseMoved = 0,
 		MouseDragged,

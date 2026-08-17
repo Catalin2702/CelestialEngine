@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <cstdint>
+
 
 namespace CE::Types {
 
@@ -46,7 +47,7 @@ enum class ShaderType: uint8_t {
  * @details Provides a human-readable string representation of the ShaderType enum value. This is useful for debugging, logging, or displaying shader type names in the user interface.
  *			The function uses a switch statement to map each ShaderType value to its corresponding string name. If the ShaderType does not match any known value, it returns "Unknown".
  */
-CE_API const char* ToString(ShaderType shaderType);
+CE_TYPES_API const char* ToString(ShaderType shaderType);
 
 /**
  * @brief Checks if the specified shader type is supported by the given graphics API
@@ -56,7 +57,7 @@ CE_API const char* ToString(ShaderType shaderType);
  * @details Each API exposes a different stage set: OpenGL has the geometry and tessellation stages but no mesh or
  *			ray-tracing ones, Metal has mesh/amplification/ray generation but no geometry or tessellation stages.
  */
-CE_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shaderType);
+CE_TYPES_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shaderType);
 
 /**
  * @brief Converts a ShaderType enum value to the corresponding OpenGL shader type constant
@@ -64,7 +65,7 @@ CE_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shaderType
  * @return int The OpenGL shader type constant corresponding to the given ShaderType, or -1 if the ShaderType is unknown or unsupported
  * @details This function maps the ShaderType enum values to their corresponding OpenGL shader type constants (e.g., GL_VERTEX_SHADER, GL_FRAGMENT_SHADER). This is essential for compiling and using shaders in an OpenGL context. If the provided ShaderType does not have a corresponding OpenGL constant, the function returns -1 to indicate an error.
  */
-CE_API int ToOpenGlShaderType(ShaderType type);
+CE_TYPES_API int ToOpenGlShaderType(ShaderType type);
 
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 
 #include <string>
 
+
 namespace CE::Events {
 
 /**
@@ -28,7 +29,7 @@ namespace CE::Events {
  * @details Abstract base class that provides common functionality for mouse movement events.
  *			Stores the new cursor position and belongs to multiple mouse-related categories.
  */
-class CE_API I_MouseMovedEvent: public I_Event {
+class CE_EVENTS_API I_MouseMovedEvent: public I_Event {
 protected:
 	/**
 	 * @brief Constructor
@@ -65,7 +66,7 @@ protected:
  *			whenever the user moves the mouse within the window, allowing the application to
  *			respond to cursor movement for tasks like camera control, UI interaction, etc.
  */
-class CE_API MouseMovedEvent final: public I_MouseMovedEvent {
+class CE_EVENTS_API MouseMovedEvent final: public I_MouseMovedEvent {
 public:
 	/**
 	 * @brief Constructor
@@ -92,7 +93,7 @@ public:
  *			have vertical scrolling (Y offset), but some devices support horizontal
  *			scrolling (X offset) as well.
  */
-class CE_API MouseWheelScrolledEvent final: public I_Event {
+class CE_EVENTS_API MouseWheelScrolledEvent final: public I_Event {
 public:
 	/**
 	 * @brief Constructor
@@ -135,7 +136,7 @@ private:
  *			press and release events. Stores the button code and belongs to multiple
  *			mouse-related categories.
  */
-class CE_API I_MouseButtonEvent: public I_Event {
+class CE_EVENTS_API I_MouseButtonEvent: public I_Event {
 protected:
 	/**
 	 * @brief Protected constructor
@@ -165,7 +166,7 @@ protected:
  *			are 0 (left), 1 (right), 2 (middle), but additional buttons may be
  *			available depending on the hardware.
  */
-class CE_API MouseButtonPressedEvent final: public I_MouseButtonEvent {
+class CE_EVENTS_API MouseButtonPressedEvent final: public I_MouseButtonEvent {
 public:
 	/**
 	 * @brief Constructor
@@ -190,7 +191,7 @@ public:
  * @details Contains the button code of the released button. This event is generated
  *			when the user releases a previously pressed mouse button.
  */
-class CE_API MouseButtonReleasedEvent final: public I_MouseButtonEvent {
+class CE_EVENTS_API MouseButtonReleasedEvent final: public I_MouseButtonEvent {
 public:
 	/**
 	 * @brief Constructor
@@ -216,7 +217,7 @@ public:
  *			This event is generated when the user moves the mouse while holding down a mouse button,
  *			allowing for drag-and-drop interactions or similar functionality.
  */
-class CE_API MouseDraggedEvent final: public I_MouseMovedEvent {
+class CE_EVENTS_API MouseDraggedEvent final: public I_MouseMovedEvent {
 public:
 	/**
 	 * @brief Constructor

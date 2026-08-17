@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -22,6 +22,7 @@
 
 #include <array>
 #include <utility>
+
 
 struct GLFWwindow;
 
@@ -107,7 +108,7 @@ public:
  *			that works on Windows, Linux, and macOS. It provides a complete windowing
  *			system with event handling, VSync control, and OpenGL context management.
  */
-class CE_API GlfwWindow final: public I_Window {
+class CE_CORE_API GlfwWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor

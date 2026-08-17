@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 
 #include <AppKit/AppKit.hpp>
 
+
 namespace CE::Native {
 
 /**
@@ -27,9 +28,9 @@ namespace CE::Native {
  *			the matching UnicastDispatcher, which the application binds to the event hub's Receive* methods. This is
  *			the single source of input events for the Metal/Cocoa backend.
  */
-class CE_API NsViewEventDispatcher: public NS::I_ViewEventDispatcher {
+class CE_APPLE_API NsViewEventDispatcher: public NS::I_ViewEventDispatcher {
 public:
-	struct CE_API MouseEvents {
+	struct CE_APPLE_API MouseEvents {
 		UnicastDispatcher<const NS::Event*> mouseDownDispatcher;
 		UnicastDispatcher<const NS::Event*> mouseUpDispatcher;
 		UnicastDispatcher<const NS::Event*> mouseDraggedDispatcher;
@@ -45,13 +46,13 @@ public:
 		UnicastDispatcher<const NS::Event*> scrollWheelDispatcher;
 	};
 
-	struct CE_API KeyboardEvents {
+	struct CE_APPLE_API KeyboardEvents {
 		UnicastDispatcher<const NS::Event*> keyDownDispatcher;
 		UnicastDispatcher<const NS::Event*> keyUpDispatcher;
 		UnicastDispatcher<const NS::Event*> flagsChangedDispatcher;
 	};
 
-	struct CE_API ViewStateEvents {
+	struct CE_APPLE_API ViewStateEvents {
 		UnicastDispatcher<> viewDidMoveToWindowDispatcher;
 		UnicastDispatcher<> viewDidMoveToSuperviewDispatcher;
 		UnicastDispatcher<> viewDidLayoutDispatcher;

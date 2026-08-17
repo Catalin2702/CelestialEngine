@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -17,8 +17,8 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
 #include <format>
-#include <ostream>
 #include <string>
+
 
 enum ImGuiKey: int;
 
@@ -97,7 +97,7 @@ inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned in
  * @details Provides a human-readable string representation of the KeyCode enum value. This is useful for debugging, logging, or displaying key names in the user interface.
  *			The function uses a switch statement to map each KeyCode value to its corresponding string name. If the KeyCode does not match any known value, it returns "Unknown".
  */
-CE_API const char* ToString(KeyboardKeyCode key);
+CE_TYPES_API const char* ToString(KeyboardKeyCode key);
 
 /**
  * @brief Converts a GLFW key code to a KeyCode enum value
@@ -108,7 +108,7 @@ CE_API const char* ToString(KeyboardKeyCode key);
  *			The function uses a switch statement to match known GLFW key codes to their KeyCode equivalents.
  *			If the provided keycode does not match any known GLFW key code, it returns KeyCode::Unknown.
  */
-CE_API KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
+CE_TYPES_API KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
 
 /**
  * @brief Converts a KeyCode enum value to a GLFW key code
@@ -119,7 +119,7 @@ CE_API KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
  *			The function uses a switch statement to match known KeyCode enum values to their GLFW integer equivalents.
  *			If the provided keycode does not match any known KeyCode value, it returns -1 to indicate an invalid key code for GLFW.
  */
-CE_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
+CE_TYPES_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  * @brief Converts a KeyCode enum value to an ImGuiKey
@@ -130,19 +130,19 @@ CE_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
  *			The function uses a switch statement to match known KeyCode enum values to their ImGuiKey equivalents.
  *			If the provided keycode does not match any known KeyCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that key.
  */
-CE_API ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
+CE_TYPES_API ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
 
 /**
  * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
  * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
  */
-CE_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
+CE_TYPES_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
 
 /**
  * @brief Converts CE::KeyCode::KeyboardKeyCode to macOS/Cocoa virtual key codes
  * @details Maps the engine's keyboard key codes to NSEvent keyCode values
  */
-CE_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
+CE_TYPES_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
 
 }
 
@@ -152,10 +152,6 @@ struct std::formatter<CE::Types::KeyboardKeyCode>: std::formatter<std::string_vi
 		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
 	}
 };
-
-inline std::ostream& operator<<(std::ostream& os, const CE::Types::KeyboardKeyCode keycode) {
-	return os << std::string(CE::Types::ToString(keycode));
-}
 
 inline auto operator<=>(const unsigned lhs, const CE::Types::KeyboardKeyCode rhs) {
 	return lhs <=> CE::Types::ToUInt(rhs);

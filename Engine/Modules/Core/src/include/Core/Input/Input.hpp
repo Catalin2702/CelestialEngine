@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -21,6 +21,7 @@
 
 #include <utility>
 
+
 namespace CE::Core {
 
 /**
@@ -34,7 +35,7 @@ namespace CE::Core {
  *			exposed here as a static method, so callers never touch the state directly.
  *			Managed as a singleton (Init/Shutdown/Get) so input can be queried statically from anywhere in the engine.
  */
-class CE_API Input final {
+class CE_CORE_API Input final {
 public:
 	/**
 	 * @brief Creates the singleton input instance

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 
 #include <string>
 
+
 namespace CE::Events {
 
 /**
@@ -28,7 +29,7 @@ namespace CE::Events {
  *			flows context → event hub → subscribers. The application reacts by reconciling its frame pacing with the
  *			new state (Cocoa: tick loop vs CAMetalDisplayLink; GLFW: frame-limiter target).
  */
-class CE_API VSyncEvent: public I_Event {
+class CE_EVENTS_API VSyncEvent: public I_Event {
 public:
 	/**
 	 * @brief Constructor

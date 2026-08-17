@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -13,8 +13,8 @@
 #define CE_CORE_MAINHUB_EVENTS_I_RENDERCONTEXTEVENTHUBDISPATCHER_HPP
 
 #include "Define/DynamicLinker.hpp"
-
 #include "Events/RenderEvent.hpp"
+
 
 namespace CE::Core {
 
@@ -25,7 +25,7 @@ namespace CE::Core {
  *			change fired by the context after switching swap behaviour) to every subscriber of the matching multicast
  *			dispatcher. Defaults are no-ops so an implementation only overrides the events it actually routes.
  */
-class CE_API I_RenderContextEventHubDispatcher {
+class CE_CORE_API I_RenderContextEventHubDispatcher {
 public:
 	virtual ~I_RenderContextEventHubDispatcher() = default;
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 
 #include <string>
 
+
 namespace CE::Events {
 
 
@@ -29,7 +30,7 @@ namespace CE::Events {
  *			by the windowing system when the user resizes the window or when the window
  *			size changes programmatically.
  */
-class CE_API WindowResizeEvent: public I_Event {
+class CE_EVENTS_API WindowResizeEvent: public I_Event {
 public:
 	/**
 	 * @brief Constructor
@@ -75,7 +76,7 @@ using ViewResizeEvent = WindowResizeEvent;
  *			when the window is closed programmatically. Handlers can use this
  *			event to perform cleanup before the application exits.
  */
-class CE_API WindowCloseEvent: public I_Event {
+class CE_EVENTS_API WindowCloseEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
@@ -96,7 +97,7 @@ public:
  *			input state) use the focus-lost case to reset held keys/buttons, otherwise a key released
  *			while another window has focus would remain stuck as "down".
  */
-class CE_API WindowFocusEvent: public I_Event {
+class CE_EVENTS_API WindowFocusEvent: public I_Event {
 public:
 	/**
 	 * @brief Constructor

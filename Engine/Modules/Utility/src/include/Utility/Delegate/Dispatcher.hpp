@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -12,11 +12,11 @@
 #ifndef CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 #define CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 
-#include "Define/DynamicLinker.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 
 #include <vector>
+
 
 namespace CE::Utility {
 
@@ -29,7 +29,7 @@ namespace CE::Utility {
  *			feed the event hub, where exactly one receiver is expected.
  */
 template <typename... Args>
-class CE_API UnicastDispatcher {
+class UnicastDispatcher {
 public:
 	using DelegateType = EventDelegate<Args...>;
 
@@ -86,7 +86,7 @@ private:
  *			silently doing nothing.
  */
 template <typename R, typename... Args>
-class CE_API CallbackDispatcher {
+class CallbackDispatcher {
 public:
 	using CallbackType = CallbackDelegate<R, Args...>;
 
@@ -147,7 +147,7 @@ private:
  *			end of it, so handlers may safely (un)subscribe from within a callback.
  */
 template <typename... Args>
-class CE_API MulticastDispatcher {
+class MulticastDispatcher {
 public:
 	using Handle = uint32_t;
 	using DelegateType = EventDelegate<Args...>;

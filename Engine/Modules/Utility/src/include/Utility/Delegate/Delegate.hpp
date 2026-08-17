@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-12
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -12,14 +12,13 @@
 #ifndef CE_UTILITY_CALLBACK_DELEGATE_HPP
 #define CE_UTILITY_CALLBACK_DELEGATE_HPP
 
-#include "Define/DynamicLinker.hpp"
-
 #include <type_traits>
+
 
 namespace CE::Utility {
 
 template <typename R, typename... Args>
-class CE_API Delegate {
+class Delegate {
 public:
 	using Stub = R(*)(void*, Args...);
 

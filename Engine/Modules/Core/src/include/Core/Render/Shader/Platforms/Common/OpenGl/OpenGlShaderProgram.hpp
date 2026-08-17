@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -21,6 +21,7 @@
 #include <memory>
 #include <vector>
 
+
 namespace CE::Core {
 
 /**
@@ -29,7 +30,7 @@ namespace CE::Core {
  * @details Provides an OpenGL-specific implementation of the I_ShaderProgram interface for managing shader programs in an OpenGL context.
  *			Handles shader program creation, linking, and resource management, and provides access to the underlying OpenGL program ID for use in rendering operations.
  */
-class CE_API OpenGlShaderProgram: public I_ShaderProgram {
+class CE_CORE_API OpenGlShaderProgram: public I_ShaderProgram {
 public:
 	/**
 	 * @brief Default constructor for OpenGlShaderProgram

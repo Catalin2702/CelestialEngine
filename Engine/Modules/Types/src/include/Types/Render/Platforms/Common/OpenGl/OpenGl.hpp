@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -12,7 +12,10 @@
 #ifndef CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
 #define CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 #include <cstdint>
+
 
 namespace CE::Types {
 
@@ -29,7 +32,7 @@ enum class BufferBit: uint32_t {
 /**
  * @brief Converts a BufferBit flag to its underlying integer value (the GL bitmask)
  */
-int ToInt(BufferBit bit);
+CE_TYPES_API int ToInt(BufferBit bit);
 
 }
 

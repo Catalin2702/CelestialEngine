@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 
 #include "Utility/Delegate/Dispatcher.hpp"
 
+
 namespace NS {
 	class Event;
 	class Notification;
@@ -30,7 +31,7 @@ namespace CE::Core {
 class MetalContext;
 class CocoaWindow;
 
-class CocoaEventHubDispatcher:
+class CE_CORE_API CocoaEventHubDispatcher:
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,

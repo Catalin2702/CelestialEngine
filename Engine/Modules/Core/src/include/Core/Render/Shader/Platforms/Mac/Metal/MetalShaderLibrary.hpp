@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 
 #include <string>
 #include <unordered_map>
+
 
 namespace MTL {
 	class Device;
@@ -43,7 +44,7 @@ struct ShaderProgram {
  *			explicit path is provided), loads it on the given device and caches every contained MTL::Function keyed by
  *			its entry-point name. Non-copyable and non-movable: it owns retained Metal objects.
  */
-class CE_API MetalShaderLibrary {
+class CE_CORE_API MetalShaderLibrary {
 public:
 	/**
 	 * @brief Constructor - loads the shader library

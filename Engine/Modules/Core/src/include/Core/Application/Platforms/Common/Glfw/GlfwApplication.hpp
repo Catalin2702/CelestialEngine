@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -25,6 +25,7 @@
 #ifdef CE_PLATFORM_MACOS
 	#include <objc/objc.h>
 #endif
+
 
 namespace CE::Core {
 	class OpenGlContext;
@@ -86,7 +87,7 @@ public:
  * @details Provides a GLFW-specific implementation of the I_Application interface for platforms that support GLFW.
  *			Manages the application lifecycle and event handling using GLFW for window management and input handling.
  */
-class CE_API GlfwApplication: public I_Application {
+class CE_CORE_API GlfwApplication: public I_Application {
 	enum EventHubSubscription: std::size_t {
 		AppError = 0,
 		VSyncChange = 1,

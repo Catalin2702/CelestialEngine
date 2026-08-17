@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <string>
+
 
 namespace CE::Types {
 
@@ -51,13 +52,13 @@ inline BuildType GetCurrentBuildType() {
  * @param type The build type to convert
  * @return std::string "Debug", "Release" or "Dist"
  */
-CE_API std::string GetBuildTypeString(BuildType type);
+CE_TYPES_API std::string GetBuildTypeString(BuildType type);
 
 /**
  * @brief Gets the human-readable name of the current build configuration
  * @return std::string "Debug", "Release" or "Dist"
  */
-CE_API std::string GetCurrentBuildTypeString();
+CE_TYPES_API std::string GetCurrentBuildTypeString();
 
 }
 

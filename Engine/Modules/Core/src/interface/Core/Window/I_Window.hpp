@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 #include "Types/Window/WindowProps.hpp"
 
 #include <utility>
+
 
 namespace CE::Events {
 class I_Event;
@@ -31,7 +32,7 @@ namespace CE::Core {
  *			Implementations include OpenGLWindow for cross-platform OpenGL windows and
  *			MetalWindow for macOS Metal-based windows.
  */
-class CE_API I_Window {
+class CE_CORE_API I_Window {
 public:
 	/**
 	 * @brief Virtual destructor

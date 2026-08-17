@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,13 +16,14 @@
 
 #include <filesystem>
 
+
 namespace CE::Utility {
 
 namespace fs = std::filesystem;
 
 class File;
 
-class CE_API FileSystem {
+class CE_UTILITY_API FileSystem {
 public:
 	/**
 	 * @brief Creates a new file with the specified content at the given path

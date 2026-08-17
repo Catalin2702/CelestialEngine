@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -17,7 +17,6 @@
 
 #include <format>
 #include <functional>
-#include <ostream>
 #include <string>
 #include <string_view>
 
@@ -48,7 +47,7 @@ enum class WindowApi: uint8_t {
  * @details Contains all necessary information to create and configure a window,
  *			including title, dimensions, and VSync setting.
  */
-struct CE_API WindowProps {
+struct CE_TYPES_API WindowProps {
 	std::string title;								///< Window title displayed in the title bar
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
@@ -85,7 +84,7 @@ struct CE_API WindowProps {
  * @details This function checks if the given window API is supported on the current platform.
  *			For example, Cocoa is only supported on macOS, while Win32 is only supported on Windows.
  */
-CE_API bool IsWindowApiSupported(const WindowApi& api);
+CE_TYPES_API bool IsWindowApiSupported(const WindowApi& api);
 
 /**
  * @brief Checks if the specified graphics API is compatible with the specified window API
@@ -95,7 +94,7 @@ CE_API bool IsWindowApiSupported(const WindowApi& api);
  * @details This function checks if the given graphics API can be used with the given window API.
  *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
  */
-CE_API bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
+CE_TYPES_API bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 
@@ -113,9 +112,5 @@ struct std::formatter<CE::Types::WindowApi>: std::formatter<std::string_view> {
 		}
 	}
 };
-
-inline std::ostream& operator<<(std::ostream& os, const CE::Types::WindowApi& event) {
-	return os << std::format("{}", event);
-}
 
 #endif //CE_TYPES_WINDOW_WINDOWPROPS_HPP

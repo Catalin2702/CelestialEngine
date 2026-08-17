@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -12,11 +12,14 @@
 #ifndef CE_TYPES_RENDER_RENDER_HPP
 #define CE_TYPES_RENDER_RENDER_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 // ReSharper disable CppUnusedIncludeDirective
 #include <cstdint>
 #include <format>
 #include <ostream>
 #include <string_view>
+
 
 namespace CE::Types {
 
@@ -42,7 +45,7 @@ enum class GraphicsApi: uint8_t {
  * @details This function checks if the given graphics API is supported on the current platform.
  *			For example, Metal is only supported on macOS, while DirectX is only supported on Windows.
  */
-bool IsGraphicsApiSupported(const GraphicsApi& api);
+CE_TYPES_API bool IsGraphicsApiSupported(const GraphicsApi& api);
 
 }
 
@@ -61,13 +64,5 @@ struct std::formatter<CE::Types::GraphicsApi> : std::formatter<std::string_view>
 		}
 	}
 };
-
-namespace CE::Types {
-
-inline std::ostream& operator<<(std::ostream& os, const GraphicsApi& event) {
-	return os << std::format("{}", event);
-}
-
-}
 
 #endif //CE_TYPES_RENDER_RENDER_HPP

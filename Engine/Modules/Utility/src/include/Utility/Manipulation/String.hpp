@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <string>
 
+
 namespace CE::Utility {
 
 /**
@@ -25,7 +26,7 @@ namespace CE::Utility {
  * @details Creates a copy of the input string and converts all uppercase letters
  *			to their lowercase equivalents. Non-alphabetic characters remain unchanged.
  */
-CE_API std::string ToLowerCase(const std::string& source);
+CE_UTILITY_API std::string ToLowerCase(const std::string& source);
 
 }
 

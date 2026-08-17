@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include "Events/KeyEvent.hpp"
 
+
 namespace CE::Core {
 
 /**
@@ -25,7 +26,7 @@ namespace CE::Core {
  *			(pressed/released/typed) to every subscriber of the matching multicast dispatcher. Defaults are no-ops so an
  *			implementation only overrides the events it actually routes.
  */
-class CE_API I_KeyboardEventHubDispatcher {
+class CE_CORE_API I_KeyboardEventHubDispatcher {
 public:
 	virtual ~I_KeyboardEventHubDispatcher() = default;
 

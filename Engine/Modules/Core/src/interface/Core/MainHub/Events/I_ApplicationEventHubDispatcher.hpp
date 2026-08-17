@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 #include "Events/ApplicationEvent.hpp"
 #include "Events/GenericEvent.hpp"
 
+
 namespace CE::Core {
 
 /**
@@ -26,7 +27,7 @@ namespace CE::Core {
  *			(tick/update/render, plus errors) to every subscriber of the matching multicast dispatcher. Defaults are
  *			no-ops so an implementation only overrides the events it actually routes.
  */
-class CE_API I_ApplicationEventHubDispatcher {
+class CE_CORE_API I_ApplicationEventHubDispatcher {
 public:
 	virtual ~I_ApplicationEventHubDispatcher() = default;
 

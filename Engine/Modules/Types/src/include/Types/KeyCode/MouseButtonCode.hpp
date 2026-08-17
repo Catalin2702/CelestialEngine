@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -17,8 +17,8 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cstdint>
 #include <format>
-#include <ostream>
 #include <string>
+
 
 namespace CE::Types {
 
@@ -69,7 +69,7 @@ inline unsigned int ToUInt(const MouseButtonCode buttonCode) { return static_cas
  *			It uses a switch statement to return the corresponding string for each defined button.
  *			If the button value is not recognized, it returns "Unknown".
  */
-CE_API const char* ToString(MouseButtonCode buttonCode);
+CE_TYPES_API const char* ToString(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a GLFW mouse button code to a MouseButton enum value
@@ -80,7 +80,7 @@ CE_API const char* ToString(MouseButtonCode buttonCode);
  *			The function uses a switch statement to match known GLFW mouse button codes to their MouseButton equivalents.
  *			If the provided buttonCode does not match any known GLFW mouse button code, it returns MouseButton::Unknown.
  */
-CE_API MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
+CE_TYPES_API MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to a GLFW mouse button code
@@ -91,7 +91,7 @@ CE_API MouseButtonCode MouseButtonKeyCodeFromGlfw(int buttonCode);
  *			The function uses a switch statement to match known MouseButton enum values to their GLFW integer equivalents.
  *			If the provided buttonCode does not match any known MouseButton value, it returns -1 to indicate an invalid button code for GLFW.
  */
-CE_API int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
+CE_TYPES_API int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts a MouseButton enum value to an ImGuiKey
@@ -102,19 +102,19 @@ CE_API int GlfwKeyCodeFromMouseButton(MouseButtonCode buttonCode);
  *			The function uses a switch statement to match known MouseButton enum values to their ImGuiKey equivalents.
  *			If the provided buttonCode does not match any known MouseButton value, it returns ImGuiKey_None to indicate that there is no valid mapping for that button.
  */
-CE_API int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
+CE_TYPES_API int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Converts NSEvent button numbers to CE::KeyCode::MouseButtonCode
  * @details Maps the NSEvent buttonNumber to the engine's mouse button key codes
  */
-CE_API MouseButtonCode MouseButtonKeyCodeFromCocoa(long buttonNumber);
+CE_TYPES_API MouseButtonCode MouseButtonKeyCodeFromCocoa(long buttonNumber);
 
 /**
  * @brief Converts CE::KeyCode::MouseButtonCode to NSEvent button numbers
  * @details Maps the engine's mouse button key codes to NSEvent buttonNumber values
  */
-CE_API int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
+CE_TYPES_API int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
 
 }
 
@@ -124,10 +124,6 @@ struct std::formatter<CE::Types::MouseButtonCode>: std::formatter<std::string_vi
 		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
 	}
 };
-
-inline std::ostream& operator<<(std::ostream& os, const CE::Types::MouseButtonCode buttonCode) {
-	return os << std::string(CE::Types::ToString(buttonCode));
-}
 
 inline auto operator<=>(const unsigned lhs, const CE::Types::MouseButtonCode rhs) {
 	return lhs <=> CE::Types::ToUInt(rhs);

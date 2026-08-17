@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include <string>
 
+
 namespace CE::Core {
 
 /**
@@ -25,7 +26,7 @@ namespace CE::Core {
  *			The layer system allows for organizing application logic into separate, manageable units.
  *			Layers are updated and rendered in order, and events propagate through the layer stack.
  */
-class CE_API I_Layer {
+class CE_CORE_API I_Layer {
 protected:
 	/**
 	 * @brief Constructor

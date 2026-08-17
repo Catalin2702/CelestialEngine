@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include <Define/DynamicLinker.hpp>
 
 #include <vector>
+
 
 namespace CE::Core {
 
@@ -28,7 +29,7 @@ class I_Layer;
  *			in reverse order (overlays receive events first). This allows overlays like
  *			UI or debug tools to intercept events before they reach game layers.
  */
-class CE_API LayerStack {
+class CE_CORE_API LayerStack {
 using StackContainer = std::vector<I_Layer*>;
 	
 public:

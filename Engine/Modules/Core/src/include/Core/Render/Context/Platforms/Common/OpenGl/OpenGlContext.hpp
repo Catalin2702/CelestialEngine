@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 
 #include <utility>
 
+
 struct GLFWwindow;
 
 namespace CE::Types {
@@ -34,7 +35,7 @@ namespace CE::Core {
  * @details The framebuffer-resize event (in backing pixels) is bound by the application to the event hub's
  *			ReceiveWindowResizeEvent; the lifecycle signals mark the context's creation, initialization and shutdown.
  */
-class CE_API OpenGlContextEventDispatcher {
+class CE_CORE_API OpenGlContextEventDispatcher {
 	struct OpenGlContextLifeCycle {
 		UnicastDispatcher<> onCreatedDispatcher;
 		UnicastDispatcher<> onInitializedDispatcher;
@@ -75,7 +76,7 @@ public:
  *			Manages an OpenGL context associated with a GLFW window, allowing for cross-platform rendering using OpenGL.
  *			This class is designed for applications that want to use OpenGL for rendering across multiple platforms using GLFW for window management.
  */
-class CE_API OpenGlContext final: public I_Context {
+class CE_CORE_API OpenGlContext final: public I_Context {
 public:
 	/**
 	 * @brief Constructor

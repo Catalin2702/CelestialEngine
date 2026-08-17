@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-18
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -87,7 +87,7 @@ target_link_libraries(CE_Apple PUBLIC
 )
 
 target_compile_definitions(CE_Apple PRIVATE
-	CE_DEFINE_EXPORTS
+	CE_APPLE_EXPORTS
 )
 
 target_include_directories(CE_Apple PUBLIC

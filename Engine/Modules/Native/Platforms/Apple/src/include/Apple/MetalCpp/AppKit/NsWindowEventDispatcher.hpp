@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 
 #include <AppKit/AppKit.hpp>
 
+
 namespace CE::Native {
 
 /**
@@ -27,26 +28,26 @@ namespace CE::Native {
  *			(miniaturize/fullscreen) and lifecycle (will close) notifications are re-emitted on the matching
  *			UnicastDispatcher, which the application binds to the event hub's Receive* methods.
  */
-class CE_API NsWindowEventDispatcher: public NS::I_WindowEventDispatcher {
+class CE_APPLE_API NsWindowEventDispatcher: public NS::I_WindowEventDispatcher {
 public:
-	struct CE_API NsWindowGeometryEvents {
+	struct CE_APPLE_API NsWindowGeometryEvents {
 		UnicastDispatcher<const NS::Notification*> didResizeDispatcher;
 		UnicastDispatcher<const NS::Notification*> didMoveDispatcher;
 	};
 
-	struct CE_API NsWindowFocusEvents {
+	struct CE_APPLE_API NsWindowFocusEvents {
 		UnicastDispatcher<const NS::Notification*> didBecomeKeyDispatcher;
 		UnicastDispatcher<const NS::Notification*> didResignKeyDispatcher;
 	};
 
-	struct CE_API NsWindowStateEvents {
+	struct CE_APPLE_API NsWindowStateEvents {
 		UnicastDispatcher<const NS::Notification*> didMiniaturizeDispatcher;
 		UnicastDispatcher<const NS::Notification*> didDeminiaturizeDispatcher;
 		UnicastDispatcher<const NS::Notification*> didEnterFullScreenDispatcher;
 		UnicastDispatcher<const NS::Notification*> didExitFullScreenDispatcher;
 	};
 
-	struct CE_API NsWindowLifecycleEvents {
+	struct CE_APPLE_API NsWindowLifecycleEvents {
 		UnicastDispatcher<const NS::Notification*> willCloseDispatcher;
 	};
 public:

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -23,6 +23,7 @@
 #include <Foundation/Foundation.hpp>
 
 #include <utility>
+
 
 namespace CA {
 	class MetalLayer;
@@ -77,7 +78,7 @@ public:
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CE_API CocoaWindow final: public I_Window {
+class CE_CORE_API CocoaWindow final: public I_Window {
 public:
 	/**
 	 * @brief Constructor

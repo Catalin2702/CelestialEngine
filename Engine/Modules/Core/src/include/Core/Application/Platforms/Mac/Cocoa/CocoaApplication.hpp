@@ -4,8 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
-//
+// Updated: 2026-08-18
 
 #pragma once
 
@@ -93,7 +92,7 @@ public:
  * @details Provides a macOS-specific implementation of the I_Application interface using Cocoa for application management.
  *			Manages the application lifecycle and event handling for a native macOS application.
  */
-class CE_API CocoaApplication: public I_Application {
+class CE_CORE_API CocoaApplication: public I_Application {
 	friend class CocoaApplicationDelegate;
 
 	enum EventHubSubscription: std::size_t {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <utility>
 
+
 namespace CE::Core {
 
 /**
@@ -41,7 +42,7 @@ namespace CE::Core {
  *			A window focus loss resets all held keys/buttons: their release events would otherwise be delivered to another
  *			window and the keys would remain stuck as "down".
  */
-class CE_API InputState {
+class CE_CORE_API InputState {
 	friend class Input;										///< Sole interface to the state: exposes its members as static methods
 
 	enum HubSubscription: std::size_t {
