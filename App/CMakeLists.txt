@@ -132,11 +132,16 @@ if(APPLE)
 		COMMENT "Compiling Asset Catalog"
 	)
 
-	# Sign the app with ad-hoc signature and entitlements (suppresses warnings)
+	# Sign the app with ad-hoc signature and entitlements (suppresses warnings). Deliberately NOT
+	# --deep: it resigns nested content (Contents/Frameworks) in an unspecified order and does not
+	# reliably produce a valid seal - Apple's own codesign docs call it deprecated for exactly this
+	# reason. The embedded module libraries are already signed individually as they're copied in
+	# (see ce_bundle_apple_frameworks, registered - and so run - before this step), so a plain,
+	# non-deep sign here only needs to seal the outer bundle around already-valid nested code.
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND codesign --force --sign -
 			--entitlements "${CMAKE_CURRENT_SOURCE_DIR}/Entitlements.plist"
-			--deep "$<TARGET_BUNDLE_DIR:CE_App>"
+			"$<TARGET_BUNDLE_DIR:CE_App>"
 		COMMENT "Code signing CE_App with entitlements"
 	)
 endif()

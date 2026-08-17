@@ -57,11 +57,13 @@ set_tests_properties(CoreTests PROPERTIES
 	LABELS "Engine;Core"
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module DLLs in
-# ../DLL/ (Windows delay-load bootstrap / Linux RPATH - see App/CMakeLists.txt for details)
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module libraries:
+# Windows via delay-load bootstrap, Linux via RPATH into ../DLL/, macOS via its own sibling copies
+# (see App/CMakeLists.txt / CelestialEngineMacros.cmake for details)
 ce_set_output_subdirectory(CE_TestsCore Tests)
 ce_enable_dll_bootstrap(CE_TestsCore)
 ce_set_dll_search_rpath(CE_TestsCore "../DLL")
+ce_embed_apple_modules_beside(CE_TestsCore)
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsCore)

@@ -7,10 +7,6 @@
 # Updated: 2026-08-18
 #
 
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg_link/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-endif()
-
 cmake_minimum_required(VERSION 4.1)
 
 include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
@@ -56,9 +52,15 @@ set_target_properties(CE_Engine PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables, and (Linux/macOS) lets it find
-# its own sibling module libraries wherever it ends up (DLL/ or CE_App.app/Contents/Frameworks)
-ce_set_output_subdirectory(CE_Engine DLL)
+# Keeps Binaries/<toolchain>/<config>/ down to just executables - skipped on macOS, where doing
+# this would force the DLL/ folder to exist as soon as CE_App alone is built (see
+# ce_set_output_subdirectory's doc comment)
+if (NOT APPLE)
+	ce_set_output_subdirectory(CE_Engine DLL)
+endif ()
+
+# Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
+# CE_App.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Engine)
 
 # Modules
