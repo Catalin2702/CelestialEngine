@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -163,7 +163,15 @@ void ImGuiOpenGlLayer::_Init() {
 			throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
 		}
 
-		const auto [width, height] = _window->get().GetFrameSize();
+		// io.DisplaySize must be in the same (logical/screen) coordinate space as the mouse position
+		// events fed in _OnMouseMoved/_OnMouseDragged - those come straight from GLFW's cursor
+		// callback, which always reports screen coordinates, never framebuffer pixels. Using the
+		// framebuffer size here (GetFrameSize()) instead of the window size desyncs the two on any
+		// display where the OS content scale isn't 1:1 (e.g. Windows at 125%/150% scaling), which is
+		// what caused clicks to land off from the visible cursor by a roughly constant offset.
+		// DisplayFramebufferScale is the separate framebuffer/window ratio used to scale draw calls
+		// for crisp rendering on such displays, and is unaffected by this.
+		const auto [width, height] = _window->get().GetWindowSize();
 		const auto [xScale, yScale] = _context->get().GetContentScale();
 
 		io.DisplaySize = ImVec2(width,height);

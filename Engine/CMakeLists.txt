@@ -56,6 +56,11 @@ set_target_properties(CE_Engine PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and (Linux/macOS) lets it find
+# its own sibling module libraries wherever it ends up (DLL/ or CE_App.app/Contents/Frameworks)
+ce_set_output_subdirectory(CE_Engine DLL)
+ce_configure_module_library_rpath(CE_Engine)
+
 # Modules
 target_link_libraries(CE_Engine PUBLIC
 	CE_Config

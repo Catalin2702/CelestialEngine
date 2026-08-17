@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-18
 //
 
 #include <CelestialEngine.hpp>
@@ -29,7 +29,7 @@ std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, con
 #endif
 		default: {
 			const auto error = std::format("Application::CreateApplication: Unsupported window API specified in window properties. Window API: {}", windowProps.windowApi);
-			CE_CORE_ERROR(error);
+			Tools::Log::LogCoreError(error);
 			throw std::runtime_error(error);
 		}
 	}

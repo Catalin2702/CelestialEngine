@@ -107,14 +107,14 @@ public:
 	 * @return std::filesystem::path The root directory path as a string
 	 * @details Returns the root directory path for the file system. This is the base directory from which all file paths are resolved. The root directory can be set using the SetRootDirectory method, and it is used as a reference point for relative file paths.
 	 */
-	[[nodiscard]] static fs::path GetRootDirectory() { return _rootDirectory; }
+	[[nodiscard]] static fs::path GetRootDirectory();
 
 	/**
 	 * @brief Sets the root directory path for the file system
 	 * @param rootDirectory The new root directory path to set
 	 * @details Sets the root directory path for the file system. This is the base directory from which all file paths are resolved. The provided path will be stored as the new root directory, and it will be used as a reference point for relative file paths.
 	 */
-	static void SetRootDirectory(const fs::path& rootDirectory) { _rootDirectory = rootDirectory; }
+	static void SetRootDirectory(const fs::path& rootDirectory);
 
 private:
 	static fs::path _rootDirectory;

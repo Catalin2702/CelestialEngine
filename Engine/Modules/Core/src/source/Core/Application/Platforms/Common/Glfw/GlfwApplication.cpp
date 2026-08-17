@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -25,6 +25,7 @@
 #include <cassert>
 #include <chrono>
 #include <format>
+#include <string>
 #include <thread>
 
 // On macOS GLFW hosts a real NSApplication, so the GLFW backend reuses the shared native menu bar built by CreateMenuBar.
@@ -33,6 +34,19 @@
 
 	#include <AppKit/AppKit.hpp>
 #endif
+
+namespace CE::Core {
+
+// On macOS, CE_App ships as a bundle (Contents/MacOS/CE_App next to Contents/Resources/), so
+// Resources/ is one level above the executable. On Windows/Linux, Resources/ is copied as a
+// direct sibling of the executable instead (see App/CMakeLists.txt), so no "../" is needed.
+#ifdef CE_PLATFORM_MACOS
+	constexpr auto OpenGlShadersDirectory = "../Resources/Shaders/OpenGL/";
+#else
+	constexpr auto OpenGlShadersDirectory = "Resources/Shaders/OpenGL/";
+#endif
+
+}
 
 namespace CE::Core {
 
@@ -257,8 +271,8 @@ void GlfwApplication::_InitRenderer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	std::array<std::unique_ptr<I_Shader>, 2> shaders{
-		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad("../Resources/Shaders/OpenGL/Vertex.glsl"), Types::ShaderType::Vertex),
-		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad("../Resources/Shaders/OpenGL/Fragment.glsl"), Types::ShaderType::Fragment)
+		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
+		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl"), Types::ShaderType::Fragment)
 	};
 
 	_shaderProgram = std::make_unique<OpenGlShaderProgram>(

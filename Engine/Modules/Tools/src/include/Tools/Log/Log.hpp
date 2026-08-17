@@ -63,6 +63,21 @@ public:
 	 */
 	static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
+	/**
+	 * @brief Logs an already-formatted message at error level on the core logger
+	 * @param message The message to log, formatted by the caller
+	 * @details Deliberately out-of-line (defined in Log.cpp) instead of the usual
+	 *			CE_CORE_* macros: those expand to a call into spdlog's templated,
+	 *			header-only formatting API, which gets compiled straight into whichever
+	 *			translation unit uses them - including EntryPoint.hpp's main(), which is
+	 *			compiled directly into the client executable. That pulls a direct (non
+	 *			delay-loadable) import of spdlog/fmt's own DLL into the executable itself.
+	 *			Routing through this plain, compiled function keeps that call inside
+	 *			CE_Tools instead, which the executable already reaches through the
+	 *			regular (delay-loaded) module DLL machinery.
+	 */
+	static void LogCoreError(const std::string& message);
+
 private:
 	static std::shared_ptr<spdlog::logger> _s_coreLogger;	///< Logger for engine core messages
 	static std::shared_ptr<spdlog::logger> _s_clientLogger;	///< Logger for client application messages

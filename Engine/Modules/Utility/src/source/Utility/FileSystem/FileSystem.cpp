@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -20,6 +20,10 @@
 namespace CE::Utility {
 
 fs::path FileSystem::_rootDirectory = fs::current_path();
+
+fs::path FileSystem::GetRootDirectory() { return _rootDirectory; }
+
+void FileSystem::SetRootDirectory(const fs::path& rootDirectory) { _rootDirectory = rootDirectory; }
 
 File FileSystem::StCreate(const fs::path& path, const std::string& content, const bool autoSave) {
 	const auto fullPath = _rootDirectory / path;

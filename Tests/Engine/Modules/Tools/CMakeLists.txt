@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-08-18
 #
 
 enable_testing()
@@ -41,6 +41,12 @@ add_test(NAME ToolsTests
 set_tests_properties(ToolsTests PROPERTIES
 	LABELS "Engine;Tools"
 )
+
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module DLLs in
+# ../DLL/ (Windows delay-load bootstrap / Linux RPATH - see App/CMakeLists.txt for details)
+ce_set_output_subdirectory(CE_TestsTools Tests)
+ce_enable_dll_bootstrap(CE_TestsTools)
+ce_set_dll_search_rpath(CE_TestsTools "../DLL")
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsTools)

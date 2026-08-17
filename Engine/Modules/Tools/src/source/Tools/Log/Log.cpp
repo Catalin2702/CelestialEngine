@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #include "Tools/Log/Log.hpp"
@@ -12,6 +12,8 @@
 #ifndef CE_DIST
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
+
+#include <cassert>
 
 namespace CE::Tools {
 
@@ -50,6 +52,11 @@ std::shared_ptr<spdlog::logger>& Log::GetCoreLogger() {
 
 std::shared_ptr<spdlog::logger>& Log::GetClientLogger() {
 	return _s_clientLogger;
+}
+
+void Log::LogCoreError(const std::string& message) {
+	assert(GetCoreLogger() && "CoreLogger is not initialized");
+	GetCoreLogger()->error(message);
 }
 
 }

@@ -94,5 +94,10 @@ target_include_directories(CE_Apple PUBLIC
 	src/include
 )
 
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and lets it find its own sibling
+# module libraries wherever it ends up (DLL/ or CE_App.app/Contents/Frameworks)
+ce_set_output_subdirectory(CE_Apple DLL)
+ce_configure_module_library_rpath(CE_Apple)
+
 # Link the platform-specific modules
 ce_copy_to_last(CE_Apple)

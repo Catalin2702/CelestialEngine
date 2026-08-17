@@ -12,6 +12,7 @@
 #ifndef CE_ENTRYPOINT_HPP
 #define CE_ENTRYPOINT_HPP
 
+#include <format>
 #include <stdexcept>
 
 
@@ -42,13 +43,16 @@ int main(const int argc, const char* argv[]) {
 			const auto app = Core::CreateApplication(argc, argv);
 			app->Start();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
-			CE_CORE_ERROR("Runtime error: {0}", _err.what());
+			// Formatted with std::format and logged via Log::LogCoreError (not the CE_CORE_ERROR
+			// macro) so this file - compiled directly into the client executable - never touches
+			// spdlog/fmt's own template machinery; see LogCoreError's doc comment for why.
+			Tools::Log::LogCoreError(std::format("Runtime error: {0}", _err.what()));
 			code = 1;
 		} catch ([[maybe_unused]] const std::exception& _err) {
-			CE_CORE_ERROR("Exception: {0}", _err.what());
+			Tools::Log::LogCoreError(std::format("Exception: {0}", _err.what()));
 			code = 1;
 		} catch (...) {
-			CE_CORE_ERROR("Unknown exception occurred");
+			Tools::Log::LogCoreError("Unknown exception occurred");
 			code = 1;
 		}
 	}

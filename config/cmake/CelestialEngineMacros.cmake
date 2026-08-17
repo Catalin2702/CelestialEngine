@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-08-18
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -168,4 +168,150 @@ function(ce_copy_to_last TARGET_NAME)
 			)
 		endif()
 	endif()
+endfunction()
+
+# Base names of the engine's own SHARED library modules (no extension): the set every
+# executable delay-loads on Windows (see ce_enable_dll_bootstrap) and whose runtime artifact
+# (.dll / .so / .dylib) is redirected into the DLL/ subfolder below, so
+# Binaries/<toolchain>/<config>/ only ever holds executables.
+set(CE_MODULE_DLL_NAMES
+	CE_Core
+	CE_Engine
+	CE_Events
+	CE_Tools
+	CE_Types
+	CE_Utility
+)
+
+# macOS also builds CE_Apple (the Cocoa/Metal native bridge, Modules/Native/Platforms/Apple) as
+# its own SHARED library. It is embedded into CE_App.app/Contents/Frameworks alongside the others
+# (see ce_bundle_apple_frameworks) but kept out of CE_MODULE_DLL_NAMES itself, since that list also
+# drives ce_enable_dll_bootstrap's /DELAYLOAD flags on Windows, where CE_Apple does not exist.
+if (APPLE)
+	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES} CE_Apple)
+else ()
+	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES})
+endif ()
+
+# Redirects TARGET_NAME's runtime artifact (the .exe on Windows/Linux, or the .dll/.so/.dylib) into
+# Binaries/<toolchain>/<config>/<SUBDIR> instead of the flat default, so e.g. every module library
+# can be pointed at "DLL" and every test executable at "Tests", leaving the top-level folder with
+# just CE_App's own executable and Resources/. On macOS this only affects where the library is
+# initially built to - the final CE_App.app bundle embeds its own copies via
+# ce_bundle_apple_frameworks instead of referencing this location at runtime.
+# Usage: ce_set_output_subdirectory(target_name subdir)
+function(ce_set_output_subdirectory TARGET_NAME SUBDIR)
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>/${SUBDIR}"
+		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Binaries/${CE_TOOLCHAIN_NAME}/$<CONFIG>/${SUBDIR}"
+	)
+endfunction()
+
+# Gives a CE module SHARED library (Core, Events, Tools, Types, Utility, Engine, and on macOS also
+# Apple) its own "look in my own directory" RPATH, so once every module library ends up sitting
+# flat in the same folder - DLL/ in the build tree and on Linux, or CE_App.app/Contents/Frameworks
+# on macOS (see ce_bundle_apple_frameworks) - it resolves its dependencies on sibling module
+# libraries as-is, without needing install_name_tool/patchelf rewriting after the fact. On macOS
+# this also sets INSTALL_NAME_DIR so the library's own identity is @rpath-relative (portable)
+# instead of an absolute build-tree path. No-op on Windows, which resolves inter-module DLL
+# dependencies via ce_enable_dll_bootstrap instead.
+# Usage: ce_configure_module_library_rpath(target_name)
+function(ce_configure_module_library_rpath TARGET_NAME)
+	if (WIN32)
+		return()
+	endif ()
+
+	if (APPLE)
+		set_target_properties(${TARGET_NAME} PROPERTIES
+			INSTALL_NAME_DIR "@rpath"
+			BUILD_RPATH "@loader_path"
+			INSTALL_RPATH "@loader_path"
+		)
+	else ()
+		set_target_properties(${TARGET_NAME} PROPERTIES
+			BUILD_RPATH "$ORIGIN"
+			INSTALL_RPATH "$ORIGIN"
+		)
+	endif ()
+endfunction()
+
+# Embeds an $ORIGIN-relative (Linux) or @loader_path-relative (macOS) RPATH into TARGET_NAME - a
+# plain (non-bundle) executable, such as one of the Tests/*.exe - so the dynamic loader finds the
+# module libraries in RELATIVE_PATH without needing LD_LIBRARY_PATH/DYLD_LIBRARY_PATH set. Do NOT
+# use this for CE_App on macOS: a .app bundle should embed its own copies instead, so it stays
+# portable if moved - see ce_bundle_apple_frameworks. No-op on Windows, which uses
+# ce_enable_dll_bootstrap instead.
+# Usage: ce_set_dll_search_rpath(target_name relative_path_to_dll_dir)  e.g. "DLL" or "../DLL"
+function(ce_set_dll_search_rpath TARGET_NAME RELATIVE_PATH)
+	if (WIN32)
+		return()
+	endif ()
+
+	if (APPLE)
+		set(ORIGIN_TOKEN "@loader_path")
+	else ()
+		set(ORIGIN_TOKEN "$ORIGIN")
+	endif ()
+
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		BUILD_RPATH "${ORIGIN_TOKEN}/${RELATIVE_PATH}"
+		INSTALL_RPATH "${ORIGIN_TOKEN}/${RELATIVE_PATH}"
+	)
+endfunction()
+
+# On Windows, marks every CE_MODULE_DLL_NAMES import as delay-loaded on TARGET_NAME and compiles
+# in the bootstrap translation unit that registers the DLL/ subfolder as an additional search
+# directory (via AddDllDirectory) before those imports are first touched. Needed because the
+# module DLLs live in DLL/ instead of next to the executable, and unlike Linux/macOS's RPATH, the
+# Windows loader has no notion of "look in this subfolder relative to me" - it only searches the
+# executable's own directory, system directories and PATH. No-op elsewhere.
+# Usage: ce_enable_dll_bootstrap(target_name)
+function(ce_enable_dll_bootstrap TARGET_NAME)
+	if (NOT WIN32)
+		return()
+	endif ()
+
+	target_sources(${TARGET_NAME} PRIVATE
+		"${CMAKE_SOURCE_DIR}/Engine/Modules/Native/Platforms/Windows/src/source/Windows/DllSearchBootstrap.cpp"
+	)
+
+	target_link_options(${TARGET_NAME} PRIVATE
+		/DEFAULTLIB:delayimp
+	)
+
+	foreach (MODULE_DLL ${CE_MODULE_DLL_NAMES})
+		target_link_options(${TARGET_NAME} PRIVATE
+			/DELAYLOAD:${MODULE_DLL}.dll
+		)
+	endforeach ()
+endfunction()
+
+# On macOS, embeds every CE_APPLE_FRAMEWORK_MODULE_NAMES library into TARGET_NAME's own
+# Contents/Frameworks/ - the standard, portable way to ship a self-contained .app bundle - and
+# points the bundle executable's RPATH at @executable_path/../Frameworks so it resolves them
+# there. Each embedded library resolves ITS OWN sibling dependencies the same way, via its own
+# @loader_path RPATH set by ce_configure_module_library_rpath, so no install_name_tool rewriting
+# is needed after the copy. Requires TARGET_NAME to be a MACOSX_BUNDLE executable. No-op
+# elsewhere - Windows/Linux use ce_enable_dll_bootstrap / ce_set_dll_search_rpath instead,
+# pointing at a shared DLL/ folder rather than duplicating the module libraries into the bundle.
+# Usage: ce_bundle_apple_frameworks(target_name)
+function(ce_bundle_apple_frameworks TARGET_NAME)
+	if (NOT APPLE)
+		return()
+	endif ()
+
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		BUILD_RPATH "@executable_path/../Frameworks"
+		INSTALL_RPATH "@executable_path/../Frameworks"
+	)
+
+	foreach (MODULE_LIB ${CE_APPLE_FRAMEWORK_MODULE_NAMES})
+		add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_BUNDLE_CONTENT_DIR:${TARGET_NAME}>/Frameworks"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				"$<TARGET_FILE:${MODULE_LIB}>"
+				"$<TARGET_BUNDLE_CONTENT_DIR:${TARGET_NAME}>/Frameworks/"
+			COMMENT "Embedding ${MODULE_LIB} into ${TARGET_NAME}.app/Contents/Frameworks"
+		)
+	endforeach ()
 endfunction()

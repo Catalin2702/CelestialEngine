@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-08-18
 #
 
 set(INPUT_SOURCES
@@ -56,6 +56,12 @@ add_test(NAME CoreTests
 set_tests_properties(CoreTests PROPERTIES
 	LABELS "Engine;Core"
 )
+
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module DLLs in
+# ../DLL/ (Windows delay-load bootstrap / Linux RPATH - see App/CMakeLists.txt for details)
+ce_set_output_subdirectory(CE_TestsCore Tests)
+ce_enable_dll_bootstrap(CE_TestsCore)
+ce_set_dll_search_rpath(CE_TestsCore "../DLL")
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsCore)

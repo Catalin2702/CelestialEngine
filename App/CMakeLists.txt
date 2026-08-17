@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-18
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -51,11 +51,51 @@ else ()
 	add_executable(CE_App
 		${SOURCES}
 	)
+
+	add_dependencies(CE_App CE_OpenGLShaders)
+
+	# Mirrors the macOS branch above: treating the shaders as link dependencies forces CE_App to
+	# relink (and thus re-run the POST_BUILD copy below) whenever a .glsl file changes, instead of
+	# only picking up the change on the next full reconfigure.
+	set_property(TARGET CE_App APPEND PROPERTY
+		LINK_DEPENDS ${CE_OPENGL_SHADERS_SOURCES}
+	)
+
+	# GLSL is loaded and compiled at runtime, so the .glsl files are copied next to the executable
+	# as-is, mirroring the macOS bundle's Resources/Shaders/OpenGL layout (see the platform-specific
+	# relative path chosen in GlfwApplication.cpp).
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL"
+		COMMENT "Creating Resources/Shaders/OpenGL"
+	)
+
+	foreach (SHADER_FILE ${CE_OPENGL_SHADERS_SOURCES})
+		add_custom_command(TARGET CE_App POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				"${SHADER_FILE}"
+				"$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL/"
+			COMMENT "Copying ${SHADER_FILE} to Resources/Shaders/OpenGL"
+		)
+	endforeach ()
 endif()
 
 set_target_properties(CE_App PROPERTIES
 	LINKER_LANGUAGE CXX
+	OUTPUT_NAME "CelestialEngine"
 )
+
+# Windows: delay-load the module DLLs and register DLL/ as their search directory.
+ce_enable_dll_bootstrap(CE_App)
+
+if (APPLE)
+	# macOS ships CE_App as a self-contained .app bundle: embed every module .dylib into
+	# Contents/Frameworks/ instead of pointing at the external DLL/ folder, so the bundle stays
+	# portable if copied/moved elsewhere.
+	ce_bundle_apple_frameworks(CE_App)
+else ()
+	# Linux: embed an $ORIGIN-relative RPATH pointing at DLL/.
+	ce_set_dll_search_rpath(CE_App "DLL")
+endif ()
 
 # Create macOS bundle to avoid system warnings
 if(APPLE)

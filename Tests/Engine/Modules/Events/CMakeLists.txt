@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-08-18
 #
 
 set(SOURCES
@@ -46,6 +46,12 @@ add_test(NAME EventsTests
 set_tests_properties(EventsTests PROPERTIES
 	LABELS "Engine;Events"
 )
+
+# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module DLLs in
+# ../DLL/ (Windows delay-load bootstrap / Linux RPATH - see App/CMakeLists.txt for details)
+ce_set_output_subdirectory(CE_TestsEvents Tests)
+ce_enable_dll_bootstrap(CE_TestsEvents)
+ce_set_dll_search_rpath(CE_TestsEvents "../DLL")
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsEvents)
