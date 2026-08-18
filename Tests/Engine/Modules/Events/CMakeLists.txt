@@ -51,9 +51,10 @@ set_tests_properties(EventsTests PROPERTIES
 # Windows via delay-load bootstrap, Linux via RPATH into ../DLL/, macOS via its own sibling copies
 # (see App/CMakeLists.txt / CelestialEngineMacros.cmake for details)
 ce_set_output_subdirectory(CE_TestsEvents Tests)
+ce_stage_to_binaries(CE_TestsEvents Tests)
 ce_enable_dll_bootstrap(CE_TestsEvents)
 ce_set_dll_search_rpath(CE_TestsEvents "../DLL")
-ce_embed_apple_modules_beside(CE_TestsEvents)
+ce_embed_apple_modules_beside(CE_TestsEvents Tests)
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_TestsEvents)

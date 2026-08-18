@@ -94,12 +94,11 @@ target_include_directories(CE_Apple PUBLIC
 	src/include
 )
 
-# Deliberately NOT ce_set_output_subdirectory(CE_Apple DLL): this file only ever runs on macOS,
-# where redirecting the module libraries' output would force a Binaries/<toolchain>/<config>/DLL/
-# folder to exist as soon as CE_App alone is built (see that function's doc comment). It builds to
-# CMake's own default location instead; ce_bundle_apple_frameworks / ce_embed_apple_modules_beside
-# copy it out of there on demand. This DOES still need its own @loader_path RPATH so it finds its
-# sibling module libraries wherever it ends up.
+# Built into the build tree like every other module library, so nothing lands next to
+# CelestialEngine.app (see ce_set_module_library_output); ce_bundle_apple_frameworks /
+# ce_embed_apple_modules_beside copy it out of there on demand. It still needs its own
+# @loader_path RPATH so it finds its sibling module libraries wherever it ends up.
+ce_set_module_library_output(CE_Apple)
 ce_configure_module_library_rpath(CE_Apple)
 
 # Link the platform-specific modules

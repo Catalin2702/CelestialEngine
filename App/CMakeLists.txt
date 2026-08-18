@@ -13,6 +13,13 @@ include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
 
 project(CE_App LANGUAGES CXX VERSION 0.1.3)
 
+# The name of the produced binary (Contents/MacOS/<name> inside the bundle). Kept in ONE place
+# because Info.plist's CFBundleExecutable has to match it exactly: when it does not, Launch
+# Services cannot find the executable the plist advertises and Finder refuses to open the app with
+# "you can't open the application because it may be damaged or incomplete" - even though the
+# bundle is correctly signed and running Contents/MacOS/<name> from a terminal works fine.
+set(CE_APP_OUTPUT_NAME "CelestialEngine")
+
 set(SOURCES
 	src/App.cpp
 )
@@ -81,7 +88,7 @@ endif()
 
 set_target_properties(CE_App PROPERTIES
 	LINKER_LANGUAGE CXX
-	OUTPUT_NAME "CelestialEngine"
+	OUTPUT_NAME "${CE_APP_OUTPUT_NAME}"
 )
 
 # Windows: delay-load the module DLLs and register DLL/ as their search directory.
@@ -102,20 +109,27 @@ if(APPLE)
 	# Set the Asset Catalog for the app icon
 	set(ASSET_CATALOG "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Assets.xcassets")
 
+	# Resolve @CE_APP_OUTPUT_NAME@ / @PROJECT_VERSION@ once, into the build tree, and use THAT as
+	# the bundle's Info.plist source everywhere below.
+	set(CE_APP_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in" "${CE_APP_INFO_PLIST}" @ONLY)
+
 	# Set bundle properties
 	set_target_properties(CE_App PROPERTIES
 		MACOSX_BUNDLE_BUNDLE_NAME "CelestialEngine App"
 		MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
 		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
-		MACOSX_BUNDLE_EXECUTABLE_NAME "CE_App"
+		MACOSX_BUNDLE_EXECUTABLE_NAME "${CE_APP_OUTPUT_NAME}"
 		MACOSX_BUNDLE_GUI_IDENTIFIER "com.celestialengine.app"
-		MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+		MACOSX_BUNDLE_INFO_PLIST "${CE_APP_INFO_PLIST}"
 	)
 
-	# Copy Info.plist to bundle (fallback if MACOSX_BUNDLE_INFO_PLIST doesn't work)
+	# Copy Info.plist to bundle (fallback if MACOSX_BUNDLE_INFO_PLIST doesn't work). It copies the
+	# CONFIGURED plist, not the raw template: copying Info.plist.in verbatim would overwrite the
+	# generated one with a file still full of @PLACEHOLDERS@.
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+			"${CE_APP_INFO_PLIST}"
 			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Info.plist"
 		COMMENT "Copying Info.plist to bundle"
 	)
@@ -150,6 +164,23 @@ target_link_libraries(CE_App PRIVATE
 	CE_Config
 	CE_Engine
 )
+
+# Deliver the finished artifact to Binaries/<toolchain>/<config>/. Registered LAST on purpose: it
+# is a POST_BUILD copy, and POST_BUILD steps run in registration order, so everything that fills
+# the bundle (Info.plist, asset catalog, embedded frameworks) and finally signs it has already run.
+ce_stage_to_binaries(CE_App)
+
+if (NOT APPLE)
+	# The bundle carries its Resources/ along; a plain executable does not, so the folder the
+	# POST_BUILD steps above filled in the build tree is staged alongside the executable.
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			"$<TARGET_FILE_DIR:CE_App>/Resources"
+			"${CE_BINARIES_DIR}/Resources"
+		COMMENT "Staging Resources to ${CE_BINARIES_DIR}"
+		VERBATIM
+	)
+endif ()
 
 # Copy to Binaries/Last folder (no-op unless CE_COPY_LAST is enabled)
 ce_copy_to_last(CE_App)

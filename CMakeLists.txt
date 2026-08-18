@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-08-18
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -40,6 +40,16 @@ project(CelestialEngine LANGUAGES CXX VERSION 0.1.3)
 
 enable_testing()
 
+# Building the tests is what makes CMake create Binaries/<toolchain>/<config>/Tests/ - and it
+# creates it at GENERATE time, so the folder shows up (empty) even in a build that only ever
+# compiles CE_App. Turn this off to configure the app alone, with no Tests/ folder at all:
+#   cmake --preset config-preset-clang -DCE_BUILD_TESTS=OFF
+# It is a cache variable read at configure time, so flipping it needs a re-configure.
+option(CE_BUILD_TESTS "Build the test executables" ON)
+
 add_subdirectory(Engine)
 add_subdirectory(App)
-add_subdirectory(Tests)
+
+if (CE_BUILD_TESTS)
+	add_subdirectory(Tests)
+endif ()

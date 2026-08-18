@@ -9,7 +9,7 @@
 # Updated: 2026-04-18
 #
 
-# Script to run the CE_App application and all tests
+# Script to run the CelestialEngine application and all tests
 # Uses the Binaries/Last folder to run the latest build
 
 # Colors for output
@@ -190,36 +190,36 @@ if [ "$RUN_GUI_APPS" = true ]; then
 	echo "${BLUE}========================================${NC}"
 	echo ""
 
-	# Execute CE_App with OpenGL
+	# Execute CelestialEngine with OpenGL
 	run_command \
-		"CE_App (OpenGLGlfw)" \
-		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll OpenGlGlfw\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
+		"CelestialEngine (OpenGLGlfw)" \
+		"./CelestialEngine.app/Contents/MacOS/CelestialEngine -t \"RunAll OpenGlGlfw\" -w 1280 -h 720 -v true -g opengl -wa glfw" \
 		"true"
 
 	run_command \
-		"CE_App (MetalCocoa)" \
-		"./CE_App.app/Contents/MacOS/CE_App -t \"RunAll MetalCocoa\" -w 1280 -h 720 -v true -g metal -wa cocoa" \
+		"CelestialEngine (MetalCocoa)" \
+		"./CelestialEngine.app/Contents/MacOS/CelestialEngine -t \"RunAll MetalCocoa\" -w 1280 -h 720 -v true -g metal -wa cocoa" \
 		"true"
 
 	# Wait for window system to stabilize after GUI tests
 	echo "${YELLOW}Waiting for window system cleanup...${NC}"
 	sleep 1
 
-	# Ensure all CE_App processes are terminated
-	echo "${YELLOW}Checking for remaining CE_App processes...${NC}"
-	if pgrep -f "CE_App" > /dev/null 2>&1; then
-		echo "${YELLOW}Found running CE_App processes, terminating...${NC}"
-		pkill -TERM -f "CE_App" 2>/dev/null
+	# Ensure all CelestialEngine processes are terminated
+	echo "${YELLOW}Checking for remaining CelestialEngine processes...${NC}"
+	if pgrep -f "CelestialEngine.app" > /dev/null 2>&1; then
+		echo "${YELLOW}Found running CelestialEngine processes, terminating...${NC}"
+		pkill -TERM -f "CelestialEngine.app" 2>/dev/null
 		sleep 0.5
 		# Force kill if still running
-		if pgrep -f "CE_App" > /dev/null 2>&1; then
-			echo "${YELLOW}Force killing remaining CE_App processes...${NC}"
-			pkill -KILL -f "CE_App" 2>/dev/null
+		if pgrep -f "CelestialEngine.app" > /dev/null 2>&1; then
+			echo "${YELLOW}Force killing remaining CelestialEngine processes...${NC}"
+			pkill -KILL -f "CelestialEngine.app" 2>/dev/null
 			sleep 0.5
 		fi
-		echo "${GREEN}✓ All CE_App processes terminated${NC}"
+		echo "${GREEN}✓ All CelestialEngine processes terminated${NC}"
 	else
-		echo "${GREEN}✓ No CE_App processes running${NC}"
+		echo "${GREEN}✓ No CelestialEngine processes running${NC}"
 	fi
 	echo ""
 fi

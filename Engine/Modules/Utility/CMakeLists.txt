@@ -67,12 +67,9 @@ set_target_properties(CE_Utility PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables - skipped on macOS, where doing
-# this would force the DLL/ folder to exist as soon as CE_App alone is built (see
-# ce_set_output_subdirectory's doc comment)
-if (NOT APPLE)
-	ce_set_output_subdirectory(CE_Utility DLL)
-endif ()
+# Keeps Binaries/<toolchain>/<config>/ down to just executables: DLL/ on Windows and Linux, and on
+# macOS out of Binaries/ entirely, into the build tree (see ce_set_module_library_output)
+ce_set_module_library_output(CE_Utility)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
 # CE_App.app/Contents/Frameworks)
