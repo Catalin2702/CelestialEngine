@@ -35,6 +35,15 @@ File::File(File&& other) noexcept {
 	_isChanged = other._isChanged;
 	_isSaved = other._isSaved;
 
+	// Without this, a moved-from File (e.g. the local NRVO/move-elided source when a factory
+	// function like FileSystem::StCreate returns by value without the compiler eliding the move -
+	// MSVC's /Od reliably skips NRVO where Clang/GCC often still perform it even unoptimized, which
+	// is why this only ever surfaced on the Visual Studio generator) keeps _autoSave/_isChanged
+	// from the source. Its destructor then still tries to auto-save, but _path was just moved out
+	// (now empty), so FileSystem::StSave throws - out of a noexcept destructor, which terminates
+	// the process instead of throwing a catchable exception.
+	other._autoSave = false;
+	other._isChanged = false;
 	other._isSaved = false;
 }
 
@@ -70,6 +79,10 @@ File& File::operator=(File&& other) noexcept {
 	_isChanged = other._isChanged;
 	_isSaved = other._isSaved;
 
+	// See the move constructor's comment: a moved-from File must not attempt to auto-save on
+	// destruction, since its _path was just moved out.
+	other._autoSave = false;
+	other._isChanged = false;
 	other._isLoaded = false;
 
 	return *this;

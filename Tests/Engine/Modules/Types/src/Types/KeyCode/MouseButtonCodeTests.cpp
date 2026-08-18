@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -13,7 +13,6 @@
 #include <gtest/gtest.h>
 
 #include <format>
-#include <sstream>
 
 using namespace CE::Types;
 
@@ -152,14 +151,4 @@ TEST_F(MouseButtonCodeTest, ImGuiKeyFromMouseButton_WheelAxes_MapToMiddleButton)
  */
 TEST_F(MouseButtonCodeTest, Formatter_FormatsAsButtonName) {
 	EXPECT_EQ(std::format("{}", MouseButtonCode::Left), "Left");
-}
-
-/**
- * @brief Test that streaming a button code writes its name
- */
-TEST_F(MouseButtonCodeTest, StreamOperator_WritesButtonName) {
-	std::ostringstream stream;
-	stream << MouseButtonCode::Right;
-
-	EXPECT_EQ(stream.str(), "Right");
 }

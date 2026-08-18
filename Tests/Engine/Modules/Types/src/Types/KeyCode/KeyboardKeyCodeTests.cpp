@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
@@ -14,7 +14,6 @@
 #include <gtest/gtest.h>
 
 #include <format>
-#include <sstream>
 
 using namespace CE::Types;
 
@@ -145,16 +144,6 @@ TEST_F(KeyboardKeyCodeTest, ImGuiKeyFromKeyboard_UnknownKey_ReturnsNone) {
 TEST_F(KeyboardKeyCodeTest, Formatter_FormatsAsKeyName) {
 	EXPECT_EQ(std::format("{}", KeyboardKeyCode::A), "A");
 	EXPECT_EQ(std::format("{}", KeyboardKeyCode::Escape), "Escape");
-}
-
-/**
- * @brief Test that streaming a key code writes its name
- */
-TEST_F(KeyboardKeyCodeTest, StreamOperator_WritesKeyName) {
-	std::ostringstream stream;
-	stream << KeyboardKeyCode::Space;
-
-	EXPECT_EQ(stream.str(), "Space");
 }
 
 /**

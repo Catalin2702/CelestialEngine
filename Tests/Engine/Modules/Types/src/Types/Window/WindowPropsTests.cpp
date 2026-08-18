@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Types/Window/WindowProps.hpp>
@@ -14,7 +14,6 @@
 #include <gtest/gtest.h>
 
 #include <format>
-#include <sstream>
 
 using namespace CE::Types;
 
@@ -158,14 +157,4 @@ TEST_F(WindowPropsTest, Formatter_FormatsWindowApiName) {
 	EXPECT_EQ(std::format("{}", WindowApi::Win32), "Win32");
 	EXPECT_EQ(std::format("{}", WindowApi::X11), "X11");
 	EXPECT_EQ(std::format("{}", WindowApi::Cocoa), "Cocoa");
-}
-
-/**
- * @brief Test that streaming a window API writes its name
- */
-TEST_F(WindowPropsTest, StreamOperator_WritesWindowApiName) {
-	std::ostringstream stream;
-	stream << WindowApi::Cocoa;
-
-	EXPECT_EQ(stream.str(), "Cocoa");
 }

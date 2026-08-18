@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -112,11 +112,11 @@ unsigned int GlfwWindow::GetRefreshRate() const {
 std::pair<float, float> GlfwWindow::GetFrameSize() const {
 	if (not _glfwWindow) {
 		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
-		return {0, 0};
+		return {0.0f, 0.0f};
 	}
 	int width = 0, height = 0;
 	glfwGetFramebufferSize(_glfwWindow.get(), &width, &height);
-	return {width, height};
+	return {static_cast<float>(width), static_cast<float>(height)};
 }
 
 void GlfwWindow::SetWindowSize(const unsigned int width, const unsigned int height) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Utility/Delegate/Delegate.hpp>
@@ -29,7 +29,7 @@ int FreeAddFunction(const int a, const int b) { return a + b; }
 class DelegateTarget {
 public:
 	void Increment() { ++calls; }
-	void SetValue(const int value) { this->value = value; }
+	void SetValue(const int newValue) { value = newValue; }
 	[[nodiscard]] int GetValue() const { return value; }
 	[[nodiscard]] int Multiply(const int factor) const { return value * factor; }
 

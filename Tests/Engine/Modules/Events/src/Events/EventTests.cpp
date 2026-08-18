@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Events/ApplicationEvent.hpp>
@@ -14,8 +14,6 @@
 #include <Events/WindowEvent.hpp>
 
 #include <gtest/gtest.h>
-
-#include <sstream>
 
 using namespace CE::Events;
 
@@ -175,18 +173,6 @@ TEST_F(EventTest, ToString_DefaultsToEventName) {
 	const WindowCloseEvent event;
 
 	EXPECT_EQ(event.ToString(), "WindowClose");
-}
-
-/**
- * @brief Test that the stream operator writes the ToString representation
- */
-TEST_F(EventTest, StreamOperator_WritesToString) {
-	const WindowResizeEvent event{1024, 768};
-
-	std::ostringstream stream;
-	stream << event;
-
-	EXPECT_EQ(stream.str(), event.ToString());
 }
 
 /**

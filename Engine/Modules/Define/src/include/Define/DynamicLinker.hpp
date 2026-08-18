@@ -74,4 +74,10 @@
 	#define CE_APPLE_API CE_API_IMPORT
 #endif
 
+#ifdef CE_ENGINE_EXPORTS
+	#define CE_ENGINE_API CE_API_EXPORT
+#else
+	#define CE_ENGINE_API CE_API_IMPORT
+#endif
+
 #endif //CE_DEFINE_DYNAMICLINKER_HPP

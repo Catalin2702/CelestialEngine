@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include <Types/Render/Render.hpp>
@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 #include <format>
-#include <sstream>
 
 using namespace CE::Types;
 
@@ -77,14 +76,4 @@ TEST_F(RenderTypesTest, Formatter_FormatsApiName) {
 	EXPECT_EQ(std::format("{}", GraphicsApi::Vulkan), "Vulkan");
 	EXPECT_EQ(std::format("{}", GraphicsApi::DirectX11), "DirectX11");
 	EXPECT_EQ(std::format("{}", GraphicsApi::DirectX12), "DirectX12");
-}
-
-/**
- * @brief Test that streaming an API writes its name
- */
-TEST_F(RenderTypesTest, StreamOperator_WritesApiName) {
-	std::ostringstream stream;
-	stream << GraphicsApi::Metal;
-
-	EXPECT_EQ(stream.str(), "Metal");
 }

@@ -18,6 +18,10 @@ set(HEADERS
 	src/internal/EntryPoint.hpp
 )
 
+set(SOURCES
+	src/source/CelestialEngine.cpp
+)
+
 # Vendor libraries
 add_subdirectory(Vendor/Glad)
 add_subdirectory(Vendor/Glfw)
@@ -44,6 +48,7 @@ add_subdirectory(Shaders)
 
 add_library(CE_Engine SHARED
 	${HEADERS}
+	${SOURCES}
 )
 
 set_target_properties(CE_Engine PROPERTIES
@@ -62,6 +67,11 @@ endif ()
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
 # CE_App.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Engine)
+
+target_compile_definitions(CE_Engine PRIVATE
+	CE_ENGINE_EXPORTS
+	CE_ENGINE_VERSION="${PROJECT_VERSION}"
+)
 
 # Modules
 target_link_libraries(CE_Engine PUBLIC

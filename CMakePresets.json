@@ -11,7 +11,7 @@
 		"Created by: Catalin Chirosca",
 		"Created: 2026-08-13",
 		"Updated by: Catalin Chirosca",
-		"Updated: 2026-08-17",
+		"Updated: 2026-08-18",
 		"",
 		"All generators are multi-config, so the build type lives in the build/test presets",
 		"(via 'configuration') instead of in a configure preset per type. That keeps the",
@@ -41,6 +41,21 @@
 			"displayName": "Config-Preset Clang",
 			"inherits": "config-preset-ninja-multi",
 			"binaryDir": "${sourceDir}/.build/clang",
+			"condition": {
+				"type": "allOf",
+				"conditions": [
+					{
+						"type": "notEquals",
+						"lhs": "$env{CLANG_CMAKE_C_COMPILER}",
+						"rhs": ""
+					},
+					{
+						"type": "notEquals",
+						"lhs": "$env{CLANG_CMAKE_CXX_COMPILER}",
+						"rhs": ""
+					}
+				]
+			},
 			"cacheVariables": {
 				"CMAKE_C_COMPILER": "$env{CLANG_CMAKE_C_COMPILER}",
 				"CMAKE_CXX_COMPILER": "$env{CLANG_CMAKE_CXX_COMPILER}",
@@ -78,6 +93,21 @@
 				"VCPKG_TARGET_TRIPLET": "arm64-osx",
 				"CE_TOOLCHAIN_NAME": "Xcode"
 			}
+		},
+		{
+			"name": "config-preset-vs",
+			"displayName": "Config-Preset Visual Studio",
+			"inherits": "config-preset-base",
+			"generator": "Visual Studio 17 2022",
+			"binaryDir": "${sourceDir}/.build/vs",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			},
+			"cacheVariables": {
+				"CE_TOOLCHAIN_NAME": "VisualStudio"
+			}
 		}
 	],
 	"buildPresets": [
@@ -102,6 +132,12 @@
 			"displayName": "Build-Preset Xcode-Multi",
 			"inherits": "build-preset-base",
 			"configurePreset": "config-preset-xcode"
+		},
+		{
+			"name": "build-preset-vs-multi",
+			"displayName": "Build-Preset VS-Multi",
+			"inherits": "build-preset-base",
+			"configurePreset": "config-preset-vs"
 		}
 	],
 	"testPresets": [
@@ -133,6 +169,12 @@
 			"displayName": "Test-Preset Xcode-Multi",
 			"inherits": "test-preset-base",
 			"configurePreset": "config-preset-xcode"
+		},
+		{
+			"name": "test-preset-vs-multi",
+			"displayName": "Test-Preset VS-Multi",
+			"inherits": "test-preset-base",
+			"configurePreset": "config-preset-vs"
 		}
 	]
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -13,6 +13,8 @@
 #define CE_CELESTIALENGINE_HPP
 
 // ReSharper disable CppUnusedIncludeDirective
+
+#include <Define/DynamicLinker.hpp>
 
 // ---- Use in CelestialEngine applications ------
 // #include <Core/Application.hpp>
@@ -53,6 +55,15 @@
 
 // ---- Utility ----------------------------------
 #include <Utility/Utility.hpp>
+// -----------------------------------------------
+
+// ---- Engine Info -------------------------------
+namespace CE {
+	/**
+	 * @brief Returns the CelestialEngine version this application was built against, as "MAJOR.MINOR.PATCH"
+	 */
+	CE_ENGINE_API const char* GetEngineVersion();
+}
 // -----------------------------------------------
 
 // ---- Convenient namespace aliases -------------

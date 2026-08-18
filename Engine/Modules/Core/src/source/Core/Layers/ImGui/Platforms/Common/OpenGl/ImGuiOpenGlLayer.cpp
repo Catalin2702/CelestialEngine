@@ -141,14 +141,6 @@ void ImGuiOpenGlLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-#ifndef CE_PLATFORM_MACOS
-		// Multi-viewport (detaching ImGui windows into separate OS windows) is intentionally NOT enabled: on macOS a viewport
-		// window dragged out while the main window is fullscreen escapes into a new Space and makes GLFW abort in
-		// _glfwInputWindowContentScale (assert xscale > 0). Keeping windows inside the main window avoids it, and matches the
-		// Metal layer which never enabled viewports either.
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-#endif
-
 		const auto& app = GlfwApplication::StGet();
 
 		_window = dynamic_cast<GlfwWindow&>(app.GetWindow());
