@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -178,7 +178,7 @@ void CocoaApplication::Init() {
 
 	_context->SetVSync(windowProps.VSync);
 
-	const auto [vertexFunction, fragmentFunction] = _context->GetShaderLibrary()->GetShaderProgram("vertexMain", "fragmentMain");
+	const auto [vertexFunction, fragmentFunction] = _context->GetShaderLibrary().GetShaderProgram("vertexMain", "fragmentMain");
 
 	const auto renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
 	renderPipelineDescriptor->setVertexFunction(vertexFunction);
@@ -322,11 +322,11 @@ void CocoaApplication::SetEventHubDispatcher() {
 #pragma endregion
 
 #pragma region KeyboardEvents
-	auto& keyboardEvents = _context->metalContextEventDispatcher.keyboardEvents;
-	keyboardEvents.keyDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyDownEvent>(&eventHubDispatcher));
-	keyboardEvents.keyUpDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyUpEvent>(&eventHubDispatcher));
+	auto& [keyDownDispatcher, keyUpDispatcher, flagsChangedDispatcher] = _context->metalContextEventDispatcher.keyboardEvents;
+	keyDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyDownEvent>(&eventHubDispatcher));
+	keyUpDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyUpEvent>(&eventHubDispatcher));
 	// Modifier keys (Shift/Ctrl/Alt/Cmd) never arrive as keyDown/keyUp: AppKit reports them via flagsChanged.
-	keyboardEvents.flagsChangedDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveFlagsChangedEvent>(&eventHubDispatcher));
+	flagsChangedDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveFlagsChangedEvent>(&eventHubDispatcher));
 #pragma endregion
 
 #pragma region WindowEvents

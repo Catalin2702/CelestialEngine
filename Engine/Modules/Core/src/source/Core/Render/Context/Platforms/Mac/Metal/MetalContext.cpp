@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-18
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -18,6 +18,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <utility>
+
 
 namespace CE::Core {
 
@@ -62,7 +63,7 @@ void MetalContext::Init() {
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
 
-	_shaderLibrary = std::make_unique<MetalShaderLibrary>(_device.get());
+	_shaderLibrary = MetalShaderLibrary(_device.get());
 
 	_CreateView();
 
@@ -94,11 +95,10 @@ void MetalContext::_CreateView() {
 	_view->setPaused(true);
 	_view->setEnableSetNeedsDisplay(false);
 
-	_viewDelegate = std::make_unique<Native::MtkViewDelegate>();
-	_viewDelegate->SetDrawableSizeWillChangeDelegate(
+	_viewDelegate.SetDrawableSizeWillChangeDelegate(
 		EventDelegate<MTK::View*, CGSize>::FromConstMethod<MetalContext, &MetalContext::_OnDrawableResize>(this)
 	);
-	_view->setDelegate(_viewDelegate.get());
+	_view->setDelegate(&_viewDelegate);
 
 	_view->setEventDispatcher(&metalContextEventDispatcher);
 }
@@ -117,11 +117,10 @@ void MetalContext::_CreateDisplayLink() {
 		throw std::runtime_error(error);
 	}
 
-	_displayLinkDelegate = std::make_unique<Native::CaMetalDisplayLinkDelegate>();
-	_displayLinkDelegate->SetMetalDisplayLinkNeedsUpdateDelegate(
+	_displayLinkDelegate.SetMetalDisplayLinkNeedsUpdateDelegate(
 		EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>::FromMethod<MetalContext, &MetalContext::_OnMetalLinkNeedsUpdate>(this)
 	);
-	_displayLink->setDelegate(_displayLinkDelegate.get());
+	_displayLink->setDelegate(&_displayLinkDelegate);
 
 	// Start paused: the application unpauses it in SetRunning once the app is actually running.
 	_displayLink->setPaused(true);
@@ -137,7 +136,6 @@ void MetalContext::_DestroyDisplayLink() {
 	_displayLink->invalidate();
 	_displayLink.reset();
 
-	_displayLinkDelegate.reset();
 	_displayLinkDrawable = nullptr;
 }
 
@@ -147,7 +145,7 @@ void MetalContext::SetDrawDelegate(const EventDelegate<MTK::View*>& delegate) {
 }
 
 CA::MetalDrawable* MetalContext::AcquireDrawable() const {
-	// Prefer the drawable vended by the current display-link update; fall back to dequeuing one from the layer when no
+	// Prefer the drawable vended by the current display-link update; fall back to de-queuing one from the layer when no
 	// update is in flight (e.g. the VSync-off tick loop drives frames without the display link).
 	if (_displayLinkDrawable)
 		return _displayLinkDrawable;

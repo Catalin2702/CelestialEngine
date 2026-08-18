@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-18
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -14,6 +14,7 @@
 
 #include <format>
 #include <ranges>
+
 
 namespace CE::Core {
 
@@ -46,6 +47,9 @@ MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& p
 	}
 }
 
+MetalShaderLibrary::MetalShaderLibrary(MetalShaderLibrary&& other) noexcept:
+	_device(std::move(other._device)), _library(std::move(other._library)), _functions(std::move(other._functions)) {}
+
 MetalShaderLibrary::~MetalShaderLibrary() {
 	for (const auto& function: _functions | std::views::values) {
 		if (function) {
@@ -55,6 +59,20 @@ MetalShaderLibrary::~MetalShaderLibrary() {
 	_functions.clear();
 	_library.reset();
 	_device.reset();
+}
+
+MetalShaderLibrary& MetalShaderLibrary::operator=(const MetalShaderLibrary& other) {
+	_device = other._device;
+	_library = other._library;
+	_functions = other._functions;
+	return *this;
+}
+
+MetalShaderLibrary& MetalShaderLibrary::operator=(MetalShaderLibrary&& other) noexcept {
+	_device = std::move(other._device);
+	_library = std::move(other._library);
+	_functions = std::move(other._functions);
+	return *this;
 }
 
 ShaderProgram MetalShaderLibrary::GetShaderProgram(const std::string& vertexName, const std::string& fragmentName) const {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
@@ -13,6 +13,7 @@
 #include "Utility/FileSystem/File.hpp"
 
 #include <glad/glad.h>
+
 
 namespace CE::Core {
 
@@ -34,6 +35,12 @@ OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept {
 OpenGlShader::~OpenGlShader() {
 	if (_shaderId != 0)
 		glDeleteShader(_shaderId);
+}
+
+OpenGlShader& OpenGlShader::operator=(const OpenGlShader& other) {
+	_shaderId = other._shaderId;
+	_type = other._type;
+	return *this;
 }
 
 OpenGlShader& OpenGlShader::operator=(OpenGlShader&& other) noexcept {

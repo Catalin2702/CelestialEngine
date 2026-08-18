@@ -18,7 +18,6 @@
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 
 #include <initializer_list>
-#include <memory>
 #include <vector>
 
 
@@ -43,24 +42,22 @@ public:
 	 * @param shaders An initializer list of pointers to I_Shader objects to attach to the shader program
 	 * @details Creates a new OpenGL shader program and attaches the provided shaders to it. The constructor initializes the program ID and iterates through the list of shaders, attaching each one to the program using glAttachShader. This allows for convenient creation of a shader program with multiple shaders in a single step.
 	 */
-	OpenGlShaderProgram(std::initializer_list<I_Shader*> shaders);
+	OpenGlShaderProgram(std::initializer_list<OpenGlShader> shaders);
 
-	/**
-	 * @brief Copy constructor (deleted)
-	 * @details Copying an OpenGlShaderProgram is not allowed because it would result in two objects sharing the same OpenGL program ID and shader pointers, leading to double-deletes when both are destroyed.
-	 */
-	OpenGlShaderProgram(const OpenGlShaderProgram& other) = delete;
+	OpenGlShaderProgram(const OpenGlShaderProgram& other) = default;
 
-	/**
-	 * @brief Copy assignment operator (deleted)
-	 */
-	OpenGlShaderProgram& operator=(const OpenGlShaderProgram& other) = delete;
+	OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept;
 
 	/**
 	 * @brief Destructor for OpenGlShaderProgram
 	 * @details Cleans up the OpenGL shader program resources by unbinding the program, detaching all attached shaders, and deleting the shader program. This ensures that all associated OpenGL resources are properly released when the OpenGlShaderProgram object is destroyed.
 	 */
 	~OpenGlShaderProgram() override;
+
+public:
+	OpenGlShaderProgram& operator=(const OpenGlShaderProgram& other);
+
+	OpenGlShaderProgram& operator=(OpenGlShaderProgram&& other) noexcept;
 
 public:
 	/**
@@ -86,14 +83,14 @@ public:
 	 * @param shader Pointer to the shader to add
 	 * @details Adds a shader to the shader program, allowing the program to manage multiple shaders (e.g., vertex and fragment shaders) and link them together for rendering. This method checks for null pointers, duplicate shaders, and whether the program is already linked or in use before adding the shader.
 	 */
-	void AddShader(I_Shader* shader) override;
+	void AddShader(OpenGlShader&& shader);
 
 	/**
 	 * @brief Removes a shader from the shader program
 	 * @param shader Pointer to the shader to remove
 	 * @details Removes a shader from the shader program, allowing the program to manage its shaders and free up resources when a shader is no longer needed. This method checks for null pointers and whether the program is linked or in use before removing the shader.
 	 */
-	void RemoveShader(I_Shader* shader) override;
+	void RemoveShader(const OpenGlShader& shader);
 
 public:
 	/**
@@ -116,7 +113,7 @@ public:
 
 private:
 	uint32_t _programId;
-	std::vector<std::unique_ptr<I_Shader>> _shaders; ///< Owned shader objects; cleared after linking
+	std::vector<OpenGlShader> _shaders; ///< Owned shader objects; cleared after linking
 };
 
 }

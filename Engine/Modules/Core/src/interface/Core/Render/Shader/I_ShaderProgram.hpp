@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP
 
 #include <cstdint>
+
 
 namespace CE::Core {
 
@@ -48,22 +49,6 @@ public:
 	 *			Must be implemented by derived classes to ensure proper linking of the shader program and validation of the attached shaders.
 	 */
 	virtual void Link() = 0;
-
-	/**
-	 * @brief Adds a shader to the shader program
-	 * @param shader Pointer to the shader to add
-	 * @details Pure virtual method that adds a shader to the shader program. This allows the shader program to manage multiple shaders (e.g., vertex and fragment shaders) and link them together for rendering.
-	 *			Must be implemented by derived classes to ensure proper management of shaders within the program.
-	 */
-	virtual void AddShader(I_Shader* shader) = 0;
-
-	/**
-	 * @brief Removes a shader from the shader program
-	 * @param shader Pointer to the shader to remove
-	 * @details Pure virtual method that removes a shader from the shader program. This allows the shader program to manage its shaders and free up resources when a shader is no longer needed.
-	 *			Must be implemented by derived classes to ensure proper management of shaders within the program.
-	 */
-	virtual void RemoveShader(I_Shader* shader) = 0;
 
 public:
 	/**

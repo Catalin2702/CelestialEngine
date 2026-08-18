@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-18
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -15,18 +15,35 @@
 
 #include <memory>
 
+
 namespace CE::Core {
 
 OpenGlShaderProgram::OpenGlShaderProgram() {
-	_programId = glCreateProgram();
+	_programId = 0;
 }
 
-OpenGlShaderProgram::OpenGlShaderProgram(const std::initializer_list<I_Shader*> shaders) {
+OpenGlShaderProgram::OpenGlShaderProgram(const std::initializer_list<OpenGlShader> shaders): _shaders(shaders) {
 	_programId = glCreateProgram();
-	for (const auto shader : shaders) {
-		glAttachShader(_programId, shader->GetShaderId());
-		_shaders.emplace_back(shader); // takes ownership of the raw pointer
+	for (const auto& shader : _shaders) {
+		glAttachShader(_programId, shader.GetShaderId());
 	}
+}
+
+OpenGlShaderProgram::OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept: _programId(other._programId), _shaders(std::move(other._shaders)) {
+	other._programId = 0;
+}
+
+OpenGlShaderProgram& OpenGlShaderProgram::operator=(const OpenGlShaderProgram& other) {
+	_programId = other._programId;
+	_shaders = other._shaders;
+	return *this;
+}
+
+OpenGlShaderProgram& OpenGlShaderProgram::operator=(OpenGlShaderProgram&& other) noexcept {
+	_programId = other._programId;
+	_shaders = std::move(other._shaders);
+	other._programId = 0;
+	return *this;
 }
 
 OpenGlShaderProgram::~OpenGlShaderProgram() {
@@ -34,8 +51,9 @@ OpenGlShaderProgram::~OpenGlShaderProgram() {
 
 	// If Link() was never called, shaders may still be attached; detach them before deleting.
 	for (const auto& shader : _shaders)
-		glDetachShader(_programId, shader->GetShaderId());
-	_shaders.clear(); // unique_ptrs destroy each OpenGlShader -> glDeleteShader()
+		glDetachShader(_programId, shader.GetShaderId());
+
+	_shaders.clear();
 
 	glDeleteProgram(_programId);
 }
@@ -76,15 +94,12 @@ void OpenGlShaderProgram::Link() {
 
 	// Detach and delete shader objects: once the program is linked their source is no longer needed.
 	for (const auto& shader : _shaders)
-		glDetachShader(_programId, shader->GetShaderId());
-	_shaders.clear(); // unique_ptrs destroy each OpenGlShader -> glDeleteShader()
+		glDetachShader(_programId, shader.GetShaderId());
+
+	_shaders.clear();
 }
 
-void OpenGlShaderProgram::AddShader(I_Shader* shader) {
-	if (shader == nullptr) {
-		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Attempted to add a null shader to the shader program. Ignoring.");
-		return;
-	}
+void OpenGlShaderProgram::AddShader(OpenGlShader&& shader) {
 	if (IsLinked()) {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Cannot add shader to a linked shader program. Please link the program after adding all shaders.");
 		return;
@@ -94,19 +109,15 @@ void OpenGlShaderProgram::AddShader(I_Shader* shader) {
 		return;
 	}
 
-	if (std::ranges::find_if(_shaders, [shader](const auto& s) { return s->GetShaderId() == shader->GetShaderId(); }) != _shaders.end()) {
+	if (std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }) != _shaders.end()) {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Shader is already added to the shader program. Ignoring duplicate.");
 		return;
 	}
-	glAttachShader(_programId, shader->GetShaderId());
+	glAttachShader(_programId, shader.GetShaderId());
 	_shaders.emplace_back(shader); // takes ownership
 }
 
-void OpenGlShaderProgram::RemoveShader(I_Shader* shader) {
-	if (shader == nullptr) {
-		CE_CORE_WARN("OpenGlShaderProgram::RemoveShader: Attempted to remove a null shader from the shader program. Ignoring.");
-		return;
-	}
+void OpenGlShaderProgram::RemoveShader(const OpenGlShader& shader) {
 	if (IsLinked()) {
 		CE_CORE_WARN("OpenGlShaderProgram::RemoveShader: Cannot remove shader from a linked shader program. Please link the program after adding all shaders.");
 		return;
@@ -116,8 +127,8 @@ void OpenGlShaderProgram::RemoveShader(I_Shader* shader) {
 		return;
 	}
 
-	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.get() == shader; }); it != _shaders.end()) {
-		glDetachShader(_programId, (*it)->GetShaderId());
+	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }); it != _shaders.end()) {
+		glDetachShader(_programId, it->GetShaderId());
 		_shaders.erase(it); // unique_ptr destructor -> glDeleteShader()
 	}
 }

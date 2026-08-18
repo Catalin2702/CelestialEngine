@@ -53,11 +53,7 @@ public:
 	 */
 	OpenGlShader(const Utility::File& file, Types::ShaderType type);
 
-	/**
-	 * @brief Copy constructor (deleted)
-	 * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
-	 */
-	OpenGlShader(const OpenGlShader&) = delete;
+	OpenGlShader(const OpenGlShader&) = default;
 
 	/**
 	 * @brief Move constructor for OpenGlShader
@@ -73,11 +69,7 @@ public:
 	~OpenGlShader() override;
 
 public:
-	/**
-	 * @brief Copy assignment operator (deleted)
-	 * @details Copying an OpenGlShader is not allowed because it would result in two objects sharing the same OpenGL shader ID, leading to a double-delete when both are destroyed.
-	 */
-	OpenGlShader& operator=(const OpenGlShader&) = delete;
+	OpenGlShader& operator=(const OpenGlShader& other);
 
 	/**
 	 * @brief Move assignment operator for OpenGlShader

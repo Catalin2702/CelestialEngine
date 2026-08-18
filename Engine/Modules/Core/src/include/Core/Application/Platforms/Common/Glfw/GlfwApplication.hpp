@@ -16,6 +16,7 @@
 
 #include "Core/Application/I_Application.hpp"
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 
 #include <array>
 #include <memory>
@@ -29,7 +30,6 @@
 
 namespace CE::Core {
 	class OpenGlContext;
-	class OpenGlShaderProgram;
 	class I_Layer;
 	class ImGuiOpenGlLayer;
 	class GlfwWindow;
@@ -233,7 +233,7 @@ private:
 	 * @details Subscribed to GlfwEventHubDispatcher::openGlRenderContextEventHub.onChangeVSyncDispatcher. Updates the
 	 *			frame limiter target: monitor refresh rate with VSync on, the configured refresh rate with VSync off.
 	 */
-	void _OnVSyncChange(Events::VSyncEvent& event) const;
+	void _OnVSyncChange(const Events::VSyncEvent& event) const;
 
 protected:
 	/**
@@ -281,7 +281,7 @@ public:
 
 private:
 	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
-	std::unique_ptr<OpenGlShaderProgram> _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
+	OpenGlShaderProgram _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
 	std::unique_ptr<GlfwWindow> _window; ///< Pointer to the GLFW window
 
 	ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI

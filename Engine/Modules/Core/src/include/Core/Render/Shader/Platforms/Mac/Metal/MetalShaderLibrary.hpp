@@ -46,6 +46,8 @@ struct ShaderProgram {
  */
 class CE_CORE_API MetalShaderLibrary {
 public:
+	MetalShaderLibrary() = default;
+
 	/**
 	 * @brief Constructor - loads the shader library
 	 * @param device Metal device the library is created on (retained)
@@ -53,14 +55,14 @@ public:
 	 */
 	explicit MetalShaderLibrary(MTL::Device* device, const std::string& path = "");
 
-	MetalShaderLibrary(const MetalShaderLibrary&) = delete;
-	MetalShaderLibrary(MetalShaderLibrary&&) = delete;
+	MetalShaderLibrary(const MetalShaderLibrary& other) = default;
+	MetalShaderLibrary(MetalShaderLibrary&& other) noexcept;
 
 	~MetalShaderLibrary();
 
 public:
-	MetalShaderLibrary& operator=(const MetalShaderLibrary&) = delete;
-	MetalShaderLibrary& operator=(MetalShaderLibrary&&) = delete;
+	MetalShaderLibrary& operator=(const MetalShaderLibrary& other);
+	MetalShaderLibrary& operator=(MetalShaderLibrary&& other) noexcept;
 
 public:
 	/**

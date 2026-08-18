@@ -27,7 +27,6 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include <memory>
 #include <utility>
 
 
@@ -159,7 +158,7 @@ public:
 	 * @return const Shader::MetalShaderLibrary& Reference to the MetalShaderLibrary used for managing shaders
 	 * @details Returns a reference to the MetalShaderLibrary used for managing shaders in the Metal context. This allows the application to access platform-specific shader management features or perform operations that require direct access to the shader library.
 	 */
-	[[nodiscard]] MetalShaderLibrary* GetShaderLibrary() const { return _shaderLibrary.get(); }
+	[[nodiscard]] const MetalShaderLibrary& GetShaderLibrary() const { return _shaderLibrary; }
 
 	/** @brief Gets the MetalKit render view
 	 * @return MTK::RenderView* Pointer to the MTK::RenderView used for rendering
@@ -235,15 +234,15 @@ public:
 	MetalContextEventDispatcher metalContextEventDispatcher; ///< Dispatches the MTK::View and MetalContext events
 
 private:
+	MetalShaderLibrary _shaderLibrary; ///< Shader library for managing Metal shaders
+
 	NS::SharedPtr<MTL::CommandQueue> _commandQueue = nullptr;	///< Metal command queue for issuing rendering commands
 	NS::SharedPtr<MTL::Device> _device = nullptr;				///< Metal device (GPU) for resource creation and rendering
 	NS::SharedPtr<MTK::View> _view = nullptr;					///< MetalKit view used for rendering
-
-	std::unique_ptr<MetalShaderLibrary> _shaderLibrary; ///< Shader library for managing Metal shaders
-	std::unique_ptr<Native::MtkViewDelegate> _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
+	Native::MtkViewDelegate _viewDelegate; ///< Drives the MTK::View (draw / drawable-size-change)
 
 	NS::SharedPtr<CA::MetalDisplayLink> _displayLink = nullptr; ///< Paces frames in step with the display refresh
-	std::unique_ptr<Native::CaMetalDisplayLinkDelegate> _displayLinkDelegate; ///< Receives the display link's per-frame updates
+	Native::CaMetalDisplayLinkDelegate _displayLinkDelegate; ///< Receives the display link's per-frame updates
 
 	CA::MetalDrawable* _displayLinkDrawable = nullptr; ///< Drawable vended by the current display-link update; valid only for the duration of the frame callback
 	CallbackDispatcher<void, MTK::View*> _drawDispatcher; ///< Invoked once per display-link update to render a frame

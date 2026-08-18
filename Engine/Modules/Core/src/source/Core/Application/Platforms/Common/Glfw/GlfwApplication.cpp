@@ -35,6 +35,7 @@
 	#include <AppKit/AppKit.hpp>
 #endif
 
+
 namespace CE::Core {
 
 // On macOS, CE_App ships as a bundle (Contents/MacOS/CE_App next to Contents/Resources/), so
@@ -87,7 +88,6 @@ GlfwApplication::~GlfwApplication() {
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
 
-	_shaderProgram.reset();
 	_context.reset();
 	_window.reset();
 }
@@ -125,13 +125,12 @@ void GlfwApplication::Quit() {
 void GlfwApplication::Tick(const float deltaTime) {
 	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
 	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
-	assert(_shaderProgram && "GlfwApplication::Tick: Vertex shader must be initialized before ticking application");
 
 	applicationEventHandler.DispatchTickEvent();
 
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color);
 
-	_shaderProgram->Bind();
+	_shaderProgram.Bind();
 	glBindVertexArray(_vertexArrayId);
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
@@ -270,18 +269,13 @@ void GlfwApplication::_InitRenderer() {
 	constexpr unsigned int indices[3] = { 0, 1, 2 };
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	std::array<std::unique_ptr<I_Shader>, 2> shaders{
-		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
-		std::make_unique<OpenGlShader>(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl"), Types::ShaderType::Fragment)
-	};
-
-	_shaderProgram = std::make_unique<OpenGlShaderProgram>(
+	_shaderProgram = OpenGlShaderProgram(
 		std::initializer_list{
-			shaders[0].release(),
-			shaders[1].release()
+			OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
+			OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl"), Types::ShaderType::Fragment)
 		}
 	);
-	_shaderProgram->Link();
+	_shaderProgram.Link();
 }
 
 void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
@@ -393,7 +387,7 @@ void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 	Quit();
 }
 
-void GlfwApplication::_OnVSyncChange(Events::VSyncEvent& event) const {
+void GlfwApplication::_OnVSyncChange(const Events::VSyncEvent& event) const {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 	_st_TargetFPS = event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate;
 }
