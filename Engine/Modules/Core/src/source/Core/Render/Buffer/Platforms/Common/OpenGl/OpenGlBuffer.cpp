@@ -31,7 +31,7 @@ OpenGlVertexBuffer::OpenGlVertexBuffer(OpenGlVertexBuffer&& other) noexcept: _re
 }
 
 OpenGlVertexBuffer& OpenGlVertexBuffer::operator=(OpenGlVertexBuffer&& other) noexcept {
-	if (this == &other)
+	if (this == &other) [[unlikely]]
 		return *this;
 
 	if (this->_renderID)
@@ -73,7 +73,7 @@ OpenGlIndexBuffer::OpenGlIndexBuffer(OpenGlIndexBuffer&& other) noexcept: _rende
 }
 
 OpenGlIndexBuffer& OpenGlIndexBuffer::operator=(OpenGlIndexBuffer&& other) noexcept {
-	if (this == &other)
+	if (this == &other) [[unlikely]]
 		return *this;
 
 	if (this->_renderID)

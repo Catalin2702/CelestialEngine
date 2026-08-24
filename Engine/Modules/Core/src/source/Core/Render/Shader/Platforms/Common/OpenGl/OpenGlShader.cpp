@@ -41,22 +41,26 @@ OpenGlShader::~OpenGlShader() {
 }
 
 OpenGlShader& OpenGlShader::operator=(const OpenGlShader& other) {
+	if (this == &other) [[unlikely]]
+		return *this;
+
 	_shaderId = other._shaderId;
 	_type = other._type;
 	return *this;
 }
 
 OpenGlShader& OpenGlShader::operator=(OpenGlShader&& other) noexcept {
-	if (this != &other) {
-		if (_shaderId != 0)
-			glDeleteShader(_shaderId);
+	if (this == &other) [[unlikely]]
+		return *this;
 
-		_shaderId = other._shaderId;
-		_type = other._type;
+	if (_shaderId != 0)
+		glDeleteShader(_shaderId);
 
-		other._shaderId = 0;
-		other._type = Types::ShaderType::None;
-	}
+	_shaderId = other._shaderId;
+	_type = other._type;
+
+	other._shaderId = 0;
+	other._type = Types::ShaderType::None;
 
 	return *this;
 }

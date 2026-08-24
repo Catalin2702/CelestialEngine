@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-24
 //
 
 #include "Utility/FileSystem/File.hpp"
@@ -54,7 +54,7 @@ File::~File() {
 }
 
 File& File::operator=(const File& other) {
-	if (this == &other)
+	if (this == &other) [[unlikely]]
 		return *this;
 
 	_path = other._path;
@@ -68,7 +68,7 @@ File& File::operator=(const File& other) {
 }
 
 File& File::operator=(File&& other) noexcept {
-	if (this == &other)
+	if (this == &other) [[unlikely]]
 		return *this;
 
 	_path = std::move(other._path);
