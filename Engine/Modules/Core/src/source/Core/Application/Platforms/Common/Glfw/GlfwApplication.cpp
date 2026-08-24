@@ -215,7 +215,7 @@ void GlfwApplication::_InitWindow() {
 	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 
-	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[likely]] {
+	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
