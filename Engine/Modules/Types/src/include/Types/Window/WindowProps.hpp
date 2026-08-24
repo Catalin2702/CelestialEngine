@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -103,12 +103,12 @@ struct std::formatter<CE::Types::WindowApi>: std::formatter<std::string_view> {
 	auto format(const CE::Types::WindowApi value, std::format_context& ctx) const {
 		using CE::Types::WindowApi;
 		switch (value) {
-			case WindowApi::None:  return std::formatter<std::string_view>::format("None", ctx);
-			case WindowApi::GLFW:  return std::formatter<std::string_view>::format("GLFW", ctx);
+			case WindowApi::None: return std::formatter<std::string_view>::format("None", ctx);
+			case WindowApi::GLFW: return std::formatter<std::string_view>::format("GLFW", ctx);
 			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
-			case WindowApi::X11:   return std::formatter<std::string_view>::format("X11", ctx);
+			case WindowApi::X11: return std::formatter<std::string_view>::format("X11", ctx);
 			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
-			default:               return std::formatter<std::string_view>::format("Unknown Window API", ctx);
+			default: return std::formatter<std::string_view>::format("Unknown Window API", ctx);
 		}
 	}
 };

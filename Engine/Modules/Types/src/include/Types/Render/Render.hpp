@@ -53,13 +53,13 @@ struct std::formatter<CE::Types::GraphicsApi> : std::formatter<std::string_view>
 	auto format(const CE::Types::GraphicsApi value, std::format_context& ctx) const {
 		using CE::Types::GraphicsApi;
 		switch (value) {
-			case GraphicsApi::None:      return std::formatter<std::string_view>::format("None", ctx);
-			case GraphicsApi::OpenGL:    return std::formatter<std::string_view>::format("OpenGL", ctx);
-			case GraphicsApi::Metal:     return std::formatter<std::string_view>::format("Metal", ctx);
-			case GraphicsApi::Vulkan:    return std::formatter<std::string_view>::format("Vulkan", ctx);
+			case GraphicsApi::None: return std::formatter<std::string_view>::format("None", ctx);
+			case GraphicsApi::OpenGL: return std::formatter<std::string_view>::format("OpenGL", ctx);
+			case GraphicsApi::Metal: return std::formatter<std::string_view>::format("Metal", ctx);
+			case GraphicsApi::Vulkan: return std::formatter<std::string_view>::format("Vulkan", ctx);
 			case GraphicsApi::DirectX11: return std::formatter<std::string_view>::format("DirectX11", ctx);
 			case GraphicsApi::DirectX12: return std::formatter<std::string_view>::format("DirectX12", ctx);
-			default:                     return std::formatter<std::string_view>::format("Unknown Graphics API", ctx);
+			default: return std::formatter<std::string_view>::format("Unknown Graphics API", ctx);
 		}
 	}
 };
