@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-24
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -35,7 +35,7 @@ NS::String* FullScreenDefaultsKey(const NS::Window* window) {
 }
 
 bool IsWindowFullScreen(const NS::Window* window) {
-	return (static_cast<NS::UInteger>(window->styleMask()) & NS::WindowStyleMaskFullScreen) != 0;
+	return (window->styleMask() & NS::WindowStyleMaskFullScreen) != 0;
 }
 
 void SaveFullScreenFlag(NS::String* key, const bool value) {
@@ -74,7 +74,7 @@ CocoaWindow::~CocoaWindow() {
 }
 
 std::pair<float, float> CocoaWindow::GetWindowSize() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
 		return {0, 0};
 	}
@@ -84,7 +84,7 @@ std::pair<float, float> CocoaWindow::GetWindowSize() const {
 }
 
 std::pair<float, float> CocoaWindow::GetFrameSize() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetFrameSize: Could not get frame size because window is not initialized.");
 		return {0, 0};
 	}
@@ -94,7 +94,7 @@ std::pair<float, float> CocoaWindow::GetFrameSize() const {
 }
 
 void CocoaWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
-	if (not _window)
+	if (not _window) [[unlikely]]
 		return;
 
 	const auto [currentOrigin, currentSize] = _window->frame();
@@ -106,12 +106,12 @@ void CocoaWindow::SetWindowSize(const unsigned int width, const unsigned int hei
 }
 
 void CocoaWindow::SetContentView(const MTK::View* view) const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::SetContentView: Cannot set content view because window is not initialized.");
 		return;
 	}
 
-	if (not view) {
+	if (not view) [[unlikely]] {
 		CE_CORE_ERROR("CocoaWindow::SetContentView: Cannot set a null content view!");
 		throw std::runtime_error("CocoaWindow::SetContentView: Cannot set a null content view!");
 	}
@@ -124,7 +124,7 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 }
 
 void CocoaWindow::Show() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Show: Cannot show window because it is not initialized.");
 		return;
 	}
@@ -143,7 +143,7 @@ void CocoaWindow::Init() {
 }
 
 void CocoaWindow::Miniaturize() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Miniaturize: Cannot miniaturize because window is not initialized");
 		return;
 	}
@@ -152,7 +152,7 @@ void CocoaWindow::Miniaturize() const {
 }
 
 void CocoaWindow::Deminiaturize() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
 		return;
 	}
@@ -161,7 +161,7 @@ void CocoaWindow::Deminiaturize() const {
 }
 
 void CocoaWindow::ToggleFullScreen() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
 		return;
 	}
@@ -185,7 +185,7 @@ void CocoaWindow::_InitWindow() {
 			NS::BackingStoreBuffered,
 			false
 		);
-		if (not rawWindow) {
+		if (not rawWindow) [[unlikely]] {
 			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa window!");
 			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa window!");
 		}
@@ -211,7 +211,7 @@ void CocoaWindow::_InitWindow() {
 
 void CocoaWindow::_Shutdown() {
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
-	if (_window) {
+	if (_window) [[unlikely]] {
 		// Persist the native fullscreen state so Show() can restore it on the next launch (mirrors the frame autosave).
 		SaveFullScreenFlag(FullScreenDefaultsKey(_window.get()), IsWindowFullScreen(_window.get()));
 

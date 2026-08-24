@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -17,6 +17,7 @@
 #include <fstream>
 #include <vector>
 
+
 namespace CE::Utility {
 
 fs::path FileSystem::_rootDirectory = fs::current_path();
@@ -27,21 +28,21 @@ void FileSystem::SetRootDirectory(const fs::path& rootDirectory) { _rootDirector
 
 File FileSystem::StCreate(const fs::path& path, const std::string& content, const bool autoSave) {
 	const auto fullPath = _rootDirectory / path;
-	if (StExists(path)) {
+	if (StExists(path)) [[unlikely]] {
 		const auto message = "FileSystem::StCreate: Cannot create file because it already exists at path: " + fullPath.string();
 		CE_CORE_WARN(message);
 		return StLoad(path, autoSave);
 	}
 
 	std::ofstream outputFile(fullPath, std::ios::binary);
-	if (not outputFile) {
+	if (not outputFile) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StCreate: Failed to create file at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}
 
 	outputFile.write(content.data(), static_cast<std::streamsize>(content.size()));
-	if (not outputFile) {
+	if (not outputFile) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StCreate: Failed to write content to file at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
@@ -60,14 +61,14 @@ File FileSystem::StNew(const fs::path& path, const std::string& content, const b
 
 File FileSystem::StLoad(const fs::path& path, const bool autoSave) {
 	const auto fullPath = _rootDirectory / path;
-	if (not StExists(path)) {
+	if (not StExists(path)) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StLoad: Cannot load file because it does not exist at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}
 
 	std::ifstream inputFile(fullPath, std::ios::binary);
-	if (not inputFile) {
+	if (not inputFile) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StLoad: Failed to open file for reading at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
@@ -102,7 +103,7 @@ File FileSystem::StUnload(File& file) {
 }
 
 void FileSystem::StSave(const File& file) {
-	if (not file._isLoaded) {
+	if (not file._isLoaded) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StSave: Cannot save file because it is not loaded. File path: " + file._path.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
@@ -113,14 +114,14 @@ void FileSystem::StSave(const File& file) {
 	const auto fullPath = _rootDirectory / file._path;
 
 	std::ofstream outputFile{fullPath, std::ios::binary};
-	if (not outputFile) {
+	if (not outputFile) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StSave: Failed to open file for writing at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}
 
 	outputFile.write(reinterpret_cast<const char*>(file._content.data()), static_cast<std::streamsize>(file._content.size()));
-	if (not outputFile) {
+	if (not outputFile) [[unlikely]] {
 		const auto errorMessage = "FileSystem::StSave: Failed to write content to file at path: " + fullPath.string();
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);

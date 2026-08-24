@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-24
 //
 
 #include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -16,13 +16,14 @@
 
 #include <AppKit/AppKit.hpp>
 
+
 namespace CE::Core {
 
 // Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
 // Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
 // growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
 static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
-	if (not (context and context->GetView() and window))
+	if (not (context and context->GetView() and window)) [[unlikely]]
 		return {0.0f, 0.0f};
 
 	const auto view = context->GetView();
@@ -131,13 +132,13 @@ void CocoaEventHubDispatcher::ReceiveAppUpdateEvent() {
 }
 
 void CocoaEventHubDispatcher::ReceiveKeyDownEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode()), 0};
 	DispatchKeyPressedEvent(keyPressedEvent);
 
-	if (const auto* characters = event->characters(); characters and characters->length() > 0) {
+	if (const auto* characters = event->characters(); characters and characters->length() > 0) [[likely]] {
 		const unsigned int codepoint = characters->character(0);
 		Events::KeyTypedEvent keyTypedEvent{codepoint};
 		DispatchKeyTypedEvent(keyTypedEvent);
@@ -145,7 +146,7 @@ void CocoaEventHubDispatcher::ReceiveKeyDownEvent(const NS::Event* event) {
 }
 
 void CocoaEventHubDispatcher::ReceiveKeyUpEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	Events::KeyReleasedEvent keyReleasedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode())};
@@ -171,12 +172,12 @@ static NS::UInteger DeviceMaskForModifierKey(const Types::KeyboardKeyCode keyCod
 }
 
 void CocoaEventHubDispatcher::ReceiveFlagsChangedEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	const auto keyCode = Types::KeyboardKeyCodeFromCocoa(event->keyCode());
 	const auto deviceMask = DeviceMaskForModifierKey(keyCode);
-	if (deviceMask == 0)
+	if (deviceMask == 0) [[unlikely]]
 		return; // Not a modifier we track (e.g. CapsLock, Fn)
 
 	if (event->modifierFlags() & deviceMask) {
@@ -190,7 +191,7 @@ void CocoaEventHubDispatcher::ReceiveFlagsChangedEvent(const NS::Event* event) {
 }
 
 void CocoaEventHubDispatcher::ReceiveMouseButtonDownEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	Events::MouseButtonPressedEvent mouseButtonPressedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
@@ -198,7 +199,7 @@ void CocoaEventHubDispatcher::ReceiveMouseButtonDownEvent(const NS::Event* event
 }
 
 void CocoaEventHubDispatcher::ReceiveMouseButtonUpEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
@@ -206,7 +207,7 @@ void CocoaEventHubDispatcher::ReceiveMouseButtonUpEvent(const NS::Event* event) 
 }
 
 void CocoaEventHubDispatcher::ReceiveMouseDraggedEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	const auto [x, y] = MouseLocationTopLeft(_context, _window, event);
@@ -215,7 +216,7 @@ void CocoaEventHubDispatcher::ReceiveMouseDraggedEvent(const NS::Event* event) {
 }
 
 void CocoaEventHubDispatcher::ReceiveMouseMovedEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	const auto [x, y] = MouseLocationTopLeft(_context, _window, event);
@@ -224,7 +225,7 @@ void CocoaEventHubDispatcher::ReceiveMouseMovedEvent(const NS::Event* event) {
 }
 
 void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
-	if (not event)
+	if (not event) [[unlikely]]
 		return;
 
 	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{

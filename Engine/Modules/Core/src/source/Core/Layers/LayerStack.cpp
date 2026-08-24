@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-24
 //
 
 #include "Core/Layers/LayerStack.hpp"
 #include "Core/Layers/I_Layer.hpp"
+
 
 namespace CE::Core {
 
@@ -39,7 +40,7 @@ void LayerStack::PushOverlay(I_Layer* overlay) {
 }
 
 void LayerStack::PopLayer(I_Layer* layer) {
-	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) {
+	if (const auto it = std::find(_layers.begin(), _layers.end(), layer); it != _layers.end()) [[likely]] {
 		layer->OnDetach();
 		_layers.erase(it);
 		--_layerInsert;
@@ -47,7 +48,7 @@ void LayerStack::PopLayer(I_Layer* layer) {
 }
 
 void LayerStack::PopOverlay(I_Layer* overlay) {
-	if (const auto it = std::find(_layers.begin(), _layers.end(), overlay); it != _layers.end()) {
+	if (const auto it = std::find(_layers.begin(), _layers.end(), overlay); it != _layers.end()) [[likely]] {
 		overlay->OnDetach();
 		_layers.erase(it);
 	}

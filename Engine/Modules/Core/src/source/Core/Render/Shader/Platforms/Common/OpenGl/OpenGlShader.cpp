@@ -36,7 +36,7 @@ OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept {
 }
 
 OpenGlShader::~OpenGlShader() {
-	if (_shaderId != 0)
+	if (_shaderId != 0) [[likely]]
 		glDeleteShader(_shaderId);
 }
 
@@ -53,7 +53,7 @@ OpenGlShader& OpenGlShader::operator=(OpenGlShader&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 
-	if (_shaderId != 0)
+	if (_shaderId != 0) [[unlikely]]
 		glDeleteShader(_shaderId);
 
 	_shaderId = other._shaderId;

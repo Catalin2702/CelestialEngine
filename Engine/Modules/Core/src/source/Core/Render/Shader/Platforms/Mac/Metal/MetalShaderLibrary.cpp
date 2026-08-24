@@ -26,8 +26,8 @@ constexpr auto relativeLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
 // Resources directory, so loading is independent of the current working
 // directory (fixes launches from IDEs/debuggers such as CLion and Xcode).
 static std::string ResolveDefaultLibraryPath() {
-	if (const auto bundle = NS::Bundle::mainBundle()) {
-		if (const auto resourcePath = bundle->resourcePath()) {
+	if (const auto bundle = NS::Bundle::mainBundle()) [[likely]] {
+		if (const auto resourcePath = bundle->resourcePath()) [[likely]] {
 			return std::string(resourcePath->utf8String()) + "/Shaders/Metal/Main.metallib";
 		}
 	}
@@ -41,7 +41,7 @@ MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& p
 
 	_LoadLibrary();
 
-	if (not IsValid()) {
+	if (not IsValid()) [[unlikely]] {
 		CE_CORE_ERROR("MetalShaderLibrary::MetalShaderLibrary: Failed to load default shader library from device.");
 		throw std::runtime_error("Failed to load default shader library from device.");
 	}
@@ -52,7 +52,7 @@ MetalShaderLibrary::MetalShaderLibrary(MetalShaderLibrary&& other) noexcept:
 
 MetalShaderLibrary::~MetalShaderLibrary() {
 	for (const auto& function: _functions | std::views::values) {
-		if (function) {
+		if (function) [[likely]] {
 			function->release();
 		}
 	}
@@ -86,10 +86,10 @@ ShaderProgram MetalShaderLibrary::GetShaderProgram(const std::string& vertexName
 	program.vertexFunction = GetShaderFunction(vertexName);
 	program.fragmentFunction = GetShaderFunction(fragmentName);
 
-	if (not program.vertexFunction) {
+	if (not program.vertexFunction) [[unlikely]] {
 		CE_CORE_ERROR("MetalShaderLibrary::GetShaderProgram: Failed to get vertex shader function '{}' from library.", vertexName);
 	}
-	if (not program.fragmentFunction) {
+	if (not program.fragmentFunction) [[unlikely]] {
 		CE_CORE_ERROR("MetalShaderLibrary::GetShaderProgram: Failed to get fragment shader function '{}' from library.", fragmentName);
 	}
 
@@ -97,7 +97,7 @@ ShaderProgram MetalShaderLibrary::GetShaderProgram(const std::string& vertexName
 }
 
 MTL::Function* MetalShaderLibrary::GetShaderFunction(const std::string& name) const {
-	if (const auto it = _functions.find(name); it != _functions.end()) {
+	if (const auto it = _functions.find(name); it != _functions.end()) [[likely]]{
 		return it->second;
 	}
 	return nullptr;
@@ -111,7 +111,7 @@ void MetalShaderLibrary::_LoadLibrary() {
 	const auto url = NS::URL::fileURLWithPath(NS::String::string(defaultLibraryPath.c_str(), NS::UTF8StringEncoding));
 	NS::Error* error = nullptr;
 	const auto library = _device->newLibrary(url, &error);
-	if (not library) {
+	if (not library) [[unlikely]] {
 		const auto errorMessage = std::format("MetalShaderLibrary::_LoadLibrary: Failed to load Metal shader library from path: {}. Error: {}", defaultLibraryPath, error ? error->localizedDescription()->utf8String() : "Unknown error");
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
@@ -123,7 +123,7 @@ void MetalShaderLibrary::_LoadLibrary() {
 	const NS::String* functionName = nullptr;
 	while ((functionName = reinterpret_cast<NS::String*>(enumerator->nextObject())) != nullptr) {
 		const auto functionNameStr = functionName->utf8String();
-		if (const auto function = _library->newFunction(functionName)) {
+		if (const auto function = _library->newFunction(functionName)) [[likely]] {
 			_functions[functionNameStr] = function;
 		}
 		else {

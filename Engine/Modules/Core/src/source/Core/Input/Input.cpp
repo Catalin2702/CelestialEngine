@@ -4,26 +4,27 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-24
 //
 
 #include "Core/Input/Input.hpp"
 
 #include <cassert>
 
+
 namespace CE::Core {
 
 Input* Input::_instance = nullptr;
 
 void Input::Init() {
-	if (_instance)
+	if (_instance) [[unlikely]]
 		return;
 
 	_instance = new Input();
 }
 
 void Input::Shutdown() {
-	if (not _instance)
+	if (not _instance) [[unlikely]]
 		return;
 
 	delete _instance;

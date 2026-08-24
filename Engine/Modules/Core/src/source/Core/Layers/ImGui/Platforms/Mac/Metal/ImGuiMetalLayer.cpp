@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-24
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -22,6 +22,7 @@
 
 #include <imgui.h>
 
+
 namespace CE::Core {
 
 ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _context(std::nullopt), _window(std::nullopt) {
@@ -36,7 +37,7 @@ ImGuiMetalLayer::~ImGuiMetalLayer() {
 }
 
 void ImGuiMetalLayer::OnRender() const {
-	if (not _currentFrameStarted)
+	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
@@ -62,7 +63,7 @@ void ImGuiMetalLayer::OnRender() const {
 }
 
 void ImGuiMetalLayer::SubscribeToEventHub() {
-	if (_eventHub)
+	if (_eventHub) [[unlikely]]
 		UnsubscribeFromEventHub();
 
 	_eventHub = dynamic_cast<CocoaApplication&>(I_Application::StGet()).eventHubDispatcher;
@@ -81,7 +82,7 @@ void ImGuiMetalLayer::SubscribeToEventHub() {
 }
 
 void ImGuiMetalLayer::UnsubscribeFromEventHub() {
-	if (not _eventHub)
+	if (not _eventHub) [[unlikely]]
 		return;
 
 	_eventHub->get().cocoaMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
@@ -106,7 +107,7 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 	_deltaTime = deltaTime;
 
 	_frameContext.drawable = _context->get().AcquireDrawable();
-	if (not _frameContext.drawable) {
+	if (not _frameContext.drawable) [[unlikely]] {
 		CE_CORE_WARN("Failed to get drawable");
 		_renderSemaphore.release();
 		return;
@@ -133,7 +134,7 @@ void ImGuiMetalLayer::Begin(const float deltaTime) {
 }
 
 void ImGuiMetalLayer::End() {
-	if (not _currentFrameStarted)
+	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
 	ImGui::Render();
@@ -162,14 +163,6 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-#ifndef CE_PLATFORM_MACOS
-		// Multi-viewport (detaching ImGui windows into separate OS windows) is intentionally NOT enabled: on macOS a viewport
-		// window dragged out while the main window is fullscreen escapes into a new Space and makes GLFW abort in
-		// _glfwInputWindowContentScale (assert xscale > 0). Keeping windows inside the main window avoids it, and matches the
-		// Metal layer which never enabled viewports either.
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-#endif
-
 		const auto& app = CocoaApplication::StGet();
 
 		_window = app.GetCocoaWindow();
@@ -193,7 +186,7 @@ void ImGuiMetalLayer::_Init() {
 }
 
 void ImGuiMetalLayer::_Shutdown() {
-	if (not _initialized)
+	if (not _initialized) [[unlikely]]
 		return;
 	_initialized = false;
 
@@ -218,7 +211,7 @@ void ImGuiMetalLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) c
 
 void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
+	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, true);
@@ -226,7 +219,7 @@ void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& eve
 
 void ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
+	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, false);
@@ -234,7 +227,7 @@ void ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& e
 
 void ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
+	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddKeyEvent(key, true);
@@ -242,7 +235,7 @@ void ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 
 void ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
+	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddKeyEvent(key, false);
@@ -250,7 +243,7 @@ void ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 
 void ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const unsigned int codepoint = event.GetKeyCode();
-	if (codepoint == 0)
+	if (codepoint == 0) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddInputCharacter(codepoint);

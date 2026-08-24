@@ -4,21 +4,22 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-24
 //
 
 #include "Core/Input/InputState.hpp"
+
 
 namespace CE::Core {
 
 // Map a key/button code to its bitset index; returns false for Unknown or out-of-range codes so
 // bogus platform codes can never touch (or read) the state.
 static bool KeyIndex(const Types::KeyboardKeyCode keyCode, std::size_t& outIndex) {
-	if (keyCode == Types::KeyboardKeyCode::Unknown)
+	if (keyCode == Types::KeyboardKeyCode::Unknown) [[unlikely]]
 		return false;
 
 	const auto index = static_cast<std::size_t>(Types::ToUInt(keyCode));
-	if (index >= InputState::stMaxKeys)
+	if (index >= InputState::stMaxKeys) [[unlikely]]
 		return false;
 
 	outIndex = index;
@@ -26,11 +27,11 @@ static bool KeyIndex(const Types::KeyboardKeyCode keyCode, std::size_t& outIndex
 }
 
 static bool ButtonIndex(const Types::MouseButtonCode buttonCode, std::size_t& outIndex) {
-	if (buttonCode == Types::MouseButtonCode::Unknown)
+	if (buttonCode == Types::MouseButtonCode::Unknown) [[unlikely]]
 		return false;
 
 	const auto index = static_cast<std::size_t>(Types::ToUInt(buttonCode));
-	if (index >= InputState::stMaxMouseButtons)
+	if (index >= InputState::stMaxMouseButtons) [[unlikely]]
 		return false;
 
 	outIndex = index;

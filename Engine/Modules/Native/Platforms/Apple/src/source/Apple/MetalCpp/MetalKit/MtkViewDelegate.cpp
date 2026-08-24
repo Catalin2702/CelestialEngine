@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-08-24
 //
 
 #include "Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp"
 
 #include <cassert>
+
 
 namespace CE::Native {
 
@@ -19,7 +20,7 @@ void MtkViewDelegate::drawInMTKView(MTK::View* view) {
 }
 
 void MtkViewDelegate::drawableSizeWillChange(MTK::View* view, const CGSize size) {
-	if (_drawableSizeWillChangeDispatcher.IsBound())
+	if (_drawableSizeWillChangeDispatcher.IsBound()) [[likely]]
 		_drawableSizeWillChangeDispatcher.Execute(view, size);
 }
 

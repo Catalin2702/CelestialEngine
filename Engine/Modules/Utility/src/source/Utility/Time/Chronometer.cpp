@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-24
 //
 
 #include "Utility/Time/Chronometer.hpp"
 
 #include "Tools/Log/Log.hpp"
+
 
 namespace CE::Utility {
 
@@ -27,7 +28,7 @@ void Chronometer::Start() {
 }
 
 void Chronometer::Stop() {
-	if (_isStopped)
+	if (_isStopped) [[unlikely]]
 		return;
 
 	_end = Clock::now();

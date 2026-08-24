@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -52,13 +52,13 @@ MetalContext::~MetalContext() {
 
 void MetalContext::Init() {
 	_device = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
-	if (not _device) {
+	if (not _device) [[unlikely]] {
 		CE_CORE_ERROR("MetalContext::Init: Could not create MetalDevice!");
 		throw std::runtime_error("MetalContext::Init: Could not create MetalDevice!");
 	}
 
 	_commandQueue = NS::TransferPtr(_device->newCommandQueue());
-	if (not _commandQueue) {
+	if (not _commandQueue) [[unlikely]] {
 		CE_CORE_ERROR("MetalContext::Init: Could not create Metal Command Queue!");
 		throw std::runtime_error("MetalContext::Init: Could not create Metal Command Queue!");
 	}
@@ -82,7 +82,7 @@ void MetalContext::_CreateView() {
 	};
 
 	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, _device.get()));
-	if (not _view) {
+	if (not _view) [[unlikely]] {
 		CE_CORE_ERROR("MetalContext::_CreateView: Could not create MetalKit view!");
 		throw std::runtime_error("MetalContext::_CreateView: Could not create MetalKit view!");
 	}
@@ -104,14 +104,14 @@ void MetalContext::_CreateView() {
 }
 
 void MetalContext::_CreateDisplayLink() {
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		constexpr auto error = "MetalContext::_CreateDisplayLink: Cannot create display link because MTKView or its layer are not initialized.";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
 	_displayLink = NS::TransferPtr(CA::MetalDisplayLink::alloc()->init(_view->layer()));
-	if (not _displayLink) {
+	if (not _displayLink) [[unlikely]] {
 		constexpr auto error = "MetalContext::_CreateDisplayLink: Could not create CAMetalDisplayLink.";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -128,7 +128,7 @@ void MetalContext::_CreateDisplayLink() {
 }
 
 void MetalContext::_DestroyDisplayLink() {
-	if (not _displayLink)
+	if (not _displayLink) [[unlikely]]
 		return;
 
 	_displayLink->setPaused(true);
@@ -150,7 +150,7 @@ CA::MetalDrawable* MetalContext::AcquireDrawable() const {
 	if (_displayLinkDrawable)
 		return _displayLinkDrawable;
 
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::AcquireDrawable: Cannot acquire drawable because MTKView or its layer are not initialized.");
 		return nullptr;
 	}
@@ -159,7 +159,7 @@ CA::MetalDrawable* MetalContext::AcquireDrawable() const {
 }
 
 void MetalContext::SetDisplayLinkPaused(const bool paused) const {
-	if (not _displayLink) {
+	if (not _displayLink) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::SetDisplayLinkPaused: Cannot change display link state because it is not initialized.");
 		return;
 	}
@@ -184,7 +184,7 @@ void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
 }
 
 void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content size change because MTKView or its layer are not initialized.");
 		return;
 	}
@@ -194,7 +194,7 @@ void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) 
 }
 
 void MetalContext::SetVSync(const bool enabled) {
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::SetVSync: Cannot handle VSync change because MTKView or its layer are not initialized.");
 		return;
 	}
@@ -205,7 +205,7 @@ void MetalContext::SetVSync(const bool enabled) {
 	// Keep the display link in lockstep with the VSync state: it paces frames when VSync is on and must not exist when it is
 	// off, otherwise CAMetalLayer::nextDrawable() (used by the VSync-off tick loop) is rejected by Core Animation.
 	if (enabled) {
-		if (not _displayLink)
+		if (not _displayLink) [[likely]]
 			_CreateDisplayLink();
 	}
 	else
@@ -215,7 +215,7 @@ void MetalContext::SetVSync(const bool enabled) {
 }
 
 bool MetalContext::IsVSyncEnabled() const {
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::IsVSyncEnabled: Cannot get the VSync state because MTKView or its layer are not initialized.");
 		return false;
 	}
@@ -225,7 +225,7 @@ bool MetalContext::IsVSyncEnabled() const {
 }
 
 std::pair<float, float> MetalContext::GetContentScale() const {
-	if (not (_view and _view->layer())) {
+	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::GetContentScale: Cannot get the content scale because MTKView or its layer are not initialized.");
 		return {1., 1.};
 	}

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Tools/Log/Log.hpp"
@@ -15,6 +15,7 @@
 
 #include <cassert>
 
+
 namespace CE::Tools {
 
 std::shared_ptr<spdlog::logger> Log::_s_coreLogger;
@@ -23,15 +24,15 @@ std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
 void Log::Init() {
 #ifndef CE_DIST
 	spdlog::set_pattern("%^[%T] %n: %v%$");
-	if (not _s_coreLogger) {
+	if (not _s_coreLogger) [[likely]] {
 		_s_coreLogger = spdlog::stdout_color_mt("CoreLogger");
-		if (_s_coreLogger)
+		if (_s_coreLogger) [[likely]]
 			_s_coreLogger->set_level(spdlog::level::trace);
 	}
 
-	if (not _s_clientLogger) {
+	if (not _s_clientLogger) [[likely]] {
 		_s_clientLogger = spdlog::stdout_color_mt("ClientLogger");
-		 if (_s_clientLogger)
+		 if (_s_clientLogger) [[likely]]
 			 _s_clientLogger->set_level(spdlog::level::trace);
 	}
 #endif

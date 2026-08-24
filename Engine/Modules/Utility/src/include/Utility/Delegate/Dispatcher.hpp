@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -40,7 +40,7 @@ public:
 	 * @details Refuses (with a warning) if a delegate is already bound: Unbind first to rebind.
 	 */
 	void Bind(DelegateType delegate) {
-		if (not IsBound())
+		if (not IsBound()) [[likely]]
 			_delegate = delegate;
 		else {
 			CE_CORE_WARN("A delegate is already assigned");
@@ -61,7 +61,7 @@ public:
 	 * @details No-op while unbound.
 	 */
 	void Dispatch(Args... args) const {
-		if (not IsBound())
+		if (not IsBound()) [[unlikely]]
 			return;
 
 		_delegate(args...);
@@ -97,7 +97,7 @@ public:
 	 * @details Refuses (with a warning) if a callback is already bound: Unbind first to rebind.
 	 */
 	void Bind(CallbackType callback) {
-		if (not IsBound())
+		if (not IsBound()) [[likely]]
 			_callback = callback;
 		else {
 			CE_CORE_WARN("A delegate is already assigned");
@@ -119,7 +119,7 @@ public:
 	 * @details Throws std::runtime_error if no callback is bound: a missing result cannot be silently ignored.
 	 */
 	R Execute(Args... args) {
-		if (not IsBound()) {
+		if (not IsBound()) [[unlikely]] {
 			constexpr auto error = "CallbackDispatcher::Execute: Set the callback before trying to execute this method.";
 			CE_CORE_ERROR(error);
 			throw std::runtime_error(error);
@@ -163,7 +163,7 @@ public:
 		const auto handle = _handle++;
 		Entry entry{.handle = handle, .delegate = delegate};
 
-		if (_isDispatching)
+		if (_isDispatching) [[unlikely]]
 			_pendingAdds.push_back(entry);
 		else
 			_callbacks.push_back(entry);
@@ -177,7 +177,7 @@ public:
 	 * @details Deferred to the end of the dispatch if called from within a handler; unknown handles are ignored.
 	 */
 	void Unsubscribe(const Handle handle) {
-		if (_isDispatching)
+		if (_isDispatching) [[unlikely]]
 			_pendingRemoves.push_back(handle);
 		else
 			RemoveEntry(handle);
@@ -211,7 +211,7 @@ private:
 		auto it = std::find_if(_callbacks.begin(), _callbacks.end(), [handle](const Entry& entry) {
 			return entry.handle == handle;
 		});
-		if (it != _callbacks.end()) {
+		if (it != _callbacks.end()) [[likely]] {
 			*it = _callbacks.back();
 			_callbacks.pop_back();
 		}

@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-24
 //
 
 #include "Types/Window/WindowProps.hpp"
+
 
 namespace CE::Types {
 
@@ -15,7 +16,7 @@ WindowProps::WindowProps(const std::string& title, const unsigned int width, con
 	title(title), width(width), height(height), VSync(VSync), refreshRate(refreshRate), graphicsApi(graphicsApi), windowApi(windowApi) {}
 
 bool IsWindowApiSupported(const WindowApi& api) {
-	if (api == WindowApi::None)
+	if (api == WindowApi::None) [[unlikely]]
 		return false;
 
 	if (api == WindowApi::GLFW)
@@ -37,7 +38,7 @@ bool IsWindowApiSupported(const WindowApi& api) {
 }
 
 bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
-	if (windowApi == WindowApi::None or graphicsApi == GraphicsApi::None)
+	if (windowApi == WindowApi::None or graphicsApi == GraphicsApi::None) [[unlikely]]
 		return false;
 
 	if (windowApi == WindowApi::GLFW and graphicsApi == GraphicsApi::OpenGL)

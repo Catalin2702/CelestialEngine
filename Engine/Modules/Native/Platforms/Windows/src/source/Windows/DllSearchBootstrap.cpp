@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 // Registers the executable's DLL/ subfolder as an additional DLL search directory before any
@@ -20,12 +20,13 @@
 #include <filesystem>
 #include <system_error>
 
+
 namespace {
 
 	void RegisterDllSearchDirectory() {
 		wchar_t exePath[MAX_PATH];
 		const auto length = GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-		if (length == 0 || length == MAX_PATH)
+		if (length == 0 || length == MAX_PATH) [[unlikely]]
 			return;
 
 		const auto exeDirectory = std::filesystem::path(exePath).parent_path();
@@ -35,7 +36,7 @@ namespace {
 		// level up. Probing both means every caller of ce_enable_dll_bootstrap "just works"
 		// regardless of which subfolder it itself lives in.
 		for (const auto& candidate: {exeDirectory / L"DLL", exeDirectory.parent_path() / L"DLL"}) {
-			if (std::error_code errorCode; std::filesystem::is_directory(candidate, errorCode)) {
+			if (std::error_code errorCode; std::filesystem::is_directory(candidate, errorCode)) [[likely]] {
 				SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
 				AddDllDirectory(candidate.c_str());
 				return;

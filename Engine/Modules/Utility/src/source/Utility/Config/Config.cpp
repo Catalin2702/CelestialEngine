@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-24
 //
 
 #include "Utility/Config/Config.hpp"
+
 
 namespace CE::Utility {
 
@@ -22,7 +23,7 @@ const Types::WindowProps& Config::StGetWindowProps() {
 }
 
 void Config::StSetWindowProps(Types::WindowProps windowProps) {
-	if (_stInstance == nullptr) {
+	if (_stInstance == nullptr) [[unlikely]] {
 		_stInstance = new Config();
 	}
 	_stInstance.load()->_windowProps = std::move(windowProps);

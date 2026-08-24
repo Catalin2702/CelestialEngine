@@ -14,6 +14,7 @@
 
 #include <utility>
 
+
 namespace CE::Utility {
 
 File::File(fs::path  path, const Types::FileLoadState loadState, const bool autoSave):
@@ -146,7 +147,7 @@ const std::vector<uint8_t>& File::GetContentBytesLazy() {
 }
 
 std::string File::GetContentString() const {
-	if (not _isLoaded) {
+	if (not _isLoaded) [[unlikely]] {
 		CE_CORE_WARN("File::GetContentString: Attempted to get content string from file at path: {0} but the content is not loaded. Returning empty string.", _path.string());
 		return {};
 	}

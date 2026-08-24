@@ -82,7 +82,7 @@ GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiL
 }
 
 GlfwApplication::~GlfwApplication() {
-	if (IsRunning())
+	if (IsRunning()) [[likely]]
 		GlfwApplication::Quit();
 
 	_layerStack.Clear();
@@ -104,7 +104,7 @@ void GlfwApplication::Start() {
 	while (IsRunning()) {
 		Tick(GetDeltaTime());
 
-		if (_st_TargetFPS == 0)
+		if (_st_TargetFPS == 0) [[unlikely]]
 			continue;
 
 		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / _st_TargetFPS));
@@ -138,7 +138,7 @@ void GlfwApplication::Tick(const float deltaTime) {
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
-	if (_imguiLayer) {
+	if (_imguiLayer) [[likely]] {
 		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
@@ -215,7 +215,7 @@ void GlfwApplication::_InitWindow() {
 	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 
-	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[likely]] {
 		const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -278,12 +278,12 @@ void GlfwApplication::_InitRenderer() {
 }
 
 void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
-	if (not imguiLayer) {
+	if (not imguiLayer) [[unlikely]] {
 		CE_CORE_WARN("GlfwApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto openGlLayer = dynamic_cast<ImGuiOpenGlLayer*>(imguiLayer)) {
+	if (const auto openGlLayer = dynamic_cast<ImGuiOpenGlLayer*>(imguiLayer)) [[likely]] {
 		if (_imguiLayer) {
 			_imguiLayer->UnsubscribeFromEventHub();
 			PopOverlay(_imguiLayer);
@@ -301,7 +301,7 @@ void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 }
 
 void GlfwApplication::RemoveImGuiLayer() {
-	if (not _imguiLayer)
+	if (not _imguiLayer) [[unlikely]]
 		return;
 
 	_imguiLayer->UnsubscribeFromEventHub();
@@ -310,7 +310,7 @@ void GlfwApplication::RemoveImGuiLayer() {
 }
 
 void GlfwApplication::SetEventHubDispatcher() {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		constexpr auto error = "GlfwApplication::SetEventHubDispatcher: Window must be initialized before setting up the event hub dispatcher";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);

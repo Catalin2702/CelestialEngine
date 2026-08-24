@@ -77,11 +77,11 @@ void OpenGlShaderProgram::Link() {
 
 	GLint isLinked = 0;
 	glGetProgramiv(_programId, GL_LINK_STATUS, &isLinked);
-	if (isLinked == GL_FALSE) {
+	if (isLinked == GL_FALSE) [[unlikely]] {
 		GLint maxLength = 0;
 		glGetProgramiv(_programId, GL_INFO_LOG_LENGTH, &maxLength);
 
-		if (maxLength <= 0) {
+		if (maxLength <= 0) [[unlikely]] {
 			CE_CORE_ERROR("OpenGlShaderProgram::Link: Failed to link shader program: No info log available");
 			glDeleteProgram(_programId);
 			_shaders.clear();
@@ -106,16 +106,16 @@ void OpenGlShaderProgram::Link() {
 }
 
 void OpenGlShaderProgram::AddShader(OpenGlShader&& shader) {
-	if (IsLinked()) {
+	if (IsLinked()) [[unlikely]] {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Cannot add shader to a linked shader program. Please link the program after adding all shaders.");
 		return;
 	}
-	if (IsUsed()) {
+	if (IsUsed()) [[unlikely]] {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Cannot add shader to a shader program that is currently in use. Please unbind the program before adding shaders.");
 		return;
 	}
 
-	if (std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }) != _shaders.end()) {
+	if (std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }) != _shaders.end()) [[unlikely]] {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Shader is already added to the shader program. Ignoring duplicate.");
 		return;
 	}
@@ -124,16 +124,16 @@ void OpenGlShaderProgram::AddShader(OpenGlShader&& shader) {
 }
 
 void OpenGlShaderProgram::RemoveShader(const OpenGlShader& shader) {
-	if (IsLinked()) {
+	if (IsLinked()) [[unlikely]] {
 		CE_CORE_WARN("OpenGlShaderProgram::RemoveShader: Cannot remove shader from a linked shader program. Please link the program after adding all shaders.");
 		return;
 	}
-	if (IsUsed()) {
+	if (IsUsed()) [[unlikely]] {
 		CE_CORE_WARN("OpenGlShaderProgram::RemoveShader: Cannot remove shader from a shader program that is currently in use. Please unbind the program before removing shaders.");
 		return;
 	}
 
-	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }); it != _shaders.end()) {
+	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }); it != _shaders.end()) [[likely]] {
 		glDetachShader(_programId, it->GetShaderId());
 		_shaders.erase(it); // unique_ptr destructor -> glDeleteShader()
 	}

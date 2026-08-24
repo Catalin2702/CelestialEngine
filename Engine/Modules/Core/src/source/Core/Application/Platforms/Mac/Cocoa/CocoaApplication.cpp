@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -63,7 +63,7 @@ CocoaApplication::CocoaApplication() {
 }
 
 CocoaApplication::~CocoaApplication() {
-	if (IsRunning())
+	if (IsRunning()) [[likely]]
 		CocoaApplication::Quit();
 
 	Input::Shutdown();
@@ -121,7 +121,7 @@ void CocoaApplication::Tick(const float deltaTime) {
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
-	if (_imguiLayer) {
+	if (_imguiLayer) [[likely]] {
 		_imguiLayer->Begin(deltaTime);
 
 		for (const auto layer: _layerStack)
@@ -154,7 +154,7 @@ void CocoaApplication::Init() {
 
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 
-	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) {
+	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -187,7 +187,7 @@ void CocoaApplication::Init() {
 
 	NS::Error* pipelineError = nullptr;
 	defaultRenderPipelineState = _context->GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
-	if (not defaultRenderPipelineState) {
+	if (not defaultRenderPipelineState) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -197,13 +197,13 @@ void CocoaApplication::Init() {
 }
 
 void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
-	if (not imguiLayer){
+	if (not imguiLayer) [[unlikely]] {
 		CE_WARN("CocoaApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto metalLayer = dynamic_cast<ImGuiMetalLayer*>(imguiLayer)) {
-		if (_imguiLayer) {
+	if (const auto metalLayer = dynamic_cast<ImGuiMetalLayer*>(imguiLayer)) [[likely]] {
+		if (_imguiLayer) [[likely]] {
 			_imguiLayer->UnsubscribeFromEventHub();
 			PopOverlay(_imguiLayer);
 			_imguiLayer = nullptr;
@@ -221,7 +221,7 @@ void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 }
 
 void CocoaApplication::RemoveImGuiLayer() {
-	if (not _imguiLayer)
+	if (not _imguiLayer) [[unlikely]]
 		return;
 
 	_imguiLayer->UnsubscribeFromEventHub();
@@ -252,10 +252,10 @@ void CocoaApplication::_StartTickLoop() {
 		while (_loopThreadRunning.load(std::memory_order_acquire)) {
 			// Pace against the main thread instead of busy-spinning: post exactly one Tick, then block until it completes.
 			dispatch_async_f(dispatch_get_main_queue(), this, [](void* context) {
-				if (const auto app = static_cast<CocoaApplication*>(context)) {
+				if (const auto app = static_cast<CocoaApplication*>(context)) [[likely]] {
 					// Drop the frame if the app stopped or the loop was torn down (e.g. VSync was switched on) between
 					// the dispatch and now, so no stale Tick calls nextDrawable() once a display link exists.
-					if (app->IsRunning() and app->_loopThreadRunning.load(std::memory_order_acquire))
+					if (app->IsRunning() and app->_loopThreadRunning.load(std::memory_order_acquire)) [[likely]]
 						app->Tick(app->GetDeltaTime());
 					// Release the loop thread to schedule the next frame.
 					dispatch_semaphore_signal(app->_tickSemaphore);
@@ -274,7 +274,7 @@ void CocoaApplication::_StopTickLoop() {
 	// block that can no longer run (the main thread is stuck in join). Waking the loop thread here avoids that deadlock.
 	dispatch_semaphore_signal(_tickSemaphore);
 
-	if (_loopThread.joinable())
+	if (_loopThread.joinable()) [[likely]]
 		_loopThread.join();
 }
 
@@ -290,7 +290,7 @@ void CocoaApplication::InitImGuiLayer() {
 }
 
 void CocoaApplication::SetEventHubDispatcher() {
-	if (not (_context and _window)) {
+	if (not (_context and _window)) [[unlikely]] {
 		constexpr auto error = "CocoaApplication::SetEventHubDispatcher: Context and window must be initialized before setting up the event hub dispatcher";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -460,7 +460,7 @@ void CocoaApplication::_OnDidFinishLaunching(NS::Notification*) const {
 }
 
 void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
-	if (not _appCocoa) {
+	if (not _appCocoa) [[unlikely]] {
 		constexpr auto error = "CocoaApplication::_OnWillFinishLaunching: The cocoa application is not initialized";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -468,8 +468,8 @@ void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {
 	const auto mainMenu = CreateMenuBar<CocoaApplication>();
 	_appCocoa->setMainMenu(mainMenu);
 
-	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) {
-		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) {
+	if (_appCocoa->activationPolicy() != NS::ActivationPolicyRegular) [[likely]] {
+		if (not _appCocoa->setActivationPolicy(NS::ActivationPolicyRegular)) [[unlikely]] {
 			constexpr auto error = "CocoaApplication::_OnDidFinishLaunching: Failed to set activation policy for the application";
 			CE_CORE_ERROR(error);
 			throw std::runtime_error(error);
@@ -483,7 +483,7 @@ void CocoaApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 
 void CocoaApplication::_OnVSyncChange(Events::VSyncEvent&) {
 	_Pause();
-	if (IsRunning())
+	if (IsRunning()) [[likely]]
 		_Run();
 }
 

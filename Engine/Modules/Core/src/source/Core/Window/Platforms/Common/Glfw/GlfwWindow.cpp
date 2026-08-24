@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -27,6 +27,7 @@
 
 #include <stdexcept>
 #include <utility>
+
 
 namespace CE::Core {
 
@@ -95,14 +96,14 @@ std::pair<float, float> GlfwWindow::GetWindowSize() const {
 }
 
 unsigned int GlfwWindow::GetRefreshRate() const {
-	if (not _glfwWindow)
+	if (not _glfwWindow) [[unlikely]]
 		return 0;
 
 	// When fullscreen the window owns a monitor; otherwise fall back to the primary monitor.
 	auto monitor = glfwGetWindowMonitor(_glfwWindow.get());
-	if (not monitor)
+	if (not monitor) [[unlikely]]
 		monitor = glfwGetPrimaryMonitor();
-	if (not monitor)
+	if (not monitor) [[unlikely]]
 		return 0;
 
 	const auto mode = glfwGetVideoMode(monitor);
@@ -110,7 +111,7 @@ unsigned int GlfwWindow::GetRefreshRate() const {
 }
 
 std::pair<float, float> GlfwWindow::GetFrameSize() const {
-	if (not _glfwWindow) {
+	if (not _glfwWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
 		return {0.0f, 0.0f};
 	}
@@ -129,24 +130,24 @@ void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
 }
 
 void GlfwWindow::_SetIOEventCallbacks() {
-	if (not _glfwWindow)
+	if (not _glfwWindow) [[unlikely]]
 		return;
 
 	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int scancode, const int action, const int mods) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchKeyEvent(key, action, scancode, mods);
 		}
 	});
 
 	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int codepoint) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchCharEvent(codepoint);
 		}
 	});
 
 	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int mods) {
 		// GLFW has no native drag event, so we track button state here to synthesize
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			if (button >= 0 && button < static_cast<int>(_this->_pressedMouseButtons.size()))
 				_this->_pressedMouseButtons[button] = (action == GLFW_PRESS);
 			_this->_lastMouseMods = mods;
@@ -156,11 +157,7 @@ void GlfwWindow::_SetIOEventCallbacks() {
 	});
 
 	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
-		// if (const auto windowCallbacks = static_cast<WindowCallbacks*>(glfwGetWindowUserPointer(window)); windowCallbacks and windowCallbacks->EventCallback) {
-		// 	Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
-		// 	windowCallbacks->EventCallback(mouseMovedEvent);
-		// }
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchMousePositionEvent(xPos, yPos);
 
 			// GLFW has no native drag event: if the cursor moves while a mouse button is
@@ -173,31 +170,31 @@ void GlfwWindow::_SetIOEventCallbacks() {
 	});
 
 	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
 		}
 	});
 }
 
 void GlfwWindow::_SetWindowEventCallbacks() {
-	if (not _glfwWindow)
+	if (not _glfwWindow) [[unlikely]]
 		return;
 
 	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchResizeEvent(width, height);
 			_this->SetWindowSize(width, height);
 		}
 	});
 
 	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchCloseEvent();
 		}
 	});
 
 	glfwSetWindowFocusCallback(_glfwWindow.get(), [](GLFWwindow* window, const int focused) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) {
+		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchFocusEvent(focused);
 		}
 	});
@@ -213,7 +210,7 @@ void GlfwWindow::Init() {
 }
 
 void GlfwWindow::Miniaturize() const {
-	if (not _glfwWindow) {
+	if (not _glfwWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::Miniaturize: Cannot miniaturize because window is not initialized");
 		return;
 	}
@@ -222,7 +219,7 @@ void GlfwWindow::Miniaturize() const {
 }
 
 void GlfwWindow::Deminiaturize() const {
-	if (not _glfwWindow) {
+	if (not _glfwWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
 		return;
 	}
@@ -231,7 +228,7 @@ void GlfwWindow::Deminiaturize() const {
 }
 
 void GlfwWindow::ToggleFullScreen() const {
-	if (not _glfwWindow) {
+	if (not _glfwWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
 		return;
 	}
@@ -240,7 +237,7 @@ void GlfwWindow::ToggleFullScreen() const {
 	// GLFW hosts a real NSWindow on macOS: use the native (Spaces) fullscreen so the transition animates and keeps the
 	// title-bar controls, instead of the exclusive glfwSetWindowMonitor fullscreen that covers them and hides the traffic lights.
 	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(_glfwWindow.get()));
-	if (not nsWindow) {
+	if (not nsWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because the native Cocoa window is unavailable");
 		return;
 	}
@@ -262,13 +259,13 @@ void GlfwWindow::ToggleFullScreen() const {
 	glfwGetWindowSize(window, &_windowedWidth, &_windowedHeight);
 
 	const auto monitor = glfwGetPrimaryMonitor();
-	if (not monitor) {
+	if (not monitor) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot enter fullscreen because no monitor is available");
 		return;
 	}
 
 	const auto mode = glfwGetVideoMode(monitor);
-	if (not mode) {
+	if (not mode) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot enter fullscreen because the monitor video mode is unavailable");
 		return;
 	}
@@ -278,8 +275,8 @@ void GlfwWindow::ToggleFullScreen() const {
 }
 
 void GlfwWindow::_InitWindow() {
-	if (not _st_GLFWInitialized) {
-		if (const int success = glfwInit(); not success) {
+	if (not _st_GLFWInitialized) [[likely]] {
+		if (const int success = glfwInit(); not success) [[unlikely]] {
 			constexpr auto error = "GlfwWindow::_InitWindow: Could not initialize GLFW!";
 			windowEventHandler.DispatchErrorEvent(-1, error);
 			throw std::runtime_error(error);
@@ -306,7 +303,7 @@ void GlfwWindow::_InitWindow() {
 		nullptr
 	));
 
-	if (not _glfwWindow) {
+	if (not _glfwWindow) [[unlikely]] {
 		constexpr auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";
 		windowEventHandler.DispatchErrorEvent(-1, error);
 		throw std::runtime_error(error);
@@ -319,7 +316,7 @@ void GlfwWindow::_Shutdown() {
 	_glfwWindow.reset();
 
 	_st_GLFWWindowCount--;
-	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) {
+	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) [[likely]] {
 		glfwTerminate();
 		_st_GLFWInitialized = false;
 	}

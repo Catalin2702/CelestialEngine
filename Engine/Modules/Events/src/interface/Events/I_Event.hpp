@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -16,7 +16,6 @@
 #include "Define/Type.hpp"
 
 #include <functional>
-#include <ostream>
 #include <string>
 
 
@@ -153,7 +152,7 @@ public:
 	 * @details Sets the handled flag to true, indicating that the event has been processed
 	 */
 	void Consume() const {
-		if (_isMutable)
+		if (_isMutable) [[likely]]
 			_handled = true;
 	}
 

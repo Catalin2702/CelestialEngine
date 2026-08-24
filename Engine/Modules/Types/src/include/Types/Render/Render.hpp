@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -17,7 +17,6 @@
 // ReSharper disable CppUnusedIncludeDirective
 #include <cstdint>
 #include <format>
-#include <ostream>
 #include <string_view>
 
 

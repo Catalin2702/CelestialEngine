@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -24,6 +24,7 @@
 
 #include <stdexcept>
 
+
 namespace CE::Core {
 
 static int _st_imGuiOpenGlLayerCount = 0;
@@ -38,7 +39,7 @@ ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
 }
 
 void ImGuiOpenGlLayer::OnRender() const {
-	if (not _currentFrameStarted)
+	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
@@ -56,7 +57,7 @@ void ImGuiOpenGlLayer::OnRender() const {
 }
 
 void ImGuiOpenGlLayer::SubscribeToEventHub() {
-	if (_eventHub)
+	if (_eventHub) [[unlikely]]
 		UnsubscribeFromEventHub();
 
 	_eventHub = dynamic_cast<GlfwApplication&>(I_Application::StGet()).eventHubDispatcher;
@@ -75,7 +76,7 @@ void ImGuiOpenGlLayer::SubscribeToEventHub() {
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
-	if (not _eventHub)
+	if (not _eventHub) [[unlikely]]
 		return;
 
 	_eventHub->get().glfwMouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
@@ -109,7 +110,7 @@ void ImGuiOpenGlLayer::Begin(const float deltaTime) {
 }
 
 void ImGuiOpenGlLayer::End() {
-	if (not _currentFrameStarted)
+	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
 	ImGui::Render();
@@ -119,13 +120,6 @@ void ImGuiOpenGlLayer::End() {
 	OpenGlContext::SetViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	if (const auto& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		_window->get().SetCurrentContext();
-	}
 }
 
 void ImGuiOpenGlLayer::_Init() {
@@ -144,13 +138,13 @@ void ImGuiOpenGlLayer::_Init() {
 		const auto& app = GlfwApplication::StGet();
 
 		_window = dynamic_cast<GlfwWindow&>(app.GetWindow());
-		if (not _window) {
+		if (not _window) [[unlikely]] {
 			CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 			throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
 		}
 
 		_context = dynamic_cast<OpenGlContext&>(app.GetRenderContext());
-		if (not _context) {
+		if (not _context) [[unlikely]] {
 			CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
 			throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
 		}
@@ -171,13 +165,6 @@ void ImGuiOpenGlLayer::_Init() {
 
 		assert(_window->get().GetGlfwWindow() != nullptr);
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
-
 		ImGui_ImplGlfw_InitForOpenGL(_window->get().GetGlfwWindow(), false);
 
 		ImGui_ImplOpenGL3_Init("#version 410");
@@ -193,12 +180,12 @@ void ImGuiOpenGlLayer::_Init() {
 }
 
 void ImGuiOpenGlLayer::_Shutdown() {
-	if (not _initialized)
+	if (not _initialized) [[unlikely]]
 		return;
 	_initialized = false;
 
 	_st_imGuiOpenGlLayerCount--;
-	if (_st_imGuiOpenGlLayerCount > 0)
+	if (_st_imGuiOpenGlLayerCount > 0) [[unlikely]]
 		return;
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -223,7 +210,7 @@ void ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) 
 
 void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
+	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, true);
@@ -231,7 +218,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 
 void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
-	if (button >= ImGuiMouseButton_COUNT)
+	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddMouseButtonEvent(button, false);
@@ -239,7 +226,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& 
 
 void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
+	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddKeyEvent(key, true);
@@ -247,7 +234,7 @@ void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 
 void ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
-	if (key == ImGuiKey_None)
+	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddKeyEvent(key, false);
@@ -255,7 +242,7 @@ void ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
 
 void ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 	const unsigned int codepoint = event.GetKeyCode();
-	if (codepoint == 0)
+	if (codepoint == 0) [[unlikely]]
 		return;
 
 	ImGui::GetIO().AddInputCharacter(codepoint);

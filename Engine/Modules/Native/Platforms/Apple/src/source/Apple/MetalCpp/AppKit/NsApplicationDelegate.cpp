@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-18
+// Updated: 2026-08-24
 //
 
 #include "Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp"
@@ -12,6 +12,7 @@
 #include <Foundation/Foundation.hpp>
 
 #include <cassert>
+
 
 namespace CE::Native {
 
@@ -21,7 +22,7 @@ void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification* noti
 }
 
 void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {
-	if (_appWillFinishLaunchingDispatcher.IsBound())
+	if (_appWillFinishLaunchingDispatcher.IsBound()) [[likely]]
 		_appWillFinishLaunchingDispatcher.Execute(notification);
 }
 

@@ -34,7 +34,7 @@ OpenGlVertexBuffer& OpenGlVertexBuffer::operator=(OpenGlVertexBuffer&& other) no
 	if (this == &other) [[unlikely]]
 		return *this;
 
-	if (this->_renderID)
+	if (this->_renderID) [[likely]]
 		glDeleteBuffers(1, &this->_renderID);
 
 	this->_renderID = other._renderID;

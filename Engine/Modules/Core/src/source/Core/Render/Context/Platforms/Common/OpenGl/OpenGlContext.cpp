@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-24
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 
 namespace CE::Core {
 
@@ -60,7 +61,7 @@ void OpenGlContext::Init() {
 	assert(_window && "OpenGlContext requires a valid GLFW window pointer");
 	glfwMakeContextCurrent(_window);
 
-	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) {
+	if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) [[unlikely]] {
 		CE_CORE_ERROR("OpenGlContext::Init: Could not load GLAD");
 		throw std::runtime_error("OpenGlContext::Init: Could not load GLAD");
 	}
@@ -99,7 +100,7 @@ bool OpenGlContext::IsVSyncEnabled() const {
 }
 
 std::pair<float, float> OpenGlContext::GetContentScale() const {
-	if (not _window) {
+	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("OpenGlContext::GetContentScale: Could not get content scale because the window is not set.");
 		return {1.0f, 1.0f};
 	}
