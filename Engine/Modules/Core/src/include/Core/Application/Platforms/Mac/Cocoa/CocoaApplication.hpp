@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 
 #pragma once
 
@@ -112,12 +112,12 @@ public:
 	/**
 	 * @brief Copy constructor (deleted)
 	 */
-	CocoaApplication(const CocoaApplication& other) = delete;
+	CocoaApplication(const CocoaApplication&) = delete;
 
 	/**
 	 * @brief Move constructor (deleted)
 	 */
-	CocoaApplication(CocoaApplication&& other) noexcept = delete;
+	CocoaApplication(CocoaApplication&&) noexcept = delete;
 
 	/**
 	 * @brief Destructor
@@ -128,12 +128,12 @@ public:
 	/**
 	 * @brief Copy assignment operator (deleted)
 	 */
-	CocoaApplication& operator=(const CocoaApplication& other) = delete;
+	CocoaApplication& operator=(const CocoaApplication&) = delete;
 
 	/**
 	 * @brief Move assignment operator (deleted)
 	 */
-	CocoaApplication& operator=(CocoaApplication&& other) = delete;
+	CocoaApplication& operator=(CocoaApplication&&) = delete;
 
 public:
 	/**

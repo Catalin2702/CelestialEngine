@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -132,7 +132,7 @@ void GlfwApplication::Tick(const float deltaTime) {
 
 	_shaderProgram.Bind();
 	glBindVertexArray(_vertexArrayId);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(_indexBuffer.GetCount()), GL_UNSIGNED_INT, nullptr);
 
 	for (const auto layer: _layerStack)
 		layer->OnUpdate();
@@ -249,25 +249,24 @@ void GlfwApplication::_InitRenderer() {
 	glGenVertexArrays(1, &_vertexArrayId);
 	glBindVertexArray(_vertexArrayId);
 
-	glGenBuffers(1, &_vertexBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferId);
-
-	constexpr float vertices[3 * 3] = {
+	constexpr uint32_t vertexCount = 3 * 3;
+	constexpr float vertices[vertexCount] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
 		 0.0f,  0.5f, 0.0f
 	};
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	constexpr uint32_t indexCount = 3;
+	constexpr uint32_t indices[indexCount] = { 0, 1, 2 };
+
+	_vertexBuffer = OpenGlVertexBuffer(vertices, vertexCount);
+	_vertexBuffer.Bind();
+
+	_indexBuffer = OpenGlIndexBuffer(indices, indexCount);
+	_indexBuffer.Bind();
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-	glGenBuffers(1, &_indexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBufferId);
-
-	constexpr unsigned int indices[3] = { 0, 1, 2 };
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	_shaderProgram = OpenGlShaderProgram(
 		std::initializer_list{

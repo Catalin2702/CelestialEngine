@@ -4,13 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-24
 //
 
 #pragma once
 
 #ifndef CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
 #define CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
+
+#include <cstddef>
+
 
 namespace CE::Core {
 
@@ -33,6 +36,11 @@ public:
 	 * @brief Deactivates the buffer
 	 */
 	virtual void Unbind() const = 0;
+};
+
+class I_IndexBuffer: public I_Buffer {
+public:
+	[[nodiscard]] virtual size_t GetCount() const = 0;
 };
 
 }

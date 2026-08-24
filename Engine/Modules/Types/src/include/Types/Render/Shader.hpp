@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -28,6 +28,7 @@ namespace CE::Types {
  *			These shader types are essential for defining the stages of the graphics pipeline and how vertices and fragments are processed.
  */
 enum class ShaderType: uint8_t {
+	None,
 	Vertex,
 	Fragment,
 	Compute,

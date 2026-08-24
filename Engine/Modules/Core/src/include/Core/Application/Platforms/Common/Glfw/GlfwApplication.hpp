@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -16,6 +16,7 @@
 
 #include "Core/Application/I_Application.hpp"
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 
 #include <array>
@@ -105,12 +106,12 @@ public:
 	/**
 	 * @brief Copy constructor (deleted)
 	 */
-	GlfwApplication(const GlfwApplication& other) = delete;
+	GlfwApplication(const GlfwApplication&) = delete;
 
 	/**
 	 * @brief Move constructor (deleted)
 	 */
-	GlfwApplication(GlfwApplication&& other) noexcept = delete;
+	GlfwApplication(GlfwApplication&&) noexcept = delete;
 
 	/**
 	 * @brief Destructor
@@ -121,12 +122,12 @@ public:
 	/**
 	 * @brief Copy assignment operator (deleted)
 	 */
-	GlfwApplication& operator=(const GlfwApplication& other) = delete;
+	GlfwApplication& operator=(const GlfwApplication&) = delete;
 
 	/**
 	 * @brief Move assignment operator (deleted)
 	 */
-	GlfwApplication& operator=(GlfwApplication&& other) noexcept = delete;
+	GlfwApplication& operator=(GlfwApplication&&) noexcept = delete;
 
 public:
 	/**
@@ -281,12 +282,15 @@ public:
 
 private:
 	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
-	OpenGlShaderProgram _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
 	std::unique_ptr<GlfwWindow> _window; ///< Pointer to the GLFW window
+
+	OpenGlVertexBuffer _vertexBuffer;
+	OpenGlIndexBuffer _indexBuffer;
+	OpenGlShaderProgram _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
 
 	ImGuiOpenGlLayer* _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 
-	uint32_t _vertexArrayId = 0, _vertexBufferId = 0, _indexBufferId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
+	uint32_t _vertexArrayId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
 
 	std::array<uint32_t, _Count> _eventHubHandlers{}; ///< Handles of the app-level hub subscriptions, indexed by EventHubSubscription
 };

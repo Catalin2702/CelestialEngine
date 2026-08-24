@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -44,7 +44,7 @@ public:
 	 */
 	OpenGlShaderProgram(std::initializer_list<OpenGlShader> shaders);
 
-	OpenGlShaderProgram(const OpenGlShaderProgram& other) = default;
+	OpenGlShaderProgram(const OpenGlShaderProgram&) = default;
 
 	OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept;
 

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-08-24
 #
 
 set(APPLICATION_HEADERS
@@ -40,6 +40,9 @@ set(MAINHUB_HEADERS
 )
 
 set(RENDER_HEADERS
+	# Buffer
+	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
+
 	# Context
 	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
 
@@ -85,6 +88,9 @@ set(MAINHUB_INTERFACES
 
 
 set(RENDER_INTERFACES
+	# Buffer
+	src/interface/Core/Render/Buffer/I_Buffer.hpp
+
 	# Context
 	src/interface/Core/Render/Context/I_Context.hpp
 
@@ -131,6 +137,9 @@ set(MAINHUB_SOURCES
 )
 
 set(RENDER_SOURCES
+	# Buffer
+	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
+
 	# Context
 	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-24
 //
 
 #pragma once
@@ -55,7 +55,7 @@ public:
 	 */
 	explicit MetalShaderLibrary(MTL::Device* device, const std::string& path = "");
 
-	MetalShaderLibrary(const MetalShaderLibrary& other) = default;
+	MetalShaderLibrary(const MetalShaderLibrary&) = default;
 	MetalShaderLibrary(MetalShaderLibrary&& other) noexcept;
 
 	~MetalShaderLibrary();
