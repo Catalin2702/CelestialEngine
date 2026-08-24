@@ -4,14 +4,26 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-25
 //
 
 #include "Utility/ImGui/ImGui.hpp"
 
+#include "Utility/FileSystem/FileSystem.hpp"
+
 #include <GLFW/glfw3.h>
 
+#include <string>
+
 namespace CE::Utility {
+
+void SetImGuiIniFile(ImGuiIO& io, const char* fileName) {
+	// Never reassigned once initialised: ImGui keeps the raw pointer, so a second call with a
+	// different name must not move the storage out from under a live context
+	static const std::string iniFilePath = (FileSystem::GetConfigDirectory() / fileName).string();
+
+	io.IniFilename = iniFilePath.c_str();
+}
 
 ImGuiKey GlfwKeyToImGuiKey(const int key) {
 	switch (key) {

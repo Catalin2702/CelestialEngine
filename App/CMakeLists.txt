@@ -146,6 +146,18 @@ if(APPLE)
 		COMMENT "Compiling Asset Catalog"
 	)
 
+	# Running the app leaves ImGui's imgui.ini next to the executable (its CWD is Contents/MacOS).
+	# A non-executable file in the bundle root makes the next codesign fail ("unsealed contents
+	# present in the bundle root"), so the leftovers are swept before signing - it is user state,
+	# nothing that belongs in a signed bundle. Registered before the signing step on purpose.
+	add_custom_command(TARGET CE_App POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E rm -f
+			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/MacOS/imgui.ini"
+			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Resources/imgui.ini"
+		COMMENT "Removing stray imgui.ini from the bundle"
+		VERBATIM
+	)
+
 	# Sign the app with ad-hoc signature and entitlements (suppresses warnings). Deliberately NOT
 	# --deep: it resigns nested content (Contents/Frameworks) in an unspecified order and does not
 	# reliably produce a valid seal - Apple's own codesign docs call it deprecated for exactly this

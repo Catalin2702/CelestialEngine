@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -13,6 +13,7 @@
 #include "Types/FileSystem/File.hpp"
 #include "Utility/FileSystem/File.hpp"
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -25,6 +26,71 @@ fs::path FileSystem::_rootDirectory = fs::current_path();
 fs::path FileSystem::GetRootDirectory() { return _rootDirectory; }
 
 void FileSystem::SetRootDirectory(const fs::path& rootDirectory) { _rootDirectory = rootDirectory; }
+
+namespace {
+
+constexpr auto configFolderName = "CelestialEngine";
+
+// Reads an environment variable, returning an empty path when it is unset or empty, so the caller
+// can fall through to the next candidate instead of building a path rooted at nothing
+fs::path EnvironmentPath(const char* name) {
+	const char* value = std::getenv(name);
+	if (value == nullptr or *value == '\0')
+		return {};
+	return {value};
+}
+
+fs::path ResolveConfigDirectory() {
+#if defined(CE_PLATFORM_WINDOWS)
+	auto base = EnvironmentPath("APPDATA");
+	if (base.empty())
+		base = EnvironmentPath("USERPROFILE");
+#elif defined(CE_PLATFORM_MACOS)
+	fs::path base;
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+		base = home / "Library" / "Application Support";
+#else
+	auto base = EnvironmentPath("XDG_CONFIG_HOME");
+	if (base.empty()) {
+		if (const auto home = EnvironmentPath("HOME"); not home.empty())
+			base = home / ".config";
+	}
+#endif
+
+	// No usable home: fall back next to the executable rather than handing back an empty path. It is
+	// not writable in every deployment, but it keeps callers on a valid path instead of "/CelestialEngine"
+	if (base.empty()) [[unlikely]] {
+		CE_CORE_WARN("FileSystem::GetConfigDirectory: No per-user data directory found, falling back to the root directory.");
+		return FileSystem::GetRootDirectory() / configFolderName;
+	}
+
+	return base / configFolderName;
+}
+
+}
+
+fs::path FileSystem::GetConfigDirectory() {
+	// Resolved once: the environment does not change under the running process, and the create call
+	// below only needs to happen on first use
+	static const fs::path configDirectory = [] {
+		auto directory = ResolveConfigDirectory();
+
+		// The outcome is checked with exists() rather than the error_code: create_directories reports
+		// "already exists" as a failure on some standard libraries, which would log an error on every
+		// run but the first
+		std::error_code error;
+		fs::create_directories(directory, error);
+		// Braces are load-bearing: CE_CORE_ERROR expands to two statements, so a braceless if would
+		// log unconditionally
+		if (not fs::exists(directory)) [[unlikely]] {
+			CE_CORE_ERROR("FileSystem::GetConfigDirectory: Failed to create the configuration directory at path: " + directory.string() + " (" + error.message() + ")");
+		}
+
+		return directory;
+	}();
+
+	return configDirectory;
+}
 
 File FileSystem::StCreate(const fs::path& path, const std::string& content, const bool autoSave) {
 	const auto fullPath = _rootDirectory / path;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -108,6 +108,25 @@ public:
 	 * @details Returns the root directory path for the file system. This is the base directory from which all file paths are resolved. The root directory can be set using the SetRootDirectory method, and it is used as a reference point for relative file paths.
 	 */
 	[[nodiscard]] static fs::path GetRootDirectory();
+
+	/**
+	 * @brief Gets the per-user, writable directory for engine and application configuration
+	 * @return std::filesystem::path Absolute path to the configuration directory
+	 * @details Resolves the platform's conventional location for per-user application data and appends the engine
+	 *			folder: `~/Library/Application Support/CelestialEngine` on macOS, `%APPDATA%/CelestialEngine` on
+	 *			Windows, `$XDG_CONFIG_HOME/CelestialEngine` (or `~/.config/CelestialEngine`) on Linux. The directory
+	 *			is created on first call.
+	 *
+	 *			This is deliberately *outside* the application bundle. Writing into `Contents/` would break the code
+	 *			signature seal - which is produced at build time and cannot be renewed at runtime - and the bundle is
+	 *			frequently read-only anyway (an app in /Applications, or one running translocated after Gatekeeper
+	 *			quarantine). Read-only defaults shipped with the app belong in `Contents/Resources`; everything the
+	 *			running engine writes back belongs here.
+	 *
+	 *			The path is resolved once and cached; if the platform's home/app-data variable is unavailable, it
+	 *			falls back to the root directory so callers always get a usable path.
+	 */
+	[[nodiscard]] static fs::path GetConfigDirectory();
 
 	/**
 	 * @brief Sets the root directory path for the file system

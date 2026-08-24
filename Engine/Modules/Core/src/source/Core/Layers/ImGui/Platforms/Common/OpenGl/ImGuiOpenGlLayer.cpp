@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -17,6 +17,7 @@
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
+#include "Utility/ImGui/ImGui.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>
@@ -131,6 +132,7 @@ void ImGuiOpenGlLayer::_Init() {
 		ImGui::StyleColorsDark();
 
 		ImGuiIO& io = ImGui::GetIO();
+		Utility::SetImGuiIniFile(io);
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

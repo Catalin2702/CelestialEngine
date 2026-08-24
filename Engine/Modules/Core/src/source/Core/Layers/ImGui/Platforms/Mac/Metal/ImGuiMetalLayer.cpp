@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -15,6 +15,7 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
+#include "Utility/ImGui/ImGui.hpp"
 #include "Types/Build/Build.hpp"
 
 #include <Metal/Metal.hpp>
@@ -159,6 +160,7 @@ void ImGuiMetalLayer::_Init() {
 		ImGui::StyleColorsDark();
 
 		auto& io = ImGui::GetIO();
+		Utility::SetImGuiIniFile(io);
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
