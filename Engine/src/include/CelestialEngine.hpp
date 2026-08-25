@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -20,7 +20,7 @@
 // #include <Core/Application.hpp>
 #include <Core/Application/I_Application.hpp>
 #include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 #include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
 #endif
 // -----------------------------------------------
@@ -40,7 +40,7 @@
 #include <Core/Layers/I_Layer.hpp>
 #include <Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 #include <Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
 #endif
 // -----------------------------------------------

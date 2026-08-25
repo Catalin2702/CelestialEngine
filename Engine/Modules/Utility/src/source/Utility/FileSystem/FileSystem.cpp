@@ -53,14 +53,14 @@ fs::path EnvironmentPath(const char* name) {
 }
 
 fs::path ResolveConfigDirectory() {
-#if defined(CE_PLATFORM_WINDOWS)
+#if CE_PLATFORM_MACOS
+	fs::path base;
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+	base = home / "Library" / "Application Support";
+#elif CE_PLATFORM_WINDOWS
 	auto base = EnvironmentPath("APPDATA");
 	if (base.empty())
 		base = EnvironmentPath("USERPROFILE");
-#elif defined(CE_PLATFORM_MACOS)
-	fs::path base;
-	if (const auto home = EnvironmentPath("HOME"); not home.empty())
-		base = home / "Library" / "Application Support";
 #else
 	auto base = EnvironmentPath("XDG_CONFIG_HOME");
 	if (base.empty()) {

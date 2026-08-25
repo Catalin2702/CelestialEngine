@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Utility/Time/Chronometer.hpp"
@@ -45,7 +45,7 @@ double Chronometer::GetElapsedMilliseconds() const {
 }
 
 void Chronometer::PrintResult() const {
-#ifdef CE_DEBUG
+#if CE_DEBUG
 	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", GetElapsedMilliseconds() * .001);
 #endif
 }

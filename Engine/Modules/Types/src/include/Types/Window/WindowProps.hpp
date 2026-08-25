@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_TYPES_WINDOW_WINDOWPROPS_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Define/Type.hpp"
 #include "Types/Render/Render.hpp"
 
 #include <format>
@@ -31,15 +32,30 @@ namespace CE::Types {
  * @enum WindowApi
  * @brief Enumeration of supported windowing APIs
  * @details Defines the windowing APIs that can be used for creating and managing windows.
- *			Includes options for GLFW (cross-platform), Win32 (Windows), X11 (Linux), and Cocoa (macOS).
+ *			Includes options for GLFW (cross-platform), Win32 (Windows), X11 (Linux), Wayland (Linux) and Cocoa (macOS).
  */
 enum class WindowApi: uint8_t {
-	None,											///< No window API specified
-	GLFW,											///< GLFW windowing library
-	Win32,											///< Win32 API (Windows)
-	X11,											///< X11 (Linux)
-	Cocoa,											///< Cocoa (macOS)
+	None = 0,											///< No window API specified
+	GLFW = BIT(0),										///< GLFW windowing library
+	Cocoa = BIT(1),										///< Cocoa (macOS)
+	Win32 = BIT(2),										///< Win32 API (Windows)
+	X11 = BIT(3),										///< X11 (Linux)
+	Wayland = BIT(4),									///< Wayland (Linux)
 };
+
+constexpr WindowApi operator & (WindowApi x, WindowApi y) {
+	return static_cast<WindowApi>(static_cast<uint8_t>(x) & static_cast<uint8_t>(y));
+}
+
+constexpr WindowApi operator | (WindowApi x, WindowApi y) {
+	return static_cast<WindowApi>(static_cast<uint8_t>(x) | static_cast<uint8_t>(y));
+}
+
+constexpr WindowApi operator ^ (WindowApi x, WindowApi y) {
+	return static_cast<WindowApi>(static_cast<uint8_t>(x) ^ static_cast<uint8_t>(y));
+}
+
+CE_TYPES_API bool HasAnyFlags(WindowApi x, WindowApi y);
 
 /**
  * @struct WindowProps
@@ -53,8 +69,8 @@ struct CE_TYPES_API WindowProps {
 	unsigned int height = 0;						///< Window height in pixels
 	bool VSync = false;								///< Vertical synchronization enabled/disabled
 	unsigned int refreshRate = 0;					///< Target frame rate used when VSync is off (0 = uncapped). When VSync is on, the display's actual refresh rate is used instead.
-	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering (OpenGL, Metal, Vulkan, DirectX)
-	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management (GLFW, Win32, X11, Cocoa)
+	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering
+	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management
 
 	/**
 	 * @brief Default constructor
@@ -107,6 +123,7 @@ struct std::formatter<CE::Types::WindowApi>: std::formatter<std::string_view> {
 			case WindowApi::GLFW: return std::formatter<std::string_view>::format("GLFW", ctx);
 			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
 			case WindowApi::X11: return std::formatter<std::string_view>::format("X11", ctx);
+			case WindowApi::Wayland: return std::formatter<std::string_view>::format("Wayland", ctx);
 			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
 			default: return std::formatter<std::string_view>::format("Unknown Window API", ctx);
 		}

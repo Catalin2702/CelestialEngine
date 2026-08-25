@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -19,10 +19,10 @@
  *			On macOS/Linux: __attribute__((visibility("default"))) for both, since ELF/Mach-O
  *			shared libraries do not distinguish export from import at the symbol declaration.
  */
-#if defined(CE_PLATFORM_WINDOWS)
+#if CE_PLATFORM_WINDOWS == 1
 	#define CE_API_EXPORT __declspec(dllexport)
 	#define CE_API_IMPORT __declspec(dllimport)
-#elif defined(CE_PLATFORM_MACOS) || defined(CE_PLATFORM_LINUX)
+#elif CE_PLATFORM_MACOS == 1 || CE_PLATFORM_LINUX == 1
 	#define CE_API_EXPORT __attribute__((visibility("default")))
 	#define CE_API_IMPORT __attribute__((visibility("default")))
 #else

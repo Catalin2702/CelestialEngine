@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -17,26 +17,26 @@
 #include "Core/Application/I_Application.hpp"
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
+#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
+#include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
 #include <array>
 #include <memory>
 
 // On macOS GLFW still creates a real NSApplication, so the GLFW backend reuses the native menu bar. SEL and NS::Object are only
 // needed for the menu callbacks, which exist on macOS alone; elsewhere GLFW has no native menu bar.
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
 	#include <objc/objc.h>
 #endif
 
 
 namespace CE::Core {
-	class OpenGlContext;
 	class I_Layer;
 	class ImGuiOpenGlLayer;
-	class GlfwWindow;
 }
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
 namespace NS {
 	class Object;
 }
@@ -198,7 +198,7 @@ public:
 	 */
 	[[nodiscard]] static GlfwApplication& StGet();
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
 	// Native macOS menu-bar callbacks. GLFW creates the NSApplication, so the same menu (built by CreateMenuBar) drives these.
 	/**
 	 * @brief Menu callback: quits the application
@@ -257,24 +257,24 @@ public:
 	 * @return Reference to the application window
 	 * @details Returns a reference to the application window, which can be used for various operations such as event handling and rendering.
 	 */
-	[[nodiscard]] I_Window& GetWindow() const override;
+	[[nodiscard]] I_Window& GetWindow() const override { return *_window; }
 
 	/**
 	 * @brief Gets the GLFW-specific window for platform-specific operations
 	 */
-	[[nodiscard]] GlfwWindow& GetGlfwWindow() const;
+	[[nodiscard]] GlfwWindow& GetGlfwWindow() const { return *_window; }
 
 	/**
 	* @brief Gets the rendering context
 	* @return Render::Context::I_Context& Reference to the rendering context
 	 * @details Returns a reference to the application renderer context, which can be used for rendering operations and managing graphics resources.
 	 */
-	I_Context& GetRenderContext() const override;
+	I_Context& GetRenderContext() const override { return *_context; }
 
 	/**
 	 * @brief Gets the OpenGL-specific rendering context for platform-specific operations
 	 */
-	OpenGlContext& GetOpenGlContext() const;
+	OpenGlContext& GetOpenGlContext() const { return *_context; }
 
 public:
 	GlfwEventHubDispatcher eventHubDispatcher;

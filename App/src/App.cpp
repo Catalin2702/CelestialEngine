@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #include <CelestialEngine.hpp>
@@ -21,7 +21,7 @@ std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, con
 			app = std::make_unique<GlfwApplication>();
 			break;
 		}
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 		case Types::WindowApi::Cocoa: {
 			app = std::make_unique<CocoaApplication>();
 			break;

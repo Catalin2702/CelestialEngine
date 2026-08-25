@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-25
 //
 
 #include <Types/Build/Build.hpp>
@@ -37,11 +37,11 @@ TEST_F(BuildTypeTest, GetBuildTypeString_NamesTheBuildType) {
  *			per configuration, so the test binary must report the configuration it was built in.
  */
 TEST_F(BuildTypeTest, GetCurrentBuildType_MatchesTheConfigurationMacro) {
-#if defined(CE_DEBUG)
+#if CE_DEBUG
 	EXPECT_EQ(GetCurrentBuildType(), BuildType::Debug);
-#elif defined(CE_RELEASE)
+#elif CE_RELEASE
 	EXPECT_EQ(GetCurrentBuildType(), BuildType::Release);
-#elif defined(CE_DIST)
+#elif CE_DIST
 	EXPECT_EQ(GetCurrentBuildType(), BuildType::Dist);
 #endif
 }

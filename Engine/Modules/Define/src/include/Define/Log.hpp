@@ -19,7 +19,7 @@
 // one statement in every configuration.
 
 // Core Trace and Info logging macros - disabled in Release and Dist builds
-#if defined(CE_RELEASE) || defined(CE_DIST)
+#if CE_RELEASE || CE_DIST
 	/**
 	 * @brief Core engine trace logging macro (disabled in Release/Dist)
 	 * @param ... Format string and arguments (printf-style)
@@ -94,7 +94,7 @@
 #endif
 
 // Warning, Error, and Critical logging macros - disabled only in Dist builds
-#ifdef CE_DIST
+#if CE_DIST
 	/**
 	 * @brief Core engine warning logging macro (disabled in Dist)
 	 * @param ... Format string and arguments (printf-style)

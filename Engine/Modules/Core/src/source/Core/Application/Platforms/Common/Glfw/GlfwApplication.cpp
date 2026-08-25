@@ -29,7 +29,7 @@
 #include <thread>
 
 // On macOS GLFW hosts a real NSApplication, so the GLFW backend reuses the shared native menu bar built by CreateMenuBar.
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
 	#include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
 
 	#include <AppKit/AppKit.hpp>
@@ -41,7 +41,7 @@ namespace CE::Core {
 // On macOS, CE_App ships as a bundle (Contents/MacOS/CE_App next to Contents/Resources/), so
 // Resources/ is one level above the executable. On Windows/Linux, Resources/ is copied as a
 // direct sibling of the executable instead (see App/CMakeLists.txt), so no "../" is needed.
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
 	constexpr auto OpenGlShadersDirectory = "../Resources/Shaders/OpenGL/";
 #else
 	constexpr auto OpenGlShadersDirectory = "Resources/Shaders/OpenGL/";
@@ -79,6 +79,16 @@ GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiL
 	_stInstance = this;
 
 	I_Application::SetRunning(false);
+
+	GlfwApplication::_InitWindow();
+	GlfwApplication::_InitRenderer();
+
+	_context->SetVSync(Utility::Config::StGetWindowProps().VSync);
+
+	if constexpr (CE_PLATFORM_MACOS) {
+		// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
+		NS::Application::sharedApplication()->setMainMenu(CreateMenuBar<GlfwApplication>());
+	}
 }
 
 GlfwApplication::~GlfwApplication() {
@@ -157,22 +167,15 @@ void GlfwApplication::Tick(const float deltaTime) {
 }
 
 void GlfwApplication::Init() {
-	_InitWindow();
-	_InitRenderer();
 
-	_context->SetVSync(Utility::Config::StGetWindowProps().VSync);
-
-#ifdef CE_PLATFORM_MACOS
-	// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
-	NS::Application::sharedApplication()->setMainMenu(CreateMenuBar<GlfwApplication>());
-#endif
 }
 
 GlfwApplication& GlfwApplication::StGet() {
 	return dynamic_cast<GlfwApplication&>(I_Application::StGet());
 }
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 1
+
 void GlfwApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
 	StGet().Quit();
 }
@@ -198,6 +201,7 @@ void GlfwApplication::StOnDeminiaturizeCallback(void*, SEL, const NS::Object*) {
 void GlfwApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object*) {
 	StGet().GetGlfwWindow().ToggleFullScreen();
 }
+
 #endif
 
 void GlfwApplication::InitImGuiLayer() {
@@ -390,22 +394,6 @@ void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 void GlfwApplication::_OnVSyncChange(const Events::VSyncEvent& event) const {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 	_st_TargetFPS = event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate;
-}
-
-I_Window& GlfwApplication::GetWindow() const {
-	return *_window;
-}
-
-GlfwWindow& GlfwApplication::GetGlfwWindow() const {
-	return *_window;
-}
-
-I_Context& GlfwApplication::GetRenderContext() const {
-	return *_context;
-}
-
-OpenGlContext& GlfwApplication::GetOpenGlContext() const {
-	return *_context;
 }
 
 }

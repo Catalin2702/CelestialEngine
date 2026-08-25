@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Tools/Log/Log.hpp"
 
-#ifndef CE_DIST
+#if not CE_DIST
 #include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
@@ -22,7 +22,7 @@ std::shared_ptr<spdlog::logger> Log::_s_coreLogger;
 std::shared_ptr<spdlog::logger> Log::_s_clientLogger;
 
 void Log::Init() {
-#ifndef CE_DIST
+#if not CE_DIST
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 	if (not _s_coreLogger) [[likely]] {
 		_s_coreLogger = spdlog::stdout_color_mt("CoreLogger");
@@ -39,7 +39,7 @@ void Log::Init() {
 }
 
 void Log::Shutdown() {
-#ifndef CE_DIST
+#if not CE_DIST
 	spdlog::drop("CoreLogger");
 	spdlog::drop("ClientLogger");
 #endif

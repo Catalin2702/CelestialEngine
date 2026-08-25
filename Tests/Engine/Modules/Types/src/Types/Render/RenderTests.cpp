@@ -40,17 +40,18 @@ TEST_F(RenderTypesTest, IsGraphicsApiSupported_None_IsNotSupported) {
  */
 TEST_F(RenderTypesTest, IsGraphicsApiSupported_CrossPlatformApis_AreSupported) {
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::OpenGL));
+	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::Vulkan));
 }
 
 /**
  * @brief Test that the platform-exclusive APIs are only supported on their own platform
  */
 TEST_F(RenderTypesTest, IsGraphicsApiSupported_PlatformExclusiveApis_FollowThePlatform) {
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::Metal));
 	EXPECT_FALSE(IsGraphicsApiSupported(GraphicsApi::DirectX11));
 	EXPECT_FALSE(IsGraphicsApiSupported(GraphicsApi::DirectX12));
-#elifdef CE_PLATFORM_WINDOWS
+#elif CE_PLATFORM_WINDOWS
 	EXPECT_FALSE(IsGraphicsApiSupported(GraphicsApi::Metal));
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::DirectX11));
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::DirectX12));

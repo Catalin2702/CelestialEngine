@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -18,7 +18,7 @@
 
 // On macOS GLFW hosts a real NSWindow, so fullscreen defers to the native (Spaces) toggleFullScreen instead of GLFW's
 // exclusive monitor fullscreen (which hides the title-bar controls).
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 	#define GLFW_EXPOSE_NATIVE_COCOA
 	#include <GLFW/glfw3native.h>
 
@@ -233,7 +233,7 @@ void GlfwWindow::ToggleFullScreen() const {
 		return;
 	}
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 	// GLFW hosts a real NSWindow on macOS: use the native (Spaces) fullscreen so the transition animates and keeps the
 	// title-bar controls, instead of the exclusive glfwSetWindowMonitor fullscreen that covers them and hides the traffic lights.
 	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(_glfwWindow.get()));

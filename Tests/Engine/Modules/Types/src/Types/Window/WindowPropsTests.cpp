@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #include <Types/Window/WindowProps.hpp>
@@ -82,18 +82,21 @@ TEST_F(WindowPropsTest, IsWindowApiSupported_Glfw_IsAlwaysSupported) {
  * @brief Test that the native window APIs are only supported on their own platform
  */
 TEST_F(WindowPropsTest, IsWindowApiSupported_NativeApis_FollowThePlatform) {
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 	EXPECT_TRUE(IsWindowApiSupported(WindowApi::Cocoa));
 	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Win32));
 	EXPECT_FALSE(IsWindowApiSupported(WindowApi::X11));
-#elifdef CE_PLATFORM_WINDOWS
-	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Cocoa));
+	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Wayland));
+#elif CE_PLATFORM_WINDOWS
 	EXPECT_TRUE(IsWindowApiSupported(WindowApi::Win32));
+	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Cocoa));
 	EXPECT_FALSE(IsWindowApiSupported(WindowApi::X11));
+	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Wayland));
 #else
+	EXPECT_TRUE(IsWindowApiSupported(WindowApi::X11));
+	EXPECT_TRUE(IsWindowApiSupported(WindowApi::Wayland));
 	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Cocoa));
 	EXPECT_FALSE(IsWindowApiSupported(WindowApi::Win32));
-	EXPECT_TRUE(IsWindowApiSupported(WindowApi::X11));
 #endif
 }
 
@@ -122,16 +125,18 @@ TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NoneIsNeverCompatib
  * @brief Test that the native pairings hold on their own platform
  */
 TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NativePairings_FollowThePlatform) {
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::Cocoa));
 	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Cocoa));
 	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::OpenGL, WindowApi::Cocoa));
-#elifdef CE_PLATFORM_WINDOWS
+#elif CE_PLATFORM_WINDOWS
 	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::DirectX11, WindowApi::Win32));
 	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::DirectX12, WindowApi::Win32));
+	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Win32));
 	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::Win32));
 #else
 	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::X11));
+	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Wayland));
 	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::X11));
 #endif
 }
@@ -154,7 +159,8 @@ TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_MetalAndGlfw_AreInc
 TEST_F(WindowPropsTest, Formatter_FormatsWindowApiName) {
 	EXPECT_EQ(std::format("{}", WindowApi::None), "None");
 	EXPECT_EQ(std::format("{}", WindowApi::GLFW), "GLFW");
+	EXPECT_EQ(std::format("{}", WindowApi::Cocoa), "Cocoa");
 	EXPECT_EQ(std::format("{}", WindowApi::Win32), "Win32");
 	EXPECT_EQ(std::format("{}", WindowApi::X11), "X11");
-	EXPECT_EQ(std::format("{}", WindowApi::Cocoa), "Cocoa");
+	EXPECT_EQ(std::format("{}", WindowApi::Wayland), "Wayland");
 }

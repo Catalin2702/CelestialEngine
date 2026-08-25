@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_TYPES_RENDER_RENDER_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Define/Type.hpp"
 
 // ReSharper disable CppUnusedIncludeDirective
 #include <cstdint>
@@ -29,13 +30,27 @@ namespace CE::Types {
  *			Includes options for OpenGL, Metal, Vulkan, and DirectX (Windows).
  */
 enum class GraphicsApi: uint8_t {
-	None,											///< No graphics API specified
-	OpenGL,											///< OpenGL graphics API
-	Metal,											///< Metal graphics API (macOS)
-	Vulkan,											///< Vulkan graphics API
-	DirectX11,										///< DirectX 11 graphics API (Windows)
-	DirectX12,										///< DirectX 12 graphics API (Windows)
+	None = 0,											///< No graphics API specified
+	OpenGL = BIT(0),											///< OpenGL graphics API
+	Metal = BIT(1),											///< Metal graphics API (macOS)
+	DirectX11 = BIT(2),										///< DirectX 11 graphics API (Windows)
+	DirectX12 = BIT(3),										///< DirectX 12 graphics API (Windows)
+	Vulkan = BIT(4),											///< Vulkan graphics API
 };
+
+constexpr GraphicsApi operator & (GraphicsApi x, GraphicsApi y) {
+	return static_cast<GraphicsApi>(static_cast<uint8_t>(x) & static_cast<uint8_t>(y));
+}
+
+constexpr GraphicsApi operator | (GraphicsApi x, GraphicsApi y) {
+	return static_cast<GraphicsApi>(static_cast<uint8_t>(x) | static_cast<uint8_t>(y));
+}
+
+constexpr GraphicsApi operator ^ (GraphicsApi x, GraphicsApi y) {
+	return static_cast<GraphicsApi>(static_cast<uint8_t>(x) ^ static_cast<uint8_t>(y));
+}
+
+CE_TYPES_API bool HasAnyFlags(GraphicsApi x, GraphicsApi y);
 
 /**
  * @brief Checks if the specified graphics API is supported on the current platform

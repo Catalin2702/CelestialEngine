@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-08-25
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -52,28 +52,17 @@ if (NOT TARGET CE_Config)
 	add_library(CE_Config INTERFACE)
 
 	target_compile_definitions(CE_Config INTERFACE
-		$<$<CONFIG:Debug>:
-			CE_DEBUG
-			DEBUG
-		>
-		$<$<CONFIG:Release>:
-			CE_RELEASE
-			NDEBUG
-		>
-		$<$<CONFIG:Dist>:
-			CE_DIST
-			NDEBUG
-		>
+		CE_DEBUG=$<CONFIG:Debug>
+		CE_RELEASE=$<CONFIG:Release>
+		CE_DIST=$<CONFIG:Dist>
 
-		$<$<PLATFORM_ID:Windows>:
-			CE_PLATFORM_WINDOWS
-		>
-		$<$<PLATFORM_ID:Darwin>:
-			CE_PLATFORM_MACOS
-		>
-		$<$<PLATFORM_ID:Linux>:
-			CE_PLATFORM_LINUX
-		>
+		CE_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
+		CE_PLATFORM_MACOS=$<PLATFORM_ID:Darwin>
+		CE_PLATFORM_LINUX=$<PLATFORM_ID:Linux>
+
+		$<$<CONFIG:Debug>:DEBUG>
+		$<$<CONFIG:Release>:NDEBUG>
+		$<$<CONFIG:Dist>:NDEBUG>
 	)
 
 	target_compile_features(CE_Config INTERFACE

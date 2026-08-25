@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-25
 //
 
 #include <Tools/Log/Log.hpp>
@@ -88,7 +88,7 @@ TEST_F(LogTest, GetCoreLogger_AfterInit_ReturnsValidLogger) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NE(logger, nullptr);
 #else
 	// In distribution builds, logger might be null
@@ -104,7 +104,7 @@ TEST_F(LogTest, GetClientLogger_AfterInit_ReturnsValidLogger) {
 	Log::Init();
 	const auto& logger = Log::GetClientLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NE(logger, nullptr);
 #else
 	// In distribution builds, logger might be null
@@ -121,7 +121,7 @@ TEST_F(LogTest, GetLoggers_CoreAndClient_AreDifferent) {
 	const auto& coreLogger = Log::GetCoreLogger();
 	const auto& clientLogger = Log::GetClientLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NE(coreLogger, clientLogger);
 #else
 	// In distribution builds, both might be null
@@ -137,7 +137,7 @@ TEST_F(LogTest, CoreLogger_LogMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->trace("Test trace message");
@@ -159,7 +159,7 @@ TEST_F(LogTest, ClientLogger_LogMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetClientLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->trace("Test trace message");
@@ -181,7 +181,7 @@ TEST_F(LogTest, Logger_FormattedMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->info("Formatted message: {} {} {}", 1, 2.5, "test");
@@ -220,7 +220,7 @@ TEST_F(LogTest, Logger_DistBuild_HandlesGracefully) {
 	// This test ensures the code compiles and runs in both debug and dist modes
 	EXPECT_NO_THROW(Log::Init());
 
-#ifndef CE_DIST
+#if not CE_DIST
 	if (const auto& logger = Log::GetCoreLogger()) {
 		EXPECT_NO_THROW(logger->info("This should log in debug builds"));
 	}
@@ -235,7 +235,7 @@ TEST_F(LogTest, Logger_DistBuild_HandlesGracefully) {
 TEST_F(LogTest, Logger_MultipleAccesses_ThreadSafe) {
 	Log::Init();
 
-#ifndef CE_DIST
+#if not CE_DIST
 	for (int i = 0; i < 10; ++i) {
 		const auto& coreLogger = Log::GetCoreLogger();
 		const auto& clientLogger = Log::GetClientLogger();

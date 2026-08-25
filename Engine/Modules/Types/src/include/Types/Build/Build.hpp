@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -35,11 +35,11 @@ enum class BuildType {
  */
 // NOLINTNEXTLINE
 inline BuildType GetCurrentBuildType() {
-#if defined(CE_DEBUG)
+#if CE_DEBUG
 	return BuildType::Debug;
-#elif defined(CE_RELEASE)
+#elif CE_RELEASE
 	return BuildType::Release;
-#elif defined(CE_DIST)
+#elif CE_DIST
 	return BuildType::Dist;
 #else
 	#error "Unknown build type! Define CE_DEBUG, CE_RELEASE, or CE_DIST."

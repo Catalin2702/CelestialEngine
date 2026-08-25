@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -250,7 +250,7 @@ private:
 	/// @brief Latest keyboard modifier flags reported by the mouse button callback, forwarded with synthesized drag events.
 	int _lastMouseMods = 0;
 
-#ifndef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS == 0
 	/// @brief Windowed-mode placement saved when entering fullscreen, so ToggleFullScreen can restore it on exit.
 	/// @details Only used by the glfwSetWindowMonitor fullscreen path; macOS defers to the native NSWindow fullscreen instead.
 	///			 Mutable because ToggleFullScreen is const yet must cache the pre-fullscreen rect (position and size).

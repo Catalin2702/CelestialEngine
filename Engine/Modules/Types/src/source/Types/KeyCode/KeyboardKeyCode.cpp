@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-25
 //
 
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -313,7 +313,7 @@ ImGuiKey ImGuiKeyFromKeyboard(const KeyboardKeyCode keycode) {
 		case KeyboardKeyCode::LeftAlt: return ImGuiKey_LeftAlt;
 		case KeyboardKeyCode::RightAlt: return ImGuiKey_RightAlt;
 
-#ifdef CE_PLATFORM_MACOS
+#if CE_PLATFORM_MACOS
 		case KeyboardKeyCode::LeftControl: return ImGuiKey_LeftSuper;
 		case KeyboardKeyCode::RightControl: return ImGuiKey_RightSuper;
 

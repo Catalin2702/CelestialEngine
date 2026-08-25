@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -36,7 +36,7 @@ int main(const int argc, const char* argv[]) {
 	Tools::Log::Init();
 	{
 		try {
-#ifdef CE_DEBUG
+#if CE_DEBUG
 			Utility::Chronometer chronometer;
 #endif
 			Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
