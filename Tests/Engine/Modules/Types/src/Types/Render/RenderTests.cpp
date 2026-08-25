@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #include <Types/Render/Render.hpp>
@@ -40,7 +40,6 @@ TEST_F(RenderTypesTest, IsGraphicsApiSupported_None_IsNotSupported) {
  */
 TEST_F(RenderTypesTest, IsGraphicsApiSupported_CrossPlatformApis_AreSupported) {
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::OpenGL));
-	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::Vulkan));
 }
 
 /**

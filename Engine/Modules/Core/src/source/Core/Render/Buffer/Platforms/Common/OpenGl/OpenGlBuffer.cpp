@@ -4,12 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
+#include "Utility/Range/Enumerate.hpp"
 
 #include <algorithm>
+#include <ranges>
 #include <glad/glad.h>
 
 
@@ -17,6 +19,32 @@ namespace CE::Core {
 
 constexpr uint32_t FLOAT_SIZE = sizeof(float);
 constexpr uint32_t UINT32_SIZE = sizeof(uint32_t);
+
+static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const ShaderDataType type) {
+	switch (type) {
+		case ShaderDataType::Float:
+		case ShaderDataType::Float2:
+		case ShaderDataType::Float3:
+		case ShaderDataType::Float4:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+			return GL_INT;
+		case ShaderDataType::Bool:
+			return GL_BOOL;
+		case ShaderDataType::None:
+		default:
+			return GL_NONE;
+	}
+}
+
+const void* OpenGlBufferOffset(const uint32_t offset) {
+	return reinterpret_cast<const void*>(static_cast<uintptr_t>(offset));
+}
 
 #pragma region OpenGlVertexBuffer
 OpenGlVertexBuffer::OpenGlVertexBuffer(const float* vertices, const size_t count) {
@@ -57,6 +85,28 @@ void OpenGlVertexBuffer::Bind() const {
 void OpenGlVertexBuffer::Unbind() const {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
+	_layout = layout;
+	const auto stride = static_cast<GLsizei>(_layout.GetStride());
+
+	for (auto const [index, element]: Utility::Enumerate(_layout)) {
+		glEnableVertexAttribArray(index);
+		glVertexAttribPointer(
+			index,
+			static_cast<GLint>(element.componentCount),
+			ShaderDataTypeToOpenGlBaseType(element.type),
+			element.normalized,
+			stride,
+			OpenGlBufferOffset(element.offset)
+		);
+	}
+}
+
+void OpenGlVertexBuffer::SetLayout(BufferLayout&& layout) {
+	_layout = std::move(layout);
+}
+
 #pragma endregion
 
 #pragma region OpenGlIndexBuffer
@@ -101,6 +151,7 @@ void OpenGlIndexBuffer::Bind() const {
 void OpenGlIndexBuffer::Unbind() const {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
 #pragma endregion
 
 }

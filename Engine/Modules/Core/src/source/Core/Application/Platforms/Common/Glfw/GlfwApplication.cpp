@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -249,11 +249,11 @@ void GlfwApplication::_InitRenderer() {
 	glGenVertexArrays(1, &_vertexArrayId);
 	glBindVertexArray(_vertexArrayId);
 
-	constexpr uint32_t vertexCount = 3 * 3;
+	constexpr uint32_t vertexCount = 3 * 7;
 	constexpr float vertices[vertexCount] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 	};
 
 	constexpr uint32_t indexCount = 3;
@@ -265,15 +265,16 @@ void GlfwApplication::_InitRenderer() {
 	_indexBuffer = OpenGlIndexBuffer(indices, indexCount);
 	_indexBuffer.Bind();
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	const BufferLayout layout = {
+		{ShaderDataType::Float3, "inputPosition"},
+		{ShaderDataType::Float4, "inputColor"}
+	};
+	_vertexBuffer.SetLayout(layout);
 
-	_shaderProgram = OpenGlShaderProgram(
-		std::initializer_list{
-			OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
-			OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl"), Types::ShaderType::Fragment)
-		}
-	);
+	_shaderProgram = OpenGlShaderProgram({{
+		OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
+		OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl"), Types::ShaderType::Fragment)
+	}});
 	_shaderProgram.Link();
 }
 

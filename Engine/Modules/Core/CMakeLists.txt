@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-24
+# Updated: 2026-08-25
 #
 
 set(APPLICATION_HEADERS
@@ -138,6 +138,7 @@ set(MAINHUB_SOURCES
 
 set(RENDER_SOURCES
 	# Buffer
+	src/source/Core/Render/Buffer/Buffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
 
 	# Context

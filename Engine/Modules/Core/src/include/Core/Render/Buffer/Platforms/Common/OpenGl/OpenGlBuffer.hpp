@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -16,11 +16,10 @@
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
 
-#include <cstddef>
-#include <cstdint>
-
 
 namespace CE::Core {
+
+CE_CORE_API const void* OpenGlBufferOffset(uint32_t offset);
 
 #pragma region OpenGlVertexBuffer
 /**
@@ -29,7 +28,7 @@ namespace CE::Core {
  * @details Owns an OpenGL buffer object created on construction and deleted on destruction; Bind/Unbind
  *			attach/detach it to GL_ARRAY_BUFFER.
  */
-class CE_CORE_API OpenGlVertexBuffer final: public I_Buffer {
+class CE_CORE_API OpenGlVertexBuffer final: public I_VertexBuffer {
 public:
 	OpenGlVertexBuffer(const float* vertices, size_t count);
 
@@ -47,7 +46,12 @@ public:
 	void Bind() const override;
 	void Unbind() const override;
 
+	void SetLayout(const BufferLayout& layout) override;
+	void SetLayout(BufferLayout&& layout) override;
+	[[nodiscard]] const BufferLayout& GetLayout() const override { return _layout; }
+
 private:
+	BufferLayout _layout;
 	uint32_t _renderID = 0;
 };
 #pragma endregion

@@ -132,6 +132,10 @@ public:
 	 * @brief Sets the root directory path for the file system
 	 * @param rootDirectory The new root directory path to set
 	 * @details Sets the root directory path for the file system. This is the base directory from which all file paths are resolved. The provided path will be stored as the new root directory, and it will be used as a reference point for relative file paths.
+	 *
+	 *			The path is made absolute before it is stored, resolved against the working directory at the time of the
+	 *			call: a relative root would stop resolving as soon as anything changed the working directory, which GLFW
+	 *			does on macOS (glfwInit chdirs into the bundle's Contents/Resources).
 	 */
 	static void SetRootDirectory(const fs::path& rootDirectory);
 

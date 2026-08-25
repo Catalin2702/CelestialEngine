@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-08-25
 #
 
 set(HEADERS
@@ -18,18 +18,21 @@ set(HEADERS
 	src/include/Utility/Delegate/Delegate.hpp
 	src/include/Utility/Delegate/Dispatcher.hpp
 
-	# Manipulation
-	src/include/Utility/Manipulation/String.hpp
-
-	# Time
-	src/include/Utility/Time/Chronometer.hpp
+	# FileSystem
+	src/include/Utility/FileSystem/FileSystem.hpp
+	src/include/Utility/FileSystem/File.hpp
 
 	# ImGui
 	src/include/Utility/ImGui/ImGui.hpp
 
-	# FileSystem
-	src/include/Utility/FileSystem/FileSystem.hpp
-	src/include/Utility/FileSystem/File.hpp
+	# Manipulation
+	src/include/Utility/Manipulation/String.hpp
+
+	# Range
+	src/include/Utility/Range/Enumerate.hpp
+
+	# Time
+	src/include/Utility/Time/Chronometer.hpp
 
 	# Main
 	src/include/Utility/Utility.hpp
@@ -42,18 +45,18 @@ set(SOURCES
 	# Config
 	src/source/Utility/Config/Config.cpp
 
+	# FileSystem
+	src/source/Utility/FileSystem/FileSystem.cpp
+	src/source/Utility/FileSystem/File.cpp
+
+	# ImGui
+	src/source/Utility/ImGui/ImGui.cpp
+
 	# Manipulation
 	src/source/Utility/Manipulation/String.cpp
 
 	# Time
 	src/source/Utility/Time/Chronometer.cpp
-
-	# ImGui
-	src/source/Utility/ImGui/ImGui.cpp
-
-	# FileSystem
-	src/source/Utility/FileSystem/FileSystem.cpp
-	src/source/Utility/FileSystem/File.cpp
 )
 
 add_library(CE_Utility SHARED

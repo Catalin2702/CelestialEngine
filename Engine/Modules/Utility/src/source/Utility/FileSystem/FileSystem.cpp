@@ -13,7 +13,6 @@
 #include "Types/FileSystem/File.hpp"
 #include "Utility/FileSystem/File.hpp"
 
-#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -25,7 +24,20 @@ fs::path FileSystem::_rootDirectory = fs::current_path();
 
 fs::path FileSystem::GetRootDirectory() { return _rootDirectory; }
 
-void FileSystem::SetRootDirectory(const fs::path& rootDirectory) { _rootDirectory = rootDirectory; }
+void FileSystem::SetRootDirectory(const fs::path& rootDirectory) {
+	// Stored absolute, resolved against the working directory as it is right now. A relative root
+	// silently breaks the moment something changes the working directory afterwards - and GLFW does
+	// exactly that on macOS: glfwInit() chdirs into the bundle's Contents/Resources, so a root taken
+	// from a relative argv[0] would stop resolving right after the window is created.
+	std::error_code error;
+	auto absoluteRoot = fs::absolute(rootDirectory, error);
+	if (error) [[unlikely]] {
+		CE_CORE_WARN("FileSystem::SetRootDirectory: Failed to make the root directory absolute, keeping it as given: " + rootDirectory.string() + " (" + error.message() + ")");
+		absoluteRoot = rootDirectory;
+	}
+
+	_rootDirectory = std::move(absoluteRoot);
+}
 
 namespace {
 

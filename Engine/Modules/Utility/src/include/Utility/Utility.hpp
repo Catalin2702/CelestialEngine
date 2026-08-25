@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -13,12 +13,19 @@
 #define CE_UTILITY_HPP
 
 #include "CMD/Window.hpp"
+
 #include "Config/Config.hpp"
+
 #include "Delegate/Delegate.hpp"
 #include "Delegate/Dispatcher.hpp"
+
 #include "FileSystem/File.hpp"
 #include "FileSystem/FileSystem.hpp"
+
 #include "Manipulation/String.hpp"
+
+#include "Range/Enumerate.hpp"
+
 #include "Time/Chronometer.hpp"
 
 #endif //CE_UTILITY_HPP
