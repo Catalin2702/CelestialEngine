@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -15,6 +15,8 @@
 #include "Tools/Log/Log.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 
+#include <cassert>
+#include <utility>
 #include <vector>
 
 
@@ -32,6 +34,18 @@ template <typename... Args>
 class UnicastDispatcher {
 public:
 	using DelegateType = EventDelegate<Args...>;
+
+public:
+	// Declared explicitly rather than left implicit: the dispatchers are held by value inside movable owners
+	// (OpenGlContext, GlfwWindow, ...), and a move that is not noexcept would silently degrade into a copy inside
+	// std::vector and friends. Copies stay available - a dispatcher is just a delegate holder, cheap and trivially copyable.
+	UnicastDispatcher() = default;
+	UnicastDispatcher(const UnicastDispatcher&) = default;
+	UnicastDispatcher(UnicastDispatcher&&) noexcept = default;
+	~UnicastDispatcher() = default;
+
+	UnicastDispatcher& operator=(const UnicastDispatcher&) = default;
+	UnicastDispatcher& operator=(UnicastDispatcher&&) noexcept = default;
 
 public:
 	/**
@@ -89,6 +103,15 @@ template <typename R, typename... Args>
 class CallbackDispatcher {
 public:
 	using CallbackType = CallbackDelegate<R, Args...>;
+
+public:
+	CallbackDispatcher() = default;
+	CallbackDispatcher(const CallbackDispatcher&) = default;
+	CallbackDispatcher(CallbackDispatcher&&) noexcept = default;
+	~CallbackDispatcher() = default;
+
+	CallbackDispatcher& operator=(const CallbackDispatcher&) = default;
+	CallbackDispatcher& operator=(CallbackDispatcher&&) noexcept = default;
 
 public:
 	/**
@@ -151,6 +174,38 @@ class MulticastDispatcher {
 public:
 	using Handle = uint32_t;
 	using DelegateType = EventDelegate<Args...>;
+
+public:
+	MulticastDispatcher() = default;
+	MulticastDispatcher(const MulticastDispatcher&) = default;
+	~MulticastDispatcher() = default;
+
+	MulticastDispatcher& operator=(const MulticastDispatcher&) = default;
+
+	// Written out instead of defaulted only for the assert: moving a dispatcher while Dispatch is walking _callbacks
+	// would leave that loop iterating a moved-from vector. The handle counter is carried over (not reset) so tokens
+	// handed out before the move never collide with tokens handed out after it.
+	MulticastDispatcher(MulticastDispatcher&& other) noexcept:
+		_callbacks(std::move(other._callbacks)),
+		_pendingAdds(std::move(other._pendingAdds)),
+		_pendingRemoves(std::move(other._pendingRemoves)),
+		_handle(other._handle) {
+		assert(not other._isDispatching && "MulticastDispatcher: moved while dispatching");
+	}
+
+	MulticastDispatcher& operator=(MulticastDispatcher&& other) noexcept {
+		if (this == &other) [[unlikely]]
+			return *this;
+
+		assert(not _isDispatching && not other._isDispatching && "MulticastDispatcher: moved while dispatching");
+
+		_callbacks = std::move(other._callbacks);
+		_pendingAdds = std::move(other._pendingAdds);
+		_pendingRemoves = std::move(other._pendingRemoves);
+		_handle = other._handle;
+
+		return *this;
+	}
 
 public:
 	/**

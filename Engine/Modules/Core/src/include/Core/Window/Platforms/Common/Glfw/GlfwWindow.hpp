@@ -116,11 +116,32 @@ public:
 	 */
 	explicit GlfwWindow();
 
+	GlfwWindow(const GlfwWindow&) = delete;
+
+	/**
+	 * @brief Move constructor
+	 * @details GLFW keeps the address of the owning GlfwWindow in the native window's user pointer (see _InitWindow), and
+	 *			every C callback recovers `this` from it. Moving the object changes that address, so the move re-registers
+	 *			the user pointer on the new location: a defaulted move would leave every GLFW callback pointing at the
+	 *			moved-from husk. The moved-from window keeps a null native handle and becomes inert.
+	 */
+	GlfwWindow(GlfwWindow&& other) noexcept;
+
 	/**
 	 * @brief Destructor
 	 * @details Cleans up GLFW window resources by calling _Shutdown()
 	 */
 	~GlfwWindow() override;
+
+public:
+	GlfwWindow& operator=(const GlfwWindow&) = delete;
+
+	/**
+	 * @brief Move assignment
+	 * @details Releases the window currently held (if any), then adopts other's native handle and re-registers the GLFW
+	 *			user pointer on this object. See the move constructor for why that re-registration is mandatory.
+	 */
+	GlfwWindow& operator=(GlfwWindow&& other) noexcept;
 
 public:
 	/**
@@ -233,6 +254,14 @@ protected:
 	 *			the GLFW window when there are no more references to it
 	 */
 	void _Shutdown() override;
+
+private:
+	/**
+	 * @brief Points the native window's GLFW user pointer at this object
+	 * @details Called on creation and again after every move: the GLFW C callbacks resolve their GlfwWindow through
+	 *			glfwGetWindowUserPointer, so the pointer must always name the object that currently owns the handle.
+	 */
+	void _AdoptNativeWindow();
 
 public:
 	WINDOW_API_TYPE(GLFW)

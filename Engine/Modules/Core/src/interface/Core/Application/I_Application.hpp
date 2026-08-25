@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -150,13 +150,13 @@ public:
 	 * @brief Gets the application's window
 	 * @return Window::I_Window* Pointer to the window
 	 */
-	[[nodiscard]] virtual I_Window& GetWindow() const = 0;
+	[[nodiscard]] virtual const I_Window& GetWindow() const = 0;
 
 	/**
 	 * @brief Gets the application's graphics context
 	 * @return Render::Context::I_Context* Pointer to the graphics context
 	 */
-	[[nodiscard]] virtual I_Context& GetRenderContext() const = 0;
+	[[nodiscard]] virtual const I_Context& GetRenderContext() const = 0;
 
 	/**
 	 * @brief Checks whether the application loop is currently running

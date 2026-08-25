@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-25
 //
 
 #include <Core/Layers/I_Layer.hpp>
@@ -123,7 +123,7 @@ TEST_F(LayerStackTest, PushLayer_InsertsBeforeOverlays) {
 	stack.PushLayer(secondLayer);
 
 	std::vector<std::string> order;
-	for (const auto* layer: stack)
+	for (const auto& layer: stack)
 		order.push_back(layer->GetName());
 
 	EXPECT_EQ(order, (std::vector<std::string>{"First", "Second", "Overlay"}));
@@ -148,21 +148,20 @@ TEST_F(LayerStackTest, PushLayer_MultipleLayers_KeepsAllOfThem) {
 // ============================================================================
 
 /**
- * @brief Test that PopLayer removes the layer and detaches it without deleting it
+ * @brief Test that PopLayer removes the layer and detaches it
+ * @details The stack owns its layers, so the popped layer is destroyed with it: the detach is observed through the
+ *			external counter, which outlives the layer, never through the (already dangling) layer pointer.
  */
 TEST_F(LayerStackTest, PopLayer_RemovesAndDetachesLayer) {
 	LayerStack stack;
-	auto* layer = new MockStackLayer{"Layer"};
+	int detachCount = 0;
+	auto* layer = new MockStackLayer{"Layer", &detachCount};
 
 	stack.PushLayer(layer);
 	stack.PopLayer(layer);
 
 	EXPECT_TRUE(stack.Empty());
-	EXPECT_FALSE(layer->attached);
-	EXPECT_EQ(layer->detachCount, 1);
-
-	// PopLayer hands ownership back to the caller
-	delete layer;
+	EXPECT_EQ(detachCount, 1);
 }
 
 /**
@@ -170,15 +169,14 @@ TEST_F(LayerStackTest, PopLayer_RemovesAndDetachesLayer) {
  */
 TEST_F(LayerStackTest, PopOverlay_RemovesAndDetachesOverlay) {
 	LayerStack stack;
-	auto* overlay = new MockStackLayer{"Overlay"};
+	int detachCount = 0;
+	auto* overlay = new MockStackLayer{"Overlay", &detachCount};
 
 	stack.PushOverlay(overlay);
 	stack.PopOverlay(overlay);
 
 	EXPECT_TRUE(stack.Empty());
-	EXPECT_EQ(overlay->detachCount, 1);
-
-	delete overlay;
+	EXPECT_EQ(detachCount, 1);
 }
 
 /**
@@ -209,12 +207,11 @@ TEST_F(LayerStackTest, PopLayer_KeepsInsertionPointConsistent) {
 	stack.PushOverlay(overlay);
 	stack.PushLayer(firstLayer);
 	stack.PopLayer(firstLayer);
-	delete firstLayer;
 
 	stack.PushLayer(new MockStackLayer{"Second"});
 
 	std::vector<std::string> order;
-	for (const auto* layer: stack)
+	for (const auto& layer: stack)
 		order.push_back(layer->GetName());
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Second", "Overlay"}));
@@ -244,7 +241,7 @@ TEST_F(LayerStackTest, Iteration_ReachesEveryLayerOnce) {
 	stack.PushLayer(first);
 	stack.PushOverlay(second);
 
-	for (const auto layer: stack)
+	for (const auto& layer: stack)
 		layer->OnUpdate();
 
 	EXPECT_EQ(first->updateCount, 1);
@@ -285,7 +282,7 @@ TEST_F(LayerStackTest, Clear_ResetsInsertionPoint) {
 	stack.PushLayer(new MockStackLayer{"Layer2"});
 
 	std::vector<std::string> order;
-	for (const auto* layer: stack)
+	for (const auto& layer: stack)
 		order.push_back(layer->GetName());
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Layer2", "Overlay2"}));

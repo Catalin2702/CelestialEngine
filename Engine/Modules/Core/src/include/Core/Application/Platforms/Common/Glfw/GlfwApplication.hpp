@@ -257,32 +257,44 @@ public:
 	 * @return Reference to the application window
 	 * @details Returns a reference to the application window, which can be used for various operations such as event handling and rendering.
 	 */
-	[[nodiscard]] I_Window& GetWindow() const override { return *_window; }
+	[[nodiscard]] const I_Window& GetWindow() const override { return _window; }
 
 	/**
 	 * @brief Gets the GLFW-specific window for platform-specific operations
 	 */
-	[[nodiscard]] GlfwWindow& GetGlfwWindow() const { return *_window; }
+	[[nodiscard]] const GlfwWindow& GetGlfwWindow() const { return _window; }
+
+	/**
+	 * @brief Gets the GLFW-specific window for operations that mutate it (fullscreen, size, ...)
+	 */
+	[[nodiscard]] GlfwWindow& GetGlfwWindow() { return _window; }
 
 	/**
 	* @brief Gets the rendering context
 	* @return Render::Context::I_Context& Reference to the rendering context
 	 * @details Returns a reference to the application renderer context, which can be used for rendering operations and managing graphics resources.
 	 */
-	I_Context& GetRenderContext() const override { return *_context; }
+	const I_Context& GetRenderContext() const override { return _context; }
 
 	/**
 	 * @brief Gets the OpenGL-specific rendering context for platform-specific operations
 	 */
-	OpenGlContext& GetOpenGlContext() const { return *_context; }
+	[[nodiscard]] const OpenGlContext& GetOpenGlContext() const { return _context; }
+
+	/**
+	 * @brief Gets the OpenGL-specific rendering context for operations that mutate it (VSync, buffer swap, ...)
+	 */
+	[[nodiscard]] OpenGlContext& GetOpenGlContext() { return _context; }
 
 public:
 	GlfwEventHubDispatcher eventHubDispatcher;
 	GlfwApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
 
 private:
-	std::unique_ptr<OpenGlContext> _context; ///< Pointer to the OpenGL rendering context
-	std::unique_ptr<GlfwWindow> _window; ///< Pointer to the GLFW window
+	// Declaration order is construction order: OpenGlContext is built from the window's native handle, so the window has
+	// to come first. Swapping these two lines would hand the context a handle from a not-yet-constructed window.
+	GlfwWindow _window;		///< The application window, owned by value
+	OpenGlContext _context;	///< The OpenGL rendering context, owned by value
 
 	OpenGlVertexBuffer _vertexBuffer;
 	OpenGlIndexBuffer _indexBuffer;

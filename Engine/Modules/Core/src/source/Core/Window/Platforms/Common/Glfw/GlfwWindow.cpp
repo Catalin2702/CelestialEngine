@@ -81,8 +81,55 @@ GlfwWindow::GlfwWindow() {
 	Init();
 }
 
+GlfwWindow::GlfwWindow(GlfwWindow&& other) noexcept:
+	windowEventHandler(std::move(other.windowEventHandler)),
+	_glfwWindow(std::move(other._glfwWindow)),
+	_pressedMouseButtons(other._pressedMouseButtons),
+	_lastMouseMods(other._lastMouseMods) {
+#if not CE_PLATFORM_MACOS
+	_windowedX = other._windowedX;
+	_windowedY = other._windowedY;
+	_windowedWidth = other._windowedWidth;
+	_windowedHeight = other._windowedHeight;
+#endif
+
+	_AdoptNativeWindow();
+}
+
+GlfwWindow& GlfwWindow::operator=(GlfwWindow&& other) noexcept {
+	if (this == &other) [[unlikely]]
+		return *this;
+
+	// Release the window this object currently owns before taking over other's, otherwise that handle would leak and the
+	// window count would drift.
+	_Shutdown();
+
+	windowEventHandler = std::move(other.windowEventHandler);
+	_glfwWindow = std::move(other._glfwWindow);
+	_pressedMouseButtons = other._pressedMouseButtons;
+	_lastMouseMods = other._lastMouseMods;
+
+#if not CE_PLATFORM_MACOS
+	_windowedX = other._windowedX;
+	_windowedY = other._windowedY;
+	_windowedWidth = other._windowedWidth;
+	_windowedHeight = other._windowedHeight;
+#endif
+
+	_AdoptNativeWindow();
+
+	return *this;
+}
+
 GlfwWindow::~GlfwWindow() {
 	_Shutdown();
+}
+
+void GlfwWindow::_AdoptNativeWindow() {
+	if (not _glfwWindow) [[unlikely]]
+		return;
+
+	glfwSetWindowUserPointer(_glfwWindow.get(), this);
 }
 
 void GlfwWindow::OnUpdate() const {
@@ -309,10 +356,15 @@ void GlfwWindow::_InitWindow() {
 		throw std::runtime_error(error);
 	}
 
-	glfwSetWindowUserPointer(_glfwWindow.get(), this);
+	_AdoptNativeWindow();
 }
 
 void GlfwWindow::_Shutdown() {
+	// A moved-from window holds no handle and never ran Init, so it must not decrement the window count: doing so would
+	// terminate GLFW while the window that took its handle over is still alive.
+	if (not _glfwWindow)
+		return;
+
 	_glfwWindow.reset();
 
 	_st_GLFWWindowCount--;

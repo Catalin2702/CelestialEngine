@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include <Define/DynamicLinker.hpp>
 
+#include <memory>
 #include <vector>
 
 
@@ -30,8 +31,9 @@ class I_Layer;
  *			UI or debug tools to intercept events before they reach game layers.
  */
 class CE_CORE_API LayerStack {
-using StackContainer = std::vector<I_Layer*>;
-	
+public:
+	using StackContainer = std::vector<std::shared_ptr<I_Layer>>;
+
 public:
 	/**
 	 * @brief Constructor

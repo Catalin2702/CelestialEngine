@@ -109,16 +109,16 @@ TEST_F(WindowPropsTest, IsWindowApiSupported_NativeApis_FollowThePlatform) {
  * @details This is the cross-platform combination the engine falls back to.
  */
 TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_GlfwAndOpenGl_AreCompatible) {
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::OpenGL, WindowApi::GLFW));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::OpenGL, WindowApi::GLFW));
 }
 
 /**
  * @brief Test that a missing API on either side is never compatible
  */
 TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NoneIsNeverCompatible) {
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::None, WindowApi::GLFW));
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::OpenGL, WindowApi::None));
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::None, WindowApi::None));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::None, WindowApi::GLFW));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::OpenGL, WindowApi::None));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::None, WindowApi::None));
 }
 
 /**
@@ -126,18 +126,18 @@ TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NoneIsNeverCompatib
  */
 TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NativePairings_FollowThePlatform) {
 #if CE_PLATFORM_MACOS
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::Cocoa));
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Cocoa));
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::OpenGL, WindowApi::Cocoa));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::Metal, WindowApi::Cocoa));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::Vulkan, WindowApi::Cocoa));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::OpenGL, WindowApi::Cocoa));
 #elif CE_PLATFORM_WINDOWS
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::DirectX11, WindowApi::Win32));
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::DirectX12, WindowApi::Win32));
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Win32));
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::Win32));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::DirectX11, WindowApi::Win32));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::DirectX12, WindowApi::Win32));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::Vulkan, WindowApi::Win32));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::Metal, WindowApi::Win32));
 #else
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::X11));
-	EXPECT_TRUE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Vulkan, WindowApi::Wayland));
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::X11));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::Vulkan, WindowApi::X11));
+	EXPECT_TRUE(IsGraphicsApiCompatible(GraphicsApi::Vulkan, WindowApi::Wayland));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::Metal, WindowApi::X11));
 #endif
 }
 
@@ -146,7 +146,7 @@ TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_NativePairings_Foll
  * @details Metal needs the Cocoa window and its MetalKit view; GLFW only carries the OpenGL context.
  */
 TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_MetalAndGlfw_AreIncompatible) {
-	EXPECT_FALSE(IsGraphicsApiCompatibleWithWindowApi(GraphicsApi::Metal, WindowApi::GLFW));
+	EXPECT_FALSE(IsGraphicsApiCompatible(GraphicsApi::Metal, WindowApi::GLFW));
 }
 
 // ============================================================================

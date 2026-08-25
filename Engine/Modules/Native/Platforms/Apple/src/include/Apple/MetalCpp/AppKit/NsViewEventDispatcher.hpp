@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -60,9 +60,17 @@ public:
 	};
 
 public:
+	// The user-declared destructor suppresses the implicit move constructor and move assignment, so a move of an owner
+	// holding this dispatcher by value would silently fall back to a copy. They are re-declared here (memberwise: every
+	// member is a nothrow-movable dispatcher). Copies stay deleted: this is a polymorphic type, and duplicating a hub
+	// would deliver every event twice.
 	NsViewEventDispatcher() = default;
-
+	NsViewEventDispatcher(const NsViewEventDispatcher&) = delete;
+	NsViewEventDispatcher(NsViewEventDispatcher&&) noexcept = default;
 	~NsViewEventDispatcher() override = default;
+
+	NsViewEventDispatcher& operator=(const NsViewEventDispatcher&) = delete;
+	NsViewEventDispatcher& operator=(NsViewEventDispatcher&&) noexcept = default;
 
 public:
 	/**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 
 #pragma once
 
@@ -205,28 +205,38 @@ public:
      * @return Window::I_Window& Reference to the window
      * @details Provides access to the window for rendering operations. This method returns a reference to the window instance managed by the CocoaApplication, allowing other components to interact with the window as needed.
      */
-	[[nodiscard]] I_Window& GetWindow() const override { return *_window; }
+	[[nodiscard]] const I_Window& GetWindow() const override { return _window; }
 
 	/**
 	 * @brief Gets the Cocoa-specific window
 	 * @return Window::CocoaWindow& Reference to the CocoaWindow
 	 * @details Provides access to the Cocoa-specific window for platform-specific operations. This method returns a reference to the CocoaWindow instance managed by the CocoaApplication, allowing other components to perform operations that are specific to the macOS platform.
 	 */
-	[[nodiscard]] CocoaWindow& GetCocoaWindow() const { return *_window; }
+	[[nodiscard]] const CocoaWindow& GetCocoaWindow() const { return _window; }
+
+	/**
+	 * @brief Gets the Cocoa-specific window for operations that mutate it
+	 */
+	[[nodiscard]] CocoaWindow& GetCocoaWindow() { return _window; }
 
 	/**
      * @brief Gets the rendering context
      * @return Render::Context::I_Context& Reference to the rendering context
      * @details Provides access to the rendering context for rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering using the Metal API.
      */
-	[[nodiscard]] I_Context& GetRenderContext() const override { return *_context; }
+	[[nodiscard]] const I_Context& GetRenderContext() const override { return _context; }
 
 	/**
 	 * @brief Gets the Metal-specific rendering context
 	 * @return Render::Context::MetalContext& Reference to the MetalContext
 	 * @details Provides access to the Metal-specific rendering context for platform-specific rendering operations. This method returns a reference to the MetalContext instance managed by the CocoaApplication, allowing other components to perform rendering operations that are specific to the Metal API on macOS.
 	 */
-	[[nodiscard]] MetalContext& GetMetalContext() const { return *_context; }
+	[[nodiscard]] const MetalContext& GetMetalContext() const { return _context; }
+
+	/**
+	 * @brief Gets the Metal-specific rendering context for operations that mutate it (VSync, pipeline state, ...)
+	 */
+	[[nodiscard]] MetalContext& GetMetalContext() { return _context; }
 
 	/**
 	 * @brief Gets the application singleton downcast to CocoaApplication
@@ -340,8 +350,12 @@ public:
 private:
 	NS::SharedPtr<NS::Application> _appCocoa = nullptr; ///< Pointer to the Cocoa application instance
 
-	std::unique_ptr<MetalContext> _context = nullptr; ///< Pointer to the Metal rendering context
-	std::unique_ptr<CocoaWindow> _window = nullptr; ///< Pointer to the application window
+	// Declaration order matters twice over. Construction: the context comes up first, since the window is handed the
+	// context-owned MetalKit view as its content view. Destruction (reverse order): the window goes down first, because it
+	// retains that view and the view references the context-owned event dispatcher - so the window has to let go of it
+	// before the context tears it down.
+	MetalContext _context;	///< The Metal rendering context, owned by value
+	CocoaWindow _window;	///< The application window, owned by value
 
 	ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
 

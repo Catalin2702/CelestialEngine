@@ -55,6 +55,21 @@ static void InstallNativeMenuBar() {
 #endif
 }
 
+// The window and the context are members held by value, so they are constructed in the initializer list, before the
+// constructor body ever runs - which is where the graphics/window API compatibility check used to live. It moves here so
+// it still runs before a window exists: the helper validates the configured pair and only then creates the window.
+static GlfwWindow CreateValidatedWindow() {
+	const auto& windowProps = Utility::Config::StGetWindowProps();
+
+	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+		const auto error = std::format("GlfwApplication::GlfwApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	return GlfwWindow{};
+}
+
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
@@ -76,18 +91,17 @@ void GlfwApplicationEventHandler::DispatchRenderEvent() const {
 	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
-GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiLayer(nullptr) {
+GlfwApplication::GlfwApplication():
+	_window(CreateValidatedWindow()),
+	_context(_window.GetGlfwWindow()),
+	_imguiLayer(nullptr) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
-
-	I_Application::SetRunning(false);
 
 	GlfwApplication::_InitWindow();
 	GlfwApplication::_InitRenderer();
 
-	_context->SetVSync(Utility::Config::StGetWindowProps().VSync);
-
-	InstallNativeMenuBar();
+	GlfwApplication::Init();
 }
 
 GlfwApplication::~GlfwApplication() {
@@ -96,9 +110,6 @@ GlfwApplication::~GlfwApplication() {
 
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
-
-	_context.reset();
-	_window.reset();
 }
 
 void GlfwApplication::Start() {
@@ -107,7 +118,7 @@ void GlfwApplication::Start() {
 	ResetDeltaTime();
 
 	const auto& windowProps = Utility::Config::StGetWindowProps();
-	_st_TargetFPS = windowProps.VSync ? _window->GetRefreshRate() : windowProps.refreshRate;
+	_st_TargetFPS = windowProps.VSync ? _window.GetRefreshRate() : windowProps.refreshRate;
 
 	auto nextFrame = std::chrono::steady_clock::now();
 	while (IsRunning()) {
@@ -132,9 +143,6 @@ void GlfwApplication::Quit() {
 }
 
 void GlfwApplication::Tick(const float deltaTime) {
-	assert(_window && "GlfwApplication::Tick: Window must be initialized before ticking application");
-	assert(_context && "GlfwApplication::Tick: Renderer must be initialized before ticking application");
-
 	applicationEventHandler.DispatchTickEvent();
 
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color);
@@ -143,14 +151,14 @@ void GlfwApplication::Tick(const float deltaTime) {
 	glBindVertexArray(_vertexArrayId);
 	glDrawElements(GL_TRIANGLES, static_cast<int>(_indexBuffer.GetCount()), GL_UNSIGNED_INT, nullptr);
 
-	for (const auto layer: _layerStack)
+	for (const auto& layer: _layerStack)
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
 	if (_imguiLayer) [[likely]] {
 		_imguiLayer->Begin(deltaTime);
 
-		for (const auto layer: _layerStack)
+		for (const auto& layer: _layerStack)
 			layer->OnRender();
 		applicationEventHandler.DispatchRenderEvent();
 
@@ -161,12 +169,16 @@ void GlfwApplication::Tick(const float deltaTime) {
 	// to the next frame, so they must land on a clean transition state.
 	Input::EndFrame();
 
-	_window->OnUpdate();
-	_context->SwapBuffers();
+	_window.OnUpdate();
+	_context.SwapBuffers();
 }
 
 void GlfwApplication::Init() {
+	I_Application::SetRunning(false);
 
+	_context.SetVSync(Utility::Config::StGetWindowProps().VSync);
+
+	InstallNativeMenuBar();
 }
 
 GlfwApplication& GlfwApplication::StGet() {
@@ -204,8 +216,6 @@ void GlfwApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object*
 #endif
 
 void GlfwApplication::InitImGuiLayer() {
-	assert(_window && "GlfwApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
-	assert(_context && "GlfwApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
 	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
 	auto overlay = std::make_unique<ImGuiOpenGlLayer>();
@@ -215,16 +225,16 @@ void GlfwApplication::InitImGuiLayer() {
 }
 
 void GlfwApplication::_InitWindow() {
-	assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
-	const auto& windowProps = Utility::Config::StGetWindowProps();
-
-	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
-		const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
-
-	_window = std::make_unique<GlfwWindow>();
+	// assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
+	// const auto& windowProps = Utility::Config::StGetWindowProps();
+	//
+	// if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	// 	const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+	// 	CE_CORE_ERROR(error);
+	// 	throw std::runtime_error(error);
+	// }
+	//
+	// _window = std::make_unique<GlfwWindow>();
 
 	// Input must exist before SubscribeToHubDispatcher: the input state it owns is the hub's first subscriber.
 	Input::Init();
@@ -234,18 +244,18 @@ void GlfwApplication::_InitWindow() {
 }
 
 void GlfwApplication::_InitRenderer() {
-	assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
-	assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
-
-	_context = std::make_unique<OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
-	_context->Init();
+	// assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
+	// assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
+	//
+	// _context = std::make_unique<OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
+	// _context->Init();
 
 	// The context is created after the window (and after SetEventHubDispatcher), so its resize dispatcher is bound to the hub
 	// here rather than in SetEventHubDispatcher.
-	_context->openGlContextEventDispatcher.openGlContextLifeCycle.onResizeDispatcher.Bind(
+	_context.openGlContextEventDispatcher.openGlContextLifeCycle.onResizeDispatcher.Bind(
 		EventDelegate<int, int>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveWindowResizeEvent>(&eventHubDispatcher)
 	);
-	_context->openGlContextEventDispatcher.openGlContextLifeCycle.onVSyncChangedDispatcher.Bind(
+	_context.openGlContextEventDispatcher.openGlContextLifeCycle.onVSyncChangedDispatcher.Bind(
 		EventDelegate<bool>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
 
@@ -314,14 +324,8 @@ void GlfwApplication::RemoveImGuiLayer() {
 }
 
 void GlfwApplication::SetEventHubDispatcher() {
-	if (not _window) [[unlikely]] {
-		constexpr auto error = "GlfwApplication::SetEventHubDispatcher: Window must be initialized before setting up the event hub dispatcher";
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
-
 	using hub = GlfwEventHubDispatcher;
-	auto& [windowStateEvents, keyboardEvents, mouseEvents] = _window->windowEventHandler;
+	auto& [windowStateEvents, keyboardEvents, mouseEvents] = _window.windowEventHandler;
 
 	// Window resize is fired by the render context (framebuffer size), not the window: see _InitRenderer. The window-size
 	// callback still runs to keep the window's cached size in sync, it just no longer feeds the hub.
@@ -392,7 +396,7 @@ void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 
 void GlfwApplication::_OnVSyncChange(const Events::VSyncEvent& event) const {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
-	_st_TargetFPS = event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate;
+	_st_TargetFPS = event.GetState() ? _window.GetRefreshRate() : windowProps.refreshRate;
 }
 
 }

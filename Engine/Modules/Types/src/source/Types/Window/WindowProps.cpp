@@ -39,7 +39,7 @@ bool IsWindowApiSupported(const WindowApi& api) {
 	return false;
 }
 
-bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
+bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
 	if (windowApi == WindowApi::None or graphicsApi == GraphicsApi::None) [[unlikely]]
 		return false;
 

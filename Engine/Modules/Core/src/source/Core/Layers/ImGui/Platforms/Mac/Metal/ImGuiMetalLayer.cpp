@@ -165,7 +165,9 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		const auto& app = CocoaApplication::StGet();
+		// Non-const: the window and the context are owned by value by CocoaApplication, so the const getters hand out const
+		// references, which the (non-const) cached reference_wrappers below cannot bind to.
+		auto& app = CocoaApplication::StGet();
 
 		_window = app.GetCocoaWindow();
 

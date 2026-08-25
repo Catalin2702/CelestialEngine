@@ -137,19 +137,13 @@ void ImGuiOpenGlLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		const auto& app = GlfwApplication::StGet();
+		// The window and the context are owned by value by GlfwApplication and exposed with their concrete types, so the
+		// dynamic_cast through the I_Window / I_Context interfaces (which only hand out const references) is gone: there is
+		// nothing left to check at runtime either, a reference cannot be null and the type is fixed at compile time.
+		auto& app = GlfwApplication::StGet();
 
-		_window = dynamic_cast<GlfwWindow&>(app.GetWindow());
-		if (not _window) [[unlikely]] {
-			CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
-			throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an GlfwWindow window!");
-		}
-
-		_context = dynamic_cast<OpenGlContext&>(app.GetRenderContext());
-		if (not _context) [[unlikely]] {
-			CE_CORE_ERROR("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
-			throw std::runtime_error("ImGuiOpenGlLayer::_Init: ImGuiOpenGlLayer requires an OpenGlContext context!");
-		}
+		_window = app.GetGlfwWindow();
+		_context = app.GetOpenGlContext();
 
 		// io.DisplaySize must be in the same (logical/screen) coordinate space as the mouse position
 		// events fed in _OnMouseMoved/_OnMouseDragged - those come straight from GLFW's cursor

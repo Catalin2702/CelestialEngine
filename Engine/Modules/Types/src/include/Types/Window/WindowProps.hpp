@@ -110,7 +110,7 @@ CE_TYPES_API bool IsWindowApiSupported(const WindowApi& api);
  * @details This function checks if the given graphics API can be used with the given window API.
  *			For example, OpenGL and Vulkan are generally compatible with GLFW, while Metal is only compatible with Cocoa on macOS.
  */
-CE_TYPES_API bool IsGraphicsApiCompatibleWithWindowApi(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
+CE_TYPES_API bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-25
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -50,16 +50,13 @@ void CocoaApplicationEventHandler::DispatchRenderEvent() const {
 	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
-CocoaApplication::CocoaApplication() {
+CocoaApplication::CocoaApplication(): _tickSemaphore(dispatch_semaphore_create(0)) {
 	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
 
 	I_Application::SetRunning(false);
 
 	_appCocoa = NS::RetainPtr(NS::Application::sharedApplication());
-
-	// Starts empty (count 0): the tick loop posts a frame, then waits here until the main thread signals completion.
-	_tickSemaphore = dispatch_semaphore_create(0);
 }
 
 CocoaApplication::~CocoaApplication() {
@@ -73,11 +70,8 @@ CocoaApplication::~CocoaApplication() {
 	_layerStack.Clear();
 	_imguiLayer = nullptr;
 
-	// Reset the window before the context: the window retains the context-owned view (as its content view) and that
-	// view references the context-owned event dispatcher, so the window must let go of the view first.
-	_window.reset();
-	_context.reset();
-
+	// The window is destroyed before the context (reverse declaration order, see the members in the header): the window
+	// retains the context-owned view as its content view, and that view references the context-owned event dispatcher.
 	_appCocoa.reset();
 
 	if (_tickSemaphore) {
@@ -117,14 +111,14 @@ void CocoaApplication::Quit() {
 void CocoaApplication::Tick(const float deltaTime) {
 	applicationEventHandler.DispatchTickEvent();
 
-	for (const auto layer: _layerStack)
+	for (const auto& layer: _layerStack)
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
 	if (_imguiLayer) [[likely]] {
 		_imguiLayer->Begin(deltaTime);
 
-		for (const auto layer: _layerStack)
+		for (const auto& layer: _layerStack)
 			layer->OnRender();
 		applicationEventHandler.DispatchRenderEvent();
 
@@ -137,9 +131,6 @@ void CocoaApplication::Tick(const float deltaTime) {
 }
 
 void CocoaApplication::Init() {
-	assert(not _window && "CocoaApplication::Init: Window is already initialized!");
-	assert(not _context && "CocoaApplication::Init: Renderer is already initialized!");
-
 	_appCocoa->setDelegate(&_appDelegate);
 
 	// App-level launch setup (activation policy, menu bar, activation, window reveal) is deferred to the run loop via the
@@ -154,20 +145,18 @@ void CocoaApplication::Init() {
 
 	const auto& windowProps = Utility::Config::StGetWindowProps();
 
-	if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
-	_context = std::make_unique<MetalContext>();
-	_context->Init();
-
-	_window = std::make_unique<CocoaWindow>();
-	_window->Init();
+	// The context and the window are members held by value: they exist from construction, so Init only brings them up.
+	_context.Init();
+	_window.Init();
 
 	// Attach the render context's MetalKit view to the window and wire it into the engine.
-	_window->SetContentView(_context->GetView());
+	_window.SetContentView(_context.GetView());
 
 	Input::Init();
 
@@ -176,17 +165,17 @@ void CocoaApplication::Init() {
 
 	_BindContextDelegates();
 
-	_context->SetVSync(windowProps.VSync);
+	_context.SetVSync(windowProps.VSync);
 
-	const auto [vertexFunction, fragmentFunction] = _context->GetShaderLibrary().GetShaderProgram("vertexMain", "fragmentMain");
+	const auto [vertexFunction, fragmentFunction] = _context.GetShaderLibrary().GetShaderProgram("vertexMain", "fragmentMain");
 
 	const auto renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
 	renderPipelineDescriptor->setVertexFunction(vertexFunction);
 	renderPipelineDescriptor->setFragmentFunction(fragmentFunction);
-	renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(_context->props.pixelFormat);
+	renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(_context.props.pixelFormat);
 
 	NS::Error* pipelineError = nullptr;
-	defaultRenderPipelineState = _context->GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
+	defaultRenderPipelineState = _context.GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
 	if (not defaultRenderPipelineState) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
 		CE_CORE_ERROR(error);
@@ -232,7 +221,6 @@ void CocoaApplication::RemoveImGuiLayer() {
 void CocoaApplication::SetRunning(const bool running) {
 	I_Application::SetRunning(running);
 
-	assert(_context && "CocoaApplication::SetRunning: Render context must be initialized");
 
 	if (running)
 		_Run();
@@ -279,8 +267,6 @@ void CocoaApplication::_StopTickLoop() {
 }
 
 void CocoaApplication::InitImGuiLayer() {
-	assert(_window && "CocoaApplication::InitImGuiLayer: Window must be initialized before initializing ImGui layer");
-	assert(_context && "CocoaApplication::InitImGuiLayer: Renderer must be initialized before initializing ImGui layer");
 	assert(not _imguiLayer && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
 	auto overlay = std::make_unique<ImGuiMetalLayer>();
@@ -290,19 +276,13 @@ void CocoaApplication::InitImGuiLayer() {
 }
 
 void CocoaApplication::SetEventHubDispatcher() {
-	if (not (_context and _window)) [[unlikely]] {
-		constexpr auto error = "CocoaApplication::SetEventHubDispatcher: Context and window must be initialized before setting up the event hub dispatcher";
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
-
 	// The hub needs the render view and window to convert native (bottom-left) mouse coordinates into engine space.
-	eventHubDispatcher.SetSources(_context.get(), _window.get());
+	eventHubDispatcher.SetSources(&_context, &_window);
 
 	using hub = CocoaEventHubDispatcher;
 
 #pragma region MouseEvents
-	auto& mouseEvents = _context->metalContextEventDispatcher.mouseEvents;
+	auto& mouseEvents = _context.metalContextEventDispatcher.mouseEvents;
 
 
 	mouseEvents.mouseDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveMouseButtonDownEvent>(&eventHubDispatcher));
@@ -322,7 +302,7 @@ void CocoaApplication::SetEventHubDispatcher() {
 #pragma endregion
 
 #pragma region KeyboardEvents
-	auto& [keyDownDispatcher, keyUpDispatcher, flagsChangedDispatcher] = _context->metalContextEventDispatcher.keyboardEvents;
+	auto& [keyDownDispatcher, keyUpDispatcher, flagsChangedDispatcher] = _context.metalContextEventDispatcher.keyboardEvents;
 	keyDownDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyDownEvent>(&eventHubDispatcher));
 	keyUpDispatcher.Bind(EventDelegate<const NS::Event*>::FromMethod<hub, &hub::ReceiveKeyUpEvent>(&eventHubDispatcher));
 	// Modifier keys (Shift/Ctrl/Alt/Cmd) never arrive as keyDown/keyUp: AppKit reports them via flagsChanged.
@@ -330,23 +310,23 @@ void CocoaApplication::SetEventHubDispatcher() {
 #pragma endregion
 
 #pragma region WindowEvents
-	_window->cocoaWindowEventDispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
+	_window.cocoaWindowEventDispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowWillCloseEvent>(&eventHubDispatcher)
 	);
 	// Focus changes feed the hub so input state can reset held keys when the window stops receiving events.
-	_window->cocoaWindowEventDispatcher.nsWindowFocusEvents.didBecomeKeyDispatcher.Bind(
+	_window.cocoaWindowEventDispatcher.nsWindowFocusEvents.didBecomeKeyDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowDidBecomeKeyEvent>(&eventHubDispatcher)
 	);
-	_window->cocoaWindowEventDispatcher.nsWindowFocusEvents.didResignKeyDispatcher.Bind(
+	_window.cocoaWindowEventDispatcher.nsWindowFocusEvents.didResignKeyDispatcher.Bind(
 		EventDelegate<const NS::Notification*>::FromMethod<hub, &hub::ReceiveWindowDidResignKeyEvent>(&eventHubDispatcher)
 	);
 #pragma endregion
 
 #pragma region RenderContextEvents
-	_context->metalContextEventDispatcher.metalContextLifeCycleEvents.onResizeDispatcher.Bind(
+	_context.metalContextEventDispatcher.metalContextLifeCycleEvents.onResizeDispatcher.Bind(
 		EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveContextResizeViewEvent>(&eventHubDispatcher)
 	);
-	_context->metalContextEventDispatcher.metalContextLifeCycleEvents.onVSyncChangedDispatcher.Bind(
+	_context.metalContextEventDispatcher.metalContextLifeCycleEvents.onVSyncChangedDispatcher.Bind(
 		EventDelegate<bool>::FromMethod<hub, &hub::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
 #pragma endregion
@@ -430,7 +410,7 @@ void CocoaApplication::_Run() {
 		// VSync on: the CAMetalDisplayLink paces rendering. Tear down the tick loop first so no stale frame calls
 		// CAMetalLayer::nextDrawable() once a display link exists for the layer, then build/resume the link.
 		_StopTickLoop();
-		_context->SetDisplayLinkPaused(false);
+		_context.SetDisplayLinkPaused(false);
 	}
 	else {
 		_StartTickLoop();
@@ -438,25 +418,24 @@ void CocoaApplication::_Run() {
 }
 
 void CocoaApplication::_Pause() {
-	if (_context->IsVSyncEnabled())
-		_context->SetDisplayLinkPaused(true);
+	if (_context.IsVSyncEnabled())
+		_context.SetDisplayLinkPaused(true);
 	else
 		_StopTickLoop();
 }
 
 void CocoaApplication::_BindContextDelegates() {
-	assert(_context && "CocoaApplication::_BindViewCallbacks: Render context must be initialized before binding callbacks");
 
 	// Drive a frame from the CAMetalDisplayLink. This is what paces rendering while VSync is enabled (the display link is
 	// unpaused in SetRunning(); with VSync off the dedicated tick loop drives Tick instead and the display link stays paused.
 	// (Drawable resize is handled by the context itself and routed to the hub via its resize dispatcher.)
-	_context->SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
+	_context.SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
 }
 
 void CocoaApplication::_OnDidFinishLaunching(NS::Notification*) const {
 	// Bring the app to the foreground and reveal the window now that the run loop is active.
 	_appCocoa->activateIgnoringOtherApps(true);
-	_window->Show();
+	_window.Show();
 }
 
 void CocoaApplication::_OnWillFinishLaunching(NS::Notification*) const {

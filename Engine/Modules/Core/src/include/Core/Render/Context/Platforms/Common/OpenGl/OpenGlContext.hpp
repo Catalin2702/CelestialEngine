@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-25
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 #include "Define/Render.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
+#include <functional>
 #include <utility>
 
 
@@ -42,7 +43,28 @@ class CE_CORE_API OpenGlContextEventDispatcher {
 		UnicastDispatcher<> onWillShutdownDispatcher;
 		UnicastDispatcher<bool> onVSyncChangedDispatcher;
 		UnicastDispatcher<int, int> onResizeDispatcher;
+
+		// Every member is a UnicastDispatcher, which is nothrow-movable, so the moves are just memberwise: defaulting them
+		// keeps the bindings alive across the move instead of silently dropping them. Copies stay deleted - two live copies
+		// of the same lifecycle channel would deliver each event twice.
+		OpenGlContextLifeCycle() = default;
+		OpenGlContextLifeCycle(const OpenGlContextLifeCycle&) = delete;
+		OpenGlContextLifeCycle(OpenGlContextLifeCycle&&) noexcept = default;
+		~OpenGlContextLifeCycle() = default;
+
+		OpenGlContextLifeCycle& operator=(const OpenGlContextLifeCycle&) = delete;
+		OpenGlContextLifeCycle& operator=(OpenGlContextLifeCycle&&) noexcept = default;
 	};
+
+public:
+	OpenGlContextEventDispatcher() = default;
+	OpenGlContextEventDispatcher(const OpenGlContextEventDispatcher&) = delete;
+	OpenGlContextEventDispatcher(OpenGlContextEventDispatcher&&) noexcept = default;
+	~OpenGlContextEventDispatcher() = default;
+
+	OpenGlContextEventDispatcher& operator=(const OpenGlContextEventDispatcher&) = delete;
+	OpenGlContextEventDispatcher& operator=(OpenGlContextEventDispatcher&&) noexcept = default;
+
 public:
 	/**
 	 * @brief Forwards the context created callback to the bound listener
@@ -85,12 +107,9 @@ public:
 	 */
 	explicit OpenGlContext(GLFWwindow* window);
 
-	/**
-	 * @brief Constructor
-	 * @param window Generic pointer to the GLFW window associated with this OpenGL context
-	 * @details Creates an OpenGlContext instance associated with the specified GLFW window. The constructor does not perform initialization of the OpenGL context; the Init() method must be called separately to set up the context. The window parameter is expected to be a pointer to a GLFWwindow, and it will be cast accordingly.
-	 */
-	explicit OpenGlContext(void* window);
+	OpenGlContext(const OpenGlContext& other) = delete;
+
+	OpenGlContext(OpenGlContext&& other) noexcept;
 
 	/**
 	 * @brief Destructor
@@ -98,6 +117,11 @@ public:
 	 *			The destructor does not destroy the GLFW window itself, as window management is handled separately.
 	 */
 	~OpenGlContext() override;
+
+public:
+	OpenGlContext& operator=(const OpenGlContext& other) = delete;
+
+	OpenGlContext& operator=(OpenGlContext&& other) noexcept;
 
 public:
 	/**
@@ -147,7 +171,7 @@ public:
 	OpenGlContextEventDispatcher openGlContextEventDispatcher; ///< Fires the context's resize / lifecycle events
 
 private:
-	GLFWwindow* _window;							///< Pointer to the GLFW window associated with this OpenGL context
+	std::reference_wrapper<GLFWwindow> _window;							///< Pointer to the GLFW window associated with this OpenGL context
 };
 
 }
