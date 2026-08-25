@@ -26,7 +26,7 @@
 
 // On macOS GLFW still creates a real NSApplication, so the GLFW backend reuses the native menu bar. SEL and NS::Object are only
 // needed for the menu callbacks, which exist on macOS alone; elsewhere GLFW has no native menu bar.
-#if CE_PLATFORM_MACOS == 1
+#if CE_PLATFORM_MACOS
 	#include <objc/objc.h>
 #endif
 
@@ -36,7 +36,7 @@ namespace CE::Core {
 	class ImGuiOpenGlLayer;
 }
 
-#if CE_PLATFORM_MACOS == 1
+#if CE_PLATFORM_MACOS
 namespace NS {
 	class Object;
 }
@@ -198,7 +198,7 @@ public:
 	 */
 	[[nodiscard]] static GlfwApplication& StGet();
 
-#if CE_PLATFORM_MACOS == 1
+#if CE_PLATFORM_MACOS
 	// Native macOS menu-bar callbacks. GLFW creates the NSApplication, so the same menu (built by CreateMenuBar) drives these.
 	/**
 	 * @brief Menu callback: quits the application

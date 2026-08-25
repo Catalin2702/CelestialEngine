@@ -24,9 +24,10 @@ namespace CE::Types {
  * @details Mirrors the CMake configurations: Debug (CE_DEBUG), Release (CE_RELEASE) and Dist (CE_DIST).
  */
 enum class BuildType {
+	None,
 	Debug,
 	Release,
-	Dist
+	Dist,
 };
 
 /**
@@ -35,16 +36,13 @@ enum class BuildType {
  */
 // NOLINTNEXTLINE
 inline BuildType GetCurrentBuildType() {
-#if CE_DEBUG
-	return BuildType::Debug;
-#elif CE_RELEASE
-	return BuildType::Release;
-#elif CE_DIST
-	return BuildType::Dist;
-#else
-	#error "Unknown build type! Define CE_DEBUG, CE_RELEASE, or CE_DIST."
-#endif
-
+	if constexpr (CE_DEBUG)
+		return BuildType::Debug;
+	if constexpr (CE_RELEASE)
+		return BuildType::Release;
+	if constexpr (CE_DIST)
+		return BuildType::Dist;
+	return BuildType::None;
 }
 
 /**

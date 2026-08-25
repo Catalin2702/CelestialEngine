@@ -29,10 +29,10 @@
 #include <thread>
 
 // On macOS GLFW hosts a real NSApplication, so the GLFW backend reuses the shared native menu bar built by CreateMenuBar.
-#if CE_PLATFORM_MACOS == 1
-	#include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
+#if CE_PLATFORM_MACOS
+#include "Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp"
 
-	#include <AppKit/AppKit.hpp>
+#include <AppKit/AppKit.hpp>
 #endif
 
 
@@ -41,17 +41,19 @@ namespace CE::Core {
 // On macOS, CE_App ships as a bundle (Contents/MacOS/CE_App next to Contents/Resources/), so
 // Resources/ is one level above the executable. On Windows/Linux, Resources/ is copied as a
 // direct sibling of the executable instead (see App/CMakeLists.txt), so no "../" is needed.
-#if CE_PLATFORM_MACOS == 1
-	constexpr auto OpenGlShadersDirectory = "../Resources/Shaders/OpenGL/";
-#else
-	constexpr auto OpenGlShadersDirectory = "Resources/Shaders/OpenGL/";
-#endif
-
-}
-
-namespace CE::Core {
+constexpr auto OpenGlShadersDirectory = CE_PLATFORM_MACOS ? "../Resources/Shaders/OpenGL/": "Resources/Shaders/OpenGL/";
 
 static unsigned int _st_TargetFPS = 0;
+
+// Only macOS has a native menu bar, and NS::Application / CreateMenuBar only exist there. An `if constexpr` at the call site
+// would not be enough: the discarded branch is still name-looked-up and type-checked, so the preprocessor guard has to sit
+// inside this shim (a no-op elsewhere) instead of around the call.
+static void InstallNativeMenuBar() {
+#if CE_PLATFORM_MACOS
+	// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
+	NS::Application::sharedApplication()->setMainMenu(CreateMenuBar<GlfwApplication>());
+#endif
+}
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 static void LogError(Events::ErrorEvent& appErrorEvent) {
@@ -85,10 +87,7 @@ GlfwApplication::GlfwApplication(): _context(nullptr), _window(nullptr), _imguiL
 
 	_context->SetVSync(Utility::Config::StGetWindowProps().VSync);
 
-	if constexpr (CE_PLATFORM_MACOS) {
-		// GLFW already created the shared NSApplication during glfwInit; give it the same menu bar the Cocoa backend uses.
-		NS::Application::sharedApplication()->setMainMenu(CreateMenuBar<GlfwApplication>());
-	}
+	InstallNativeMenuBar();
 }
 
 GlfwApplication::~GlfwApplication() {
@@ -174,7 +173,7 @@ GlfwApplication& GlfwApplication::StGet() {
 	return dynamic_cast<GlfwApplication&>(I_Application::StGet());
 }
 
-#if CE_PLATFORM_MACOS == 1
+#if CE_PLATFORM_MACOS
 
 void GlfwApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
 	StGet().Quit();

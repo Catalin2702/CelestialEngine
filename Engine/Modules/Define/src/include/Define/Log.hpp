@@ -12,6 +12,8 @@
 #ifndef CE_DEFINE_LOG_HPP
 #define CE_DEFINE_LOG_HPP
 
+#include "Define/Config.hpp"
+
 // Every macro below wraps its body in do { ... } while (0). Without it they expand to two statements
 // (the assert and the log call), so a braceless `if (cond) CE_CORE_ERROR(msg);` would run the assert
 // under the condition and log unconditionally - the log line appearing even when the branch is not

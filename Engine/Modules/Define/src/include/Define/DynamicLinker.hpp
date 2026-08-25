@@ -12,6 +12,8 @@
 #ifndef CE_DEFINE_DYNAMICLINKER_HPP
 #define CE_DEFINE_DYNAMICLINKER_HPP
 
+#include "Define/Config.hpp"
+
 /**
  * @def CE_API_EXPORT / CE_API_IMPORT
  * @brief Platform-specific building blocks for exporting/importing symbols from shared libraries
@@ -19,10 +21,10 @@
  *			On macOS/Linux: __attribute__((visibility("default"))) for both, since ELF/Mach-O
  *			shared libraries do not distinguish export from import at the symbol declaration.
  */
-#if CE_PLATFORM_WINDOWS == 1
+#if CE_PLATFORM_WINDOWS
 	#define CE_API_EXPORT __declspec(dllexport)
 	#define CE_API_IMPORT __declspec(dllimport)
-#elif CE_PLATFORM_MACOS == 1 || CE_PLATFORM_LINUX == 1
+#elif CE_PLATFORM_MACOS || CE_PLATFORM_LINUX
 	#define CE_API_EXPORT __attribute__((visibility("default")))
 	#define CE_API_IMPORT __attribute__((visibility("default")))
 #else

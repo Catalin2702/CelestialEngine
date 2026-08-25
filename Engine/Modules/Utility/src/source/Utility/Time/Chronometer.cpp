@@ -45,9 +45,9 @@ double Chronometer::GetElapsedMilliseconds() const {
 }
 
 void Chronometer::PrintResult() const {
-#if CE_DEBUG
-	CE_CORE_TRACE("Chronometer duration: {0:.3f}s", GetElapsedMilliseconds() * .001);
-#endif
+	if constexpr (CE_DEBUG) {
+		CE_CORE_TRACE("Chronometer duration: {0:.3f}s", GetElapsedMilliseconds() * .001);
+	}
 }
 
 }
