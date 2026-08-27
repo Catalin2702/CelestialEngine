@@ -39,9 +39,7 @@ static void LogError(Events::ErrorEvent& appErrorEvent) {
 // before any of them exists: the helper validates the configured pair and only then builds the context (the first of the
 // two, see the member declaration order). Mirrors GlfwApplication::CreateValidatedWindow.
 static MetalContext CreateValidatedContext() {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
-
-	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	if (const auto& windowProps = Utility::Config::StGetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::CocoaApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);

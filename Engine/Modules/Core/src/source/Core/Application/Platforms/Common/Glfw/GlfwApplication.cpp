@@ -59,9 +59,7 @@ static void InstallNativeMenuBar() {
 // constructor body ever runs - which is where the graphics/window API compatibility check used to live. It moves here so
 // it still runs before a window exists: the helper validates the configured pair and only then creates the window.
 static GlfwWindow CreateValidatedWindow() {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
-
-	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	if (const auto& windowProps = Utility::Config::StGetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("GlfwApplication::GlfwApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
