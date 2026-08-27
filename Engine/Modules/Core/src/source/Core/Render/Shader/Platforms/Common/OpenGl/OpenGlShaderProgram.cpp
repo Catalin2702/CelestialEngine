@@ -135,7 +135,7 @@ void OpenGlShaderProgram::RemoveShader(const OpenGlShader& shader) {
 
 	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }); it != _shaders.end()) [[likely]] {
 		glDetachShader(_programId, it->GetShaderId());
-		_shaders.erase(it); // unique_ptr destructor -> glDeleteShader()
+		_shaders.erase(it);
 	}
 }
 
