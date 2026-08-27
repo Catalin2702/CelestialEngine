@@ -75,8 +75,10 @@ public:
 	virtual void Tick(float deltaTime) = 0;
 
 	/**
-     * @brief Virtual method to initialize the application with window properties
-     */
+	 * @brief Completes the application setup, on top of the window and renderer brought up by _InitWindow/_InitRenderer
+	 * @details Every backend calls it at the end of its own constructor, so a constructed application is already a
+	 *			usable one and clients never have to call this themselves
+	 */
 	virtual void Init() = 0;
 
 	/**

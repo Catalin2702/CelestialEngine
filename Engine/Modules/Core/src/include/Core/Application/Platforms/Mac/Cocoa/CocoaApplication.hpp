@@ -156,9 +156,12 @@ public:
 	void Tick(float deltaTime) override;
 
 	/**
-     * @brief Initializes the application with window properties
-     * @details Initializes the application by creating the window and setting up the rendering context based on the provided window properties. This method should be called before running the application to ensure that all necessary components are properly initialized.
-     */
+	 * @brief Completes the application setup once the renderer and the window are up
+	 * @details Called by the constructor, after _InitRenderer and _InitWindow: installs the AppKit delegate hooks (the
+	 *			launch-time setup they defer to the run loop) and applies the configured VSync state. Constructing a
+	 *			CocoaApplication is enough to get a fully initialized one; this stays public only because I_Application
+	 *			declares it, and is written to be safe to call again.
+	 */
 	void Init() override;
 
 	/**
@@ -191,14 +194,17 @@ public:
 
 protected:
 	/**
-	 * @brief No-op: window creation happens in Init(), interleaved with the Metal context setup
+	 * @brief Brings the window up and wires the input and event plumbing
+	 * @details Attaches the context-owned MetalKit view as the window's content view, initializes the input state and
+	 *			binds the native sources to the event hub. Runs after _InitRenderer, not before it as in GlfwApplication:
+	 *			the view it hands to the window only exists once the context is initialized.
 	 */
-	void _InitWindow() override {}
+	void _InitWindow() override;
 
 	/**
-	 * @brief No-op: renderer creation happens in Init(), interleaved with the window setup
+	 * @brief Brings the Metal context up and builds the default render pipeline state
 	 */
-	void _InitRenderer() override {}
+	void _InitRenderer() override;
 
 public:
 	/**

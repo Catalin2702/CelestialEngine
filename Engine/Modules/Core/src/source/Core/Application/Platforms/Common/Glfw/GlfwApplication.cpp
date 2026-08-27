@@ -95,10 +95,19 @@ GlfwApplication::GlfwApplication(): _window(CreateValidatedWindow()), _context(_
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
 
-	GlfwApplication::_InitWindow();
-	GlfwApplication::_InitRenderer();
+	// The singleton is published before the init steps because they reach back through StGet, so a throw from any of them
+	// has to clear it by hand: the destructor - which is what normally resets it - never runs for an object whose
+	// constructor did not complete, and the stale pointer would fail the assert above on the next application.
+	try {
+		GlfwApplication::_InitWindow();
+		GlfwApplication::_InitRenderer();
 
-	GlfwApplication::Init();
+		GlfwApplication::Init();
+	}
+	catch (...) {
+		_stInstance = nullptr;
+		throw;
+	}
 }
 
 GlfwApplication::~GlfwApplication() {

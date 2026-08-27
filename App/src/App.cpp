@@ -33,7 +33,8 @@ std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, con
 			throw std::runtime_error(error);
 		}
 	}
-	app->Init();
+	// Both backends bring themselves up in their constructor (window, renderer, event plumbing), so only the opt-in
+	// ImGui overlay is left to push here.
 	app->InitImGuiLayer();
 	return app;
 }

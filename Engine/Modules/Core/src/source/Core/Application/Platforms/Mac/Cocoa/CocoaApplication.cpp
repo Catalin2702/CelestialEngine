@@ -34,6 +34,22 @@ static void LogError(Events::ErrorEvent& appErrorEvent) {
 	CE_CORE_ERROR(appErrorEvent);
 }
 
+// The context and the window are members held by value, so they are built by the initializer list, before the constructor
+// body ever runs - which is where the graphics/window API compatibility check used to live. It moves here so it still runs
+// before any of them exists: the helper validates the configured pair and only then builds the context (the first of the
+// two, see the member declaration order). Mirrors GlfwApplication::CreateValidatedWindow.
+static MetalContext CreateValidatedContext() {
+	const auto& windowProps = Utility::Config::StGetWindowProps();
+
+	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+		const auto error = std::format("CocoaApplication::CocoaApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	return MetalContext{};
+}
+
 void CocoaApplicationEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
 	applicationEvents.onErrorDispatcher.Dispatch(errorCode, description);
 }
@@ -50,13 +66,30 @@ void CocoaApplicationEventHandler::DispatchRenderEvent() const {
 	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
-CocoaApplication::CocoaApplication(): _tickSemaphore(dispatch_semaphore_create(0)) {
+// The shared NSApplication is retained first (declaration order puts it ahead of the context and the window): everything
+// AppKit-side built below assumes it exists.
+CocoaApplication::CocoaApplication():
+	_appCocoa(NS::RetainPtr(NS::Application::sharedApplication())),
+	_context(CreateValidatedContext()),
+	_tickSemaphore(dispatch_semaphore_create(0)) {
 	assert(_stInstance == nullptr && "CocoaApplication::CocoaApplication: CocoaApplication already exists!");
 	_stInstance = this;
 
-	I_Application::SetRunning(false);
+	// The singleton is published before the init steps because they reach back through StGet, so a throw from any of them
+	// has to clear it by hand: the destructor - which is what normally resets it - never runs for an object whose
+	// constructor did not complete, and the stale pointer would fail the assert above on the next application.
+	try {
+		// Reversed compared to GlfwApplication, which brings the window up first: here the window takes the context-owned
+		// MetalKit view as its content view, so the context has to exist before the window is initialized.
+		CocoaApplication::_InitRenderer();
+		CocoaApplication::_InitWindow();
 
-	_appCocoa = NS::RetainPtr(NS::Application::sharedApplication());
+		CocoaApplication::Init();
+	}
+	catch (...) {
+		_stInstance = nullptr;
+		throw;
+	}
 }
 
 CocoaApplication::~CocoaApplication() {
@@ -131,6 +164,8 @@ void CocoaApplication::Tick(const float deltaTime) {
 }
 
 void CocoaApplication::Init() {
+	I_Application::SetRunning(false);
+
 	_appCocoa->setDelegate(&_appDelegate);
 
 	// App-level launch setup (activation policy, menu bar, activation, window reveal) is deferred to the run loop via the
@@ -143,29 +178,28 @@ void CocoaApplication::Init() {
 		EventDelegate<NS::Notification*>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnWillFinishLaunching>(this)
 	);
 
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	// Last: SetVSync fires the context's VSync dispatcher, and _OnVSyncChange (which reconciles the frame pacing with it)
+	// only reaches this application once _InitWindow has wired the hub and subscribed the app-level handlers.
+	_context.SetVSync(Utility::Config::StGetWindowProps().VSync);
+}
 
-	if (not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
-		const auto error = std::format("CocoaApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
-
-	// The context and the window are members held by value: they exist from construction, so Init only brings them up.
-	_context.Init();
+void CocoaApplication::_InitWindow() {
+	// The context and the window are members held by value: they exist from construction, so this only brings the window
+	// up and attaches the render context's MetalKit view to it.
 	_window.Init();
-
-	// Attach the render context's MetalKit view to the window and wire it into the engine.
 	_window.SetContentView(_context.GetView());
 
+	// Input must exist before SubscribeToHubDispatcher: the input state it owns is the hub's first subscriber.
 	Input::Init();
 
 	SetEventHubDispatcher();
 	SubscribeToHubDispatcher();
+}
+
+void CocoaApplication::_InitRenderer() {
+	_context.Init();
 
 	_BindContextDelegates();
-
-	_context.SetVSync(windowProps.VSync);
 
 	const auto [vertexFunction, fragmentFunction] = _context.GetShaderLibrary().GetShaderProgram("vertexMain", "fragmentMain");
 
@@ -177,7 +211,7 @@ void CocoaApplication::Init() {
 	NS::Error* pipelineError = nullptr;
 	defaultRenderPipelineState = _context.GetDevice()->newRenderPipelineState(renderPipelineDescriptor, &pipelineError);
 	if (not defaultRenderPipelineState) [[unlikely]] {
-		const auto error = std::format("CocoaApplication::Init: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
+		const auto error = std::format("CocoaApplication::_InitRenderer: Failed to create default render pipeline state. Error: {}", std::string(pipelineError->localizedDescription()->utf8String()));
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -345,7 +379,7 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 	using app = CocoaApplication;
 
 	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
-	// the same event. Requires Input::Init to have run (it has: Init calls it right before this method).
+	// the same event. Requires Input::Init to have run (it has: _InitWindow calls it right before this method).
 	Input::SubscribeToHub(
 		eventHubDispatcher.cocoaKeyboardEventHub,
 		eventHubDispatcher.cocoaMouseEventHub,
@@ -427,7 +461,6 @@ void CocoaApplication::_Pause() {
 }
 
 void CocoaApplication::_BindContextDelegates() {
-
 	// Drive a frame from the CAMetalDisplayLink. This is what paces rendering while VSync is enabled (the display link is
 	// unpaused in SetRunning(); with VSync off the dedicated tick loop drives Tick instead and the display link stays paused.
 	// (Drawable resize is handled by the context itself and routed to the hub via its resize dispatcher.)
