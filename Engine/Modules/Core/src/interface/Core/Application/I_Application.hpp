@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 //
 
 #pragma once
@@ -82,14 +82,14 @@ public:
 	/**
 	 * @brief Initializes the ImGui layer with the specified graphics API
 	 */
-	void virtual InitImGuiLayer() = 0;
+	virtual void InitImGuiLayer() = 0;
 
 	/**
 	 * @brief Adds a layer to the layer stack
 	 * @param layer Pointer to the layer to add
 	 * @details Layers are updated and receive events in the order they are pushed
 	 */
-	void virtual PushLayer(I_Layer* layer);
+	virtual void PushLayer(const std::shared_ptr<I_Layer>& layer);
 
 	/**
 	 * @brief Adds an overlay to the layer stack
@@ -97,7 +97,7 @@ public:
 	 * @details Overlays are rendered on top of regular layers and receive
 	 *			events before regular layers
 	 */
-	void virtual PushOverlay(I_Layer* overlay);
+	virtual void PushOverlay(const std::shared_ptr<I_Layer>& overlay);
 
 	/**
 	 * @brief Removes a layer from the layer stack
@@ -105,7 +105,7 @@ public:
 	 * @details Delegates to LayerStack::PopLayer, which removes the layer
 	 *			from the stack and calls its OnDetach method
 	 */
-	void virtual PopLayer(I_Layer* layer);
+	virtual void PopLayer(const std::shared_ptr<I_Layer>& layer);
 
 	/**
 	 * @brief Removes an overlay from the layer stack
@@ -113,18 +113,27 @@ public:
 	 * @details Delegates to LayerStack::PopOverlay, which removes the overlay
 	 *			from the stack and calls its OnDetach method
 	 */
-	void virtual PopOverlay(I_Layer* overlay);
+	virtual void PopOverlay(const std::shared_ptr<I_Layer>& overlay);
+
+	/**
+	 * @brief Replaces a layer (or overlay) in the layer stack with a new one
+	 * @param oldLayer Pointer to the layer to replace
+	 * @param newLayer Pointer to the layer that takes its place
+	 * @details Delegates to LayerStack::ReplaceLayer, which keeps the entry at its original index, calling the old
+	 *			layer's OnDetach before the new layer's OnAttach
+	 */
+	virtual void ReplaceLayer(const std::shared_ptr<I_Layer>& oldLayer, const std::shared_ptr<I_Layer>& newLayer);
 
 protected:
 	/**
 	 * @brief Initializes the application with the specified window properties
 	 */
-	void virtual _InitWindow() = 0;
+	virtual void _InitWindow() = 0;
 
 	/**
 	 * @brief Initializes the renderer with the specified graphics API
 	 */
-	void virtual _InitRenderer() = 0;
+	virtual void _InitRenderer() = 0;
 
 public:
 	/**
@@ -189,7 +198,7 @@ public:
 	 * @brief Sets the ImGui layer for the application
 	 * @param imguiLayer Pointer to the ImGui layer to set
 	 */
-	virtual void SetImGuiLayer(I_Layer* imguiLayer) = 0;
+	virtual void SetImGuiLayer(const std::shared_ptr<I_Layer>& imguiLayer) = 0;
 
 	/**
 	 * @brief Binds every raw platform source to the event hub's Receive* methods (backend-specific)

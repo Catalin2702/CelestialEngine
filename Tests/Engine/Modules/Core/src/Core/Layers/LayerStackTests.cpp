@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 //
 
 #include <Core/Layers/I_Layer.hpp>
@@ -23,13 +23,12 @@ namespace {
 
 /**
  * @brief Mock layer for LayerStack tests
- * @details The stack owns its layers and deletes them on Clear/destruction, so the detach flag is reported through
- *			an external counter that outlives the layer.
+ * @details Ownership is shared: the test holds a shared_ptr next to the stack's own, so a popped layer stays alive
+ *			and its counters remain readable after the stack dropped it.
  */
 class MockStackLayer: public I_Layer {
 public:
-	explicit MockStackLayer(const std::string& name = "MockStackLayer", int* detachCounter = nullptr):
-		I_Layer(name), _detachCounter(detachCounter) {}
+	explicit MockStackLayer(const std::string& name = "MockStackLayer"): I_Layer(name) {}
 
 	void OnAttach() override {
 		attached = true;
@@ -39,8 +38,6 @@ public:
 	void OnDetach() override {
 		attached = false;
 		++detachCount;
-		if (_detachCounter)
-			++(*_detachCounter);
 	}
 
 	void OnUpdate() override { ++updateCount; }
@@ -53,10 +50,11 @@ public:
 	int attachCount = 0;
 	int detachCount = 0;
 	int updateCount = 0;
-
-private:
-	int* _detachCounter;							///< Optional external counter, survives the layer deletion
 };
+
+std::shared_ptr<MockStackLayer> MakeLayer(const std::string& name = "MockStackLayer") {
+	return std::make_shared<MockStackLayer>(name);
+}
 
 /**
  * @brief Test fixture for LayerStack tests
@@ -84,7 +82,7 @@ TEST_F(LayerStackTest, DefaultConstructed_IsEmpty) {
  */
 TEST_F(LayerStackTest, PushLayer_StoresAndAttachesLayer) {
 	LayerStack stack;
-	auto* layer = new MockStackLayer{"Layer"};
+	const auto layer = MakeLayer("Layer");
 
 	stack.PushLayer(layer);
 
@@ -99,12 +97,26 @@ TEST_F(LayerStackTest, PushLayer_StoresAndAttachesLayer) {
  */
 TEST_F(LayerStackTest, PushOverlay_StoresAndAttachesOverlay) {
 	LayerStack stack;
-	auto* overlay = new MockStackLayer{"Overlay"};
+	const auto overlay = MakeLayer("Overlay");
 
 	stack.PushOverlay(overlay);
 
 	EXPECT_EQ(stack.Size(), 1);
 	EXPECT_TRUE(overlay->attached);
+}
+
+/**
+ * @brief Test that the stack shares ownership of the layers it holds
+ */
+TEST_F(LayerStackTest, PushLayer_SharesOwnershipWithTheCaller) {
+	LayerStack stack;
+	const auto layer = MakeLayer("Layer");
+
+	EXPECT_EQ(layer.use_count(), 1);
+
+	stack.PushLayer(layer);
+
+	EXPECT_EQ(layer.use_count(), 2);
 }
 
 /**
@@ -114,13 +126,10 @@ TEST_F(LayerStackTest, PushOverlay_StoresAndAttachesOverlay) {
  */
 TEST_F(LayerStackTest, PushLayer_InsertsBeforeOverlays) {
 	LayerStack stack;
-	auto* overlay = new MockStackLayer{"Overlay"};
-	auto* firstLayer = new MockStackLayer{"First"};
-	auto* secondLayer = new MockStackLayer{"Second"};
 
-	stack.PushOverlay(overlay);
-	stack.PushLayer(firstLayer);
-	stack.PushLayer(secondLayer);
+	stack.PushOverlay(MakeLayer("Overlay"));
+	stack.PushLayer(MakeLayer("First"));
+	stack.PushLayer(MakeLayer("Second"));
 
 	std::vector<std::string> order;
 	for (const auto& layer: stack)
@@ -135,10 +144,10 @@ TEST_F(LayerStackTest, PushLayer_InsertsBeforeOverlays) {
 TEST_F(LayerStackTest, PushLayer_MultipleLayers_KeepsAllOfThem) {
 	LayerStack stack;
 
-	stack.PushLayer(new MockStackLayer{"Layer1"});
-	stack.PushLayer(new MockStackLayer{"Layer2"});
-	stack.PushOverlay(new MockStackLayer{"Overlay1"});
-	stack.PushOverlay(new MockStackLayer{"Overlay2"});
+	stack.PushLayer(MakeLayer("Layer1"));
+	stack.PushLayer(MakeLayer("Layer2"));
+	stack.PushOverlay(MakeLayer("Overlay1"));
+	stack.PushOverlay(MakeLayer("Overlay2"));
 
 	EXPECT_EQ(stack.Size(), 4);
 }
@@ -149,19 +158,30 @@ TEST_F(LayerStackTest, PushLayer_MultipleLayers_KeepsAllOfThem) {
 
 /**
  * @brief Test that PopLayer removes the layer and detaches it
- * @details The stack owns its layers, so the popped layer is destroyed with it: the detach is observed through the
- *			external counter, which outlives the layer, never through the (already dangling) layer pointer.
  */
 TEST_F(LayerStackTest, PopLayer_RemovesAndDetachesLayer) {
 	LayerStack stack;
-	int detachCount = 0;
-	auto* layer = new MockStackLayer{"Layer", &detachCount};
+	const auto layer = MakeLayer("Layer");
 
 	stack.PushLayer(layer);
 	stack.PopLayer(layer);
 
 	EXPECT_TRUE(stack.Empty());
-	EXPECT_EQ(detachCount, 1);
+	EXPECT_EQ(layer->detachCount, 1);
+	EXPECT_FALSE(layer->attached);
+}
+
+/**
+ * @brief Test that popping a layer releases the stack's share of the ownership
+ */
+TEST_F(LayerStackTest, PopLayer_ReleasesTheStackOwnership) {
+	LayerStack stack;
+	const auto layer = MakeLayer("Layer");
+
+	stack.PushLayer(layer);
+	stack.PopLayer(layer);
+
+	EXPECT_EQ(layer.use_count(), 1);
 }
 
 /**
@@ -169,14 +189,13 @@ TEST_F(LayerStackTest, PopLayer_RemovesAndDetachesLayer) {
  */
 TEST_F(LayerStackTest, PopOverlay_RemovesAndDetachesOverlay) {
 	LayerStack stack;
-	int detachCount = 0;
-	auto* overlay = new MockStackLayer{"Overlay", &detachCount};
+	const auto overlay = MakeLayer("Overlay");
 
 	stack.PushOverlay(overlay);
 	stack.PopOverlay(overlay);
 
 	EXPECT_TRUE(stack.Empty());
-	EXPECT_EQ(detachCount, 1);
+	EXPECT_EQ(overlay->detachCount, 1);
 }
 
 /**
@@ -184,11 +203,11 @@ TEST_F(LayerStackTest, PopOverlay_RemovesAndDetachesOverlay) {
  */
 TEST_F(LayerStackTest, PopLayer_UnknownLayer_LeavesStackUntouched) {
 	LayerStack stack;
-	auto* known = new MockStackLayer{"Known"};
-	const auto unknown = std::make_unique<MockStackLayer>("Unknown");
+	const auto known = MakeLayer("Known");
+	const auto unknown = MakeLayer("Unknown");
 
 	stack.PushLayer(known);
-	stack.PopLayer(unknown.get());
+	stack.PopLayer(unknown);
 
 	EXPECT_EQ(stack.Size(), 1);
 	EXPECT_TRUE(known->attached);
@@ -201,20 +220,133 @@ TEST_F(LayerStackTest, PopLayer_UnknownLayer_LeavesStackUntouched) {
  */
 TEST_F(LayerStackTest, PopLayer_KeepsInsertionPointConsistent) {
 	LayerStack stack;
-	auto* overlay = new MockStackLayer{"Overlay"};
-	auto* firstLayer = new MockStackLayer{"First"};
+	const auto firstLayer = MakeLayer("First");
 
-	stack.PushOverlay(overlay);
+	stack.PushOverlay(MakeLayer("Overlay"));
 	stack.PushLayer(firstLayer);
 	stack.PopLayer(firstLayer);
 
-	stack.PushLayer(new MockStackLayer{"Second"});
+	stack.PushLayer(MakeLayer("Second"));
 
 	std::vector<std::string> order;
 	for (const auto& layer: stack)
 		order.push_back(layer->GetName());
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Second", "Overlay"}));
+}
+
+// ============================================================================
+// Replace Tests
+// ============================================================================
+
+/**
+ * @brief Test that ReplaceLayer detaches the old layer and attaches the new one
+ */
+TEST_F(LayerStackTest, ReplaceLayer_DetachesOldAndAttachesNew) {
+	LayerStack stack;
+	const auto oldLayer = MakeLayer("Old");
+	const auto newLayer = MakeLayer("New");
+
+	stack.PushLayer(oldLayer);
+	stack.ReplaceLayer(oldLayer, newLayer);
+
+	EXPECT_EQ(stack.Size(), 1);
+	EXPECT_EQ(oldLayer->detachCount, 1);
+	EXPECT_FALSE(oldLayer->attached);
+	EXPECT_EQ(newLayer->attachCount, 1);
+	EXPECT_TRUE(newLayer->attached);
+}
+
+/**
+ * @brief Test that the old layer is detached before the new one is attached
+ * @details ImGui layers create their context in OnAttach and destroy it in OnDetach, so overlapping the two would
+ *			leave the stale context current.
+ */
+TEST_F(LayerStackTest, ReplaceLayer_DetachesBeforeAttaching) {
+	LayerStack stack;
+	const auto oldLayer = MakeLayer("Old");
+	const auto newLayer = MakeLayer("New");
+
+	stack.PushOverlay(oldLayer);
+
+	EXPECT_EQ(oldLayer->detachCount, 0);
+
+	stack.ReplaceLayer(oldLayer, newLayer);
+
+	EXPECT_EQ(oldLayer->detachCount, 1);
+	EXPECT_EQ(newLayer->attachCount, 1);
+}
+
+/**
+ * @brief Test that the replacement keeps the position of the entry it took over
+ * @details Replacing in place (instead of popping and pushing) is what keeps an overlay an overlay: a PushOverlay
+ *			would move it past the layers, a PushLayer would move it before the other overlays.
+ */
+TEST_F(LayerStackTest, ReplaceLayer_KeepsThePositionOfTheReplacedEntry) {
+	LayerStack stack;
+	const auto oldOverlay = MakeLayer("OldOverlay");
+	const auto newOverlay = MakeLayer("NewOverlay");
+
+	stack.PushOverlay(oldOverlay);
+	stack.PushLayer(MakeLayer("Layer"));
+	stack.ReplaceLayer(oldOverlay, newOverlay);
+
+	std::vector<std::string> order;
+	for (const auto& layer: stack)
+		order.push_back(layer->GetName());
+
+	EXPECT_EQ(order, (std::vector<std::string>{"Layer", "NewOverlay"}));
+}
+
+/**
+ * @brief Test that replacing keeps the insertion point consistent
+ */
+TEST_F(LayerStackTest, ReplaceLayer_KeepsInsertionPointConsistent) {
+	LayerStack stack;
+	const auto oldLayer = MakeLayer("Old");
+
+	stack.PushOverlay(MakeLayer("Overlay"));
+	stack.PushLayer(oldLayer);
+	stack.ReplaceLayer(oldLayer, MakeLayer("New"));
+
+	stack.PushLayer(MakeLayer("Second"));
+
+	std::vector<std::string> order;
+	for (const auto& layer: stack)
+		order.push_back(layer->GetName());
+
+	EXPECT_EQ(order, (std::vector<std::string>{"New", "Second", "Overlay"}));
+}
+
+/**
+ * @brief Test that replacing releases the stack's share of the old layer's ownership
+ */
+TEST_F(LayerStackTest, ReplaceLayer_ReleasesTheOldLayerOwnership) {
+	LayerStack stack;
+	const auto oldLayer = MakeLayer("Old");
+
+	stack.PushLayer(oldLayer);
+	stack.ReplaceLayer(oldLayer, MakeLayer("New"));
+
+	EXPECT_EQ(oldLayer.use_count(), 1);
+}
+
+/**
+ * @brief Test that replacing an unknown layer leaves the stack untouched
+ */
+TEST_F(LayerStackTest, ReplaceLayer_UnknownLayer_LeavesStackUntouched) {
+	LayerStack stack;
+	const auto known = MakeLayer("Known");
+	const auto unknown = MakeLayer("Unknown");
+	const auto replacement = MakeLayer("Replacement");
+
+	stack.PushLayer(known);
+	stack.ReplaceLayer(unknown, replacement);
+
+	EXPECT_EQ(stack.Size(), 1);
+	EXPECT_TRUE(known->attached);
+	EXPECT_EQ(replacement->attachCount, 0);
+	EXPECT_EQ(unknown->detachCount, 0);
 }
 
 // ============================================================================
@@ -235,8 +367,8 @@ TEST_F(LayerStackTest, Iteration_EmptyStack_YieldsNothing) {
  */
 TEST_F(LayerStackTest, Iteration_ReachesEveryLayerOnce) {
 	LayerStack stack;
-	auto* first = new MockStackLayer{"First"};
-	auto* second = new MockStackLayer{"Second"};
+	const auto first = MakeLayer("First");
+	const auto second = MakeLayer("Second");
 
 	stack.PushLayer(first);
 	stack.PushOverlay(second);
@@ -253,18 +385,22 @@ TEST_F(LayerStackTest, Iteration_ReachesEveryLayerOnce) {
 // ============================================================================
 
 /**
- * @brief Test that Clear detaches and deletes every layer
+ * @brief Test that Clear detaches and releases every layer
  */
-TEST_F(LayerStackTest, Clear_DetachesAndDeletesEveryLayer) {
-	int detachCount = 0;
-
+TEST_F(LayerStackTest, Clear_DetachesAndReleasesEveryLayer) {
 	LayerStack stack;
-	stack.PushLayer(new MockStackLayer{"Layer1", &detachCount});
-	stack.PushOverlay(new MockStackLayer{"Overlay1", &detachCount});
+	const auto layer = MakeLayer("Layer1");
+	const auto overlay = MakeLayer("Overlay1");
+
+	stack.PushLayer(layer);
+	stack.PushOverlay(overlay);
 
 	stack.Clear();
 
-	EXPECT_EQ(detachCount, 2);
+	EXPECT_EQ(layer->detachCount, 1);
+	EXPECT_EQ(overlay->detachCount, 1);
+	EXPECT_EQ(layer.use_count(), 1);
+	EXPECT_EQ(overlay.use_count(), 1);
 	EXPECT_TRUE(stack.Empty());
 	EXPECT_EQ(stack.Size(), 0);
 }
@@ -274,12 +410,12 @@ TEST_F(LayerStackTest, Clear_DetachesAndDeletesEveryLayer) {
  */
 TEST_F(LayerStackTest, Clear_ResetsInsertionPoint) {
 	LayerStack stack;
-	stack.PushLayer(new MockStackLayer{"Layer1"});
-	stack.PushOverlay(new MockStackLayer{"Overlay1"});
+	stack.PushLayer(MakeLayer("Layer1"));
+	stack.PushOverlay(MakeLayer("Overlay1"));
 	stack.Clear();
 
-	stack.PushOverlay(new MockStackLayer{"Overlay2"});
-	stack.PushLayer(new MockStackLayer{"Layer2"});
+	stack.PushOverlay(MakeLayer("Overlay2"));
+	stack.PushLayer(MakeLayer("Layer2"));
 
 	std::vector<std::string> order;
 	for (const auto& layer: stack)
@@ -289,18 +425,43 @@ TEST_F(LayerStackTest, Clear_ResetsInsertionPoint) {
 }
 
 /**
- * @brief Test that destroying the stack detaches and deletes the layers it still owns
+ * @brief Test that destroying the stack detaches and releases the layers it still holds
  */
-TEST_F(LayerStackTest, Destructor_DetachesAndDeletesOwnedLayers) {
-	int detachCount = 0;
+TEST_F(LayerStackTest, Destructor_DetachesAndReleasesOwnedLayers) {
+	const auto first = MakeLayer("Layer1");
+	const auto second = MakeLayer("Layer2");
 
 	{
 		LayerStack stack;
-		stack.PushLayer(new MockStackLayer{"Layer1", &detachCount});
-		stack.PushLayer(new MockStackLayer{"Layer2", &detachCount});
+		stack.PushLayer(first);
+		stack.PushLayer(second);
 
-		EXPECT_EQ(detachCount, 0);
+		EXPECT_EQ(first->detachCount, 0);
+		EXPECT_EQ(first.use_count(), 2);
 	}
 
-	EXPECT_EQ(detachCount, 2);
+	EXPECT_EQ(first->detachCount, 1);
+	EXPECT_EQ(second->detachCount, 1);
+	EXPECT_EQ(first.use_count(), 1);
+	EXPECT_EQ(second.use_count(), 1);
+}
+
+/**
+ * @brief Test that the stack keeps a layer alive after the caller dropped its own reference
+ */
+TEST_F(LayerStackTest, PushLayer_KeepsTheLayerAliveAfterTheCallerReleasesIt) {
+	LayerStack stack;
+	std::weak_ptr<MockStackLayer> observer;
+
+	{
+		const auto layer = MakeLayer("Layer");
+		observer = layer;
+		stack.PushLayer(layer);
+	}
+
+	EXPECT_FALSE(observer.expired());
+
+	stack.Clear();
+
+	EXPECT_TRUE(observer.expired());
 }

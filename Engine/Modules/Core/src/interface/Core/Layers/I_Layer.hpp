@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-27
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <string>
+#include <utility>
 
 
 namespace CE::Core {
@@ -33,7 +34,7 @@ protected:
 	 * @param name Name for the layer
 	 * @details Creates a layer with an optional name for identification
 	 */
-	I_Layer(const std::string& name = "Layer"): _name(name) {}
+	I_Layer(std::string name = "Layer"): _name(std::move(name)) {}
 
 public:
 	/**

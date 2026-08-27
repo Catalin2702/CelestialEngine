@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 //
 
 #pragma once
@@ -54,7 +54,7 @@ public:
 	 * @details Layers are inserted before overlays in the stack. The layer's
 	 *			OnAttach() method is called after insertion.
 	 */
-	void PushLayer(I_Layer* layer);
+	void PushLayer(const std::shared_ptr<I_Layer>& layer);
 
 	/**
 	 * @brief Adds an overlay to the stack
@@ -62,21 +62,29 @@ public:
 	 * @details Overlays are always inserted at the end of the stack, after all
 	 *			regular layers. The overlay's OnAttach() method is called after insertion.
 	 */
-	void PushOverlay(I_Layer* overlay);
+	void PushOverlay(const std::shared_ptr<I_Layer>& overlay);
 
 	/**
 	 * @brief Removes a layer from the stack
 	 * @param layer Pointer to the layer to remove
 	 * @details The layer's OnDetach() method is called before removal
 	 */
-	void PopLayer(I_Layer* layer);
+	void PopLayer(const std::shared_ptr<I_Layer>& layer);
 
 	/**
 	 * @brief Removes an overlay from the stack
 	 * @param overlay Pointer to the overlay to remove
 	 * @details The overlay's OnDetach() method is called before removal
 	 */
-	void PopOverlay(I_Layer* overlay);
+	void PopOverlay(const std::shared_ptr<I_Layer>& overlay);
+
+	/**
+	 * @brief Replace a layer (or overlay) with a new one
+	 * @param oldLayer Pointer to the old layer to replace
+	 * @param newLayer Pointer to the new layer that replace the old one
+	 * @details The old layer's OnDetach() and new layer's OnAttach() methods are called
+	 */
+	void ReplaceLayer(const std::shared_ptr<I_Layer>& oldLayer, const std::shared_ptr<I_Layer>& newLayer);
 
 	/**
 	 * @brief Clears all layers from the stack

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -91,10 +91,7 @@ void GlfwApplicationEventHandler::DispatchRenderEvent() const {
 	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
-GlfwApplication::GlfwApplication():
-	_window(CreateValidatedWindow()),
-	_context(_window.GetGlfwWindow()),
-	_imguiLayer(nullptr) {
+GlfwApplication::GlfwApplication(): _window(CreateValidatedWindow()), _context(_window.GetGlfwWindow()) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
 
@@ -109,7 +106,6 @@ GlfwApplication::~GlfwApplication() {
 		GlfwApplication::Quit();
 
 	_layerStack.Clear();
-	_imguiLayer = nullptr;
 }
 
 void GlfwApplication::Start() {
@@ -155,14 +151,14 @@ void GlfwApplication::Tick(const float deltaTime) {
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
-	if (_imguiLayer) [[likely]] {
-		_imguiLayer->Begin(deltaTime);
+	if (const auto imguiLayer = _imguiLayer.lock()) [[likely]] {
+		imguiLayer->Begin(deltaTime);
 
 		for (const auto& layer: _layerStack)
 			layer->OnRender();
 		applicationEventHandler.DispatchRenderEvent();
 
-		_imguiLayer->End();
+		imguiLayer->End();
 	}
 
 	// Clear per-frame input transitions BEFORE polling: the glfwPollEvents call below delivers the events that belong
@@ -216,26 +212,15 @@ void GlfwApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object*
 #endif
 
 void GlfwApplication::InitImGuiLayer() {
-	assert(not _imguiLayer && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
+	assert(_imguiLayer.expired() && "GlfwApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
-	auto overlay = std::make_unique<ImGuiOpenGlLayer>();
-	_imguiLayer = overlay.release();
-	PushOverlay(_imguiLayer);
-	_imguiLayer->SubscribeToEventHub();
+	const auto imguiLayer = std::make_shared<ImGuiOpenGlLayer>();
+	PushOverlay(imguiLayer);
+	imguiLayer->SubscribeToEventHub();
+	_imguiLayer = imguiLayer;
 }
 
 void GlfwApplication::_InitWindow() {
-	// assert(not _window && "GlfwApplication::InitWindow: Window is already initialized!");
-	// const auto& windowProps = Utility::Config::StGetWindowProps();
-	//
-	// if (not Types::IsGraphicsApiCompatibleWithWindowApi(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
-	// 	const auto error = std::format("GlfwApplication::InitWindow: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
-	// 	CE_CORE_ERROR(error);
-	// 	throw std::runtime_error(error);
-	// }
-	//
-	// _window = std::make_unique<GlfwWindow>();
-
 	// Input must exist before SubscribeToHubDispatcher: the input state it owns is the hub's first subscriber.
 	Input::Init();
 
@@ -244,12 +229,6 @@ void GlfwApplication::_InitWindow() {
 }
 
 void GlfwApplication::_InitRenderer() {
-	// assert(_window && "GlfwApplication::InitRenderer: Window must be initialized before initializing renderer");
-	// assert(not _context && "GlfwApplication::InitRenderer: Renderer is already initialized!");
-	//
-	// _context = std::make_unique<OpenGlContext>(static_cast<GLFWwindow*>(_window->GetNativeWindow()));
-	// _context->Init();
-
 	// The context is created after the window (and after SetEventHubDispatcher), so its resize dispatcher is bound to the hub
 	// here rather than in SetEventHubDispatcher.
 	_context.openGlContextEventDispatcher.openGlContextLifeCycle.onResizeDispatcher.Bind(
@@ -291,22 +270,22 @@ void GlfwApplication::_InitRenderer() {
 	_shaderProgram.Link();
 }
 
-void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
+void GlfwApplication::SetImGuiLayer(const std::shared_ptr<I_Layer>& imguiLayer) {
 	if (not imguiLayer) [[unlikely]] {
 		CE_CORE_WARN("GlfwApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto openGlLayer = dynamic_cast<ImGuiOpenGlLayer*>(imguiLayer)) [[likely]] {
-		if (_imguiLayer) {
-			_imguiLayer->UnsubscribeFromEventHub();
-			PopOverlay(_imguiLayer);
-			_imguiLayer = nullptr;
+	if (const auto openGlLayer = std::dynamic_pointer_cast<ImGuiOpenGlLayer>(imguiLayer)) [[likely]] {
+		if (const auto oldLayer = _imguiLayer.lock()) {
+			ReplaceLayer(oldLayer, openGlLayer);
+		}
+		else {
+			PushOverlay(openGlLayer);
 		}
 
+		openGlLayer->SubscribeToEventHub();
 		_imguiLayer = openGlLayer;
-		PushOverlay(_imguiLayer);
-		_imguiLayer->SubscribeToEventHub();
 	}
 	else {
 		CE_CORE_ERROR("GlfwApplication::SetImGuiLayer: Provided ImGui layer is not compatible with OpenGlContext. Expected ImGuiOpenGlLayer or derived class.");
@@ -315,12 +294,14 @@ void GlfwApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 }
 
 void GlfwApplication::RemoveImGuiLayer() {
-	if (not _imguiLayer) [[unlikely]]
+	// The lock keeps the layer alive across PopOverlay: the stack holds the only owning reference, so erasing the entry
+	// would otherwise destroy it while OnDetach is still running. Its destructor drops the hub subscriptions.
+	const auto imguiLayer = _imguiLayer.lock();
+	if (not imguiLayer) [[unlikely]]
 		return;
 
-	_imguiLayer->UnsubscribeFromEventHub();
-	PopOverlay(_imguiLayer);
-	_imguiLayer = nullptr;
+	PopOverlay(imguiLayer);
+	_imguiLayer.reset();
 }
 
 void GlfwApplication::SetEventHubDispatcher() {

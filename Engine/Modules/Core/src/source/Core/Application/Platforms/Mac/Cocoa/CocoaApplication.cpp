@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -68,7 +68,7 @@ CocoaApplication::~CocoaApplication() {
 	_StopTickLoop();
 
 	_layerStack.Clear();
-	_imguiLayer = nullptr;
+	_imguiLayer.reset();
 
 	// The window is destroyed before the context (reverse declaration order, see the members in the header): the window
 	// retains the context-owned view as its content view, and that view references the context-owned event dispatcher.
@@ -115,14 +115,14 @@ void CocoaApplication::Tick(const float deltaTime) {
 		layer->OnUpdate();
 	applicationEventHandler.DispatchUpdateEvent();
 
-	if (_imguiLayer) [[likely]] {
-		_imguiLayer->Begin(deltaTime);
+	if (const auto imguiLayer = _imguiLayer.lock()) [[likely]] {
+		imguiLayer->Begin(deltaTime);
 
 		for (const auto& layer: _layerStack)
 			layer->OnRender();
 		applicationEventHandler.DispatchRenderEvent();
 
-		_imguiLayer->End();
+		imguiLayer->End();
 	}
 
 	// Clear per-frame input transitions (just pressed/released, scroll deltas) now that every layer had a chance to
@@ -185,22 +185,22 @@ void CocoaApplication::Init() {
 	renderPipelineDescriptor->release();
 }
 
-void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
+void CocoaApplication::SetImGuiLayer(const std::shared_ptr<I_Layer>& imguiLayer) {
 	if (not imguiLayer) [[unlikely]] {
 		CE_WARN("CocoaApplication::SetImGuiLayer: Provided ImGui layer is null. Ignoring.");
 		return;
 	}
 
-	if (const auto metalLayer = dynamic_cast<ImGuiMetalLayer*>(imguiLayer)) [[likely]] {
-		if (_imguiLayer) [[likely]] {
-			_imguiLayer->UnsubscribeFromEventHub();
-			PopOverlay(_imguiLayer);
-			_imguiLayer = nullptr;
+	if (const auto metalLayer = std::dynamic_pointer_cast<ImGuiMetalLayer>(imguiLayer)) [[likely]] {
+		if (const auto oldLayer = _imguiLayer.lock()) [[likely]] {
+			ReplaceLayer(oldLayer, metalLayer);
+		}
+		else {
+			PushOverlay(metalLayer);
 		}
 
+		metalLayer->SubscribeToEventHub();
 		_imguiLayer = metalLayer;
-		PushOverlay(_imguiLayer);
-		_imguiLayer->SubscribeToEventHub();
 	}
 	else {
 		constexpr auto error = "CocoaApplication::SetImGuiLayer: Provided ImGui layer is not compatible with MetalContext. Expected ImGuiMetalLayer or derived class.";
@@ -210,12 +210,14 @@ void CocoaApplication::SetImGuiLayer(I_Layer* imguiLayer) {
 }
 
 void CocoaApplication::RemoveImGuiLayer() {
-	if (not _imguiLayer) [[unlikely]]
+	// The lock keeps the layer alive across PopOverlay: the stack holds the only owning reference, so erasing the entry
+	// would otherwise destroy it while OnDetach is still running. Its destructor drops the hub subscriptions.
+	const auto imguiLayer = _imguiLayer.lock();
+	if (not imguiLayer) [[unlikely]]
 		return;
 
-	_imguiLayer->UnsubscribeFromEventHub();
-	PopOverlay(_imguiLayer);
-	_imguiLayer = nullptr;
+	PopOverlay(imguiLayer);
+	_imguiLayer.reset();
 }
 
 void CocoaApplication::SetRunning(const bool running) {
@@ -267,12 +269,12 @@ void CocoaApplication::_StopTickLoop() {
 }
 
 void CocoaApplication::InitImGuiLayer() {
-	assert(not _imguiLayer && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
+	assert(_imguiLayer.expired() && "CocoaApplication::InitImGuiLayer: ImGui layer is already initialized!");
 
-	auto overlay = std::make_unique<ImGuiMetalLayer>();
-	_imguiLayer = overlay.release();
-	PushOverlay(_imguiLayer);
-	_imguiLayer->SubscribeToEventHub();
+	const auto imguiLayer = std::make_shared<ImGuiMetalLayer>();
+	PushOverlay(imguiLayer);
+	imguiLayer->SubscribeToEventHub();
+	_imguiLayer = imguiLayer;
 }
 
 void CocoaApplication::SetEventHubDispatcher() {

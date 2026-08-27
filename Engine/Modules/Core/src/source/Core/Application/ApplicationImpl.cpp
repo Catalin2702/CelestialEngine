@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-27
 //
 
 #include "Core/Application/I_Application.hpp"
@@ -20,24 +20,24 @@ I_Application::~I_Application() {
 	_stInstance = nullptr;
 }
 
-void I_Application::PushLayer(I_Layer* layer) {
-	assert(layer != nullptr && "I_Application::PushLayer: Cannot push a null layer");
+void I_Application::PushLayer(const std::shared_ptr<I_Layer>& layer) {
 	_layerStack.PushLayer(layer);
 }
 
-void I_Application::PushOverlay(I_Layer* overlay) {
-	assert(overlay != nullptr && "I_Application::PushOverlay: Cannot push a null overlay");
+void I_Application::PushOverlay(const std::shared_ptr<I_Layer>& overlay) {
 	_layerStack.PushOverlay(overlay);
 }
 
-void I_Application::PopLayer(I_Layer* layer) {
-	assert(layer != nullptr && "I_Application::PopLayer: Cannot pop a null layer");
+void I_Application::PopLayer(const std::shared_ptr<I_Layer>& layer) {
 	_layerStack.PopLayer(layer);
 }
 
-void I_Application::PopOverlay(I_Layer* overlay) {
-	assert(overlay != nullptr && "I_Application::PopOverlay: Cannot pop a null overlay");
+void I_Application::PopOverlay(const std::shared_ptr<I_Layer>& overlay) {
 	_layerStack.PopOverlay(overlay);
+}
+
+void I_Application::ReplaceLayer(const std::shared_ptr<I_Layer>& oldLayer, const std::shared_ptr<I_Layer>& newLayer) {
+	_layerStack.ReplaceLayer(oldLayer, newLayer);
 }
 
 I_Application& I_Application::StGet() {

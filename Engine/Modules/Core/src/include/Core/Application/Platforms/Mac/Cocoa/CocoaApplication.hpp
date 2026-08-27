@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-27
 
 #pragma once
 
@@ -173,8 +173,9 @@ public:
 	 * @param imguiLayer Pointer to the ImGui layer to set
 	 * @details Sets the ImGui layer for rendering UI. This method allows you to specify the ImGui layer that will be used for rendering the user interface.
 	 *			It must be an ImGuiMetalLayer or derived class that is compatible with the Metal rendering context used by the application.
+	 *			If an ImGui layer is already present, it is replaced by the new one
 	 */
-	void SetImGuiLayer(I_Layer* imguiLayer) override;
+	void SetImGuiLayer(const std::shared_ptr<I_Layer>& imguiLayer) override;
 
 	/**
 	 * @brief Removes the ImGui layer from the application
@@ -357,7 +358,7 @@ private:
 	MetalContext _context;	///< The Metal rendering context, owned by value
 	CocoaWindow _window;	///< The application window, owned by value
 
-	ImGuiMetalLayer* _imguiLayer = nullptr; ///< Pointer to the ImGui layer for rendering UI
+	std::weak_ptr<ImGuiMetalLayer> _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 
 	Native::NsApplicationDelegate _appDelegate; ///< Delegate for handling Cocoa application events
 
