@@ -9,7 +9,7 @@
 
 #pragma once
 
-#ifndef BUFFER_OPENGLBUFFER_HPP
+#ifndef CE_CORE_RENDER_BUFFER_OPENGLBUFFER_HPP
 #define CE_CORE_RENDER_BUFFER_OPENGLBUFFER_HPP
 
 #include "Define/DynamicLinker.hpp"
