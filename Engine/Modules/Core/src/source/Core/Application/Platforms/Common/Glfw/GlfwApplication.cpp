@@ -10,6 +10,7 @@
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
 #include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
+#include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
