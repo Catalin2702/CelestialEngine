@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-28
 //
 
 #pragma once
@@ -120,7 +120,7 @@ public:
 
 private:
 	StackContainer _layers;							///< Vector containing all layers and overlays
-	unsigned int _layerInsert;						///< Iterator marking the position to insert layers (before overlays)
+	unsigned int _lastLayerIndex;						///< Iterator marking the position to insert layers (before overlays)
 };
 
 }

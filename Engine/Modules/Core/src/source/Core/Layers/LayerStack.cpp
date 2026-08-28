@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-28
 //
 
 #include "Core/Layers/LayerStack.hpp"
@@ -15,7 +15,13 @@
 
 namespace CE::Core {
 
-LayerStack::LayerStack(): _layerInsert(0) {}
+static LayerStack::StackContainer::iterator FindLayer(const LayerStack::StackContainer::iterator& begin, const LayerStack::StackContainer::iterator& end, const std::shared_ptr<I_Layer>& layer) {
+	return std::ranges::find_if(begin, end, [layer](const std::shared_ptr<I_Layer>& entry) {
+		return entry == layer;
+	});
+}
+
+LayerStack::LayerStack(): _lastLayerIndex(0) {}
 
 LayerStack::~LayerStack() {
 	Clear();
@@ -26,12 +32,12 @@ void LayerStack::Clear() {
 		layer->OnDetach();
 	}
 	_layers.clear();
-	_layerInsert = 0;
+	_lastLayerIndex = 0;
 }
 
 void LayerStack::PushLayer(const std::shared_ptr<I_Layer>& layer) {
-	_layers.emplace(_layers.begin() + _layerInsert, layer);
-	_layerInsert++;
+	_layers.emplace(_layers.begin() + _lastLayerIndex, layer);
+	_lastLayerIndex++;
 	layer->OnAttach();
 }
 
@@ -40,26 +46,18 @@ void LayerStack::PushOverlay(const std::shared_ptr<I_Layer>& overlay) {
 	overlay->OnAttach();
 }
 
-// shared_ptr comparison is pointer identity, so this finds the entry that owns the very same layer object - two distinct
-// shared_ptr instances pointing at it compare equal, which is what lets callers pass a handle obtained from a weak_ptr.
-static LayerStack::StackContainer::iterator FindLayer(LayerStack::StackContainer& layers, const std::shared_ptr<I_Layer>& layer) {
-	return std::ranges::find_if(layers, [layer](const std::shared_ptr<I_Layer>& entry) {
-		return entry == layer;
-	});
-}
-
 void LayerStack::PopLayer(const std::shared_ptr<I_Layer>& layer) {
-	const auto it = FindLayer(_layers, layer);
+	const auto it = FindLayer(_layers.begin(), _layers.begin() + _lastLayerIndex, layer);
 	if (it == _layers.end()) [[unlikely]]
 		return;
 
 	layer->OnDetach();
 	_layers.erase(it);
-	--_layerInsert;
+	--_lastLayerIndex;
 }
 
 void LayerStack::PopOverlay(const std::shared_ptr<I_Layer>& overlay) {
-	const auto it = FindLayer(_layers, overlay);
+	const auto it = FindLayer(_layers.begin() + _lastLayerIndex, _layers.end(), overlay);
 	if (it == _layers.end()) [[unlikely]]
 		return;
 
@@ -70,14 +68,14 @@ void LayerStack::PopOverlay(const std::shared_ptr<I_Layer>& overlay) {
 // Replacing in place (rather than PopOverlay + PushOverlay) keeps the entry at its original index, so the layer/overlay
 // split tracked by _layerInsert stays valid whichever half the replaced entry belonged to.
 void LayerStack::ReplaceLayer(const std::shared_ptr<I_Layer>& oldLayer, const std::shared_ptr<I_Layer>& newLayer) {
-	const auto it = FindLayer(_layers, oldLayer);
+	const auto it = FindLayer(_layers.begin(), _layers.end(), oldLayer);
 	if (it == _layers.end()) [[unlikely]]
 		return;
 
 	// Copied, not moved out of the slot: OnDetach runs arbitrary layer code that may walk the stack, and a moved-from
 	// entry would leave a null shared_ptr in it. The copy also keeps the old layer alive until this function returns,
 	// so it is destroyed (and unsubscribes) only after the new one is attached.
-	const auto detached = *it;
+	const auto& detached = *it;
 	detached->OnDetach();
 
 	*it = newLayer;
