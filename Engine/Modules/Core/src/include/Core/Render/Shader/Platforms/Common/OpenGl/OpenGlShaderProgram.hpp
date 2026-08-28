@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-28
 //
 
 #pragma once
@@ -35,7 +35,7 @@ public:
 	 * @brief Default constructor for OpenGlShaderProgram
 	 * @details Creates a new OpenGL shader program by calling glCreateProgram and initializes the program ID. This constructor sets up an empty shader program that can have shaders attached to it before linking.
 	 */
-	OpenGlShaderProgram();
+	OpenGlShaderProgram() = default;
 
 	/**
 	 * @brief Constructs an OpenGlShaderProgram with a list of shaders
@@ -112,7 +112,7 @@ public:
 	[[nodiscard]] bool IsUsed() const override;
 
 private:
-	uint32_t _programId;
+	uint32_t _programID = 0;
 	std::vector<OpenGlShader> _shaders; ///< Owned shader objects; cleared after linking
 };
 

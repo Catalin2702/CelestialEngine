@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-28
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -18,26 +18,22 @@
 
 namespace CE::Core {
 
-OpenGlShaderProgram::OpenGlShaderProgram() {
-	_programId = 0;
-}
-
 OpenGlShaderProgram::OpenGlShaderProgram(const std::initializer_list<OpenGlShader> shaders): _shaders(shaders) {
-	_programId = glCreateProgram();
+	_programID = glCreateProgram();
 	for (const auto& shader : _shaders) {
-		glAttachShader(_programId, shader.GetShaderId());
+		glAttachShader(_programID, shader.GetShaderId());
 	}
 }
 
-OpenGlShaderProgram::OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept: _programId(other._programId), _shaders(std::move(other._shaders)) {
-	other._programId = 0;
+OpenGlShaderProgram::OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept: _programID(other._programID), _shaders(std::move(other._shaders)) {
+	other._programID = 0;
 }
 
 OpenGlShaderProgram& OpenGlShaderProgram::operator=(const OpenGlShaderProgram& other) {
 	if (this == &other) [[unlikely]]
 		return *this;
 
-	_programId = other._programId;
+	_programID = other._programID;
 	_shaders = other._shaders;
 	return *this;
 }
@@ -46,9 +42,9 @@ OpenGlShaderProgram& OpenGlShaderProgram::operator=(OpenGlShaderProgram&& other)
 	if (this == &other) [[unlikely]]
 		return *this;
 
-	_programId = other._programId;
+	_programID = other._programID;
 	_shaders = std::move(other._shaders);
-	other._programId = 0;
+	other._programID = 0;
 	return *this;
 }
 
@@ -57,15 +53,15 @@ OpenGlShaderProgram::~OpenGlShaderProgram() {
 
 	// If Link() was never called, shaders may still be attached; detach them before deleting.
 	for (const auto& shader : _shaders)
-		glDetachShader(_programId, shader.GetShaderId());
+		glDetachShader(_programID, shader.GetShaderId());
 
 	_shaders.clear();
 
-	glDeleteProgram(_programId);
+	glDeleteProgram(_programID);
 }
 
 void OpenGlShaderProgram::Bind() const {
-	glUseProgram(_programId);
+	glUseProgram(_programID);
 }
 
 void OpenGlShaderProgram::Unbind() const {
@@ -73,25 +69,25 @@ void OpenGlShaderProgram::Unbind() const {
 }
 
 void OpenGlShaderProgram::Link() {
-	glLinkProgram(_programId);
+	glLinkProgram(_programID);
 
 	GLint isLinked = 0;
-	glGetProgramiv(_programId, GL_LINK_STATUS, &isLinked);
+	glGetProgramiv(_programID, GL_LINK_STATUS, &isLinked);
 	if (isLinked == GL_FALSE) [[unlikely]] {
 		GLint maxLength = 0;
-		glGetProgramiv(_programId, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &maxLength);
 
 		if (maxLength <= 0) [[unlikely]] {
 			CE_CORE_ERROR("OpenGlShaderProgram::Link: Failed to link shader program: No info log available");
-			glDeleteProgram(_programId);
+			glDeleteProgram(_programID);
 			_shaders.clear();
 			throw std::runtime_error("OpenGlShaderProgram::Link: Failed to link shader program: No info log available");
 		}
 
 		std::vector<char> infoLog(maxLength);
-		glGetProgramInfoLog(_programId, maxLength, &maxLength, &infoLog[0]);
+		glGetProgramInfoLog(_programID, maxLength, &maxLength, &infoLog[0]);
 
-		glDeleteProgram(_programId);
+		glDeleteProgram(_programID);
 		_shaders.clear();
 
 		CE_CORE_ERROR("OpenGlShaderProgram::Link: Failed to link shader program: {0}", infoLog.data());
@@ -100,7 +96,7 @@ void OpenGlShaderProgram::Link() {
 
 	// Detach and delete shader objects: once the program is linked their source is no longer needed.
 	for (const auto& shader : _shaders)
-		glDetachShader(_programId, shader.GetShaderId());
+		glDetachShader(_programID, shader.GetShaderId());
 
 	_shaders.clear();
 }
@@ -119,7 +115,7 @@ void OpenGlShaderProgram::AddShader(OpenGlShader&& shader) {
 		CE_CORE_WARN("OpenGlShaderProgram::AddShader: Shader is already added to the shader program. Ignoring duplicate.");
 		return;
 	}
-	glAttachShader(_programId, shader.GetShaderId());
+	glAttachShader(_programID, shader.GetShaderId());
 	_shaders.emplace_back(shader); // takes ownership
 }
 
@@ -134,25 +130,25 @@ void OpenGlShaderProgram::RemoveShader(const OpenGlShader& shader) {
 	}
 
 	if (const auto it = std::ranges::find_if(_shaders, [shader](const auto& s) { return s.GetShaderId() == shader.GetShaderId(); }); it != _shaders.end()) [[likely]] {
-		glDetachShader(_programId, it->GetShaderId());
+		glDetachShader(_programID, it->GetShaderId());
 		_shaders.erase(it);
 	}
 }
 
 uint32_t OpenGlShaderProgram::GetProgramId() const {
-	return _programId;
+	return _programID;
 }
 
 bool OpenGlShaderProgram::IsLinked() const {
 	GLint isLinked = 0;
-	glGetProgramiv(_programId, GL_LINK_STATUS, &isLinked);
+	glGetProgramiv(_programID, GL_LINK_STATUS, &isLinked);
 	return isLinked == GL_TRUE;
 }
 
 bool OpenGlShaderProgram::IsUsed() const {
 	GLint currentProgram = 0;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-	return currentProgram == static_cast<GLint>(_programId);
+	return currentProgram == static_cast<GLint>(_programID);
 }
 
 }
