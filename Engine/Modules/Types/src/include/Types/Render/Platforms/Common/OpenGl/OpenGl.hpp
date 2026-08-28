@@ -34,6 +34,18 @@ enum class BufferBit: uint32_t {
  */
 CE_TYPES_API int ToInt(BufferBit bit);
 
+constexpr BufferBit operator & (BufferBit x, BufferBit y) {
+	return static_cast<BufferBit>(static_cast<uint32_t>(x) & static_cast<uint32_t>(y));
+}
+
+constexpr BufferBit operator | (BufferBit x, BufferBit y) {
+	return static_cast<BufferBit>(static_cast<uint32_t>(x) | static_cast<uint32_t>(y));
+}
+
+constexpr BufferBit operator ^ (BufferBit x, BufferBit y) {
+	return static_cast<BufferBit>(static_cast<uint32_t>(x) ^ static_cast<uint32_t>(y));
+}
+
 }
 
 #endif //CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP

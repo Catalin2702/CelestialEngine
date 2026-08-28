@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-28
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -94,26 +94,6 @@ OpenGlContext& OpenGlContext::operator=(OpenGlContext&& other) noexcept {
 
 OpenGlContext::~OpenGlContext() {
 	openGlContextEventDispatcher.DispatchContextWillShutdown();
-}
-
-void OpenGlContext::Init() {
-	// assert(_window && "OpenGlContext requires a valid GLFW window pointer");
-	// glfwMakeContextCurrent(_window);
-	//
-	// if (const int gladStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)); not gladStatus) [[unlikely]] {
-	// 	CE_CORE_ERROR("OpenGlContext::Init: Could not load GLAD");
-	// 	throw std::runtime_error("OpenGlContext::Init: Could not load GLAD");
-	// }
-	//
-	// // The context owns the framebuffer-resize signal (backing pixels), fired to the event hub as a WindowResize. The window
-	// // keeps the separate window-size callback (points) for its own cached size. Resolve the context through the running
-	// // application, mirroring how GlfwWindow reaches the app from its own C callbacks.
-	// glfwSetFramebufferSizeCallback(_window, [](GLFWwindow*, const int width, const int height) {
-	// 	const auto& context = dynamic_cast<GlfwApplication&>(I_Application::StGet()).GetOpenGlContext();
-	// 	context.openGlContextEventDispatcher.DispatchResizeEvent(width, height);
-	// });
-	//
-	// openGlContextEventDispatcher.DispatchContextInitialized();
 }
 
 void OpenGlContext::SwapBuffers() const {

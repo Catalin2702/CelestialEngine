@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-28
 //
 
 #pragma once
@@ -124,12 +124,7 @@ public:
 	OpenGlContext& operator=(OpenGlContext&& other) noexcept;
 
 public:
-	/**
-	 * @brief Initializes the OpenGL context
-	 * @details Pure virtual method that initializes the OpenGL context, sets up necessary resources,
-	 *			and prepares it for rendering. Must be implemented by derived classes.
-	 */
-	void Init() override;
+	void Init() override {}
 
 	/**
 	 * @brief Swaps the front and back buffers
