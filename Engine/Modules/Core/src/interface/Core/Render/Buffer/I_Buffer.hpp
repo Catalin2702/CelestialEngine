@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-28
 //
 
 #pragma once
@@ -121,11 +121,11 @@ public:
 	/**
 	 * @brief Makes the buffer active for subsequent render commands
 	 */
-	virtual void Bind() const = 0;
+	virtual void BindBuffer() const = 0;
 	/**
 	 * @brief Deactivates the buffer
 	 */
-	virtual void Unbind() const = 0;
+	virtual void UnbindBuffer() const = 0;
 };
 
 class I_VertexBuffer: public I_Buffer {
@@ -133,7 +133,11 @@ public:
 	virtual void SetLayout(const BufferLayout& layout) = 0;
 	virtual void SetLayout(BufferLayout&& layout) = 0;
 
+public:
 	[[nodiscard]] virtual const BufferLayout& GetLayout() const = 0;
+
+public:
+	virtual void BindLayout() = 0;
 };
 
 class I_IndexBuffer: public I_Buffer {

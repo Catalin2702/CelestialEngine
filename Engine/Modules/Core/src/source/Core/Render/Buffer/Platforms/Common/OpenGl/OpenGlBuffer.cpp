@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-28
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Utility/Range/Enumerate.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <ranges>
 #include <glad/glad.h>
 
@@ -78,16 +79,17 @@ OpenGlVertexBuffer::~OpenGlVertexBuffer() {
 	glDeleteBuffers(1, &this->_renderID);
 }
 
-void OpenGlVertexBuffer::Bind() const {
+void OpenGlVertexBuffer::BindBuffer() const {
 	glBindBuffer(GL_ARRAY_BUFFER, this->_renderID);
 }
 
-void OpenGlVertexBuffer::Unbind() const {
+void OpenGlVertexBuffer::UnbindBuffer() const {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
-	_layout = layout;
+void OpenGlVertexBuffer::BindLayout() {
+	assert(!_layout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
+
 	const auto stride = static_cast<GLsizei>(_layout.GetStride());
 
 	for (auto const [index, element]: Utility::Enumerate(_layout)) {
@@ -101,6 +103,10 @@ void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
 			OpenGlBufferOffset(element.offset)
 		);
 	}
+}
+
+void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
+	_layout = layout;
 }
 
 void OpenGlVertexBuffer::SetLayout(BufferLayout&& layout) {
@@ -144,11 +150,11 @@ OpenGlIndexBuffer::~OpenGlIndexBuffer() {
 	glDeleteBuffers(1, &this->_renderID);
 }
 
-void OpenGlIndexBuffer::Bind() const {
+void OpenGlIndexBuffer::BindBuffer() const {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_renderID);
 }
 
-void OpenGlIndexBuffer::Unbind() const {
+void OpenGlIndexBuffer::UnbindBuffer() const {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-28
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -259,16 +259,17 @@ void GlfwApplication::_InitRenderer() {
 	constexpr uint32_t indices[indexCount] = { 0, 1, 2 };
 
 	_vertexBuffer = OpenGlVertexBuffer(vertices, vertexCount);
-	_vertexBuffer.Bind();
+	_vertexBuffer.BindBuffer();
 
 	_indexBuffer = OpenGlIndexBuffer(indices, indexCount);
-	_indexBuffer.Bind();
+	_indexBuffer.BindBuffer();
 
 	const BufferLayout layout = {
 		{ShaderDataType::Float3, "inputPosition"},
 		{ShaderDataType::Float4, "inputColor"}
 	};
 	_vertexBuffer.SetLayout(layout);
+	_vertexBuffer.BindLayout();
 
 	_shaderProgram = OpenGlShaderProgram({{
 		OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),
