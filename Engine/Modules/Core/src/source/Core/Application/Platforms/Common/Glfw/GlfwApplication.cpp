@@ -151,8 +151,8 @@ void GlfwApplication::Tick(const float deltaTime) {
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color);
 
 	_shaderProgram.Bind();
-	glBindVertexArray(_vertexArrayId);
-	glDrawElements(GL_TRIANGLES, static_cast<int>(_indexBuffer.GetCount()), GL_UNSIGNED_INT, nullptr);
+	_vertexArray.Bind();
+	glDrawElements(GL_TRIANGLES, static_cast<int>(_vertexArray.GetIndexBuffer()->GetCount()), GL_UNSIGNED_INT, nullptr);
 
 	for (const auto& layer: _layerStack)
 		layer->OnUpdate();
@@ -245,31 +245,38 @@ void GlfwApplication::_InitRenderer() {
 		EventDelegate<bool>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
 
-	glGenVertexArrays(1, &_vertexArrayId);
-	glBindVertexArray(_vertexArrayId);
-
-	constexpr uint32_t vertexCount = 3 * 7;
-	constexpr float vertices[vertexCount] = {
+	// Both shapes live in one vertex buffer: a vertex array feeds every attribute slot in lockstep, one element per vertex,
+	// so two buffers would mean two attributes of the same mesh, not two meshes. Separate figures are separate index ranges
+	// over shared vertices instead.
+	constexpr uint32_t floatsPerVertex = 3 + 4; // Float3 position + Float4 color
+	constexpr uint32_t vertexCount = 3 + 4;     // triangle + square
+	constexpr float vertices[vertexCount * floatsPerVertex] = {
+		// triangle, on the left
 		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+
+		// square, on the right
+		 -0.75f, -0.75f, 0.0f,  1.0f, 1.0f, 0.0f, 1.0f,
+		 0.75f, -0.75f, 0.0f,  0.0f, 1.0f, 1.0f, 1.0f,
+		 0.75f,  0.75f, 0.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		 -0.75f,  0.75f, 0.0f,  1.0f, 1.0f, 1.0f, 1.0f,
 	};
 
-	constexpr uint32_t indexCount = 3;
-	constexpr uint32_t indices[indexCount] = { 0, 1, 2 };
-
-	_vertexBuffer = OpenGlVertexBuffer(vertices, vertexCount);
-	_vertexBuffer.BindBuffer();
-
-	_indexBuffer = OpenGlIndexBuffer(indices, indexCount);
-	_indexBuffer.BindBuffer();
-
-	const BufferLayout layout = {
-		{ShaderDataType::Float3, "inputPosition"},
-		{ShaderDataType::Float4, "inputColor"}
+	// Indices are absolute positions in the buffer above, so the square's start at 3, right after the triangle's vertices.
+	constexpr uint32_t triangleIndexCount = 3;
+	constexpr uint32_t squareIndexCount = 6;
+	constexpr uint32_t indices[triangleIndexCount + squareIndexCount] = {
+		3, 4, 5, 5, 6, 3, // square, as two triangles sharing the 5-3 diagonal
+		0, 1, 2,          // triangle
 	};
-	_vertexBuffer.SetLayout(layout);
-	_vertexBuffer.BindLayout();
+
+	_vertexArray = OpenGlVertexArray();
+	_vertexArray.SetIndexBuffer(std::make_shared<OpenGlIndexBuffer>(indices, triangleIndexCount + squareIndexCount));
+	_vertexArray.AddVertexBuffer(std::make_shared<OpenGlVertexBuffer>(
+		vertices, vertexCount * floatsPerVertex,
+		BufferLayout{{ShaderDataType::Float3, "inputPosition"}, {ShaderDataType::Float4, "inputColor"}}
+	));
 
 	_shaderProgram = OpenGlShaderProgram({{
 		OpenGlShader(Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl"), Types::ShaderType::Vertex),

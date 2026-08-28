@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-25
+# Updated: 2026-08-28
 #
 
 set(APPLICATION_HEADERS
@@ -42,6 +42,7 @@ set(MAINHUB_HEADERS
 set(RENDER_HEADERS
 	# Buffer
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
+	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
 	# Context
 	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
@@ -90,6 +91,7 @@ set(MAINHUB_INTERFACES
 set(RENDER_INTERFACES
 	# Buffer
 	src/interface/Core/Render/Buffer/I_Buffer.hpp
+	src/interface/Core/Render/Buffer/I_VertexArray.hpp
 
 	# Context
 	src/interface/Core/Render/Context/I_Context.hpp
@@ -140,6 +142,7 @@ set(RENDER_SOURCES
 	# Buffer
 	src/source/Core/Render/Buffer/Buffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
+	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
 
 	# Context
 	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp

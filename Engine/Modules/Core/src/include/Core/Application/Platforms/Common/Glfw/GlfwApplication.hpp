@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-28
 //
 
 #pragma once
@@ -16,7 +16,7 @@
 
 #include "Core/Application/I_Application.hpp"
 #include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
-#include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
+#include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -297,13 +297,10 @@ private:
 	GlfwWindow _window;		///< The application window, owned by value
 	OpenGlContext _context;	///< The OpenGL rendering context, owned by value
 
-	OpenGlVertexBuffer _vertexBuffer;
-	OpenGlIndexBuffer _indexBuffer;
+	OpenGlVertexArray _vertexArray;
 	OpenGlShaderProgram _shaderProgram; ///< Pointer to the OpenGL shader program used for rendering
 
 	std::weak_ptr<ImGuiOpenGlLayer> _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
-
-	uint32_t _vertexArrayId = 0; ///< OpenGL buffer IDs for vertex array, vertex buffer, and index buffer
 
 	std::array<uint32_t, _Count> _eventHubHandlers{}; ///< Handles of the app-level hub subscriptions, indexed by EventHubSubscription
 };

@@ -32,6 +32,9 @@ class CE_CORE_API OpenGlVertexBuffer final: public I_VertexBuffer {
 public:
 	OpenGlVertexBuffer(const float* vertices, size_t count);
 
+	OpenGlVertexBuffer(const float* vertices, size_t count, const BufferLayout& layout);
+	OpenGlVertexBuffer(const float* vertices, size_t count, BufferLayout&& layout);
+
 	OpenGlVertexBuffer() = default;
 	OpenGlVertexBuffer(const OpenGlVertexBuffer&) = delete;
 	OpenGlVertexBuffer(OpenGlVertexBuffer&& other) noexcept;
@@ -45,7 +48,7 @@ public:
 public:
 	void BindBuffer() const override;
 	void UnbindBuffer() const override;
-	void BindLayout() override;
+	[[nodiscard]] uint32_t BindLayout(uint32_t firstAttributeIndex) override;
 
 	void SetLayout(const BufferLayout& layout) override;
 	void SetLayout(BufferLayout&& layout) override;

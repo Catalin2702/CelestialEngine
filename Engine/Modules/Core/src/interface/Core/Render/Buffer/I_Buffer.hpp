@@ -12,12 +12,15 @@
 #ifndef CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
 #define CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
 
+#include "Define/DynamicLinker.hpp"
+
 #include <string_view>
 #include <vector>
 
+
 namespace CE::Core {
 
-enum class ShaderDataType: uint8_t {
+enum class CE_CORE_API ShaderDataType: uint8_t {
 	None = 0,
 	Float,
 	Float2,
@@ -73,7 +76,7 @@ constexpr uint32_t ShaderDataTypeComponentCount(const ShaderDataType type) {
 	}
 }
 
-struct BufferElement {
+struct CE_CORE_API BufferElement {
 	BufferElement(const ShaderDataType type, const char* name, const bool normalized = false):
 		type(type), size(ShaderDataTypeSize(type)), componentCount(ShaderDataTypeComponentCount(type)), normalized(normalized), name(name) {}
 
@@ -137,7 +140,12 @@ public:
 	[[nodiscard]] virtual const BufferLayout& GetLayout() const = 0;
 
 public:
-	virtual void BindLayout() = 0;
+	/**
+	 * @brief Records this buffer's attribute layout into the currently bound vertex array
+	 * @param firstAttributeIndex The first attribute slot to use, so several buffers can share one vertex array
+	 * @return The number of attribute slots consumed, i.e. the first free slot after this buffer
+	 */
+	[[nodiscard]] virtual uint32_t BindLayout(uint32_t firstAttributeIndex) = 0;
 };
 
 class I_IndexBuffer: public I_Buffer {
