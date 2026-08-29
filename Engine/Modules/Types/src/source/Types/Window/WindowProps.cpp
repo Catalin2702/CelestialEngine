@@ -4,17 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Types/Window/WindowProps.hpp"
 
 
 namespace CE::Types {
-
-bool HasAnyFlags(const WindowApi x, const WindowApi y) {
-	return (x & y) != WindowApi::None;
-}
 
 WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const unsigned int refreshRate, const GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
 	title(title), width(width), height(height), VSync(VSync), refreshRate(refreshRate), graphicsApi(graphicsApi), windowApi(windowApi) {}

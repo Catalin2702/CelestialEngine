@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Utility/Time/Chronometer.hpp"
@@ -40,8 +40,8 @@ std::chrono::nanoseconds Chronometer::GetElapsed() const {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(end - _start);
 }
 
-double Chronometer::GetElapsedMilliseconds() const {
-	return std::chrono::duration<double, std::milli>(GetElapsed()).count();
+f64 Chronometer::GetElapsedMilliseconds() const {
+	return std::chrono::duration<f64, std::milli>(GetElapsed()).count();
 }
 
 void Chronometer::PrintResult() const {

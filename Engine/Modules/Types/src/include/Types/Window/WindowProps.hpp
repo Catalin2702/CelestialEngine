@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -15,9 +15,9 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Type.hpp"
 #include "Types/Render/Render.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <format>
-#include <functional>
 #include <string>
 #include <string_view>
 
@@ -34,7 +34,7 @@ namespace CE::Types {
  * @details Defines the windowing APIs that can be used for creating and managing windows.
  *			Includes options for GLFW (cross-platform), Win32 (Windows), X11 (Linux), Wayland (Linux) and Cocoa (macOS).
  */
-enum class WindowApi: uint8_t {
+enum class WindowApi: u8 {
 	None = 0,											///< No window API specified
 	GLFW = BIT(0),										///< GLFW windowing library
 	Cocoa = BIT(1),										///< Cocoa (macOS)
@@ -44,18 +44,20 @@ enum class WindowApi: uint8_t {
 };
 
 constexpr WindowApi operator & (WindowApi x, WindowApi y) {
-	return static_cast<WindowApi>(static_cast<uint8_t>(x) & static_cast<uint8_t>(y));
+	return static_cast<WindowApi>(static_cast<u8>(x) & static_cast<u8>(y));
 }
 
 constexpr WindowApi operator | (WindowApi x, WindowApi y) {
-	return static_cast<WindowApi>(static_cast<uint8_t>(x) | static_cast<uint8_t>(y));
+	return static_cast<WindowApi>(static_cast<u8>(x) | static_cast<u8>(y));
 }
 
 constexpr WindowApi operator ^ (WindowApi x, WindowApi y) {
-	return static_cast<WindowApi>(static_cast<uint8_t>(x) ^ static_cast<uint8_t>(y));
+	return static_cast<WindowApi>(static_cast<u8>(x) ^ static_cast<u8>(y));
 }
 
-CE_TYPES_API bool HasAnyFlags(WindowApi x, WindowApi y);
+constexpr bool HasAnyFlags(const WindowApi x, const WindowApi y) {
+	return (x & y) != WindowApi::None;
+}
 
 /**
  * @struct WindowProps

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 
 #include "Tools/Log/Log.hpp"
+#include "Types/Var/Vars.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 
 #include <cassert>
@@ -172,7 +173,7 @@ private:
 template <typename... Args>
 class MulticastDispatcher {
 public:
-	using Handle = uint32_t;
+	using Handle = u32;
 	using DelegateType = EventDelegate<Args...>;
 
 public:

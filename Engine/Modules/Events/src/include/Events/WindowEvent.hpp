@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -61,7 +61,7 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(WindowResize)
-	EVENT_CLASS_CATEGORY(EventCategoryWindow)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 
 private:
 	unsigned int _width, _height;					///< New window dimensions in pixels
@@ -86,7 +86,7 @@ public:
 
 public:
 	EVENT_CLASS_TYPE(WindowClose)
-	EVENT_CLASS_CATEGORY(EventCategoryWindow)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 };
 
 /**
@@ -120,7 +120,7 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(WindowFocus)
-	EVENT_CLASS_CATEGORY(EventCategoryWindow)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 
 private:
 	bool _focused;									///< True when the window gained input focus, false when it lost it

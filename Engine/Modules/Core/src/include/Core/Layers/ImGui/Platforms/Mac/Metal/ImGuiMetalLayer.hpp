@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -17,9 +17,9 @@
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <array>
-#include <cstdint>
 #include <functional>
 #include <optional>
 #include <semaphore>
@@ -81,7 +81,7 @@ public:
 	 * @brief Starts a new ImGui frame on the Metal backend
 	 * @param deltaTime Time elapsed since the previous frame, fed to the ImGui IO
 	 */
-	void Begin(float deltaTime) override;
+	void Begin(f32 deltaTime) override;
 
 	/**
 	 * @brief Finalizes the ImGui frame and encodes its draw data into the current Metal render pass
@@ -165,7 +165,7 @@ private:
 
 	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
 
-	std::array<uint32_t, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

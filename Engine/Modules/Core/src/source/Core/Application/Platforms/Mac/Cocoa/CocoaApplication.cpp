@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -139,7 +139,7 @@ void CocoaApplication::Quit() {
 	I_Application::SetRunning(false);
 }
 
-void CocoaApplication::Tick(const float deltaTime) {
+void CocoaApplication::Tick(const f32 deltaTime) {
 	applicationEventHandler.DispatchTickEvent();
 
 	for (const auto& layer: _layerStack)
@@ -358,7 +358,7 @@ void CocoaApplication::SetEventHubDispatcher() {
 
 #pragma region RenderContextEvents
 	_context.metalContextEventDispatcher.metalContextLifeCycleEvents.onResizeDispatcher.Bind(
-		EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveContextResizeViewEvent>(&eventHubDispatcher)
+		EventDelegate<f64, f64>::FromMethod<hub, &hub::ReceiveContextResizeViewEvent>(&eventHubDispatcher)
 	);
 	_context.metalContextEventDispatcher.metalContextLifeCycleEvents.onVSyncChangedDispatcher.Bind(
 		EventDelegate<bool>::FromMethod<hub, &hub::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)

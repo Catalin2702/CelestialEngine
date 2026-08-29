@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/ApplicationEvent.hpp>
@@ -44,9 +44,9 @@ TEST_F(ApplicationEventTest, AppTickEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(ApplicationEventTest, AppTickEvent_IsInCategory_ApplicationCategory) {
 	const AppTickEvent event;
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryApplication));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryWindow));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryApplication));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryWindow));
 }
 
 // ============================================================================
@@ -70,7 +70,7 @@ TEST_F(ApplicationEventTest, AppUpdateEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(ApplicationEventTest, AppUpdateEvent_IsInCategory_ApplicationCategory) {
 	const AppUpdateEvent event;
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryApplication));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryApplication));
 }
 
 // ============================================================================
@@ -94,7 +94,7 @@ TEST_F(ApplicationEventTest, AppRenderEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(ApplicationEventTest, AppRenderEvent_IsInCategory_ApplicationCategory) {
 	const AppRenderEvent event;
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryApplication));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryApplication));
 }
 
 // ============================================================================

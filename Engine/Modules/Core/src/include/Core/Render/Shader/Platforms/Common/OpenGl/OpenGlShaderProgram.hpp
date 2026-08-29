@@ -95,9 +95,9 @@ public:
 public:
 	/**
 	 * @brief Gets the unique identifier for the shader program
-	 * @return uint32_t Unique identifier for the shader program (e.g., OpenGL program ID)
+	 * @return u32 Unique identifier for the shader program (e.g., OpenGL program ID)
 	 */
-	[[nodiscard]] uint32_t GetProgramId() const override;
+	[[nodiscard]] u32 GetProgramId() const override;
 
 	/**
 	 * @brief Checks if the shader program is successfully linked
@@ -112,7 +112,7 @@ public:
 	[[nodiscard]] bool IsUsed() const override;
 
 private:
-	uint32_t _programID = 0;
+	u32 _programID = 0;
 	std::vector<OpenGlShader> _shaders; ///< Owned shader objects; cleared after linking
 };
 

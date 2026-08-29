@@ -94,7 +94,7 @@ void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
 	_eventHubHandles = {};
 }
 
-void ImGuiOpenGlLayer::Begin(const float deltaTime) {
+void ImGuiOpenGlLayer::Begin(const f32 deltaTime) {
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
@@ -244,7 +244,7 @@ void ImGuiOpenGlLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 
 void ImGuiOpenGlLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()), static_cast<float>(event.GetHeight()));
+	io.DisplaySize = ImVec2(static_cast<f32>(event.GetWidth()), static_cast<f32>(event.GetHeight()));
 
 	const auto [xScale, yScale] = _context->get().GetContentScale();
 	io.DisplayFramebufferScale = ImVec2(xScale, yScale);

@@ -252,7 +252,7 @@ public:
 	/**
 	 * @brief Translates the raw context resize view callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveContextResizeViewEvent(double width, double height);
+	void ReceiveContextResizeViewEvent(f64 width, f64 height);
 #pragma endregion
 
 #pragma region ReceiveWindowEvent

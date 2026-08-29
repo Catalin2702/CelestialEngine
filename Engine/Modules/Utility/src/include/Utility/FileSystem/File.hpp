@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,8 +13,8 @@
 #define CE_UTILITY_FILESYSTEM_FILE_HPP
 
 #include "Define/DynamicLinker.hpp"
-
 #include "Types/FileSystem/File.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <filesystem>
 #include <string>
@@ -124,14 +124,14 @@ public:
 	 * @param content The new content to set for the file as a byte array
 	 * @details Updates the content of the File object with the provided byte array. This does not automatically save the file to disk; you must call Save() to persist changes.
 	 */
-	void SetContent(const std::vector<uint8_t>& content);
+	void SetContent(const std::vector<u8>& content);
 
 	/**
 	 * @brief Sets the content of the file as a byte array using move semantics
 	 * @param content The new content to set for the file as a byte array, passed as an rvalue reference
 	 * @details Updates the content of the File object with the provided byte array using move semantics to avoid unnecessary copying. This does not automatically save the file to disk; you must call Save() to persist changes.
 	 */
-	void SetContent(std::vector<uint8_t>&& content);
+	void SetContent(std::vector<u8>&& content);
 
 	/**
 	 * @brief Enables or disables auto-saving of the file
@@ -152,11 +152,11 @@ public:
 
 	/**
 	 * @brief Gets the content of the file as a byte array
-	 * @return std::vector<uint8_t> The content of the file as a byte array
+	 * @return std::vector<u8> The content of the file as a byte array
 	 * @details Returns the content of the file as a byte array. If the content is stored as a string, it will be converted to a byte array before being returned.
 	 *			If the file content has not been loaded yet and lazy loading is enabled, it will be loaded from disk before returning the content.
 	 */
-	[[nodiscard]] const std::vector<uint8_t>& GetContentBytesLazy();
+	[[nodiscard]] const std::vector<u8>& GetContentBytesLazy();
 
 	/**
 	 * @brief Gets the content of the file as a string
@@ -168,11 +168,11 @@ public:
 
 	/**
 	 * @brief Gets the content of the file as a byte array
-	 * @return std::vector<uint8_t> The content of the file as a byte array
+	 * @return std::vector<u8> The content of the file as a byte array
 	 * @details Returns the content of the file as a byte array. If the content is stored as a string, it will be converted to a byte array before being returned.
 	 *			This method does not perform lazy loading; if the content has not been loaded yet, it will return an empty byte array
 	 */
-	[[nodiscard]] const std::vector<uint8_t>& GetContentBytes() const;
+	[[nodiscard]] const std::vector<u8>& GetContentBytes() const;
 
 	/**
 	 * @brief Gets the full file path
@@ -236,7 +236,7 @@ public:
 private:
 	fs::path _path;									///< File path
 
-	std::vector<uint8_t> _content;					///< File content as a byte array
+	std::vector<u8> _content;					///< File content as a byte array
 
 	Types::FileLoadState _loadState = Types::FileLoadState::NotLoaded;		///< Load state of the file (e.g., NotLoaded, Loaded, LazyLoading)
 	bool _autoSave = false;							///< Flag indicating whether the file should be automatically saved to disk when modified

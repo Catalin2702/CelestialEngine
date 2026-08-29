@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/I_Event.hpp>
@@ -62,9 +62,9 @@ TEST_F(RenderEventTest, VSyncEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(RenderEventTest, VSyncEvent_IsInCategory_RenderCategory) {
 	const VSyncEvent event{true};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryRender));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryWindow));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryApplication));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryRender));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryApplication));
 }
 
 /**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-08-29
 //
 
 #include "Events/MouseEvent.hpp"
@@ -13,17 +13,17 @@
 
 namespace CE::Events {
 
-I_MouseMovedEvent::I_MouseMovedEvent(const float x, const float y, const bool isMutable):
+I_MouseMovedEvent::I_MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
 	I_Event(isMutable), _x(x), _y(y)  {}
 
-MouseMovedEvent::MouseMovedEvent(const float x, const float y, const bool isMutable):
+MouseMovedEvent::MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
 	I_MouseMovedEvent(x, y, isMutable) {}
 
 std::string MouseMovedEvent::ToString() const {
 	return std::format("{0}: {1}, {2}", GetName(), _x, _y);
 }
 
-MouseWheelScrolledEvent::MouseWheelScrolledEvent(const float xOffset, const float yOffset, const bool isMutable):
+MouseWheelScrolledEvent::MouseWheelScrolledEvent(const f32 xOffset, const f32 yOffset, const bool isMutable):
 	I_Event(isMutable), _xOffset(xOffset), _yOffset(yOffset) {}
 
 std::string MouseWheelScrolledEvent::ToString() const {
@@ -47,7 +47,7 @@ std::string MouseButtonReleasedEvent::ToString() const {
 	return std::format("{0}: {1}", GetName(), _button);
 }
 
-MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const float x, const float y, const bool isMutable):
+MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const f32 x, const f32 y, const bool isMutable):
 	I_MouseMovedEvent(x, y, isMutable), _button(button)  {}
 
 std::string MouseDraggedEvent::ToString() const {

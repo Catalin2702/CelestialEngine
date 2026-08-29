@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,12 +13,11 @@
 #define CE_CORE_RENDER_SHADER_OPENGLSHADERCOMPILER_HPP
 
 #include "Define/DynamicLinker.hpp"
-
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Types {
-	enum class ShaderType: uint8_t;
+	enum class ShaderType: u8;
 }
 
 namespace CE::Core {
@@ -33,11 +32,11 @@ public:
 	 * @brief Compiles GLSL source code into an OpenGL shader object
 	 * @param shader Null-terminated GLSL source code
 	 * @param type The shader stage to compile (vertex, fragment, ...)
-	 * @return uint32_t The OpenGL shader object id, or 0 on compilation failure
+	 * @return u32 The OpenGL shader object id, or 0 on compilation failure
 	 * @details Compilation errors are logged; the caller owns the returned shader object and must delete it
 	 *			(or attach it to a program) once linked.
 	 */
-	static uint32_t Compile(const char* shader, Types::ShaderType type);
+	static u32 Compile(const char* shader, Types::ShaderType type);
 };
 
 }

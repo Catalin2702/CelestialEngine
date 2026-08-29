@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Core/Layers/I_Layer.hpp>
@@ -41,7 +41,7 @@ public:
 
 	void OnRender() const override { ++renderCount; }
 
-	void Begin(const float deltaTime) override {
+	void Begin(const f32 deltaTime) override {
 		++beginCount;
 		lastDeltaTime = deltaTime;
 	}
@@ -61,7 +61,7 @@ public:
 	mutable int renderCount = 0;
 	int beginCount = 0;
 	int endCount = 0;
-	float lastDeltaTime = 0.0f;
+	f32 lastDeltaTime = 0.0f;
 };
 
 /**
@@ -75,7 +75,7 @@ public:
 	void OnDetach() override {}
 	void OnUpdate() override {}
 	void OnRender() const override {}
-	void Begin(float) override {}
+	void Begin(f32) override {}
 	void End() override {}
 };
 

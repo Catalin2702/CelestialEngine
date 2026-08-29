@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Utility/FileSystem/File.hpp>
@@ -376,7 +376,7 @@ TEST_F(FileSystemTest, RelativePath_AutoSaveWritesBackToTheRootDirectory) {
  */
 TEST_F(FileSystemTest, SetContent_BinaryContent_SurvivesRoundTrip) {
 	const auto path = PathFor("binary.bin");
-	const std::vector<uint8_t> bytes{0x00, 0x01, 0x7F, 0x80, 0xFF};
+	const std::vector<u8> bytes{0x00, 0x01, 0x7F, 0x80, 0xFF};
 
 	File file = FileSystem::StCreate(path);
 	file.SetContent(bytes);

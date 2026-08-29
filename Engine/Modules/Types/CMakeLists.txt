@@ -4,12 +4,15 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-08-29
 #
 
 set(HEADERS
 	# Build
 	src/include/Types/Build/Build.hpp
+
+	# FileSystem
+	src/include/Types/FileSystem/File.hpp
 
 	# KeyCode
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
@@ -20,12 +23,13 @@ set(HEADERS
 	src/include/Types/Render/Shader.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
 
+	# Var
+	src/include/Types/Var/Vars.hpp
+
 	# Window
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
 
-	# FileSystem
-	src/include/Types/FileSystem/File.hpp
 
 	# Main
 	src/include/Types/Types.hpp

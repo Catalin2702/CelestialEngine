@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/I_Event.hpp>
 #include <Events/MouseEvent.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
+#include <Types/Var/Vars.hpp>
 
 #include <gtest/gtest.h>
 
@@ -57,10 +58,10 @@ TEST_F(MouseEventTest, MouseButtonPressedEvent_GetEventType_ReturnsCorrectType) 
 TEST_F(MouseEventTest, MouseButtonPressedEvent_IsInCategory_MouseAndInputCategories) {
 	const MouseButtonPressedEvent event{MouseButtonCode::Left};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouseButton));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryKeyboard));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouseButton));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryKeyboard));
 }
 
 /**
@@ -106,8 +107,8 @@ TEST_F(MouseEventTest, MouseButtonReleasedEvent_GetEventType_ReturnsCorrectType)
  * @brief Test that MouseMovedEvent stores mouse position correctly
  */
 TEST_F(MouseEventTest, MouseMovedEvent_Constructor_StoresPosition) {
-	constexpr float x = 150.5f;
-	constexpr float y = 200.3f;
+	constexpr auto x = 150.5_f32;
+	constexpr auto y = 200.3_f32;
 
 	const MouseMovedEvent event{x, y};
 
@@ -119,7 +120,7 @@ TEST_F(MouseEventTest, MouseMovedEvent_Constructor_StoresPosition) {
  * @brief Test that MouseMovedEvent has correct event type and name
  */
 TEST_F(MouseEventTest, MouseMovedEvent_GetEventType_ReturnsCorrectType) {
-	const MouseMovedEvent event{100.0f, 200.0f};
+	const MouseMovedEvent event{100.0_f32, 200.0_f32};
 
 	EXPECT_EQ(event.GetEventType(), EventType::MouseMoved);
 	EXPECT_EQ(MouseMovedEvent::GetStaticType(), EventType::MouseMoved);
@@ -130,11 +131,11 @@ TEST_F(MouseEventTest, MouseMovedEvent_GetEventType_ReturnsCorrectType) {
  * @brief Test that MouseMovedEvent is in the Mouse and Input categories but not MouseButton
  */
 TEST_F(MouseEventTest, MouseMovedEvent_IsInCategory_MouseAndInputCategories) {
-	const MouseMovedEvent event{0.0f, 0.0f};
+	const MouseMovedEvent event{0.0_f32, 0.0_f32};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryMouseButton));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryMouseButton));
 }
 
 // ============================================================================
@@ -145,8 +146,8 @@ TEST_F(MouseEventTest, MouseMovedEvent_IsInCategory_MouseAndInputCategories) {
  * @brief Test that MouseWheelScrolledEvent stores offsets correctly
  */
 TEST_F(MouseEventTest, MouseWheelScrolledEvent_Constructor_StoresOffsets) {
-	constexpr float xOffset = 1.5f;
-	constexpr float yOffset = -2.0f;
+	constexpr auto xOffset = 1.5_f32;
+	constexpr auto yOffset = -2.0_f32;
 
 	const MouseWheelScrolledEvent event{xOffset, yOffset};
 
@@ -158,7 +159,7 @@ TEST_F(MouseEventTest, MouseWheelScrolledEvent_Constructor_StoresOffsets) {
  * @brief Test that MouseWheelScrolledEvent has correct event type and name
  */
 TEST_F(MouseEventTest, MouseWheelScrolledEvent_GetEventType_ReturnsCorrectType) {
-	const MouseWheelScrolledEvent event{0.0f, 1.0f};
+	const MouseWheelScrolledEvent event{0.0_f32, 1.0_f32};
 
 	EXPECT_EQ(event.GetEventType(), EventType::MouseScrolled);
 	EXPECT_EQ(MouseWheelScrolledEvent::GetStaticType(), EventType::MouseScrolled);
@@ -169,10 +170,10 @@ TEST_F(MouseEventTest, MouseWheelScrolledEvent_GetEventType_ReturnsCorrectType) 
  * @brief Test that MouseWheelScrolledEvent is in the Mouse and Input categories
  */
 TEST_F(MouseEventTest, MouseWheelScrolledEvent_IsInCategory_MouseAndInputCategories) {
-	const MouseWheelScrolledEvent event{0.0f, 1.0f};
+	const MouseWheelScrolledEvent event{0.0_f32, 1.0_f32};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
 }
 
 // ============================================================================
@@ -184,8 +185,8 @@ TEST_F(MouseEventTest, MouseWheelScrolledEvent_IsInCategory_MouseAndInputCategor
  */
 TEST_F(MouseEventTest, MouseDraggedEvent_Constructor_StoresButtonAndPosition) {
 	constexpr auto button = MouseButtonCode::Left;
-	constexpr float x = 42.0f;
-	constexpr float y = 84.0f;
+	constexpr auto x = 42.0_f32;
+	constexpr auto y = 84.0_f32;
 
 	const MouseDraggedEvent event{button, x, y};
 
@@ -198,7 +199,7 @@ TEST_F(MouseEventTest, MouseDraggedEvent_Constructor_StoresButtonAndPosition) {
  * @brief Test that MouseDraggedEvent has correct event type and name
  */
 TEST_F(MouseEventTest, MouseDraggedEvent_GetEventType_ReturnsCorrectType) {
-	const MouseDraggedEvent event{MouseButtonCode::Left, 0.0f, 0.0f};
+	const MouseDraggedEvent event{MouseButtonCode::Left, 0.0_f32, 0.0_f32};
 
 	EXPECT_EQ(event.GetEventType(), EventType::MouseDragged);
 	EXPECT_EQ(MouseDraggedEvent::GetStaticType(), EventType::MouseDragged);
@@ -210,18 +211,18 @@ TEST_F(MouseEventTest, MouseDraggedEvent_GetEventType_ReturnsCorrectType) {
  * @details A drag carries a button, so unlike a plain move it also belongs to the MouseButton category.
  */
 TEST_F(MouseEventTest, MouseDraggedEvent_IsInCategory_MouseButtonAndInputCategories) {
-	const MouseDraggedEvent event{MouseButtonCode::Right, 1.0f, 2.0f};
+	const MouseDraggedEvent event{MouseButtonCode::Right, 1.0_f32, 2.0_f32};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouseButton));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouseButton));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
 }
 
 /**
  * @brief Test that MouseDraggedEvent ToString contains the button and the coordinates
  */
 TEST_F(MouseEventTest, MouseDraggedEvent_ToString_ContainsButtonAndPosition) {
-	const MouseDraggedEvent event{MouseButtonCode::Right, 12.0f, 34.0f};
+	const MouseDraggedEvent event{MouseButtonCode::Right, 12.0_f32, 34.0_f32};
 	const std::string str = event.ToString();
 
 	EXPECT_NE(str.find(CE::Types::ToString(MouseButtonCode::Right)), std::string::npos);
@@ -237,7 +238,7 @@ TEST_F(MouseEventTest, MouseDraggedEvent_ToString_ContainsButtonAndPosition) {
  * @brief Test that mouse events are mutable by default and can be consumed
  */
 TEST_F(MouseEventTest, MouseEvents_AreMutableByDefault) {
-	const MouseMovedEvent event{1.0f, 1.0f};
+	const MouseMovedEvent event{1.0_f32, 1.0_f32};
 
 	EXPECT_TRUE(event.IsMutable());
 	event.Consume();

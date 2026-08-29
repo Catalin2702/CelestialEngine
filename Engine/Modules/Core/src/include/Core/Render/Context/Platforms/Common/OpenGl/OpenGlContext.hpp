@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -25,7 +25,7 @@
 struct GLFWwindow;
 
 namespace CE::Types {
-	enum class BufferBit: uint32_t;
+	enum class BufferBit: u32;
 }
 
 namespace CE::Core {
@@ -158,7 +158,7 @@ public:
 	/**
 	 * @brief Gets the content scale (framebuffer pixels per screen coordinate, e.g. 2.0 on Retina)
 	 */
-	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
+	[[nodiscard]] std::pair<f32, f32> GetContentScale() const override;
 
 RENDER_API_TYPE(OpenGL)
 

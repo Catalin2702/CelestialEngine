@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Core/Layers/LayerStack.hpp"
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -33,7 +34,7 @@ namespace Core {
 
 namespace Types {
 	struct WindowProps;
-	enum class GraphicsApi: uint8_t;
+	enum class GraphicsApi: u8;
 }
 
 }
@@ -72,7 +73,7 @@ public:
 	 * @brief Virtual method to update the application state
 	 * @param deltaTime Time elapsed since the last update in seconds
 	 */
-	virtual void Tick(float deltaTime) = 0;
+	virtual void Tick(f32 deltaTime) = 0;
 
 	/**
 	 * @brief Completes the application setup, on top of the window and renderer brought up by _InitWindow/_InitRenderer
@@ -183,7 +184,7 @@ public:
 	 * @brief Gets the time elapsed since the previous frame, in seconds
 	 * @details Also advances the internal frame timestamp: call once per frame.
 	 */
-	float GetDeltaTime() const;
+	f32 GetDeltaTime() const;
 
 	/**
 	 * @brief Resets the frame timestamp so the next GetDeltaTime does not include a pause (e.g. startup)

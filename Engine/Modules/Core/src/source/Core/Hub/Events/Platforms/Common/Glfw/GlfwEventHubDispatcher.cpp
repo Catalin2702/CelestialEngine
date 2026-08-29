@@ -147,18 +147,18 @@ void GlfwEventHubDispatcher::ReceiveMouseButtonEvent(const int button, const int
 	}
 }
 
-void GlfwEventHubDispatcher::ReceiveMousePositionEvent(const double xPos, const double yPos) {
-	Events::MouseMovedEvent mouseMovedEvent{static_cast<float>(xPos), static_cast<float>(yPos)};
+void GlfwEventHubDispatcher::ReceiveMousePositionEvent(const f64 xPos, const f64 yPos) {
+	Events::MouseMovedEvent mouseMovedEvent{static_cast<f32>(xPos), static_cast<f32>(yPos)};
 	DispatchMouseMovedEvent(mouseMovedEvent);
 }
 
-void GlfwEventHubDispatcher::ReceiveMouseDraggedEvent(const int button, const int, const int, const double xPos, const double yPos) {
-	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromGlfw(button), static_cast<float>(xPos), static_cast<float>(yPos)};
+void GlfwEventHubDispatcher::ReceiveMouseDraggedEvent(const int button, const int, const int, const f64 xPos, const f64 yPos) {
+	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromGlfw(button), static_cast<f32>(xPos), static_cast<f32>(yPos)};
 	DispatchMouseDraggedEvent(mouseDraggedEvent);
 }
 
-void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const double xOffset, const double yOffset) {
-	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{static_cast<float>(xOffset), static_cast<float>(yOffset)};
+void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const f64 xOffset, const f64 yOffset) {
+	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{static_cast<f32>(xOffset), static_cast<f32>(yOffset)};
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
 }
 

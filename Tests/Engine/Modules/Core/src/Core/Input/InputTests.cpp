@@ -86,7 +86,7 @@ protected:
 	/**
 	 * @brief Pushes a cursor move through the hub
 	 */
-	void MoveMouse(const float x, const float y) {
+	void MoveMouse(const f32 x, const f32 y) {
 		Events::MouseMovedEvent event{x, y};
 		_hub.DispatchMouseMovedEvent(event);
 	}
@@ -94,7 +94,7 @@ protected:
 	/**
 	 * @brief Pushes a wheel scroll through the hub
 	 */
-	void ScrollWheel(const float xOffset, const float yOffset) {
+	void ScrollWheel(const f32 xOffset, const f32 yOffset) {
 		Events::MouseWheelScrolledEvent event{xOffset, yOffset};
 		_hub.DispatchMouseWheelScrolledEvent(event);
 	}

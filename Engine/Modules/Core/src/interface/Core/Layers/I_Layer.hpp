@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_CORE_LAYERS_I_LAYER_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <string>
 #include <utility>
@@ -74,7 +75,7 @@ public:
 	 * @brief Pure virtual method for handling begin frame logic
 	 * @param deltaTime Time elapsed since the last frame, used for time-based updates
 	 */
-	virtual void Begin(float deltaTime) = 0;
+	virtual void Begin(f32 deltaTime) = 0;
 
 	/**
 	 * @brief Pure virtual method for handling end frame logic
@@ -101,7 +102,7 @@ protected:
 	std::string _name;							///< Name for the layer
 
 protected:
-	mutable float _deltaTime = 0.f;					///< Time accumulator for frame timing
+	mutable f32 _deltaTime = 0.f;					///< Time accumulator for frame timing
 	bool _currentFrameStarted = false;				///< Flag to track if the current frame has started
 };
 

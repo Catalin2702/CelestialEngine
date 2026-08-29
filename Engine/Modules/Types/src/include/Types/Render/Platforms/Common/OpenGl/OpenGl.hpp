@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,8 +13,7 @@
 #define CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
 
 #include "Define/DynamicLinker.hpp"
-
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Types {
@@ -23,7 +22,7 @@ namespace CE::Types {
  * @brief Bit flags for the OpenGL framebuffer attachments that can be cleared
  * @details Values mirror the corresponding GL_*_BUFFER_BIT constants so they can be passed to glClear directly.
  */
-enum class BufferBit: uint32_t {
+enum class BufferBit: u32 {
 	Color = 0x00004000,		///< GL_COLOR_BUFFER_BIT
 	Depth = 0x00000100,		///< GL_DEPTH_BUFFER_BIT
 	Stencil = 0x00000400,	///< GL_STENCIL_BUFFER_BIT
@@ -35,15 +34,15 @@ enum class BufferBit: uint32_t {
 CE_TYPES_API int ToInt(BufferBit bit);
 
 constexpr BufferBit operator & (BufferBit x, BufferBit y) {
-	return static_cast<BufferBit>(static_cast<uint32_t>(x) & static_cast<uint32_t>(y));
+	return static_cast<BufferBit>(static_cast<u32>(x) & static_cast<u32>(y));
 }
 
 constexpr BufferBit operator | (BufferBit x, BufferBit y) {
-	return static_cast<BufferBit>(static_cast<uint32_t>(x) | static_cast<uint32_t>(y));
+	return static_cast<BufferBit>(static_cast<u32>(x) | static_cast<u32>(y));
 }
 
 constexpr BufferBit operator ^ (BufferBit x, BufferBit y) {
-	return static_cast<BufferBit>(static_cast<uint32_t>(x) ^ static_cast<uint32_t>(y));
+	return static_cast<BufferBit>(static_cast<u32>(x) ^ static_cast<u32>(y));
 }
 
 }

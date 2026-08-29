@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -16,13 +16,11 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Events/WindowEvent.hpp"
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Types/Var/Vars.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
 #include <array>
 #include <bitset>
-#include <cstdint>
 #include <utility>
 
 
@@ -107,27 +105,27 @@ private:
 	/**
 	 * @brief Gets the last known X position of the mouse cursor in window space (top-left origin)
 	 */
-	[[nodiscard]] float GetMouseX() const { return _mouseX; }
+	[[nodiscard]] f32 GetMouseX() const { return _mouseX; }
 
 	/**
 	 * @brief Gets the last known Y position of the mouse cursor in window space (top-left origin)
 	 */
-	[[nodiscard]] float GetMouseY() const { return _mouseY; }
+	[[nodiscard]] f32 GetMouseY() const { return _mouseY; }
 
 	/**
 	 * @brief Gets the last known mouse cursor position in window space (top-left origin)
 	 */
-	[[nodiscard]] std::pair<float, float> GetMouseXY() const { return {_mouseX, _mouseY}; }
+	[[nodiscard]] std::pair<f32, f32> GetMouseXY() const { return {_mouseX, _mouseY}; }
 
 	/**
 	 * @brief Gets the horizontal scroll accumulated during the current frame
 	 */
-	[[nodiscard]] float GetScrollDeltaX() const { return _scrollDeltaX; }
+	[[nodiscard]] f32 GetScrollDeltaX() const { return _scrollDeltaX; }
 
 	/**
 	 * @brief Gets the vertical scroll accumulated during the current frame
 	 */
-	[[nodiscard]] float GetScrollDeltaY() const { return _scrollDeltaY; }
+	[[nodiscard]] f32 GetScrollDeltaY() const { return _scrollDeltaY; }
 
 private:
 	/**
@@ -244,10 +242,10 @@ private:
 	std::bitset<stMaxMouseButtons> _buttonsJustPressed;		///< Mouse buttons that went down during the current frame
 	std::bitset<stMaxMouseButtons> _buttonsJustReleased;	///< Mouse buttons that went up during the current frame
 
-	float _mouseX = 0.0f, _mouseY = 0.0f;					///< Last known cursor position in window space (top-left origin)
-	float _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;		///< Scroll accumulated during the current frame
+	f32 _mouseX = 0.0f, _mouseY = 0.0f;					///< Last known cursor position in window space (top-left origin)
+	f32 _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;		///< Scroll accumulated during the current frame
 
-	std::array<uint32_t, _Count> _hubHandles{};				///< Handles of the hub subscriptions, used for unsubscription
+	std::array<u32, _Count> _hubHandles{};				///< Handles of the hub subscriptions, used for unsubscription
 };
 
 }

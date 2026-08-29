@@ -13,6 +13,7 @@
 #define CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <string_view>
 #include <vector>
@@ -20,7 +21,7 @@
 
 namespace CE::Core {
 
-enum class CE_CORE_API ShaderDataType: uint8_t {
+enum class CE_CORE_API ShaderDataType: u8 {
 	None = 0,
 	Float,
 	Float2,
@@ -35,10 +36,10 @@ enum class CE_CORE_API ShaderDataType: uint8_t {
 	Bool
 };
 
-constexpr uint32_t ShaderDataTypeSize(const ShaderDataType type) {
-	constexpr uint32_t FLOAT_SIZE = sizeof(float);
-	constexpr uint32_t INT_SIZE = sizeof(int32_t);
-	constexpr uint32_t BOOL_SIZE = sizeof(bool);
+constexpr u32 ShaderDataTypeSize(const ShaderDataType type) {
+	constexpr u32 FLOAT_SIZE = sizeof(f32);
+	constexpr u32 INT_SIZE = sizeof(u32);
+	constexpr u32 BOOL_SIZE = sizeof(bool);
 	switch (type) {
 		case ShaderDataType::Float: return FLOAT_SIZE;
 		case ShaderDataType::Float2: return FLOAT_SIZE * 2;
@@ -57,7 +58,7 @@ constexpr uint32_t ShaderDataTypeSize(const ShaderDataType type) {
 	}
 }
 
-constexpr uint32_t ShaderDataTypeComponentCount(const ShaderDataType type) {
+constexpr u32 ShaderDataTypeComponentCount(const ShaderDataType type) {
 	switch (type) {
 		case ShaderDataType::Float: return 1;
 		case ShaderDataType::Float2: return 2;
@@ -81,9 +82,9 @@ struct CE_CORE_API BufferElement {
 		type(type), size(ShaderDataTypeSize(type)), componentCount(ShaderDataTypeComponentCount(type)), normalized(normalized), name(name) {}
 
 	ShaderDataType type = ShaderDataType::None;
-	uint32_t size = 0;
-	uint32_t offset = 0;
-	uint32_t componentCount = 0;
+	u32 size = 0;
+	u32 offset = 0;
+	u32 componentCount = 0;
 	bool normalized = false;
 	std::string_view name = {};
 };
@@ -96,7 +97,7 @@ public:
 
 public:
 	[[nodiscard]] const std::vector<BufferElement>& GetElements() const { return _elements; }
-	[[nodiscard]] uint32_t GetStride() const { return _stride; }
+	[[nodiscard]] u32 GetStride() const { return _stride; }
 
 public:
 	std::vector<BufferElement>::iterator begin() { return _elements.begin(); }
@@ -107,7 +108,7 @@ private:
 
 private:
 	std::vector<BufferElement> _elements;
-	uint32_t _stride = 0;
+	u32 _stride = 0;
 };
 
 class I_VertexBuffer {
@@ -126,7 +127,7 @@ public:
 	 * @param firstAttributeIndex The first attribute slot to use, so several buffers can share one vertex array
 	 * @return The number of attribute slots consumed, i.e. the first free slot after this buffer
 	 */
-	[[nodiscard]] virtual uint32_t BindLayout(uint32_t firstAttributeIndex) = 0;
+	[[nodiscard]] virtual u32 BindLayout(u32 firstAttributeIndex) = 0;
 };
 
 class I_IndexBuffer {

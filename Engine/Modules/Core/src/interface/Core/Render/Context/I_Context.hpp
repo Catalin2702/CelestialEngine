@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -64,11 +64,11 @@ public:
 
 	/**
 	 * @brief Gets the window's content (DPI) scale
-	 * @return std::pair<float, float> The horizontal and vertical scale factors (e.g. {2, 2} on a Retina display)
+	 * @return std::pair<f32, f32> The horizontal and vertical scale factors (e.g. {2, 2} on a Retina display)
 	 * @details Ratio between the current DPI and the platform's default DPI, as reported by glfwGetWindowContentScale. Use it
 	 *			to size backing-pixel content against logical points. Returns {1, 1} if the window is not set.
 	 */
-	[[nodiscard]] virtual std::pair<float, float> GetContentScale() const = 0;
+	[[nodiscard]] virtual std::pair<f32, f32> GetContentScale() const = 0;
 };
 
 }

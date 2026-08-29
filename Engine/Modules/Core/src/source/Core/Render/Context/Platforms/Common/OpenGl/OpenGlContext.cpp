@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -118,8 +118,8 @@ bool OpenGlContext::IsVSyncEnabled() const {
 	return _st_VSync;
 }
 
-std::pair<float, float> OpenGlContext::GetContentScale() const {
-	float xScale = 1.0f, yScale = 1.0f;
+std::pair<f32, f32> OpenGlContext::GetContentScale() const {
+	f32 xScale = 1.0f, yScale = 1.0f;
 	glfwGetWindowContentScale(&_window.get(), &xScale, &yScale);
 	return {xScale, yScale};
 }

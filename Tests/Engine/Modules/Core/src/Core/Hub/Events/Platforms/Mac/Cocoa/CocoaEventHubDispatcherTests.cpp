@@ -54,7 +54,7 @@ public:
  * @brief Subscribes a HubSubscriber to a hub channel
  */
 template <typename EventType, typename Channel>
-uint32_t SubscribeTo(Channel& channel, HubSubscriber<EventType>& subscriber) {
+u32 SubscribeTo(Channel& channel, HubSubscriber<EventType>& subscriber) {
 	return channel.Subscribe(
 		EventDelegate<EventType&>::template FromMethod<HubSubscriber<EventType>, &HubSubscriber<EventType>::OnEvent>(&subscriber)
 	);

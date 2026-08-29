@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
@@ -38,7 +38,7 @@ void MetalContextEventDispatcher::DispatchVSyncChanged(const bool vsync) const {
 	metalContextLifeCycleEvents.onVSyncChangedDispatcher.Dispatch(vsync);
 }
 
-void MetalContextEventDispatcher::DispatchResizeEvent(const CGFloat width, const CGFloat height) const {
+void MetalContextEventDispatcher::DispatchResizeEvent(const f64 width, const f64 height) const {
 	metalContextLifeCycleEvents.onResizeDispatcher.Dispatch(width, height);
 }
 
@@ -177,13 +177,13 @@ void MetalContext::_OnMetalLinkNeedsUpdate(CA::MetalDisplayLink*, CA::MetalDispl
 }
 
 void MetalContext::_OnDrawableResize(MTK::View*, const CGSize size) const {
-	HandleContentSizeChange({static_cast<float>(size.width), static_cast<float>(size.height)});
+	HandleContentSizeChange({static_cast<f32>(size.width), static_cast<f32>(size.height)});
 
 	// `size` is already in backing pixels; fire it to whoever the application wired to the context's resize dispatcher.
 	metalContextEventDispatcher.DispatchResizeEvent(size.width, size.height);
 }
 
-void MetalContext::HandleContentSizeChange(const std::pair<float, float>& size) const {
+void MetalContext::HandleContentSizeChange(const std::pair<f32, f32>& size) const {
 	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::HandleContentSizeChange: Cannot handle content size change because MTKView or its layer are not initialized.");
 		return;
@@ -224,12 +224,12 @@ bool MetalContext::IsVSyncEnabled() const {
 	return layer->displaySyncEnabled();
 }
 
-std::pair<float, float> MetalContext::GetContentScale() const {
+std::pair<f32, f32> MetalContext::GetContentScale() const {
 	if (not (_view and _view->layer())) [[unlikely]] {
 		CE_CORE_WARN("MetalContext::GetContentScale: Cannot get the content scale because MTKView or its layer are not initialized.");
 		return {1., 1.};
 	}
-	const auto scale = static_cast<float>(_view->layer()->contentsScale());
+	const auto scale = static_cast<f32>(_view->layer()->contentsScale());
 	return {scale, scale};
 }
 

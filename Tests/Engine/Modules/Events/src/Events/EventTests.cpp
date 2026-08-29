@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #include <Events/ApplicationEvent.hpp>
@@ -78,9 +78,9 @@ TEST_F(EventTest, GetName_ReturnsEventTypeName) {
 TEST_F(EventTest, IsInCategory_SingleCategory) {
 	const WindowCloseEvent event;
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryWindow));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryApplication));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryApplication));
 }
 
 /**
@@ -89,12 +89,12 @@ TEST_F(EventTest, IsInCategory_SingleCategory) {
 TEST_F(EventTest, IsInCategory_CombinedCategories) {
 	const MouseButtonPressedEvent event{CE::Types::MouseButtonCode::Left};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouse));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryMouseButton));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryWindow));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryMouseButton));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryWindow));
 
-	constexpr auto expectedFlags = EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput;
+	constexpr auto expectedFlags = EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput;
 	EXPECT_EQ(event.GetCategoryFlags(), expectedFlags);
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -75,21 +75,21 @@ public:
 public:
 	/**
 	 * @brief Gets the current size of the window
-	 * @return std::pair<float, float> Pair of width and height in pixels
+	 * @return std::pair<f32, f32> Pair of width and height in pixels
 	 * @details Returns the current width and height of the window in pixels.
 	 *			This may differ from the initial properties due to resizing or platform-specific behavior.
 	 *			The returned size represents the actual dimensions of the window.
 	 */
-	[[nodiscard]] virtual std::pair<float, float> GetWindowSize() const = 0;
+	[[nodiscard]] virtual std::pair<f32, f32> GetWindowSize() const = 0;
 
 	/**
 	 * @brief Gets the current size of the frame
-	 * @return std::pair<float, float> Pair of frame width and height in pixels
+	 * @return std::pair<f32, f32> Pair of frame width and height in pixels
 	 * @details Returns the current width and height of the frame in pixels.
 	 *			The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior.
 	 *			This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
-	[[nodiscard]] virtual std::pair<float, float> GetFrameSize() const = 0;
+	[[nodiscard]] virtual std::pair<f32, f32> GetFrameSize() const = 0;
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer

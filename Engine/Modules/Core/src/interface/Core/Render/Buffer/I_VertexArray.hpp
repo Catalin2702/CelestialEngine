@@ -12,6 +12,8 @@
 #ifndef CE_CORE_RENDER_BUFFER_I_VERTEXARRAY_HPP
 #define CE_CORE_RENDER_BUFFER_I_VERTEXARRAY_HPP
 
+#include "Types/Var/Vars.hpp"
+
 #include <memory>
 
 
@@ -25,7 +27,7 @@ public:
 	virtual ~I_VertexArray() = default;
 
 public:
-	[[nodiscard]] virtual uint32_t GetRenderID() const = 0;
+	[[nodiscard]] virtual u32 GetRenderID() const = 0;
 
 public:
 	/// A vertex array holds exactly one element buffer, so this replaces the previous one rather than adding to it.

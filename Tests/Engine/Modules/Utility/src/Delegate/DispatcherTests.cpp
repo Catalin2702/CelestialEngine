@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Utility/Delegate/Dispatcher.hpp>
@@ -401,7 +401,7 @@ TEST_F(DispatcherTest, Multicast_UnsubscribeDuringDispatch_IsDeferred) {
 
 	const struct Unsubscriber {
 		MulticastDispatcher<>* dispatcher = nullptr;
-		uint32_t handle = 0;
+		u32 handle = 0;
 
 		void OnEvent() const { dispatcher->Unsubscribe(handle); }
 	} unsubscriber{.dispatcher = &dispatcher, .handle = handle};

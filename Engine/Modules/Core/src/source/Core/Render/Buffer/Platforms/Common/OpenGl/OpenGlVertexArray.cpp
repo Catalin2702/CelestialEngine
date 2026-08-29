@@ -9,6 +9,7 @@
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <cassert>
 #include <utility>
@@ -37,7 +38,7 @@ void OpenGlVertexArray::_AttachIndexBuffer(const std::shared_ptr<OpenGlIndexBuff
 	indexBuffer->BindBuffer();
 }
 
-void OpenGlVertexArray::_AttachVertexBuffer(const std::shared_ptr<OpenGlVertexBuffer>& vertexBuffer, uint32_t& attributeCount) {
+void OpenGlVertexArray::_AttachVertexBuffer(const std::shared_ptr<OpenGlVertexBuffer>& vertexBuffer, u32& attributeCount) {
 	if (not vertexBuffer) [[unlikely]]
 		return;
 

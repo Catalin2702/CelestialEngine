@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -52,7 +52,7 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(VSyncChange)
-	EVENT_CLASS_CATEGORY(EventCategoryRender)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryRender)
 
 private:
 	bool _state;									///< New VSync state (true = enabled)

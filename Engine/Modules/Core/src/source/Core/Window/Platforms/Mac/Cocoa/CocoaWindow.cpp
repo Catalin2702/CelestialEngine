@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -73,24 +73,24 @@ CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
 
-std::pair<float, float> CocoaWindow::GetWindowSize() const {
+std::pair<f32, f32> CocoaWindow::GetWindowSize() const {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
 		return {0, 0};
 	}
 
 	const auto [origin, size] = _window->frame();
-	return {static_cast<float>(size.width), static_cast<float>(size.height)};
+	return {static_cast<f32>(size.width), static_cast<f32>(size.height)};
 }
 
-std::pair<float, float> CocoaWindow::GetFrameSize() const {
+std::pair<f32, f32> CocoaWindow::GetFrameSize() const {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetFrameSize: Could not get frame size because window is not initialized.");
 		return {0, 0};
 	}
 
 	const auto [origin, size] = _window->contentRectForFrameRect();
-	return {static_cast<float>(size.width), static_cast<float>(size.height)};
+	return {static_cast<f32>(size.width), static_cast<f32>(size.height)};
 }
 
 void CocoaWindow::SetWindowSize(const unsigned int width, const unsigned int height) {

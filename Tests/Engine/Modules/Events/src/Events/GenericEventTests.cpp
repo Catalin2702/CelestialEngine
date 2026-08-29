@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/GenericEvent.hpp>
@@ -57,8 +57,8 @@ TEST_F(GenericEventTest, ErrorEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(GenericEventTest, ErrorEvent_IsInCategory_ApplicationCategory) {
 	const ErrorEvent event{1, "boom"};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryApplication));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryWindow));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryApplication));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryWindow));
 }
 
 /**

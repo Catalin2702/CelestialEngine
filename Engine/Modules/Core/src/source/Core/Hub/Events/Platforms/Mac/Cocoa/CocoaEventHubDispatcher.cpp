@@ -22,7 +22,7 @@ namespace CE::Core {
 // Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
 // Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
 // growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
-static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
+static std::pair<f32, f32> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
 	if (not (context and context->GetView() and window)) [[unlikely]]
 		return {0.0f, 0.0f};
 
@@ -31,7 +31,7 @@ static std::pair<float, float> MouseLocationTopLeft(const MetalContext* context,
 	const auto [x, y] = view->convertPointFromView(event->locationInWindow(), nullptr);
 	const auto [frameWidth, frameHeight] = window->GetFrameSize();
 
-	return {static_cast<float>(x), frameHeight - static_cast<float>(y)};
+	return {static_cast<f32>(x), frameHeight - static_cast<f32>(y)};
 }
 
 void CocoaEventHubDispatcher::SetSources(MetalContext* context, CocoaWindow* window) {
@@ -229,8 +229,8 @@ void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
 		return;
 
 	Events::MouseWheelScrolledEvent mouseWheelScrolledEvent{
-		static_cast<float>(event->scrollingDeltaX()),
-		static_cast<float>(event->scrollingDeltaY())
+		static_cast<f32>(event->scrollingDeltaX()),
+		static_cast<f32>(event->scrollingDeltaY())
 	};
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
 }
@@ -240,7 +240,7 @@ void CocoaEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
 	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveContextResizeViewEvent(const double width, const double height) {
+void CocoaEventHubDispatcher::ReceiveContextResizeViewEvent(const f64 width, const f64 height) {
 	Events::ViewResizeEvent viewResizeEvent{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
 	DispatchRenderContextResizeViewEvent(viewResizeEvent);
 }

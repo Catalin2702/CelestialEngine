@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
 
 #include "Tools/Log/Log.hpp"
 #include "Types/FileSystem/File.hpp"
+#include "Types/Var/Vars.hpp"
 #include "Utility/FileSystem/File.hpp"
 
 #include <filesystem>
@@ -152,7 +153,7 @@ File FileSystem::StLoad(const fs::path& path, const bool autoSave) {
 		throw std::runtime_error(errorMessage);
 	}
 
-	std::vector<uint8_t> bytes(
+	std::vector<u8> bytes(
 		std::istreambuf_iterator(inputFile),
 		std::istreambuf_iterator<char>{}
 	);

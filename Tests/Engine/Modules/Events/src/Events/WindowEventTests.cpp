@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/I_Event.hpp>
@@ -59,9 +59,9 @@ TEST_F(WindowEventTest, WindowResizeEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(WindowEventTest, WindowResizeEvent_IsInCategory_WindowCategory) {
 	const WindowResizeEvent event{800, 600};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryWindow));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryApplication));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryInput));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryApplication));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
 }
 
 /**
@@ -121,8 +121,8 @@ TEST_F(WindowEventTest, WindowCloseEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(WindowEventTest, WindowCloseEvent_IsInCategory_WindowCategory) {
 	const WindowCloseEvent event;
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryWindow));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryApplication));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryApplication));
 }
 
 /**
@@ -175,8 +175,8 @@ TEST_F(WindowEventTest, WindowFocusEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(WindowEventTest, WindowFocusEvent_IsInCategory_WindowCategory) {
 	const WindowFocusEvent event{false};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryWindow));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryInput));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
 }
 
 /**

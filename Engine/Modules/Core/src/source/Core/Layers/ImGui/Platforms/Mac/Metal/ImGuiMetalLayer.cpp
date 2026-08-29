@@ -102,7 +102,7 @@ void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 	_eventHubHandles = {};
 }
 
-void ImGuiMetalLayer::Begin(const float deltaTime) {
+void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 	_renderSemaphore.acquire();
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
@@ -257,12 +257,12 @@ void ImGuiMetalLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 
 	// The context reports the resize in backing pixels (the drawable size). ImGui expects DisplaySize in logical points and
-	// applies DisplayFramebufferScale on top, so feeding pixels here would double-count the scale and render the UI zoomed in
+	// applies DisplayFramebufferScale on top, so feeding pixels here would f64-count the scale and render the UI zoomed in
 	// with its right/bottom pushed off the drawable. Convert back to points.
-	const auto scale = static_cast<float>(_context->get().GetView()->layer()->contentsScale());
+	const auto scale = static_cast<f32>(_context->get().GetView()->layer()->contentsScale());
 	const auto safeScale = scale > 0.0f ? scale : 1.0f;
 
-	io.DisplaySize = ImVec2(static_cast<float>(event.GetWidth()) / safeScale, static_cast<float>(event.GetHeight()) / safeScale);
+	io.DisplaySize = ImVec2(static_cast<f32>(event.GetWidth()) / safeScale, static_cast<f32>(event.GetHeight()) / safeScale);
 	io.DisplayFramebufferScale = ImVec2(safeScale, safeScale);
 }
 

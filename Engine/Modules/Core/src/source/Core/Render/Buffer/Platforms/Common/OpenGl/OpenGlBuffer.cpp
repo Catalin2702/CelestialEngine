@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
@@ -18,8 +18,8 @@
 
 namespace CE::Core {
 
-constexpr uint32_t FLOAT_SIZE = sizeof(float);
-constexpr uint32_t UINT32_SIZE = sizeof(uint32_t);
+constexpr u32 FLOAT_SIZE = sizeof(f32);
+constexpr u32 UINT32_SIZE = sizeof(u32);
 
 static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const ShaderDataType type) {
 	switch (type) {
@@ -43,23 +43,23 @@ static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const ShaderDataType type
 	}
 }
 
-const void* OpenGlBufferOffset(const uint32_t offset) {
+const void* OpenGlBufferOffset(const u32 offset) {
 	return reinterpret_cast<const void*>(static_cast<uintptr_t>(offset));
 }
 
 
 #pragma region OpenGlVertexBuffer
-OpenGlVertexBuffer::OpenGlVertexBuffer(const float* vertices, const size_t count) {
+OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count) {
 	glGenBuffers(1, &this->_renderID);
 	glBindBuffer(GL_ARRAY_BUFFER, this->_renderID);
 	glBufferData(GL_ARRAY_BUFFER, static_cast<long>(FLOAT_SIZE * count), vertices, GL_STATIC_DRAW);
 }
 
-OpenGlVertexBuffer::OpenGlVertexBuffer(const float* vertices, const size_t count, const BufferLayout& layout): OpenGlVertexBuffer(vertices, count) {
+OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count, const BufferLayout& layout): OpenGlVertexBuffer(vertices, count) {
 	_layout = layout;
 }
 
-OpenGlVertexBuffer::OpenGlVertexBuffer(const float* vertices, const size_t count, BufferLayout&& layout): OpenGlVertexBuffer(vertices, count) {
+OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count, BufferLayout&& layout): OpenGlVertexBuffer(vertices, count) {
 	_layout = std::move(layout);
 }
 
@@ -96,14 +96,14 @@ void OpenGlVertexBuffer::UnbindBuffer() const {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-uint32_t OpenGlVertexBuffer::BindLayout(const uint32_t firstAttributeIndex) {
+u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) {
 	assert(!_layout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
 
 	const auto stride = static_cast<GLsizei>(_layout.GetStride());
 
 	for (auto const [index, element]: Utility::Enumerate(_layout)) {
 		// Offset by the slots already taken, otherwise a second buffer would overwrite the first one's attributes.
-		const auto attributeIndex = firstAttributeIndex + static_cast<uint32_t>(index);
+		const auto attributeIndex = firstAttributeIndex + static_cast<u32>(index);
 
 		glEnableVertexAttribArray(attributeIndex);
 		glVertexAttribPointer(
@@ -116,7 +116,7 @@ uint32_t OpenGlVertexBuffer::BindLayout(const uint32_t firstAttributeIndex) {
 		);
 	}
 
-	return static_cast<uint32_t>(_layout.GetElements().size());
+	return static_cast<u32>(_layout.GetElements().size());
 }
 
 void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
@@ -134,7 +134,7 @@ void OpenGlVertexBuffer::SetLayout(BufferLayout&& layout) {
 #pragma endregion
 
 #pragma region OpenGlIndexBuffer
-OpenGlIndexBuffer::OpenGlIndexBuffer(const uint32_t* indices, const size_t count): _count(count) {
+OpenGlIndexBuffer::OpenGlIndexBuffer(const u32* indices, const size_t count): _count(count) {
 	glGenBuffers(1, &this->_renderID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_renderID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(UINT32_SIZE * this->_count), indices, GL_STATIC_DRAW);

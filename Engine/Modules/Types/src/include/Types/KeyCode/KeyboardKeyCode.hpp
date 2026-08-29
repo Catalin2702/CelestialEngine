@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,9 +13,8 @@
 #define CE_TYPES_KEYCODE_KEYBOARDKEYCODE_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <cstdint>
 #include <format>
 #include <string>
 
@@ -31,7 +30,7 @@ namespace CE::Types {
  *			The enum includes standard keys (A-Z, 0-9), function keys (F1-F12), arrow keys, and special keys (Space, Enter, Escape, etc.).
  *			An Unknown value is also provided to represent unrecognized or unsupported key codes.
  */
-enum class KeyboardKeyCode : uint16_t {
+enum class KeyboardKeyCode : u16 {
 	// Alphabet
 	A = 65, B = 66, C = 67, D = 68, E = 69, F = 70,
 	G = 71, H = 72, I = 73, J = 74, K = 75, L = 76,

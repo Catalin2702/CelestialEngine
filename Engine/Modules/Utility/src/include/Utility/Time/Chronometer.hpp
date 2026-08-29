@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_UTILITY_TIME_TIMER_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <chrono>
 
@@ -62,9 +63,9 @@ public:
 
 	/**
 	 * @brief Gets the measured duration in milliseconds
-	 * @return double Same measure as GetElapsed(), expressed in milliseconds with the sub-millisecond fraction
+	 * @return f64 Same measure as GetElapsed(), expressed in milliseconds with the sub-millisecond fraction
 	 */
-	[[nodiscard]] double GetElapsedMilliseconds() const;
+	[[nodiscard]] f64 GetElapsedMilliseconds() const;
 
 	/**
 	 * @brief Checks whether the chronometer has been stopped

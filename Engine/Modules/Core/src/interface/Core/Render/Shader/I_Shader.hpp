@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -12,10 +12,10 @@
 #ifndef CE_CORE_RENDER_SHADER_I_SHADER_HPP
 #define CE_CORE_RENDER_SHADER_I_SHADER_HPP
 
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
 
 namespace CE::Types {
-	enum class ShaderType: uint8_t;
+	enum class ShaderType: u8;
 }
 
 namespace CE::Core {
@@ -32,11 +32,11 @@ public:
 public:
 	/**
 	 * @brief Gets the unique identifier for the shader
-	 * @return uint32_t Unique identifier for the shader (e.g., OpenGL shader ID)
+	 * @return u32 Unique identifier for the shader (e.g., OpenGL shader ID)
 	 * @details Pure virtual method that returns a unique identifier for the shader, which can be used for various operations such as binding and resource management.
 	 *			Must be implemented by derived classes to provide access to the underlying shader resource.
 	 */
-	[[nodiscard]] virtual uint32_t GetShaderId() const = 0;
+	[[nodiscard]] virtual u32 GetShaderId() const = 0;
 
 	/**
 	 * @brief Gets the type of the shader

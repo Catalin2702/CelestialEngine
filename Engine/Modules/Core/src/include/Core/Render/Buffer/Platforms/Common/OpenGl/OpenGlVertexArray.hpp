@@ -40,7 +40,7 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
-	[[nodiscard]] uint32_t GetRenderID() const override { return _renderID; }
+	[[nodiscard]] u32 GetRenderID() const override { return _renderID; }
 
 public:
 	void SetIndexBuffer(const std::shared_ptr<I_IndexBuffer>& indexBuffer) override;
@@ -65,7 +65,7 @@ private:
 	/// Attaches the element buffer to this vertex array; it must already be bound.
 	static void _AttachIndexBuffer(const std::shared_ptr<OpenGlIndexBuffer>& indexBuffer);
 	/// Records the buffer's attribute layout into this vertex array, after the slots already taken; it must already be bound.
-	static void _AttachVertexBuffer(const std::shared_ptr<OpenGlVertexBuffer>& vertexBuffer, uint32_t& attributeCount);
+	static void _AttachVertexBuffer(const std::shared_ptr<OpenGlVertexBuffer>& vertexBuffer, u32& attributeCount);
 
 private:
 	/// A vertex array has a single element buffer binding: setting a new one replaces whatever was bound before.
@@ -73,8 +73,8 @@ private:
 	std::vector<std::shared_ptr<OpenGlVertexBuffer>> _vertexBuffers;
 
 	/// First free attribute slot; each vertex buffer's layout starts where the previous one ended.
-	uint32_t _attributeCount = 0;
-	uint32_t _renderID = 0;
+	u32 _attributeCount = 0;
+	u32 _renderID = 0;
 };
 
 }

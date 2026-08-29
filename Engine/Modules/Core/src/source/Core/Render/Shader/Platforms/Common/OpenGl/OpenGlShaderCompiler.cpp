@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
@@ -18,8 +18,8 @@
 
 namespace CE::Core {
 
-uint32_t OpenGlShaderCompiler::Compile(const char* shader, const Types::ShaderType type) {
-	const uint32_t shaderId = glCreateShader(Types::ToOpenGlShaderType(type));
+u32 OpenGlShaderCompiler::Compile(const char* shader, const Types::ShaderType type) {
+	const u32 shaderId = glCreateShader(Types::ToOpenGlShaderType(type));
 
 	glShaderSource(shaderId, 1, &shader, nullptr);
 

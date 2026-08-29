@@ -20,6 +20,7 @@
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <array>
 #include <memory>
@@ -147,7 +148,7 @@ public:
 	 * @param deltaTime Time elapsed since the last update in seconds
 	 * @details Called every frame to update the application. Updates all layers in the layer stack.
 	 */
-	void Tick(float deltaTime) override;
+	void Tick(f32 deltaTime) override;
 
 	/**
 	 * @brief Initializes the application window
@@ -302,7 +303,7 @@ private:
 
 	std::weak_ptr<ImGuiOpenGlLayer> _imguiLayer; ///< Pointer to the ImGui layer for rendering UI
 
-	std::array<uint32_t, _Count> _eventHubHandlers{}; ///< Handles of the app-level hub subscriptions, indexed by EventHubSubscription
+	std::array<u32, _Count> _eventHubHandlers{}; ///< Handles of the app-level hub subscriptions, indexed by EventHubSubscription
 };
 
 }

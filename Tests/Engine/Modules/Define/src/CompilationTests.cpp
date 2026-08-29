@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 // Include the macros we want to test
@@ -31,7 +31,7 @@ public:
 	explicit TestWindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 	EVENT_CLASS_TYPE(WindowClose)
-	EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 };
 
 class TestKeyPressedEvent : public I_Event {
@@ -39,7 +39,7 @@ public:
 	explicit TestKeyPressedEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 	EVENT_CLASS_TYPE(KeyPressed)
-	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput)
 };
 
 // Mock render/window classes exercising the API identification macros
@@ -192,9 +192,9 @@ TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_SingleCategory) {
 	const TestWindowCloseEvent event;
 	const auto flags = event.GetCategoryFlags();
 
-	EXPECT_EQ(flags, EventCategoryApplication);
-	EXPECT_TRUE(flags & EventCategoryApplication);
-	EXPECT_FALSE(flags & EventCategoryInput);
+	EXPECT_EQ(flags, EventCategory::EventCategoryApplication);
+	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryApplication));
+	EXPECT_FALSE(HasAnyFlags(flags , EventCategory::EventCategoryInput));
 }
 
 TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_MultipleCategories) {
@@ -202,12 +202,12 @@ TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_MultipleCategories) {
 	const auto flags = event.GetCategoryFlags();
 
 	// Should have both Keyboard and Input categories
-	EXPECT_TRUE(flags & EventCategoryKeyboard);
-	EXPECT_TRUE(flags & EventCategoryInput);
-	EXPECT_FALSE(flags & EventCategoryApplication);
+	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryKeyboard));
+	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryInput));
+	EXPECT_FALSE(HasAnyFlags(flags, EventCategory::EventCategoryApplication));
 
 	// Verify exact flags value
-	constexpr auto expectedFlags = EventCategoryKeyboard | EventCategoryInput;
+	constexpr auto expectedFlags = EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput;
 	EXPECT_EQ(flags, expectedFlags);
 }
 
@@ -298,7 +298,7 @@ TEST(DefineCompilationTests, TypeTraits_EventClassHasRequiredMethods) {
 		"GetName should be callable on instance and return const char*");
 
 	// Check for GetCategoryFlags
-	static_assert(std::is_invocable_r_v<int, decltype(&TestWindowCloseEvent::GetCategoryFlags), TestWindowCloseEvent>,
+	static_assert(std::is_invocable_r_v<EventCategory, decltype(&TestWindowCloseEvent::GetCategoryFlags), TestWindowCloseEvent>,
 		"GetCategoryFlags should be callable on instance and return int");
 }
 

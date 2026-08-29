@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
-#include "Tools/Log/Log.hpp"
 #include "Utility/FileSystem/File.hpp"
 
 #include <glad/glad.h>
@@ -65,7 +64,7 @@ OpenGlShader& OpenGlShader::operator=(OpenGlShader&& other) noexcept {
 	return *this;
 }
 
-uint32_t OpenGlShader::GetShaderId() const {
+u32 OpenGlShader::GetShaderId() const {
 	return _shaderId;
 }
 

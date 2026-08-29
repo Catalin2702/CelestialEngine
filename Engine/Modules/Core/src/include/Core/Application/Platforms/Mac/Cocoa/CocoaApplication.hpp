@@ -18,6 +18,7 @@
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
@@ -153,7 +154,7 @@ public:
 	 * @param deltaTime Time elapsed since the last update in seconds
 	 * @details Called every frame to update the application. Updates all layers in the layer stack.
 	 */
-	void Tick(float deltaTime) override;
+	void Tick(f32 deltaTime) override;
 
 	/**
 	 * @brief Completes the application setup once the renderer and the window are up
@@ -372,7 +373,7 @@ private:
 	std::atomic<bool> _loopThreadRunning{false}; ///< Controls the tick loop thread lifetime independently of the app-running state
 	dispatch_semaphore_t _tickSemaphore = nullptr; ///< Paces the tick loop against main-thread frame completions (avoids busy-spinning)
 
-	std::array<uint32_t, _Count> _eventHubHandlers{};
+	std::array<u32, _Count> _eventHubHandlers{};
 
 public:
 	MTL::RenderPipelineState* defaultRenderPipelineState = nullptr;

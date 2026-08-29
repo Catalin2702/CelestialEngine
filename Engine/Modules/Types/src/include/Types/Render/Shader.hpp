@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,13 +13,12 @@
 #define CE_TYPES_RENDER_SHADER_HPP
 
 #include "Define/DynamicLinker.hpp"
-
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Types {
 
-	enum class GraphicsApi: uint8_t;
+	enum class GraphicsApi: u8;
 
 /**
  * @enum ShaderType
@@ -27,7 +26,7 @@ namespace CE::Types {
  * @details Defines the types of shaders that can be used in the rendering pipeline, such as vertex and fragment shaders.
  *			These shader types are essential for defining the stages of the graphics pipeline and how vertices and fragments are processed.
  */
-enum class ShaderType: uint8_t {
+enum class ShaderType: u8 {
 	None,
 	Vertex,
 	Fragment,

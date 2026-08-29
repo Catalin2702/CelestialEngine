@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -38,25 +38,25 @@ protected:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse moved event with the specified cursor position
 	 */
-	I_MouseMovedEvent(float x, float y, bool isMutable = true);
+	I_MouseMovedEvent(f32 x, f32 y, bool isMutable = true);
 
 public:
 	/**
 	 * @brief Gets the X coordinate of the mouse cursor
-	 * @return float X position in window coordinates
+	 * @return f32 X position in window coordinates
 	 */
-	[[nodiscard]] float GetX() const {return _x; }
+	[[nodiscard]] f32 GetX() const {return _x; }
 
 	/**
 	 * @brief Gets the Y coordinate of the mouse cursor
-	 * @return float Y position in window coordinates
+	 * @return f32 Y position in window coordinates
 	 */
-	[[nodiscard]] float GetY() const {return _y; }
+	[[nodiscard]] f32 GetY() const {return _y; }
 
-	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
 protected:
-	float _x, _y;									///< Mouse cursor position in window coordinates
+	f32 _x, _y;									///< Mouse cursor position in window coordinates
 };
 
 /**
@@ -75,7 +75,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse moved event with the specified cursor position
 	 */
-	MouseMovedEvent(float x, float y, bool isMutable = true);
+	MouseMovedEvent(f32 x, f32 y, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -102,19 +102,19 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse scrolled event with the specified scroll offsets
 	 */
-	MouseWheelScrolledEvent(float xOffset, float yOffset, bool isMutable = true);
+	MouseWheelScrolledEvent(f32 xOffset, f32 yOffset, bool isMutable = true);
 
 	/**
 	 * @brief Gets the horizontal scroll offset
-	 * @return float X scroll offset
+	 * @return f32 X scroll offset
 	 */
-	[[nodiscard]] float GetXOffset() const { return _xOffset; }
+	[[nodiscard]] f32 GetXOffset() const { return _xOffset; }
 
 	/**
 	 * @brief Gets the vertical scroll offset
-	 * @return float Y scroll offset
+	 * @return f32 Y scroll offset
 	 */
-	[[nodiscard]] float GetYOffset() const { return _yOffset; }
+	[[nodiscard]] f32 GetYOffset() const { return _yOffset; }
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -123,10 +123,10 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseScrolled)
-	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
 private:
-	float _xOffset, _yOffset;						///< Scroll wheel offsets
+	f32 _xOffset, _yOffset;						///< Scroll wheel offsets
 };
 
 /**
@@ -153,7 +153,7 @@ public:
 	 */
 	[[nodiscard]] Types::MouseButtonCode GetMouseButton() const { return _button; }
 
-	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput)
 
 protected:
 	Types::MouseButtonCode _button;									///< Platform-specific mouse button code
@@ -227,7 +227,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse dragged event with the specified button and cursor position
 	 */
-	MouseDraggedEvent(Types::MouseButtonCode button, float x, float y, bool isMutable = true);
+	MouseDraggedEvent(Types::MouseButtonCode button, f32 x, f32 y, bool isMutable = true);
 
 	/**
 	 * @brief Gets the mouse button code for the button being dragged
@@ -242,7 +242,7 @@ public:
 	[[nodiscard]] std::string ToString() const override;
 
 	EVENT_CLASS_TYPE(MouseDragged)
-	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput)
 
 private:
 	Types::MouseButtonCode _button;									///< Platform-specific mouse button code for the button being dragged

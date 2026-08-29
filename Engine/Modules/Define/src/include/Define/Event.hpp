@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-02-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -46,6 +46,6 @@
  *			};
  */
 #define EVENT_CLASS_CATEGORY(category)\
-	virtual int GetCategoryFlags() const override {return category; }
+	virtual EventCategory GetCategoryFlags() const override {return category; }
 
 #endif //CE_DEFINE_EVENT_HPP

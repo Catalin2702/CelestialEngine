@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -104,33 +104,33 @@ public:
 
 	/**
 	 * @brief Gets the current X position of the mouse cursor
-	 * @return float The X coordinate of the mouse cursor in window space (top-left origin)
+	 * @return f32 The X coordinate of the mouse cursor in window space (top-left origin)
 	 */
-	static float GetMouseX();
+	static f32 GetMouseX();
 
 	/**
 	 * @brief Gets the current Y position of the mouse cursor
-	 * @return float The Y coordinate of the mouse cursor in window space (top-left origin)
+	 * @return f32 The Y coordinate of the mouse cursor in window space (top-left origin)
 	 */
-	static float GetMouseY();
+	static f32 GetMouseY();
 
 	/**
 	 * @brief Gets the current X and Y position of the mouse cursor
-	 * @return std::pair<float, float> The X and Y coordinates of the mouse cursor in window space (top-left origin)
+	 * @return std::pair<f32, f32> The X and Y coordinates of the mouse cursor in window space (top-left origin)
 	 */
-	static std::pair<float, float> GetMouseXY();
+	static std::pair<f32, f32> GetMouseXY();
 
 	/**
 	 * @brief Gets the horizontal scroll accumulated during the current frame
-	 * @return float The X scroll delta
+	 * @return f32 The X scroll delta
 	 */
-	static float GetScrollDeltaX();
+	static f32 GetScrollDeltaX();
 
 	/**
 	 * @brief Gets the vertical scroll accumulated during the current frame
-	 * @return float The Y scroll delta
+	 * @return f32 The Y scroll delta
 	 */
-	static float GetScrollDeltaY();
+	static f32 GetScrollDeltaY();
 
 public:
 	/**

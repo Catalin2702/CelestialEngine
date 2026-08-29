@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 //
 
 #include "Core/Application/I_Application.hpp"
@@ -45,9 +45,9 @@ I_Application& I_Application::StGet() {
 	return *_stInstance;
 }
 
-float I_Application::GetDeltaTime() const {
+f32 I_Application::GetDeltaTime() const {
 	const auto currentTime = Clock::now();
-	const auto deltaTime = std::chrono::duration<float>(currentTime - _lastFrameTime.load()).count();
+	const auto deltaTime = std::chrono::duration<f32>(currentTime - _lastFrameTime.load()).count();
 	_lastFrameTime.store(currentTime);
 	return deltaTime;
 }

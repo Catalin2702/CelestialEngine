@@ -199,15 +199,15 @@ public:
 	/**
 	 * @brief Translates the raw mouse position callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveMousePositionEvent(double xPos, double yPos);
+	void ReceiveMousePositionEvent(f64 xPos, f64 yPos);
 	/**
 	 * @brief Translates the raw mouse dragged callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveMouseDraggedEvent(int button, int action, int mods, double xPos, double yPos);
+	void ReceiveMouseDraggedEvent(int button, int action, int mods, f64 xPos, f64 yPos);
 	/**
 	 * @brief Translates the raw mouse wheel scroll callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveMouseWheelScrollEvent(double xOffset, double yOffset);
+	void ReceiveMouseWheelScrollEvent(f64 xOffset, f64 yOffset);
 #pragma endregion
 
 #pragma region ReceiveRenderContextEvent

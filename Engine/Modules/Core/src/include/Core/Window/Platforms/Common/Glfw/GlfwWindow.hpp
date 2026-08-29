@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -44,9 +44,9 @@ public:
 
 	struct GlfwMouseEvents {
 		UnicastDispatcher<int, int, int> onMouseButtonDispatcher;
-		UnicastDispatcher<double, double> onMousePositionDispatcher;
-		UnicastDispatcher<int, int, int, double, double> onMouseDraggedDispatcher;
-		UnicastDispatcher<double, double> onMouseWheelScrollDispatcher;
+		UnicastDispatcher<f64, f64> onMousePositionDispatcher;
+		UnicastDispatcher<int, int, int, f64, f64> onMouseDraggedDispatcher;
+		UnicastDispatcher<f64, f64> onMouseWheelScrollDispatcher;
 	};
 
 public:
@@ -84,15 +84,15 @@ public:
 	/**
 	 * @brief Forwards the mouse position callback to the bound listener
 	 */
-	void DispatchMousePositionEvent(double xPos, double yPos) const;
+	void DispatchMousePositionEvent(f64 xPos, f64 yPos) const;
 	/**
 	 * @brief Forwards the mouse dragged callback to the bound listener
 	 */
-	void DispatchMouseDraggedEvent(int button, int action, int mods, double xPos, double yPos) const;
+	void DispatchMouseDraggedEvent(int button, int action, int mods, f64 xPos, f64 yPos) const;
 	/**
 	 * @brief Forwards the mouse wheel scroll callback to the bound listener
 	 */
-	void DispatchMouseWheelScrollEvent(double xOffset, double yOffset) const;
+	void DispatchMouseWheelScrollEvent(f64 xOffset, f64 yOffset) const;
 
 public:
 	GlfwWindowStateEvents windowStateEvents;
@@ -176,14 +176,14 @@ public:
 	 * @brief Gets the current size of the window
 	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
 	 */
-	[[nodiscard]] std::pair<float, float> GetWindowSize() const override;
+	[[nodiscard]] std::pair<f32, f32> GetWindowSize() const override;
 
 	/**
 	 * @brief Gets the current size of the frame
-	 * @return std::pair<float, float> Pair of frame width and height in pixels
+	 * @return std::pair<f32, f32> Pair of frame width and height in pixels
 	 * @details The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior. This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
 	 */
-	[[nodiscard]] std::pair<float, float> GetFrameSize() const override;
+	[[nodiscard]] std::pair<f32, f32> GetFrameSize() const override;
 
 	/**
 	 * @brief Gets the refresh rate of the monitor the window is on

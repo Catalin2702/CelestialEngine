@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -14,8 +14,8 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Type.hpp"
+#include "Types/Var/Vars.hpp"
 
-#include <functional>
 #include <string>
 
 
@@ -29,7 +29,7 @@ namespace CE::Events {
  * @details Each event type represents a specific kind of event that can occur.
  *			Events are categorized into application events, window events, input events, etc.
  */
-enum class EventType: uint8_t {
+enum class EventType: u8 {
 	None = 0,
 
 	Error,											///< Error event
@@ -63,7 +63,7 @@ enum class EventType: uint8_t {
  *			Multiple categories can be combined using bitwise OR.
  *			Each category is a single bit, allowing for efficient filtering.
  */
-enum EventCategory {
+enum class EventCategory: u8 {
 	None = 0,
 	EventCategoryApplication = BIT(0),				///< Application-related events (tick, update, render)
 	EventCategoryInput = BIT(1),					///< Input-related events (keyboard, mouse)
@@ -73,6 +73,22 @@ enum EventCategory {
 	EventCategoryRender = BIT(5),					///< Render-related events
 	EventCategoryWindow = BIT(6),					///< Window-related events
 };
+
+constexpr EventCategory operator & (EventCategory x, EventCategory y) {
+	return static_cast<EventCategory>(static_cast<u8>(x) & static_cast<u8>(y));
+}
+
+constexpr EventCategory operator | (EventCategory x, EventCategory y) {
+	return static_cast<EventCategory>(static_cast<u8>(x) | static_cast<u8>(y));
+}
+
+constexpr EventCategory operator ^ (EventCategory x, EventCategory y) {
+	return static_cast<EventCategory>(static_cast<u8>(x) ^ static_cast<u8>(y));
+}
+
+constexpr bool HasAnyFlags(const EventCategory x, const EventCategory y) {
+	return (x & y) != EventCategory::None;
+}
 
 /**
  * @class I_Event
@@ -116,7 +132,7 @@ public:
 	 * @return int Bitwise OR combination of EventCategory flags
 	 * @details Pure virtual method that must be implemented by derived classes
 	 */
-	[[nodiscard]] virtual int GetCategoryFlags() const = 0;
+	[[nodiscard]] virtual EventCategory GetCategoryFlags() const = 0;
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -133,7 +149,7 @@ public:
 	 * @return bool True if the event is in the specified category
 	 * @details Uses bitwise AND to check category membership
 	 */
-	[[nodiscard]] bool IsInCategory(const EventCategory category) const { return GetCategoryFlags() & category; }
+	[[nodiscard]] bool IsInCategory(const EventCategory category) const { return HasAnyFlags(GetCategoryFlags(), category); }
 
 	/**
 	 * @brief Checks if the event has been handled

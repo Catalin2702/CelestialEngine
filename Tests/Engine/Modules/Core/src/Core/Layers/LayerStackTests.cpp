@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 //
 
 #include <Core/Layers/I_Layer.hpp>
 #include <Core/Layers/LayerStack.hpp>
+#include <Types/Var/Vars.hpp>
 
 #include <gtest/gtest.h>
 
@@ -42,7 +43,7 @@ public:
 
 	void OnUpdate() override { ++updateCount; }
 	void OnRender() const override {}
-	void Begin(float) override {}
+	void Begin(f32) override {}
 	void End() override {}
 
 public:

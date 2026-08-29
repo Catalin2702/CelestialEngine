@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -56,7 +56,7 @@ class MetalContextEventDispatcher: public Native::NsViewEventDispatcher {
 		UnicastDispatcher<> onInitializedDispatcher;
 		UnicastDispatcher<> onWillShutdownDispatcher;
 		UnicastDispatcher<bool> onVSyncChangedDispatcher;
-		UnicastDispatcher<CGFloat, CGFloat> onResizeDispatcher;
+		UnicastDispatcher<f64, f64> onResizeDispatcher;
 	};
 public:
 	/**
@@ -78,7 +78,7 @@ public:
 	/**
 	 * @brief Forwards the resize callback to the bound listener
 	 */
-	void DispatchResizeEvent(CGFloat width, CGFloat height) const;
+	void DispatchResizeEvent(f64 width, f64 height) const;
 
 public:
 	MetalContextLifeCycleEvents metalContextLifeCycleEvents;
@@ -115,10 +115,10 @@ public:
 public:
 	/**
 	 * @brief Handles changes in content size (e.g., when the window is resized)
-	 * @param size New content size as a pair of floats (width, height)
+	 * @param size New content size as a pair of f32s (width, height)
 	 * @details Updates the Metal layer's drawable size to match the new content size. This method should be called whenever the window is resized to ensure that rendering remains correct at different sizes and that the viewport and related settings are updated accordingly.
 	 */
-	void HandleContentSizeChange(const std::pair<float, float>& size) const;
+	void HandleContentSizeChange(const std::pair<f32, f32>& size) const;
 
 	/**
 	 * @brief Changes VSync state
@@ -139,7 +139,7 @@ public:
 	/**
 	 * @brief Gets the content scale (drawable pixels per point, e.g. 2.0 on Retina)
 	 */
-	[[nodiscard]] std::pair<float, float> GetContentScale() const override;
+	[[nodiscard]] std::pair<f32, f32> GetContentScale() const override;
 
 public:
 	/** @brief Gets the Metal command queue

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Events/I_Event.hpp>
@@ -68,10 +68,10 @@ TEST_F(KeyEventTest, KeyPressedEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(KeyEventTest, KeyPressedEvent_IsInCategory_KeyboardAndInputCategories) {
 	const KeyPressedEvent event{KeyboardKeyCode::A, 0};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryKeyboard));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryApplication));
-	EXPECT_FALSE(event.IsInCategory(EventCategoryMouse));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryKeyboard));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryApplication));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryMouse));
 }
 
 /**
@@ -117,8 +117,8 @@ TEST_F(KeyEventTest, KeyReleasedEvent_GetEventType_ReturnsCorrectType) {
 TEST_F(KeyEventTest, KeyReleasedEvent_IsInCategory_KeyboardAndInputCategories) {
 	const KeyReleasedEvent event{KeyboardKeyCode::Escape};
 
-	EXPECT_TRUE(event.IsInCategory(EventCategoryKeyboard));
-	EXPECT_TRUE(event.IsInCategory(EventCategoryInput));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryKeyboard));
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryInput));
 }
 
 /**

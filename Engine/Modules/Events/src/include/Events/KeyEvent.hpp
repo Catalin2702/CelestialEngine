@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -39,7 +39,7 @@ public:
 	 */
 	[[nodiscard]] T GetKeyCode() const { return _keyCode; }
 
-	EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput)
 
 protected:
 	/**

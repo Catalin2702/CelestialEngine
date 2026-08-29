@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -12,14 +12,14 @@
 #ifndef CE_CORE_RENDER_SHADER_OPENGLSHADER_HPP
 #define CE_CORE_RENDER_SHADER_OPENGLSHADER_HPP
 
-#include "Define/DynamicLinker.hpp"
-
 #include "Core/Render/Shader/I_Shader.hpp"
+#include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE {
 namespace Types {
-	enum class ShaderType: uint8_t;
+	enum class ShaderType: u8;
 }
 
 namespace Utility {
@@ -58,7 +58,7 @@ public:
 	/**
 	 * @brief Move constructor for OpenGlShader
 	 * @param other Rvalue reference to another OpenGlShader object to move from
-	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing double-delete.
+	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing f64-delete.
 	 */
 	OpenGlShader(OpenGlShader&& other) noexcept;
 
@@ -75,7 +75,7 @@ public:
 	 * @brief Move assignment operator for OpenGlShader
 	 * @param other Rvalue reference to another OpenGlShader object to move from
 	 * @return OpenGlShader& A reference to the current OpenGlShader object after moving
-	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing double-delete. The current object's existing shader resources are cleaned up before taking ownership of the new shader ID.
+	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing f64-delete. The current object's existing shader resources are cleaned up before taking ownership of the new shader ID.
 	 */
 	OpenGlShader& operator=(OpenGlShader&& other) noexcept;
 
@@ -83,14 +83,14 @@ public:
 	/**
 	 * @brief Gets the OpenGL shader object id
 	 */
-	[[nodiscard]] uint32_t GetShaderId() const override;
+	[[nodiscard]] u32 GetShaderId() const override;
 	/**
 	 * @brief Gets the shader stage this shader belongs to
 	 */
 	[[nodiscard]] Types::ShaderType GetType() const override;
 
 private:
-	uint32_t _shaderId;
+	u32 _shaderId;
 	Types::ShaderType _type;
 };
 

@@ -12,14 +12,14 @@
 #ifndef CE_CORE_RENDER_BUFFER_OPENGLBUFFER_HPP
 #define CE_CORE_RENDER_BUFFER_OPENGLBUFFER_HPP
 
-#include "Define/DynamicLinker.hpp"
-
 #include "Core/Render/Buffer/I_Buffer.hpp"
+#include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Core {
 
-CE_CORE_API const void* OpenGlBufferOffset(uint32_t offset);
+CE_CORE_API const void* OpenGlBufferOffset(u32 offset);
 
 #pragma region OpenGlVertexBuffer
 /**
@@ -30,10 +30,10 @@ CE_CORE_API const void* OpenGlBufferOffset(uint32_t offset);
  */
 class CE_CORE_API OpenGlVertexBuffer final: public I_VertexBuffer {
 public:
-	OpenGlVertexBuffer(const float* vertices, size_t count);
+	OpenGlVertexBuffer(const f32* vertices, size_t count);
 
-	OpenGlVertexBuffer(const float* vertices, size_t count, const BufferLayout& layout);
-	OpenGlVertexBuffer(const float* vertices, size_t count, BufferLayout&& layout);
+	OpenGlVertexBuffer(const f32* vertices, size_t count, const BufferLayout& layout);
+	OpenGlVertexBuffer(const f32* vertices, size_t count, BufferLayout&& layout);
 
 	OpenGlVertexBuffer() = default;
 	OpenGlVertexBuffer(const OpenGlVertexBuffer&) = delete;
@@ -48,7 +48,7 @@ public:
 public:
 	void BindBuffer() const;
 	void UnbindBuffer() const;
-	[[nodiscard]] uint32_t BindLayout(uint32_t firstAttributeIndex) override;
+	[[nodiscard]] u32 BindLayout(u32 firstAttributeIndex) override;
 
 	void SetLayout(const BufferLayout& layout) override;
 	void SetLayout(BufferLayout&& layout) override;
@@ -56,14 +56,14 @@ public:
 
 private:
 	BufferLayout _layout;
-	uint32_t _renderID = 0;
+	u32 _renderID = 0;
 };
 #pragma endregion
 
 #pragma region OpenGlIndexBuffer
 class CE_CORE_API OpenGlIndexBuffer final: public I_IndexBuffer {
 public:
-	OpenGlIndexBuffer(const uint32_t* indices, size_t count);
+	OpenGlIndexBuffer(const u32* indices, size_t count);
 
 	OpenGlIndexBuffer() = default;
 	OpenGlIndexBuffer(const OpenGlIndexBuffer&) = delete;
@@ -81,7 +81,7 @@ public:
 	[[nodiscard]] size_t GetCount() const override { return _count; }
 
 private:
-	uint32_t _renderID = 0;
+	u32 _renderID = 0;
 	size_t _count = 0;
 };
 #pragma endregion

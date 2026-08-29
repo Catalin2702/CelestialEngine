@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,8 +13,8 @@
 #define CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
-
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <array>
 #include <functional>
@@ -82,7 +82,7 @@ public:
 	 * @details Prepares ImGui for a new frame by setting up the OpenGL rendering state and starting a new ImGui frame.
 	 * 			This is called before any ImGui rendering commands are issued each frame.
 	 */
-	void Begin(float deltaTime) override;
+	void Begin(f32 deltaTime) override;
 
 	/**
 	 * @brief Called at the end of the frame to finalize ImGui rendering
@@ -162,7 +162,7 @@ private:
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached OpenGL window pointer
 	std::optional<std::reference_wrapper<GlfwEventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
-	std::array<uint32_t, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

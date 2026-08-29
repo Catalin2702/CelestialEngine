@@ -4,16 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Types/Render/Render.hpp"
 
 namespace CE::Types {
-
-bool HasAnyFlags(const GraphicsApi x, const GraphicsApi y) {
-	return (x & y) != GraphicsApi::None;
-}
 
 bool IsGraphicsApiSupported(const GraphicsApi& api) {
 	if (api == GraphicsApi::None)

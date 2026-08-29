@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -12,7 +12,8 @@
 #ifndef CE_TYPES_FILESYSTEM_FILE_HPP
 #define CE_TYPES_FILESYSTEM_FILE_HPP
 
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
+
 
 namespace CE::Types {
 
@@ -21,7 +22,7 @@ namespace CE::Types {
  * @details NotLoaded: only the path is known; Loaded: the content is in memory; LazyLoading: the content will be
  *			loaded on first access.
  */
-enum class FileLoadState: uint8_t {
+enum class FileLoadState: u8 {
 	NotLoaded,
 	Loaded,
 	LazyLoading,

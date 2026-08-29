@@ -12,7 +12,7 @@
 #ifndef CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP
 #define CE_CORE_RENDER_SHADER_I_SHADERPROGRAM_HPP
 
-#include <cstdint>
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Core {
@@ -39,11 +39,11 @@ public:
 public:
 	/**
 	 * @brief Gets the unique identifier for the shader program
-	 * @return uint32_t Unique identifier for the shader program (e.g., OpenGL program ID)
+	 * @return u32 Unique identifier for the shader program (e.g., OpenGL program ID)
 	 * @details Pure virtual method that returns a unique identifier for the shader program, which can be used for various operations such as binding and resource management.
 	 *			Must be implemented by derived classes to provide access to the underlying shader program resource.
 	 */
-	[[nodiscard]] virtual uint32_t GetProgramId() const = 0;
+	[[nodiscard]] virtual u32 GetProgramId() const = 0;
 
 	/**
 	 * @brief Checks if the shader program is currently in use

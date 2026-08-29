@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Utility/FileSystem/File.hpp"
@@ -114,20 +114,20 @@ void File::Save() const {
 }
 
 void File::SetContent(const std::string& content) {
-	_content = std::vector<uint8_t>(content.begin(), content.end());
+	_content = std::vector<u8>(content.begin(), content.end());
 	_isLoaded = true;
 	_isChanged = true;
 	_isSaved = false;
 }
 
-void File::SetContent(const std::vector<uint8_t>& content) {
+void File::SetContent(const std::vector<u8>& content) {
 	_content = content;
 	_isLoaded = true;
 	_isChanged = true;
 	_isSaved = false;
 }
 
-void File::SetContent(std::vector<uint8_t>&& content) {
+void File::SetContent(std::vector<u8>&& content) {
 	_content = std::move(content);
 	_isLoaded = true;
 	_isChanged = true;
@@ -140,7 +140,7 @@ std::string File::GetContentStringLazy() {
 	return {_content.begin(), _content.end()};
 }
 
-const std::vector<uint8_t>& File::GetContentBytesLazy() {
+const std::vector<u8>& File::GetContentBytesLazy() {
 	if (not _isLoaded)
 		FileSystem::StLoad(*this);
 	return _content;
@@ -154,7 +154,7 @@ std::string File::GetContentString() const {
 	return {_content.begin(), _content.end()};
 }
 
-const std::vector<uint8_t>& File::GetContentBytes() const {
+const std::vector<u8>& File::GetContentBytes() const {
 	return _content;
 }
 

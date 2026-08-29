@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-29
 //
 
 #include "Core/Input/Input.hpp"
@@ -60,23 +60,23 @@ bool Input::IsMouseButtonJustReleased(const Types::MouseButtonCode buttonCode) {
 	return _instance->_state.IsMouseButtonJustReleased(buttonCode);
 }
 
-float Input::GetMouseX() {
+f32 Input::GetMouseX() {
 	return _instance->_state.GetMouseX();
 }
 
-float Input::GetMouseY() {
+f32 Input::GetMouseY() {
 	return _instance->_state.GetMouseY();
 }
 
-std::pair<float, float> Input::GetMouseXY() {
+std::pair<f32, f32> Input::GetMouseXY() {
 	return _instance->_state.GetMouseXY();
 }
 
-float Input::GetScrollDeltaX() {
+f32 Input::GetScrollDeltaX() {
 	return _instance->_state.GetScrollDeltaX();
 }
 
-float Input::GetScrollDeltaY() {
+f32 Input::GetScrollDeltaY() {
 	return _instance->_state.GetScrollDeltaY();
 }
 

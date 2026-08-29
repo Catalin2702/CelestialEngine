@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -130,7 +130,7 @@ void GlfwApplication::Start() {
 		if (_st_TargetFPS == 0) [[unlikely]]
 			continue;
 
-		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / _st_TargetFPS));
+		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<f64>(1.0 / _st_TargetFPS));
 		if (const auto now = std::chrono::steady_clock::now(); nextFrame > now)
 			std::this_thread::sleep_until(nextFrame);
 		else
@@ -145,7 +145,7 @@ void GlfwApplication::Quit() {
 	SetRunning(false);
 }
 
-void GlfwApplication::Tick(const float deltaTime) {
+void GlfwApplication::Tick(const f32 deltaTime) {
 	applicationEventHandler.DispatchTickEvent();
 
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color | Types::BufferBit::Depth);
@@ -334,9 +334,9 @@ void GlfwApplication::SetEventHubDispatcher() {
 	keyboardEvents.onCharDispatcher.Bind(EventDelegate<unsigned int>::FromMethod<hub, &hub::ReceiveCharEvent>(&eventHubDispatcher));
 
 	mouseEvents.onMouseButtonDispatcher.Bind(EventDelegate<int, int, int>::FromMethod<hub, &hub::ReceiveMouseButtonEvent>(&eventHubDispatcher));
-	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMousePositionEvent>(&eventHubDispatcher));
-	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, double, double>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
-	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<double, double>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
+	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<f64, f64>::FromMethod<hub, &hub::ReceiveMousePositionEvent>(&eventHubDispatcher));
+	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, f64, f64>::FromMethod<hub, &hub::ReceiveMouseDraggedEvent>(&eventHubDispatcher));
+	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<f64, f64>::FromMethod<hub, &hub::ReceiveMouseWheelScrollEvent>(&eventHubDispatcher));
 
 	// Focus changes feed the hub so input state can reset held keys when the window stops receiving events.
 	windowStateEvents.onFocusDispatcher.Bind(EventDelegate<int>::FromMethod<hub, &hub::ReceiveWindowFocusEvent>(&eventHubDispatcher));

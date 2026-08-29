@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -65,15 +65,15 @@ void GlfwWindowEventHandler::DispatchMouseButtonEvent(const int button, const in
 	mouseEvents.onMouseButtonDispatcher.Dispatch(button, action, mods);
 }
 
-void GlfwWindowEventHandler::DispatchMousePositionEvent(const double xPos, const double yPos) const {
+void GlfwWindowEventHandler::DispatchMousePositionEvent(const f64 xPos, const f64 yPos) const {
 	mouseEvents.onMousePositionDispatcher.Dispatch(xPos, yPos);
 }
 
-void GlfwWindowEventHandler::DispatchMouseDraggedEvent(const int button, const int action, const int mods, const double xPos, const double yPos) const {
+void GlfwWindowEventHandler::DispatchMouseDraggedEvent(const int button, const int action, const int mods, const f64 xPos, const f64 yPos) const {
 	mouseEvents.onMouseDraggedDispatcher.Dispatch(button, action, mods, xPos, yPos);
 }
 
-void GlfwWindowEventHandler::DispatchMouseWheelScrollEvent(const double xOffset, const double yOffset) const {
+void GlfwWindowEventHandler::DispatchMouseWheelScrollEvent(const f64 xOffset, const f64 yOffset) const {
 	mouseEvents.onMouseWheelScrollDispatcher.Dispatch(xOffset, yOffset);
 }
 
@@ -136,10 +136,10 @@ void GlfwWindow::OnUpdate() const {
 	glfwPollEvents();
 }
 
-std::pair<float, float> GlfwWindow::GetWindowSize() const {
+std::pair<f32, f32> GlfwWindow::GetWindowSize() const {
 	int width = 0, height = 0;
 	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
-	return {static_cast<float>(width), static_cast<float>(height)};
+	return {static_cast<f32>(width), static_cast<f32>(height)};
 }
 
 unsigned int GlfwWindow::GetRefreshRate() const {
@@ -157,14 +157,14 @@ unsigned int GlfwWindow::GetRefreshRate() const {
 	return mode ? static_cast<unsigned int>(mode->refreshRate) : 0;
 }
 
-std::pair<float, float> GlfwWindow::GetFrameSize() const {
+std::pair<f32, f32> GlfwWindow::GetFrameSize() const {
 	if (not _glfwWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
 		return {0.0f, 0.0f};
 	}
 	int width = 0, height = 0;
 	glfwGetFramebufferSize(_glfwWindow.get(), &width, &height);
-	return {static_cast<float>(width), static_cast<float>(height)};
+	return {static_cast<f32>(width), static_cast<f32>(height)};
 }
 
 void GlfwWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
@@ -203,7 +203,7 @@ void GlfwWindow::_SetIOEventCallbacks() {
 		}
 	});
 
-	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xPos, const double yPos) {
+	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const f64 xPos, const f64 yPos) {
 		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchMousePositionEvent(xPos, yPos);
 
@@ -216,7 +216,7 @@ void GlfwWindow::_SetIOEventCallbacks() {
 		}
 	});
 
-	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const double xOffset, const double yOffset) {
+	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const f64 xOffset, const f64 yOffset) {
 		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
 			_this->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
 		}

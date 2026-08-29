@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -135,7 +135,7 @@ void OpenGlShaderProgram::RemoveShader(const OpenGlShader& shader) {
 	}
 }
 
-uint32_t OpenGlShaderProgram::GetProgramId() const {
+u32 OpenGlShaderProgram::GetProgramId() const {
 	return _programID;
 }
 
