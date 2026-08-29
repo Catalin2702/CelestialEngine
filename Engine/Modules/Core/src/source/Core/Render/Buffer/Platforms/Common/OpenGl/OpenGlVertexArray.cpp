@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
@@ -88,7 +88,7 @@ void OpenGlVertexArray::Bind() const {
 	glBindVertexArray(_renderID);
 }
 
-void OpenGlVertexArray::UnBind() const {
+void OpenGlVertexArray::Unbind() const {
 	glBindVertexArray(0);
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -110,28 +110,9 @@ private:
 	uint32_t _stride = 0;
 };
 
-/**
- * @class I_Buffer
- * @brief Interface for GPU buffer objects that can be bound to the render pipeline
- * @details Minimal contract shared by API-specific buffers (vertex, index, ...): make the buffer active
- *			for subsequent draw calls (Bind) or deactivate it (Unbind).
- */
-class I_Buffer {
+class I_VertexBuffer {
 public:
-	virtual ~I_Buffer() = default;
-
-public:
-	/**
-	 * @brief Makes the buffer active for subsequent render commands
-	 */
-	virtual void BindBuffer() const = 0;
-	/**
-	 * @brief Deactivates the buffer
-	 */
-	virtual void UnbindBuffer() const = 0;
-};
-
-class I_VertexBuffer: public I_Buffer {
+	virtual ~I_VertexBuffer() = default;
 public:
 	virtual void SetLayout(const BufferLayout& layout) = 0;
 	virtual void SetLayout(BufferLayout&& layout) = 0;
@@ -148,7 +129,9 @@ public:
 	[[nodiscard]] virtual uint32_t BindLayout(uint32_t firstAttributeIndex) = 0;
 };
 
-class I_IndexBuffer: public I_Buffer {
+class I_IndexBuffer {
+public:
+	virtual ~I_IndexBuffer() = default;
 public:
 	[[nodiscard]] virtual size_t GetCount() const = 0;
 };

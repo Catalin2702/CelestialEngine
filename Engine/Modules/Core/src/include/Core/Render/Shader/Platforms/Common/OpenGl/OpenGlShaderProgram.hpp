@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -64,13 +64,13 @@ public:
 	 * @brief Binds the shader program for use in rendering
 	 * @details Attaches all shaders to the shader program and links it, making it active for subsequent rendering operations. This method ensures that the shader program is properly set up and ready for use in the rendering pipeline.
 	 */
-	void Bind() const override;
+	void Bind() const;
 
 	/**
 	 * @brief Unbinds the shader program
 	 * @details Detaches all shaders from the shader program and unbinds it, deactivating it from subsequent rendering operations. This method ensures that the shader program is properly cleaned up and no longer active in the rendering pipeline.
 	 */
-	void Unbind() const override;
+	void Unbind() const;
 
 	/**
 	 * @brief Links the shader program

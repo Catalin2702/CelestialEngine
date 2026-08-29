@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -13,7 +13,6 @@
 #define CE_CORE_RENDER_BUFFER_I_VERTEXARRAY_HPP
 
 #include <memory>
-#include <vector>
 
 
 namespace CE::Core {
@@ -26,9 +25,6 @@ public:
 	virtual ~I_VertexArray() = default;
 
 public:
-	virtual void Bind() const = 0;
-	virtual void UnBind() const = 0;
-
 	[[nodiscard]] virtual uint32_t GetRenderID() const = 0;
 
 public:

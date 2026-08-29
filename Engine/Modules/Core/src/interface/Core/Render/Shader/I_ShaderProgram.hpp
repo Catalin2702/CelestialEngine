@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -29,20 +29,6 @@ public:
 	virtual ~I_ShaderProgram() = default;
 
 public:
-	/**
-	 * @brief Binds the shader program for use in rendering
-	 * @details Pure virtual method that binds the shader program, making it active for subsequent rendering operations.
-	 *			Must be implemented by derived classes to ensure proper activation of the shader program.
-	 */
-	virtual void Bind() const = 0;
-
-	/**
-	 * @brief Unbinds the shader program
-	 * @details Pure virtual method that unbinds the shader program, deactivating it from subsequent rendering operations.
-	 *			Must be implemented by derived classes to ensure proper deactivation of the shader program.
-	 */
-	virtual void Unbind() const = 0;
-
 	/**
 	 * @brief Links the shader program
 	 * @details Pure virtual method that links the shader program, combining the attached shaders into a complete program that can be used for rendering.

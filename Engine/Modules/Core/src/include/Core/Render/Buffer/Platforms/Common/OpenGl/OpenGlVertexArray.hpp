@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Core/Render/Buffer/I_VertexArray.hpp"
 #include "Define/DynamicLinker.hpp"
+
+#include <vector>
+
 
 namespace CE::Core {
 
@@ -34,8 +37,8 @@ public:
 	OpenGlVertexArray& operator=(OpenGlVertexArray&& other) noexcept;
 
 public:
-	void Bind() const override;
-	void UnBind() const override;
+	void Bind() const;
+	void Unbind() const;
 
 	[[nodiscard]] uint32_t GetRenderID() const override { return _renderID; }
 

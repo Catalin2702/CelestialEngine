@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -46,8 +46,8 @@ public:
 	OpenGlVertexBuffer& operator=(OpenGlVertexBuffer&& other) noexcept;
 
 public:
-	void BindBuffer() const override;
-	void UnbindBuffer() const override;
+	void BindBuffer() const;
+	void UnbindBuffer() const;
 	[[nodiscard]] uint32_t BindLayout(uint32_t firstAttributeIndex) override;
 
 	void SetLayout(const BufferLayout& layout) override;
@@ -76,8 +76,8 @@ public:
 	OpenGlIndexBuffer& operator=(OpenGlIndexBuffer&& other) noexcept;
 
 public:
-	void BindBuffer() const override;
-	void UnbindBuffer() const override;
+	void BindBuffer() const;
+	void UnbindBuffer() const;
 	[[nodiscard]] size_t GetCount() const override { return _count; }
 
 private:
