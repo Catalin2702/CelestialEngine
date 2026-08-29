@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-08-29
 #
 
 set(INPUT_SOURCES
@@ -18,10 +18,10 @@ set(LAYERS_SOURCES
 
 set(MAINHUB_SOURCES
 	# Events
-	src/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
+	src/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcherTests.cpp
+		src/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcherTests.cpp
 	>
 )
 

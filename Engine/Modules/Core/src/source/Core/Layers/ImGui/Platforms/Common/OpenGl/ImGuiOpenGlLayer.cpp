@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
-#include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 #include "Events/KeyEvent.hpp"
@@ -22,8 +22,6 @@
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
-#include <stdexcept>
 
 
 namespace CE::Core {

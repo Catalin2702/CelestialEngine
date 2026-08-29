@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-28
+# Updated: 2026-08-29
 #
 
 set(APPLICATION_HEADERS
@@ -32,10 +32,10 @@ set(LAYERS_HEADERS
 
 set(MAINHUB_HEADERS
 	#Events
-	src/include/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/include/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
+		src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
 	>
 )
 
@@ -80,11 +80,11 @@ set(LAYERS_INTERFACES
 
 set(MAINHUB_INTERFACES
 	# Events
-	src/interface/Core/MainHub/Events/I_ApplicationEventHubDispatcher.hpp
-	src/interface/Core/MainHub/Events/I_KeyboardEventHubDispatcher.hpp
-	src/interface/Core/MainHub/Events/I_MouseEventHubDispatcher.hpp
-	src/interface/Core/MainHub/Events/I_RenderContextEventHubDispatcher.hpp
-	src/interface/Core/MainHub/Events/I_WindowEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_MouseEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_RenderContextEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_WindowEventHubDispatcher.hpp
 )
 
 
@@ -131,10 +131,10 @@ set(LAYERS_SOURCES
 
 set(MAINHUB_SOURCES
 	#Events
-	src/source/Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
-		src/source/Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
+		src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
 	>
 )
 

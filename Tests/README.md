@@ -11,7 +11,7 @@ percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 Tests/
 └── Engine/
     └── Modules/
-        ├── Core/       # Test per CE_Core (Input, Layers, MainHub)
+        ├── Core/       # Test per CE_Core (Input, Layers, Hub)
         ├── Define/     # Test per CE_Define (macro compilation tests)
         ├── Events/     # Test per CE_Events
         ├── Native/     # Test per CE_Native (bridge ImGui, dispatcher AppKit/MetalKit)

@@ -4,19 +4,19 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-29
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Apple/Bridge/ImGui/ImGuiBridge.h"
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
-#include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
+#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Tools/Log/Log.hpp"
-#include "Utility/ImGui/ImGui.hpp"
 #include "Types/Build/Build.hpp"
+#include "Utility/ImGui/ImGui.hpp"
 
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>

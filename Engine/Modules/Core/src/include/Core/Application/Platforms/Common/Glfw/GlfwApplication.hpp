@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-08-29
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Core/Application/I_Application.hpp"
-#include "Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"

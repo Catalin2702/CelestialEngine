@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-27
+// Updated: 2026-08-29
 
 #pragma once
 
@@ -14,7 +14,7 @@
 #include "Core/Application/I_Application.hpp"
 
 #include "Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp"
-#include "Core/MainHub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
+#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"

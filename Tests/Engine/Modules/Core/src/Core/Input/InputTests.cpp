@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-08-29
 //
 
 #include <Core/Input/Input.hpp>
 
-#include <Core/MainHub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
+#include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
 #include <Events/WindowEvent.hpp>
@@ -18,6 +18,7 @@
 #include <Types/KeyCode/MouseButtonCode.hpp>
 
 #include <gtest/gtest.h>
+
 
 using CE::Core::GlfwEventHubDispatcher;
 using CE::Core::Input;
