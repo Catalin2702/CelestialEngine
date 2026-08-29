@@ -30,7 +30,7 @@ set(LAYERS_HEADERS
 	>
 )
 
-set(MAINHUB_HEADERS
+set(HUB_HEADERS
 	#Events
 	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
 
@@ -50,6 +50,9 @@ set(RENDER_HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
+
+	# Pipeline
+	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
 
 	# Shader
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
@@ -78,7 +81,7 @@ set(LAYERS_INTERFACES
 	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
 )
 
-set(MAINHUB_INTERFACES
+set(HUB_INTERFACES
 	# Events
 	src/interface/Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp
@@ -93,8 +96,17 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Buffer/I_Buffer.hpp
 	src/interface/Core/Render/Buffer/I_VertexArray.hpp
 
+	# Command
+	src/interface/Core/Render/Command/I_CommandEncoder.hpp
+
 	# Context
 	src/interface/Core/Render/Context/I_Context.hpp
+
+	# Device
+	src/interface/Core/Render/Device/I_GraphicDevice.hpp
+
+	# Pipeline
+	src/interface/Core/Render/Pipeline/I_PipelineState.hpp
 
 	# Shader
 	src/interface/Core/Render/Shader/I_Shader.hpp
@@ -129,7 +141,7 @@ set(LAYERS_SOURCES
 	>
 )
 
-set(MAINHUB_SOURCES
+set(HUB_SOURCES
 	#Events
 	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
 
@@ -173,7 +185,7 @@ set(HEADERS
 	${APPLICATION_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
-	${MAINHUB_HEADERS}
+	${HUB_HEADERS}
 	${RENDER_HEADERS}
 	${WINDOW_HEADERS}
 )
@@ -181,7 +193,7 @@ set(HEADERS
 set(INTERFACES
 	${APPLICATION_INTERFACES}
 	${LAYERS_INTERFACES}
-	${MAINHUB_INTERFACES}
+	${HUB_INTERFACES}
 	${RENDER_INTERFACES}
 	${WINDOW_INTERFACES}
 )
@@ -190,7 +202,7 @@ set(SOURCES
 	${APPLICATION_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
-	${MAINHUB_SOURCES}
+	${HUB_SOURCES}
 	${RENDER_SOURCES}
 	${WINDOW_SOURCES}
 )

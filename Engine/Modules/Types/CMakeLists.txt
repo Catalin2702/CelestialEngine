@@ -11,6 +11,9 @@ set(HEADERS
 	# Build
 	src/include/Types/Build/Build.hpp
 
+	# Compare
+	src/include/Types/Compare/Compare.hpp
+
 	# FileSystem
 	src/include/Types/FileSystem/File.hpp
 
@@ -19,6 +22,10 @@ set(HEADERS
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 
 	# Render
+	src/include/Types/Render/BlendFactor.hpp
+	src/include/Types/Render/CullMode.hpp
+	src/include/Types/Render/PixelFormat.hpp
+	src/include/Types/Render/PrimitiveTopology.hpp
 	src/include/Types/Render/Render.hpp
 	src/include/Types/Render/Shader.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
@@ -39,11 +46,18 @@ set(SOURCES
 	# Build
 	src/source/Types/Build/Build.cpp
 
+	# Compare
+	src/source/Types/Compare/Compare.cpp
+
 	# KeyCode
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
 
 	# Render
+	src/source/Types/Render/BlendFactor.cpp
+	src/source/Types/Render/CullMode.cpp
+	src/source/Types/Render/PixelFormat.cpp
+	src/source/Types/Render/PrimitiveTopology.cpp
 	src/source/Types/Render/Render.cpp
 	src/source/Types/Render/Shader.cpp
 	src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp

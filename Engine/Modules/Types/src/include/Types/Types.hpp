@@ -14,11 +14,17 @@
 
 #include "Types/Build/Build.hpp"
 
+#include "Compare/Compare.hpp"
+
 #include "FileSystem/File.hpp"
 
 #include "KeyCode/KeyboardKeyCode.hpp"
 #include "KeyCode/MouseButtonCode.hpp"
 
+#include "Render/BlendFactor.hpp"
+#include "Render/CullMode.hpp"
+#include "Render/PixelFormat.hpp"
+#include "Render/PrimitiveTopology.hpp"
 #include "Render/Render.hpp"
 #include "Render/Shader.hpp"
 #include "Render/Platforms/Common/OpenGl/OpenGl.hpp"
