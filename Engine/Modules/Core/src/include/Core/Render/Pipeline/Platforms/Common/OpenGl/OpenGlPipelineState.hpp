@@ -30,7 +30,7 @@ namespace CE::Core {
  *			Apply() is not on I_PipelineState because Metal has no equivalent - there the pipeline is handed to the
  *			encoder, not applied to a context - so OpenGlCommandEncoder downcasts and calls it from SetPipelineState.
  */
-class CE_CORE_API OpenGlPipelineState: public I_PipelineState {
+class CE_CORE_API OpenGlPipelineState final: public I_PipelineStateBase<Types::GraphicsApi::OpenGL> {
 public:
 	/**
 	 * @brief Links the descriptor's shader modules into an OpenGL program

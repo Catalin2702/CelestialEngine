@@ -28,7 +28,7 @@ CE_CORE_API const void* OpenGlBufferOffset(u32 offset);
  * @details Owns an OpenGL buffer object created on construction and deleted on destruction; Bind/Unbind
  *			attach/detach it to GL_ARRAY_BUFFER.
  */
-class CE_CORE_API OpenGlVertexBuffer final: public I_VertexBuffer {
+class CE_CORE_API OpenGlVertexBuffer final: public I_VertexBufferBase<Types::GraphicsApi::OpenGL> {
 public:
 	OpenGlVertexBuffer(const f32* vertices, size_t count);
 
@@ -61,7 +61,7 @@ private:
 #pragma endregion
 
 #pragma region OpenGlIndexBuffer
-class CE_CORE_API OpenGlIndexBuffer final: public I_IndexBuffer {
+class CE_CORE_API OpenGlIndexBuffer final: public I_IndexBufferBase<Types::GraphicsApi::OpenGL> {
 public:
 	OpenGlIndexBuffer(const u32* indices, size_t count);
 

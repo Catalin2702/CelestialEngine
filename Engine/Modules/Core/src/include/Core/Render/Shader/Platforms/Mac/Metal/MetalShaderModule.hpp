@@ -35,7 +35,7 @@ struct ShaderModuleDescriptor;
  *			the descriptor's entryPoint names a function the library already holds. The function is retained, so a
  *			module stays valid even if the library it came from is destroyed first. Move-only, like its OpenGL twin.
  */
-class CE_CORE_API MetalShaderModule: public I_ShaderModule {
+class CE_CORE_API MetalShaderModule final: public I_ShaderModuleBase<Types::GraphicsApi::Metal> {
 public:
 	/**
 	 * @brief Resolves the descriptor's entry point in the given library

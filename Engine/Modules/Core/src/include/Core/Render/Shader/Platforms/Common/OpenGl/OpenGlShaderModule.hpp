@@ -30,7 +30,7 @@ struct ShaderModuleDescriptor;
  *			it is gone - GL only frees a shader once it is detached from all programs, so several pipelines can share
  *			one module safely. Move-only: two objects deleting the same shader name would be a f64-delete.
  */
-class CE_CORE_API OpenGlShaderModule: public I_ShaderModule {
+class CE_CORE_API OpenGlShaderModule final: public I_ShaderModuleBase<Types::GraphicsApi::OpenGL> {
 public:
 	/**
 	 * @brief Compiles the descriptor's GLSL source into an OpenGL shader object

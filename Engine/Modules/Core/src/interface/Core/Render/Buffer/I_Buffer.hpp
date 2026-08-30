@@ -13,7 +13,7 @@
 #define CE_CORE_RENDER_BUFFER_I_BUFFER_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Types/Var/Vars.hpp"
+#include "Types/Types.hpp"
 
 #include <string_view>
 #include <vector>
@@ -120,6 +120,7 @@ public:
 
 public:
 	[[nodiscard]] virtual const BufferLayout& GetLayout() const = 0;
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
 
 public:
 	/**
@@ -130,11 +131,30 @@ public:
 	[[nodiscard]] virtual u32 BindLayout(u32 firstAttributeIndex) = 0;
 };
 
+template<Types::GraphicsApi Api>
+class I_VertexBufferBase: public I_VertexBuffer {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _st_Api; }
+
+private:
+	static constexpr Types::GraphicsApi _st_Api = Api;
+};
+
 class I_IndexBuffer {
 public:
 	virtual ~I_IndexBuffer() = default;
 public:
 	[[nodiscard]] virtual size_t GetCount() const = 0;
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
+};
+
+template<Types::GraphicsApi Api>
+class I_IndexBufferBase: public I_IndexBuffer {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _st_Api; }
+
+private:
+	static constexpr Types::GraphicsApi _st_Api = Api;
 };
 
 }

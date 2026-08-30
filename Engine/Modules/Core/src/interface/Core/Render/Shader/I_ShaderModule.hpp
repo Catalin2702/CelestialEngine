@@ -12,7 +12,7 @@
 #ifndef CE_CORE_RENDER_SHADER_I_SHADERMODULE_HPP
 #define CE_CORE_RENDER_SHADER_I_SHADERMODULE_HPP
 
-#include "Types/Var/Vars.hpp"
+#include "Types/Types.hpp"
 
 #include <string_view>
 
@@ -53,6 +53,17 @@ public:
 	 * @details False on a moved-from module; a construction failure throws rather than returning an invalid module.
 	 */
 	[[nodiscard]] virtual bool IsValid() const = 0;
+
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
+};
+
+template<Types::GraphicsApi Api>
+class I_ShaderModuleBase: public I_ShaderModule {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _st_Api; }
+
+private:
+	static constexpr Types::GraphicsApi _st_Api = Api;
 };
 
 }

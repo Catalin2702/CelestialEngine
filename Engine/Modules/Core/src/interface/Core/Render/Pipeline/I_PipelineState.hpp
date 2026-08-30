@@ -12,6 +12,8 @@
 #ifndef CE_CORE_RENDER_PIPELINE_I_PIPELINESTATE_HPP
 #define CE_CORE_RENDER_PIPELINE_I_PIPELINESTATE_HPP
 
+#include "Types/Types.hpp"
+
 
 namespace CE::Core {
 
@@ -23,6 +25,16 @@ public:
 
 public:
 	[[nodiscard]] virtual const PipelineDescriptor& GetDescriptor() const = 0;
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
+};
+
+template<Types::GraphicsApi Api>
+class I_PipelineStateBase: public I_PipelineState {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _st_Api; }
+
+private:
+	static constexpr Types::GraphicsApi _st_Api = Api;
 };
 
 }
