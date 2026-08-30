@@ -32,6 +32,7 @@ namespace CE::Types {
  *			parameter to DrawIndexed.
  */
 enum class PrimitiveTopology: u8 {
+	None,
 	PointList,		///< one point per vertex
 	LineList,		///< one line per vertex pair, no sharing
 	LineStrip,		///< each vertex after the first extends the line

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -103,6 +103,10 @@ public:
 	std::vector<BufferElement>::iterator begin() { return _elements.begin(); }
 	std::vector<BufferElement>::iterator end() { return _elements.end(); }
 
+	// A layout is read-only once built, so the const overloads are what the render path actually uses.
+	[[nodiscard]] std::vector<BufferElement>::const_iterator begin() const { return _elements.begin(); }
+	[[nodiscard]] std::vector<BufferElement>::const_iterator end() const { return _elements.end(); }
+
 private:
 	void _CalculateOffsetsAndStride();
 
@@ -128,7 +132,7 @@ public:
 	 * @param firstAttributeIndex The first attribute slot to use, so several buffers can share one vertex array
 	 * @return The number of attribute slots consumed, i.e. the first free slot after this buffer
 	 */
-	[[nodiscard]] virtual u32 BindLayout(u32 firstAttributeIndex) = 0;
+	[[nodiscard]] virtual u32 BindLayout(u32 firstAttributeIndex) const = 0;
 };
 
 template<Types::GraphicsApi Api>

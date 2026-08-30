@@ -142,10 +142,6 @@ OpenGlPipelineState::~OpenGlPipelineState() {
 	glDeleteProgram(_programID);
 }
 
-u32 OpenGlPipelineState::GetOpenGlTopology() const {
-	return Types::ToOpenGl(_descriptor.topology);
-}
-
 void OpenGlPipelineState::Apply() const {
 	glUseProgram(_programID);
 

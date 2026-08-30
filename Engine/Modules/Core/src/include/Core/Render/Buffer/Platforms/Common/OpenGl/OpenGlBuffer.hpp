@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -48,7 +48,7 @@ public:
 public:
 	void BindBuffer() const;
 	void UnbindBuffer() const;
-	[[nodiscard]] u32 BindLayout(u32 firstAttributeIndex) override;
+	[[nodiscard]] u32 BindLayout(u32 firstAttributeIndex) const override;
 
 	void SetLayout(const BufferLayout& layout) override;
 	void SetLayout(BufferLayout&& layout) override;

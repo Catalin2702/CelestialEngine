@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
@@ -96,7 +96,7 @@ void OpenGlVertexBuffer::UnbindBuffer() const {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) {
+u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 	assert(!_layout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
 
 	const auto stride = static_cast<GLsizei>(_layout.GetStride());

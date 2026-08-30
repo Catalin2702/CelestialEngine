@@ -44,12 +44,19 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
+	# Command
+	src/include/Core/Render/Command/Viewport.hpp
+	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
+
 	# Context
 	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
+
+	# Device
+	src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
 
 	# Pipeline
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
@@ -161,12 +168,19 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
 
+	# Command
+	src/source/Core/Render/Command/Viewport.cpp
+	src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
+
 	# Context
 	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
+
+	# Device
+	src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
 
 	# Pipeline
 	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp

@@ -63,7 +63,7 @@ public:
 	 * @details Topology is not pipeline state in OpenGL but a draw-call argument, so it is read here and passed on
 	 *			rather than set by Apply().
 	 */
-	[[nodiscard]] u32 GetOpenGlTopology() const;
+	[[nodiscard]] Types::PrimitiveTopology GetOpenGlTopology() const { return _descriptor.topology; }
 
 	/**
 	 * @brief Makes this pipeline's program and fixed-function state current
