@@ -12,7 +12,7 @@
 #ifndef CE_CORE_RENDER_DEVICE_I_GRAPHICDEVICE_HPP
 #define CE_CORE_RENDER_DEVICE_I_GRAPHICDEVICE_HPP
 
-#include "Types/Var/Vars.hpp"
+#include "Types/Types.hpp"
 
 #include <memory>
 #include <span>
@@ -42,12 +42,23 @@ public:
 	/// Compiles (OpenGL) or resolves (Metal) one shader stage. Shared, so the same module can back several pipelines
 	/// without paying for the compile again.
 	[[nodiscard]] virtual std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) = 0;
-
 	[[nodiscard]] virtual std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) = 0;
-	[[nodiscard]] virtual std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const byte> data, const BufferLayout& layout) = 0;
+	[[nodiscard]] virtual std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> data, const BufferLayout& layout) = 0;
 
 	[[nodiscard]] virtual std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) = 0;
+
+public:
+	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() = 0;
+};
+
+template<Types::GraphicsApi Api>
+class I_GraphicDeviceBase: public I_GraphicDevice {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() override { return _st_Api; }
+
+private:
+	static constexpr Types::GraphicsApi _st_Api = Api;
 };
 
 }
