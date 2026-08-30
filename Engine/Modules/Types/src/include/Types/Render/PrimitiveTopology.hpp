@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -55,6 +55,13 @@ CE_TYPES_API const char* ToString(PrimitiveTopology topology);
  *			with an index count that is not a multiple of three is a bug every backend will render silently.
  */
 CE_TYPES_API u32 GetPrimitiveCount(PrimitiveTopology topology, u32 vertexCount);
+
+/**
+ * @brief Converts a PrimitiveTopology to the mode constant the glDraw* calls expect
+ * @details Unlike the rest of the pipeline state, topology is not something OpenGL stores: it is an argument of every
+ *			draw call, so the pipeline only exposes it and the command encoder passes it on.
+ */
+CE_TYPES_API u32 ToOpenGl(PrimitiveTopology topology);
 
 }
 

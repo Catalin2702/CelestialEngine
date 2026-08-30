@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-29
+# Updated: 2026-08-30
 #
 
 set(APPLICATION_HEADERS
@@ -53,14 +53,18 @@ set(RENDER_HEADERS
 
 	# Pipeline
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
+	src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
 
 	# Shader
+	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
+	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
+		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp
 	>
 )
 
@@ -110,6 +114,7 @@ set(RENDER_INTERFACES
 
 	# Shader
 	src/interface/Core/Render/Shader/I_Shader.hpp
+	src/interface/Core/Render/Shader/I_ShaderModule.hpp
 	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
 )
 
@@ -163,13 +168,18 @@ set(RENDER_SOURCES
 		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
 
+	# Pipeline
+	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
+
 	# Shader
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
+	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
+		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.cpp
 	>
 )
 

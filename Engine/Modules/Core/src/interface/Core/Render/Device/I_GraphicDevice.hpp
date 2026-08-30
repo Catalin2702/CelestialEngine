@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -29,6 +29,9 @@ class I_VertexBuffer;
 struct PipelineDescriptor;
 class I_PipelineState;
 
+struct ShaderModuleDescriptor;
+class I_ShaderModule;
+
 class BufferLayout;
 
 class I_GraphicDevice {
@@ -36,6 +39,10 @@ public:
 	virtual ~I_GraphicDevice() = default;
 
 public:
+	/// Compiles (OpenGL) or resolves (Metal) one shader stage. Shared, so the same module can back several pipelines
+	/// without paying for the compile again.
+	[[nodiscard]] virtual std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) = 0;
+
 	[[nodiscard]] virtual std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const byte> data, const BufferLayout& layout) = 0;

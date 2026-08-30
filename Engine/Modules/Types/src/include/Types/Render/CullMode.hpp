@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -60,6 +60,19 @@ CE_TYPES_API const char* ToString(CullMode cullMode);
  * @return const char* A string representation of the FrontFace, or "Unknown" if the value is out of range
  */
 CE_TYPES_API const char* ToString(FrontFace frontFace);
+
+/**
+ * @brief Converts a CullMode to the face constant glCullFace expects
+ * @return u32 GL_FRONT or GL_BACK; GL_BACK for None, which has no face of its own
+ * @details CullMode::None is not a face but the absence of culling: the caller must glDisable(GL_CULL_FACE) for it
+ *			rather than pass the returned value on.
+ */
+CE_TYPES_API u32 ToOpenGl(CullMode cullMode);
+
+/**
+ * @brief Converts a FrontFace to the winding constant glFrontFace expects
+ */
+CE_TYPES_API u32 ToOpenGl(FrontFace frontFace);
 
 }
 

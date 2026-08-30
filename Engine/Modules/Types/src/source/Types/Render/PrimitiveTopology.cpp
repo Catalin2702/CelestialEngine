@@ -4,10 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #include "Types/Render/PrimitiveTopology.hpp"
+
+#include <glad/glad.h>
 
 namespace CE::Types {
 
@@ -41,6 +43,18 @@ u32 GetPrimitiveCount(const PrimitiveTopology topology, const u32 vertexCount) {
 
 		default:
 			return 0;
+	}
+}
+
+u32 ToOpenGl(const PrimitiveTopology topology) {
+	switch (topology) {
+		case PrimitiveTopology::PointList: return GL_POINTS;
+		case PrimitiveTopology::LineList: return GL_LINES;
+		case PrimitiveTopology::LineStrip: return GL_LINE_STRIP;
+		case PrimitiveTopology::TriangleStrip: return GL_TRIANGLE_STRIP;
+		case PrimitiveTopology::TriangleList:
+		default:
+			return GL_TRIANGLES;
 	}
 }
 
