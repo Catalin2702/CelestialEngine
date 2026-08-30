@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -68,6 +68,8 @@ CE_TYPES_API const char* ToString(BlendFactor blendFactor);
  *			driver at pipeline creation - and only on the backends that bother to validate it.
  */
 CE_TYPES_API bool IsValidDestinationFactor(BlendFactor blendFactor);
+
+CE_TYPES_API u32 ToOpenGl(BlendFactor blendFactor);
 
 }
 

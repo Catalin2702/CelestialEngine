@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-30
 //
 
 #pragma once
@@ -76,6 +76,8 @@ constexpr bool HasAnyFlags(const CompareFunc x, const CompareFunc y) {
  *			by casting an out-of-range integer, since the three bits are exhaustive.
  */
 CE_TYPES_API const char* ToString(CompareFunc compareFunc);
+
+CE_TYPES_API u32 ToOpenGl(CompareFunc compareFunc);
 
 }
 
