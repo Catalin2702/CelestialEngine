@@ -74,6 +74,9 @@ set(RENDER_HEADERS
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp
 	>
+
+	# Swapchain
+	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
 )
 
 set(WINDOW_HEADERS
@@ -124,6 +127,9 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Shader/I_Shader.hpp
 	src/interface/Core/Render/Shader/I_ShaderModule.hpp
 	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
+
+	# Swapchain
+	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
 )
 
 set(WINDOW_INTERFACES
@@ -196,6 +202,9 @@ set(RENDER_SOURCES
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.cpp
 	>
+
+	# Swapchain
+	src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
 )
 
 set(WINDOW_SOURCES
