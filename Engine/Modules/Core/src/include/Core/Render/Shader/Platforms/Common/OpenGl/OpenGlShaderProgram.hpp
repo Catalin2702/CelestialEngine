@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -55,9 +55,9 @@ public:
 	~OpenGlShaderProgram() override;
 
 public:
-	OpenGlShaderProgram& operator=(const OpenGlShaderProgram& other);
+	OpenGlShaderProgram& operator = (const OpenGlShaderProgram& other);
 
-	OpenGlShaderProgram& operator=(OpenGlShaderProgram&& other) noexcept;
+	OpenGlShaderProgram& operator = (OpenGlShaderProgram&& other) noexcept;
 
 public:
 	/**

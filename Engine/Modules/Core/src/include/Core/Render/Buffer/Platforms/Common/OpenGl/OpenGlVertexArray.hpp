@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -33,8 +33,8 @@ public:
 	~OpenGlVertexArray() override;
 
 public:
-	OpenGlVertexArray& operator=(const OpenGlVertexArray&) = delete;
-	OpenGlVertexArray& operator=(OpenGlVertexArray&& other) noexcept;
+	OpenGlVertexArray& operator = (const OpenGlVertexArray&) = delete;
+	OpenGlVertexArray& operator = (OpenGlVertexArray&& other) noexcept;
 
 public:
 	void Bind() const;

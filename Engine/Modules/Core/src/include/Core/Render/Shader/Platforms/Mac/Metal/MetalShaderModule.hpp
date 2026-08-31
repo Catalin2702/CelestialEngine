@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -52,8 +52,8 @@ public:
 	~MetalShaderModule() override;
 
 public:
-	MetalShaderModule& operator=(const MetalShaderModule&) = delete;
-	MetalShaderModule& operator=(MetalShaderModule&& other) noexcept;
+	MetalShaderModule& operator = (const MetalShaderModule&) = delete;
+	MetalShaderModule& operator = (MetalShaderModule&& other) noexcept;
 
 public:
 	[[nodiscard]] Types::ShaderType GetStage() const override { return _stage; }

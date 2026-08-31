@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -121,7 +121,7 @@ OpenGlPipelineState::OpenGlPipelineState(OpenGlPipelineState&& other) noexcept:
 	other._programID = 0;
 }
 
-OpenGlPipelineState& OpenGlPipelineState::operator=(OpenGlPipelineState&& other) noexcept {
+OpenGlPipelineState& OpenGlPipelineState::operator = (OpenGlPipelineState&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

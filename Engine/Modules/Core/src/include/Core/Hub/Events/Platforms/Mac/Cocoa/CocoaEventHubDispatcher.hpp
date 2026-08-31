@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -82,8 +82,8 @@ public:
 	CocoaEventHubDispatcher(CocoaEventHubDispatcher&&) noexcept = default;
 	~CocoaEventHubDispatcher() override = default;
 
-	CocoaEventHubDispatcher& operator=(const CocoaEventHubDispatcher&) = delete;
-	CocoaEventHubDispatcher& operator=(CocoaEventHubDispatcher&&) noexcept = default;
+	CocoaEventHubDispatcher& operator = (const CocoaEventHubDispatcher&) = delete;
+	CocoaEventHubDispatcher& operator = (CocoaEventHubDispatcher&&) noexcept = default;
 
 public:
 	/**

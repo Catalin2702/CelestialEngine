@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -42,8 +42,8 @@ public:
 	~OpenGlVertexBuffer() override;
 
 public:
-	OpenGlVertexBuffer& operator=(const OpenGlVertexBuffer&) = delete;
-	OpenGlVertexBuffer& operator=(OpenGlVertexBuffer&& other) noexcept;
+	OpenGlVertexBuffer& operator = (const OpenGlVertexBuffer&) = delete;
+	OpenGlVertexBuffer& operator = (OpenGlVertexBuffer&& other) noexcept;
 
 public:
 	void BindBuffer() const;
@@ -72,8 +72,8 @@ public:
 	~OpenGlIndexBuffer() override;
 
 public:
-	OpenGlIndexBuffer& operator=(const OpenGlIndexBuffer&) = delete;
-	OpenGlIndexBuffer& operator=(OpenGlIndexBuffer&& other) noexcept;
+	OpenGlIndexBuffer& operator = (const OpenGlIndexBuffer&) = delete;
+	OpenGlIndexBuffer& operator = (OpenGlIndexBuffer&& other) noexcept;
 
 public:
 	void BindBuffer() const;

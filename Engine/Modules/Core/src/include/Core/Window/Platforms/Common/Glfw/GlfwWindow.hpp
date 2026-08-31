@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -134,14 +134,14 @@ public:
 	~GlfwWindow() override;
 
 public:
-	GlfwWindow& operator=(const GlfwWindow&) = delete;
+	GlfwWindow& operator = (const GlfwWindow&) = delete;
 
 	/**
 	 * @brief Move assignment
 	 * @details Releases the window currently held (if any), then adopts other's native handle and re-registers the GLFW
 	 *			user pointer on this object. See the move constructor for why that re-registration is mandatory.
 	 */
-	GlfwWindow& operator=(GlfwWindow&& other) noexcept;
+	GlfwWindow& operator = (GlfwWindow&& other) noexcept;
 
 public:
 	/**

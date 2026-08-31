@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
@@ -55,7 +55,7 @@ OpenGlShaderModule::OpenGlShaderModule(OpenGlShaderModule&& other) noexcept:
 	other._stage = Types::ShaderType::None;
 }
 
-OpenGlShaderModule& OpenGlShaderModule::operator=(OpenGlShaderModule&& other) noexcept {
+OpenGlShaderModule& OpenGlShaderModule::operator = (OpenGlShaderModule&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

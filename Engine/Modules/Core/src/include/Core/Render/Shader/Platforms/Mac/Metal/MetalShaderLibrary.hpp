@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -61,8 +61,8 @@ public:
 	~MetalShaderLibrary();
 
 public:
-	MetalShaderLibrary& operator=(const MetalShaderLibrary& other);
-	MetalShaderLibrary& operator=(MetalShaderLibrary&& other) noexcept;
+	MetalShaderLibrary& operator = (const MetalShaderLibrary& other);
+	MetalShaderLibrary& operator = (MetalShaderLibrary&& other) noexcept;
 
 public:
 	/**

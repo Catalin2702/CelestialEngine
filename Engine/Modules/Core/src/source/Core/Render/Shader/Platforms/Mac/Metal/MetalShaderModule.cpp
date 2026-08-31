@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
@@ -58,7 +58,7 @@ MetalShaderModule::MetalShaderModule(MetalShaderModule&& other) noexcept:
 	other._stage = Types::ShaderType::None;
 }
 
-MetalShaderModule& MetalShaderModule::operator=(MetalShaderModule&& other) noexcept {
+MetalShaderModule& MetalShaderModule::operator = (MetalShaderModule&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

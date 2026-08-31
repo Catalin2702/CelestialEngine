@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -65,9 +65,9 @@ public:
 
 	// Disable copy and move to prevent issues with cached window pointers
 	ImGuiOpenGlLayer(const ImGuiOpenGlLayer&) = delete;
-	ImGuiOpenGlLayer& operator=(const ImGuiOpenGlLayer&) = delete;
+	ImGuiOpenGlLayer& operator = (const ImGuiOpenGlLayer&) = delete;
 	ImGuiOpenGlLayer(ImGuiOpenGlLayer&&) = delete;
-	ImGuiOpenGlLayer& operator=(ImGuiOpenGlLayer&&) = delete;
+	ImGuiOpenGlLayer& operator = (ImGuiOpenGlLayer&&) = delete;
 
 public:
 	/**

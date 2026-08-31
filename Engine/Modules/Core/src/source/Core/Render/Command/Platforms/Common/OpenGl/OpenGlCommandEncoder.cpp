@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
@@ -37,7 +37,7 @@ OpenGlCommandEncoder::OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcep
 	other._ended = true;
 }
 
-OpenGlCommandEncoder& OpenGlCommandEncoder::operator=(OpenGlCommandEncoder&& other) noexcept {
+OpenGlCommandEncoder& OpenGlCommandEncoder::operator = (OpenGlCommandEncoder&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -52,8 +52,8 @@ class CE_CORE_API OpenGlContextEventDispatcher {
 		OpenGlContextLifeCycle(OpenGlContextLifeCycle&&) noexcept = default;
 		~OpenGlContextLifeCycle() = default;
 
-		OpenGlContextLifeCycle& operator=(const OpenGlContextLifeCycle&) = delete;
-		OpenGlContextLifeCycle& operator=(OpenGlContextLifeCycle&&) noexcept = default;
+		OpenGlContextLifeCycle& operator = (const OpenGlContextLifeCycle&) = delete;
+		OpenGlContextLifeCycle& operator = (OpenGlContextLifeCycle&&) noexcept = default;
 	};
 
 public:
@@ -62,8 +62,8 @@ public:
 	OpenGlContextEventDispatcher(OpenGlContextEventDispatcher&&) noexcept = default;
 	~OpenGlContextEventDispatcher() = default;
 
-	OpenGlContextEventDispatcher& operator=(const OpenGlContextEventDispatcher&) = delete;
-	OpenGlContextEventDispatcher& operator=(OpenGlContextEventDispatcher&&) noexcept = default;
+	OpenGlContextEventDispatcher& operator = (const OpenGlContextEventDispatcher&) = delete;
+	OpenGlContextEventDispatcher& operator = (OpenGlContextEventDispatcher&&) noexcept = default;
 
 public:
 	/**
@@ -119,9 +119,9 @@ public:
 	~OpenGlContext() override;
 
 public:
-	OpenGlContext& operator=(const OpenGlContext& other) = delete;
+	OpenGlContext& operator = (const OpenGlContext& other) = delete;
 
-	OpenGlContext& operator=(OpenGlContext&& other) noexcept;
+	OpenGlContext& operator = (OpenGlContext&& other) noexcept;
 
 public:
 	void Init() override {}

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
@@ -39,7 +39,7 @@ OpenGlShader::~OpenGlShader() {
 		glDeleteShader(_shaderId);
 }
 
-OpenGlShader& OpenGlShader::operator=(const OpenGlShader& other) {
+OpenGlShader& OpenGlShader::operator = (const OpenGlShader& other) {
 	if (this == &other) [[unlikely]]
 		return *this;
 
@@ -48,7 +48,7 @@ OpenGlShader& OpenGlShader::operator=(const OpenGlShader& other) {
 	return *this;
 }
 
-OpenGlShader& OpenGlShader::operator=(OpenGlShader&& other) noexcept {
+OpenGlShader& OpenGlShader::operator = (OpenGlShader&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

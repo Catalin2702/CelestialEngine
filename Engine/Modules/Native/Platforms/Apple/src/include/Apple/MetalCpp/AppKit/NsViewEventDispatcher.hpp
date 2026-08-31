@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -69,8 +69,8 @@ public:
 	NsViewEventDispatcher(NsViewEventDispatcher&&) noexcept = default;
 	~NsViewEventDispatcher() override = default;
 
-	NsViewEventDispatcher& operator=(const NsViewEventDispatcher&) = delete;
-	NsViewEventDispatcher& operator=(NsViewEventDispatcher&&) noexcept = default;
+	NsViewEventDispatcher& operator = (const NsViewEventDispatcher&) = delete;
+	NsViewEventDispatcher& operator = (NsViewEventDispatcher&&) noexcept = default;
 
 public:
 	/**

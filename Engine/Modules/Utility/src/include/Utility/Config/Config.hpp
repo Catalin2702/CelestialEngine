@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -39,8 +39,8 @@ public:
 	~Config() = delete;
 
 public:
-	Config& operator=(const Config&) = delete;
-	Config& operator=(Config&&) noexcept = delete;
+	Config& operator = (const Config&) = delete;
+	Config& operator = (Config&&) noexcept = delete;
 
 public:
 	/**

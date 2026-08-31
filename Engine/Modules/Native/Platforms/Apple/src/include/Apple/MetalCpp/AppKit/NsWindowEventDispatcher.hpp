@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -60,8 +60,8 @@ public:
 	NsWindowEventDispatcher(NsWindowEventDispatcher&&) noexcept = default;
 	~NsWindowEventDispatcher() override = default;
 
-	NsWindowEventDispatcher& operator=(const NsWindowEventDispatcher&) = delete;
-	NsWindowEventDispatcher& operator=(NsWindowEventDispatcher&&) noexcept = default;
+	NsWindowEventDispatcher& operator = (const NsWindowEventDispatcher&) = delete;
+	NsWindowEventDispatcher& operator = (NsWindowEventDispatcher&&) noexcept = default;
 
 public:
 	/**

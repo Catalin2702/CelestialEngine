@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
@@ -68,7 +68,7 @@ OpenGlVertexBuffer::OpenGlVertexBuffer(OpenGlVertexBuffer&& other) noexcept: _re
 	other._renderID = 0;
 }
 
-OpenGlVertexBuffer& OpenGlVertexBuffer::operator=(OpenGlVertexBuffer&& other) noexcept {
+OpenGlVertexBuffer& OpenGlVertexBuffer::operator = (OpenGlVertexBuffer&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 
@@ -146,7 +146,7 @@ OpenGlIndexBuffer::OpenGlIndexBuffer(OpenGlIndexBuffer&& other) noexcept: _rende
 	other._count = 0;
 }
 
-OpenGlIndexBuffer& OpenGlIndexBuffer::operator=(OpenGlIndexBuffer&& other) noexcept {
+OpenGlIndexBuffer& OpenGlIndexBuffer::operator = (OpenGlIndexBuffer&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

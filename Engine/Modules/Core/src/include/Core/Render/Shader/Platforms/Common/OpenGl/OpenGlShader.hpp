@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -69,7 +69,7 @@ public:
 	~OpenGlShader() override;
 
 public:
-	OpenGlShader& operator=(const OpenGlShader& other);
+	OpenGlShader& operator = (const OpenGlShader& other);
 
 	/**
 	 * @brief Move assignment operator for OpenGlShader
@@ -77,7 +77,7 @@ public:
 	 * @return OpenGlShader& A reference to the current OpenGlShader object after moving
 	 * @details Transfers ownership of the OpenGL shader ID from another OpenGlShader instance. The moved-from object will have its shader ID set to 0 (invalid), preventing f64-delete. The current object's existing shader resources are cleaned up before taking ownership of the new shader ID.
 	 */
-	OpenGlShader& operator=(OpenGlShader&& other) noexcept;
+	OpenGlShader& operator = (OpenGlShader&& other) noexcept;
 
 public:
 	/**

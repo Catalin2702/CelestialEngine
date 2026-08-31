@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -47,8 +47,8 @@ public:
 	~OpenGlPipelineState() override;
 
 public:
-	OpenGlPipelineState& operator=(const OpenGlPipelineState&) = delete;
-	OpenGlPipelineState& operator=(OpenGlPipelineState&& other) noexcept;
+	OpenGlPipelineState& operator = (const OpenGlPipelineState&) = delete;
+	OpenGlPipelineState& operator = (OpenGlPipelineState&& other) noexcept;
 
 public:
 	[[nodiscard]] const PipelineDescriptor& GetDescriptor() const override { return _descriptor; }

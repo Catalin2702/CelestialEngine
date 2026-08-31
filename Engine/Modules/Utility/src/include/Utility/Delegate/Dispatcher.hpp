@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -45,8 +45,8 @@ public:
 	UnicastDispatcher(UnicastDispatcher&&) noexcept = default;
 	~UnicastDispatcher() = default;
 
-	UnicastDispatcher& operator=(const UnicastDispatcher&) = default;
-	UnicastDispatcher& operator=(UnicastDispatcher&&) noexcept = default;
+	UnicastDispatcher& operator = (const UnicastDispatcher&) = default;
+	UnicastDispatcher& operator = (UnicastDispatcher&&) noexcept = default;
 
 public:
 	/**
@@ -111,8 +111,8 @@ public:
 	CallbackDispatcher(CallbackDispatcher&&) noexcept = default;
 	~CallbackDispatcher() = default;
 
-	CallbackDispatcher& operator=(const CallbackDispatcher&) = default;
-	CallbackDispatcher& operator=(CallbackDispatcher&&) noexcept = default;
+	CallbackDispatcher& operator = (const CallbackDispatcher&) = default;
+	CallbackDispatcher& operator = (CallbackDispatcher&&) noexcept = default;
 
 public:
 	/**
@@ -181,7 +181,7 @@ public:
 	MulticastDispatcher(const MulticastDispatcher&) = default;
 	~MulticastDispatcher() = default;
 
-	MulticastDispatcher& operator=(const MulticastDispatcher&) = default;
+	MulticastDispatcher& operator = (const MulticastDispatcher&) = default;
 
 	// Written out instead of defaulted only for the assert: moving a dispatcher while Dispatch is walking _callbacks
 	// would leave that loop iterating a moved-from vector. The handle counter is carried over (not reset) so tokens
@@ -194,7 +194,7 @@ public:
 		assert(not other._isDispatching && "MulticastDispatcher: moved while dispatching");
 	}
 
-	MulticastDispatcher& operator=(MulticastDispatcher&& other) noexcept {
+	MulticastDispatcher& operator = (MulticastDispatcher&& other) noexcept {
 		if (this == &other) [[unlikely]]
 			return *this;
 

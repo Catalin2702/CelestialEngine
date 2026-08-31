@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -46,8 +46,8 @@ public:
 	~OpenGlShaderModule() override;
 
 public:
-	OpenGlShaderModule& operator=(const OpenGlShaderModule&) = delete;
-	OpenGlShaderModule& operator=(OpenGlShaderModule&& other) noexcept;
+	OpenGlShaderModule& operator = (const OpenGlShaderModule&) = delete;
+	OpenGlShaderModule& operator = (OpenGlShaderModule&& other) noexcept;
 
 public:
 	[[nodiscard]] Types::ShaderType GetStage() const override { return _stage; }

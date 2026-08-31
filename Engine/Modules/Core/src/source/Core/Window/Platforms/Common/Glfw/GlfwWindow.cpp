@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -96,7 +96,7 @@ GlfwWindow::GlfwWindow(GlfwWindow&& other) noexcept:
 	_AdoptNativeWindow();
 }
 
-GlfwWindow& GlfwWindow::operator=(GlfwWindow&& other) noexcept {
+GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

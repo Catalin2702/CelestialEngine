@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -73,8 +73,8 @@ public:
 	GlfwEventHubDispatcher(GlfwEventHubDispatcher&&) noexcept = default;
 	~GlfwEventHubDispatcher() override = default;
 
-	GlfwEventHubDispatcher& operator=(const GlfwEventHubDispatcher&) = delete;
-	GlfwEventHubDispatcher& operator=(GlfwEventHubDispatcher&&) noexcept = default;
+	GlfwEventHubDispatcher& operator = (const GlfwEventHubDispatcher&) = delete;
+	GlfwEventHubDispatcher& operator = (GlfwEventHubDispatcher&&) noexcept = default;
 
 public:
 #pragma region DispatchApplicationEvent

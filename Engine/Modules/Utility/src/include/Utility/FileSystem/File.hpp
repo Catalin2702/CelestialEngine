@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -70,7 +70,7 @@ public:
 	 * @return File& A reference to the current File object after copying
 	 * @details Copies the file path from the provided File object. The content is not copied. The current File will attempt to load the content when accessed.
 	 */
-	File & operator=(const File& other);
+	File & operator = (const File& other);
 
 	/**
 	 * @brief Move assignment operator
@@ -78,7 +78,7 @@ public:
 	 * @return File& A reference to the current File object after moving
 	 * @details Moves the file path and content from the provided File object. After the move, the original File object will be left in a valid but unspecified state.
 	 */
-	File & operator=(File&& other) noexcept;
+	File & operator = (File&& other) noexcept;
 
 public:
 	/**

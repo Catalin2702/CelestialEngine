@@ -54,8 +54,8 @@ public:
 	~OpenGlCommandEncoder() override;
 
 public:
-	OpenGlCommandEncoder& operator=(const OpenGlCommandEncoder&) = delete;
-	OpenGlCommandEncoder& operator=(OpenGlCommandEncoder&& other) noexcept;
+	OpenGlCommandEncoder& operator = (const OpenGlCommandEncoder&) = delete;
+	OpenGlCommandEncoder& operator = (OpenGlCommandEncoder&& other) noexcept;
 
 public:
 	/**

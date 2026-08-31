@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 
 #pragma once
 
@@ -129,12 +129,12 @@ public:
 	/**
 	 * @brief Copy assignment operator (deleted)
 	 */
-	CocoaApplication& operator=(const CocoaApplication&) = delete;
+	CocoaApplication& operator = (const CocoaApplication&) = delete;
 
 	/**
 	 * @brief Move assignment operator (deleted)
 	 */
-	CocoaApplication& operator=(CocoaApplication&&) = delete;
+	CocoaApplication& operator = (CocoaApplication&&) = delete;
 
 public:
 	/**

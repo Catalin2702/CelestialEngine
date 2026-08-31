@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
@@ -81,7 +81,7 @@ OpenGlContext::OpenGlContext(OpenGlContext&& other) noexcept:
 	other.openGlContextEventDispatcher = {};
 }
 
-OpenGlContext& OpenGlContext::operator=(OpenGlContext&& other) noexcept {
+OpenGlContext& OpenGlContext::operator = (OpenGlContext&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

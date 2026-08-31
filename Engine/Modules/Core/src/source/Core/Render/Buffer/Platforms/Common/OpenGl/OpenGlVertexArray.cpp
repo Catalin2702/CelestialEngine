@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
@@ -61,7 +61,7 @@ OpenGlVertexArray::OpenGlVertexArray(OpenGlVertexArray&& other) noexcept:
 	other._renderID = 0;
 }
 
-OpenGlVertexArray& OpenGlVertexArray::operator=(OpenGlVertexArray&& other) noexcept {
+OpenGlVertexArray& OpenGlVertexArray::operator = (OpenGlVertexArray&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

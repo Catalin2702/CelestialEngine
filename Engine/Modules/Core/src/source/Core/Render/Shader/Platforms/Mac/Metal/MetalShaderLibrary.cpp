@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -61,7 +61,7 @@ MetalShaderLibrary::~MetalShaderLibrary() {
 	_device.reset();
 }
 
-MetalShaderLibrary& MetalShaderLibrary::operator=(const MetalShaderLibrary& other) {
+MetalShaderLibrary& MetalShaderLibrary::operator = (const MetalShaderLibrary& other) {
 	if (this == &other) [[unlikely]]
 		return *this;
 
@@ -71,7 +71,7 @@ MetalShaderLibrary& MetalShaderLibrary::operator=(const MetalShaderLibrary& othe
 	return *this;
 }
 
-MetalShaderLibrary& MetalShaderLibrary::operator=(MetalShaderLibrary&& other) noexcept {
+MetalShaderLibrary& MetalShaderLibrary::operator = (MetalShaderLibrary&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 

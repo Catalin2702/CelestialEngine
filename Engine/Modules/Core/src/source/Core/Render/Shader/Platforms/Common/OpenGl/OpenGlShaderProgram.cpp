@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
@@ -29,7 +29,7 @@ OpenGlShaderProgram::OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept: 
 	other._programID = 0;
 }
 
-OpenGlShaderProgram& OpenGlShaderProgram::operator=(const OpenGlShaderProgram& other) {
+OpenGlShaderProgram& OpenGlShaderProgram::operator = (const OpenGlShaderProgram& other) {
 	if (this == &other) [[unlikely]]
 		return *this;
 
@@ -38,7 +38,7 @@ OpenGlShaderProgram& OpenGlShaderProgram::operator=(const OpenGlShaderProgram& o
 	return *this;
 }
 
-OpenGlShaderProgram& OpenGlShaderProgram::operator=(OpenGlShaderProgram&& other) noexcept {
+OpenGlShaderProgram& OpenGlShaderProgram::operator = (OpenGlShaderProgram&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 
