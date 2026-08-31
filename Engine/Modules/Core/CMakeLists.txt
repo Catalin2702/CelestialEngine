@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-31
+# Updated: 2026-09-01
 #
 
 set(APPLICATION_HEADERS
@@ -79,6 +79,10 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
 )
 
+set(RUNLOOP_HEADERS
+	src/include/Core/RunLoop/PacedRunLoop.hpp
+)
+
 set(WINDOW_HEADERS
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
@@ -130,6 +134,10 @@ set(RENDER_INTERFACES
 
 	# Swapchain
 	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
+)
+
+set(RUNLOOP_INTERFACES
+	src/interface/Core/RunLoop/I_RunLoop.hpp
 )
 
 set(WINDOW_INTERFACES
@@ -207,6 +215,10 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
 )
 
+set(RUNLOOP_SOURCES
+	src/source/Core/RunLoop/PacedRunLoop.cpp
+)
+
 set(WINDOW_SOURCES
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 
@@ -221,6 +233,7 @@ set(HEADERS
 	${LAYERS_HEADERS}
 	${HUB_HEADERS}
 	${RENDER_HEADERS}
+	${RUNLOOP_HEADERS}
 	${WINDOW_HEADERS}
 )
 
@@ -229,6 +242,7 @@ set(INTERFACES
 	${LAYERS_INTERFACES}
 	${HUB_INTERFACES}
 	${RENDER_INTERFACES}
+	${RUNLOOP_INTERFACES}
 	${WINDOW_INTERFACES}
 )
 
@@ -238,6 +252,7 @@ set(SOURCES
 	${LAYERS_SOURCES}
 	${HUB_SOURCES}
 	${RENDER_SOURCES}
+	${RUNLOOP_SOURCES}
 	${WINDOW_SOURCES}
 )
 

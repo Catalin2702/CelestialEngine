@@ -1,0 +1,62 @@
+//
+// Module: CelestialEngine/Engine/Modules/Core/RunLoop
+// File: PacedRunLoop.cpp
+// Created by: Catalin Chirosca
+// Created: 2026-09-01
+// Updated by: Catalin Chirosca
+// Updated: 2026-09-01
+//
+
+#include "Core/RunLoop/PacedRunLoop.hpp"
+#include "Tools/Log/Log.hpp"
+
+#include <stdexcept>
+#include <thread>
+
+
+namespace CE::Core {
+
+void PacedRunLoop::Run() {
+	if (_running) [[unlikely]] {
+		CE_CORE_WARN("PacedRunLoop::Run: The loop is already running!");
+		return;
+	}
+
+	if (not _onFrame.IsBound()) [[unlikely]] {
+		constexpr auto error = "PacedRunLoop::Run: No frame delegate is bound!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	_running = true;
+	_paused = false;
+
+	_onDidStart.Dispatch();
+
+	auto nextFrame = std::chrono::steady_clock::now();
+
+	while (_running) [[likely]] {
+		if (_paused) [[unlikely]] {
+			std::this_thread::sleep_for(_pausedFromPolling);
+			nextFrame = std::chrono::steady_clock::now();
+			continue;
+		}
+
+		_onFrame.Dispatch();
+
+		if (_targetFrameRate == 0) [[unlikely]]
+			continue;
+
+		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+			std::chrono::duration<f64>(1.0_f64 / _targetFrameRate)
+		);
+
+		if (const auto now = std::chrono::steady_clock::now(); nextFrame > now)
+			std::this_thread::sleep_until(nextFrame);
+		else
+			nextFrame = now;
+	}
+}
+
+
+}
