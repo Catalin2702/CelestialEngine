@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -21,6 +21,7 @@
 #include "KeyCode/KeyboardKeyCode.hpp"
 #include "KeyCode/MouseButtonCode.hpp"
 
+#include "Render/AttachmentAction.hpp"
 #include "Render/BlendFactor.hpp"
 #include "Render/CullMode.hpp"
 #include "Render/PixelFormat.hpp"

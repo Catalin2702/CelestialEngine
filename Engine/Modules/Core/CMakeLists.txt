@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-30
+# Updated: 2026-08-31
 #
 
 set(APPLICATION_HEADERS
@@ -45,6 +45,7 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
 	# Command
+	src/include/Core/Render/Command/RenderPassDescriptor.hpp
 	src/include/Core/Render/Command/Viewport.hpp
 	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
 

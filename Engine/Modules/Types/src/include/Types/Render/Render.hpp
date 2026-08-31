@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -61,6 +61,14 @@ constexpr bool HasAnyFlags(const GraphicsApi x, const GraphicsApi y) {
  *			For example, Metal is only supported on macOS, while DirectX is only supported on Windows.
  */
 CE_TYPES_API bool IsGraphicsApiSupported(const GraphicsApi& api);
+
+/**
+ * @brief Colour render targets a single render pass can write to at once
+ * @details A hard ceiling on Direct3D 11/12 (D3D1x_SIMULTANEOUS_RENDER_TARGET_COUNT) and on Metal, and the minimum
+ *			the OpenGL spec requires of GL_MAX_COLOR_ATTACHMENTS. Vulkan is the exception: its guaranteed
+ *			maxColorAttachments is only 4, so that limit has to be queried and the attachment count clamped to it.
+ */
+inline constexpr u32 MAX_COLOR_ATTACHMENTS = 8;
 
 }
 

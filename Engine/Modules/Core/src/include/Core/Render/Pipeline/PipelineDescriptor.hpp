@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -48,7 +48,7 @@ struct CE_CORE_API BlendState {
 };
 
 struct CE_CORE_API RenderTargetFormats {
-	std::array<Types::PixelFormat, 8> colors = {Types::PixelFormat::BGRA8Unorm};
+	std::array<Types::PixelFormat, Types::MAX_COLOR_ATTACHMENTS> colors = {Types::PixelFormat::BGRA8Unorm};
 	u32 colorCount = 1;
 	Types::PixelFormat depth = Types::PixelFormat::Depth32Float;
 };

@@ -21,7 +21,7 @@
 namespace CE::Core {
 
 class I_CommandEncoder;
-class RenderPassDescriptor;
+struct RenderPassDescriptor;
 
 class I_IndexBuffer;
 class I_VertexBuffer;

@@ -20,11 +20,14 @@
 
 namespace CE::Core {
 
-OpenGlCommandEncoder::OpenGlCommandEncoder() {
+OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height) {
 	glGenVertexArrays(1, &_vaoID);
 
 	// Bound for the encoder's whole life: every buffer binding below is recorded into it, and glDrawElements reads it.
 	glBindVertexArray(_vaoID);
+
+	glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+	glDepthRangef(0.f, 1.f);
 }
 
 OpenGlCommandEncoder::OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept:

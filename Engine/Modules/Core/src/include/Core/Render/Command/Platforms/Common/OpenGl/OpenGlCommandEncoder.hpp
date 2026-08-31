@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -39,9 +39,14 @@ namespace CE::Core {
 class OpenGlCommandEncoder final: public I_CommandEncoderBase<Types::GraphicsApi::OpenGL> {
 public:
 	/**
-	 * @brief Creates and binds the encoder's vertex array
+	 * @brief Creates and binds the encoder's vertex array, and sets the pass' default viewport
+	 * @param width Width of the render area, in target pixels
+	 * @param height Height of the render area, in target pixels
+	 * @details The viewport starts covering the whole render area, the way a Metal render command encoder does.
+	 *			Without that, glViewport - which is global and survives the pass that set it - would silently hand the
+	 *			next pass whatever rectangle the previous one left behind.
 	 */
-	OpenGlCommandEncoder();
+	OpenGlCommandEncoder(u32 width, u32 height);
 
 	OpenGlCommandEncoder(const OpenGlCommandEncoder&) = delete;
 	OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept;

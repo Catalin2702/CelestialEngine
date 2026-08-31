@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-29
+# Updated: 2026-08-31
 #
 
 set(HEADERS
@@ -22,6 +22,7 @@ set(HEADERS
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 
 	# Render
+	src/include/Types/Render/AttachmentAction.hpp
 	src/include/Types/Render/BlendFactor.hpp
 	src/include/Types/Render/CullMode.hpp
 	src/include/Types/Render/PixelFormat.hpp
@@ -54,6 +55,7 @@ set(SOURCES
 	src/source/Types/KeyCode/MouseButtonCode.cpp
 
 	# Render
+	src/source/Types/Render/AttachmentAction.cpp
 	src/source/Types/Render/BlendFactor.cpp
 	src/source/Types/Render/CullMode.cpp
 	src/source/Types/Render/PixelFormat.cpp
