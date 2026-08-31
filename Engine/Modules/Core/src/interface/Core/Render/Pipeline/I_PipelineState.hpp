@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-08-31
 //
 
 #pragma once
@@ -31,10 +31,10 @@ public:
 template<Types::GraphicsApi Api>
 class I_PipelineStateBase: public I_PipelineState {
 public:
-	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _st_Api; }
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _api; }
 
 private:
-	static constexpr Types::GraphicsApi _st_Api = Api;
+	static constexpr Types::GraphicsApi _api = Api;
 };
 
 }
