@@ -14,10 +14,13 @@
 
 #include "Types/Types.hpp"
 
+#include <memory>
 #include <utility>
 
 
 namespace CE::Core {
+
+class I_Window;
 
 /**
  * @class I_Swapchain
@@ -33,6 +36,9 @@ namespace CE::Core {
 class I_Swapchain {
 public:
 	virtual ~I_Swapchain() = default;
+
+public:
+	[[nodiscard]] static std::unique_ptr<I_Swapchain> MakeSwapchain(I_Window& window, Types::GraphicsApi api);
 
 public:
 	/**
@@ -98,6 +104,8 @@ public:
 private:
 	static constexpr Types::GraphicsApi _api = Api;
 };
+
+
 
 }
 

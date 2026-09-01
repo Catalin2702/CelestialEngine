@@ -216,6 +216,7 @@ set(RENDER_SOURCES
 	>
 
 	# Swapchain
+	src/source/Core/Render/Swapchain/SwapchainFactory.cpp
 	src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
 )
 
