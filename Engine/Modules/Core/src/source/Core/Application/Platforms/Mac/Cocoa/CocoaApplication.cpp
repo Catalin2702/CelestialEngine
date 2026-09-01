@@ -379,40 +379,40 @@ void CocoaApplication::SubscribeToHubDispatcher() {
 	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
 	// the same event. Requires Input::Init to have run (it has: _InitWindow calls it right before this method).
 	Input::SubscribeToHub(
-		eventHubDispatcher.cocoaKeyboardEventHub,
-		eventHubDispatcher.cocoaMouseEventHub,
-		eventHubDispatcher.cocoaWindowEventHub
+		eventHubDispatcher.keyboardEventHub,
+		eventHubDispatcher.mouseEventHub,
+		eventHubDispatcher.windowEventHub
 	);
 
-	_eventHubHandlers[AppError] = eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
+	_eventHubHandlers[AppError] = eventHubDispatcher.applicationEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
-	_eventHubHandlers[VSyncChange] = eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
+	_eventHubHandlers[VSyncChange] = eventHubDispatcher.renderContextEventHub.onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromMethod<app, &app::_OnVSyncChange>(this)
 	);
 
-	_eventHubHandlers[WindowClose] = eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Subscribe(
+	_eventHubHandlers[WindowClose] = eventHubDispatcher.windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<app, &app::_OnWindowClose>(this)
 	);
-	_eventHubHandlers[WindowError] = eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Subscribe(
+	_eventHubHandlers[WindowError] = eventHubDispatcher.windowEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 }
 
 void CocoaApplication::UnsubscribeFromDispatcher() {
 	Input::UnsubscribeFromHub(
-		eventHubDispatcher.cocoaKeyboardEventHub,
-		eventHubDispatcher.cocoaMouseEventHub,
-		eventHubDispatcher.cocoaWindowEventHub
+		eventHubDispatcher.keyboardEventHub,
+		eventHubDispatcher.mouseEventHub,
+		eventHubDispatcher.windowEventHub
 	);
 
-	eventHubDispatcher.cocoaApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
+	eventHubDispatcher.applicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
 
-	eventHubDispatcher.metalRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
+	eventHubDispatcher.renderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
 
-	eventHubDispatcher.cocoaWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
-	eventHubDispatcher.cocoaWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
+	eventHubDispatcher.windowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
+	eventHubDispatcher.windowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
 }
 
 void CocoaApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {

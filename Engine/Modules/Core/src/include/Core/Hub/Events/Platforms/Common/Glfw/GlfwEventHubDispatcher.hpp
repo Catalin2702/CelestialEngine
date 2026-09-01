@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -12,57 +12,18 @@
 #ifndef CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
 #define CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
 
-#include "Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_MouseEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_RenderContextEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_WindowEventHubDispatcher.hpp"
-
-#include "Utility/Delegate/Dispatcher.hpp"
+#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
 
 namespace CE::Core {
 
-class CE_CORE_API GlfwEventHubDispatcher:
-	public I_ApplicationEventHubDispatcher,
-	public I_KeyboardEventHubDispatcher,
-	public I_MouseEventHubDispatcher,
-	public I_RenderContextEventHubDispatcher,
-	public I_WindowEventHubDispatcher
-{
-public:
-	struct GlfwApplicationEventHub {
-		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppTickEvent&> onTickMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::AppUpdateEvent&> onUpdateMulticastDispatcher;
-	};
-
-	struct GlfwKeyboardEventHub {
-		Utility::MulticastDispatcher<Events::KeyPressedEvent&> onPressedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::KeyReleasedEvent&> onReleasedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::KeyTypedEvent&> onTypedMulticastDispatcher;
-	};
-
-	struct GlfwMouseEventHub {
-		Utility::MulticastDispatcher<Events::MouseMovedEvent&> onMovedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseButtonPressedEvent&> onButtonPressedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseButtonReleasedEvent&> onButtonReleasedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseDraggedEvent&> onDraggedMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::MouseWheelScrolledEvent&> onWheelScrolledMulticastDispatcher;
-	};
-
-	struct GlfwWindowEventHub {
-		Utility::MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
-		Utility::MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher;	///< Fired on GLFW focus callback; input state resets held keys on focus loss
-	};
-
-	struct OpenGlRenderContextEventHub {
-		Utility::MulticastDispatcher<Events::VSyncEvent&> onChangeVSyncDispatcher;
-	};
-
+/**
+ * @class GlfwEventHubDispatcher
+ * @brief The event hub fed by the GLFW callbacks
+ * @details Holds the shared channels and translates GLFW's raw C callback arguments into engine events. Everything
+ *			backend-specific stops at the Receive* methods; what leaves through the hub is the same on every platform.
+ */
+class CE_CORE_API GlfwEventHubDispatcher final: public I_EventHubDispatcherBase<Types::WindowApi::GLFW> {
 public:
 	// The user-declared destructor suppresses the implicit move constructor and move assignment, so a move of an owner
 	// holding this dispatcher by value would silently fall back to a copy. They are re-declared here (memberwise: every
@@ -240,11 +201,27 @@ public:
 #pragma endregion
 
 public:
-	GlfwApplicationEventHub glfwApplicationEventHub;
-	GlfwKeyboardEventHub glfwKeyboardEventHub;
-	GlfwMouseEventHub glfwMouseEventHub;
-	GlfwWindowEventHub glfwWindowEventHub;
-	OpenGlRenderContextEventHub openGlRenderContextEventHub;
+	[[nodiscard]] ApplicationEventHub& GetApplicationEventHub() override { return applicationEventHub; }
+	[[nodiscard]] const ApplicationEventHub& GetApplicationEventHub() const override { return applicationEventHub; }
+
+	[[nodiscard]] KeyboardEventHub& GetKeyboardEventHub() override { return keyboardEventHub; }
+	[[nodiscard]] const KeyboardEventHub& GetKeyboardEventHub() const override { return keyboardEventHub; }
+
+	[[nodiscard]] MouseEventHub& GetMouseEventHub() override { return mouseEventHub; }
+	[[nodiscard]] const MouseEventHub& GetMouseEventHub() const override { return mouseEventHub; }
+
+	[[nodiscard]] WindowEventHub& GetWindowEventHub() override { return windowEventHub; }
+	[[nodiscard]] const WindowEventHub& GetWindowEventHub() const override { return windowEventHub; }
+
+	[[nodiscard]] RenderContextEventHub& GetRenderContextEventHub() override { return renderContextEventHub; }
+	[[nodiscard]] const RenderContextEventHub& GetRenderContextEventHub() const override { return renderContextEventHub; }
+
+public:
+	ApplicationEventHub applicationEventHub;
+	KeyboardEventHub keyboardEventHub;
+	MouseEventHub mouseEventHub;
+	WindowEventHub windowEventHub;
+	RenderContextEventHub renderContextEventHub;
 };
 
 }

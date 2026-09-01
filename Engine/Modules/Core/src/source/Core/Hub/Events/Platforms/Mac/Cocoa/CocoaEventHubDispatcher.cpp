@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -40,75 +40,75 @@ void CocoaEventHubDispatcher::SetSources(MetalContext* context, CocoaWindow* win
 }
 
 void CocoaEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
-	cocoaApplicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
+	applicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) {
-	cocoaApplicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
+	applicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) {
-	cocoaApplicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
+	applicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
-	cocoaApplicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
+	applicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) {
-	cocoaKeyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
+	keyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) {
-	cocoaKeyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
+	keyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) {
-	cocoaKeyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
+	keyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) {
-	cocoaMouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
+	mouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) {
-	cocoaMouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
+	mouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) {
-	cocoaMouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
+	mouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) {
-	cocoaMouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
+	mouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) {
-	cocoaMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
+	mouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
-	metalRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
+	renderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent) {
-	metalRenderContextEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
+	renderContextEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	cocoaWindowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
+	windowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
-	cocoaWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
+	windowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	cocoaWindowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
+	windowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
 }
 
 void CocoaEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
-	cocoaWindowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
+	windowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {

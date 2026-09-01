@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include <Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp>
@@ -86,7 +86,7 @@ protected:
  */
 TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowResizeEvent_ProducesWindowResizeEvent) {
 	HubSubscriber<Events::WindowResizeEvent> subscriber;
-	SubscribeTo(_hub.cocoaWindowEventHub.onResizeMulticastDispatcher, subscriber);
+	SubscribeTo(_hub.windowEventHub.onResizeMulticastDispatcher, subscriber);
 
 	_hub.ReceiveWindowResizeEvent(1440, 900);
 
@@ -102,7 +102,7 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowResizeEvent_ProducesWindowResiz
  */
 TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowWillCloseEvent_ProducesImmutableWindowCloseEvent) {
 	HubSubscriber<Events::WindowCloseEvent> subscriber;
-	SubscribeTo(_hub.cocoaWindowEventHub.onCloseMulticastDispatcher, subscriber);
+	SubscribeTo(_hub.windowEventHub.onCloseMulticastDispatcher, subscriber);
 
 	_hub.ReceiveWindowWillCloseEvent(nullptr);
 
@@ -118,7 +118,7 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowWillCloseEvent_ProducesImmutabl
  */
 TEST_F(CocoaEventHubDispatcherTest, KeyWindowNotifications_ProduceMatchingFocusEvents) {
 	HubSubscriber<Events::WindowFocusEvent> subscriber;
-	SubscribeTo(_hub.cocoaWindowEventHub.onFocusMulticastDispatcher, subscriber);
+	SubscribeTo(_hub.windowEventHub.onFocusMulticastDispatcher, subscriber);
 
 	_hub.ReceiveWindowDidBecomeKeyEvent(nullptr);
 
@@ -136,7 +136,7 @@ TEST_F(CocoaEventHubDispatcherTest, KeyWindowNotifications_ProduceMatchingFocusE
  */
 TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowErrorEvent_ProducesImmutableErrorEvent) {
 	HubSubscriber<Events::ErrorEvent> subscriber;
-	SubscribeTo(_hub.cocoaWindowEventHub.onErrorMulticastDispatcher, subscriber);
+	SubscribeTo(_hub.windowEventHub.onErrorMulticastDispatcher, subscriber);
 
 	_hub.ReceiveWindowErrorEvent(7, "Cocoa window error");
 
@@ -155,7 +155,7 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowErrorEvent_ProducesImmutableErr
  */
 TEST_F(CocoaEventHubDispatcherTest, ReceiveContextChangeVSyncEvent_ProducesVSyncEvent) {
 	HubSubscriber<Events::VSyncEvent> subscriber;
-	SubscribeTo(_hub.metalRenderContextEventHub.onChangeVSyncDispatcher, subscriber);
+	SubscribeTo(_hub.renderContextEventHub.onChangeVSyncDispatcher, subscriber);
 
 	_hub.ReceiveContextChangeVSyncEvent(false);
 
@@ -169,7 +169,7 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveContextChangeVSyncEvent_ProducesVSync
  */
 TEST_F(CocoaEventHubDispatcherTest, ReceiveContextResizeViewEvent_ProducesViewResizeEvent) {
 	HubSubscriber<Events::ViewResizeEvent> subscriber;
-	SubscribeTo(_hub.metalRenderContextEventHub.onResizeViewDispatcher, subscriber);
+	SubscribeTo(_hub.renderContextEventHub.onResizeViewDispatcher, subscriber);
 
 	_hub.ReceiveContextResizeViewEvent(1280.0, 720.0);
 
@@ -186,8 +186,8 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveContextResizeViewEvent_ProducesViewRe
 TEST_F(CocoaEventHubDispatcherTest, ViewResizeAndWindowResize_AreDistinctChannels) {
 	HubSubscriber<Events::ViewResizeEvent> viewSubscriber;
 	HubSubscriber<Events::WindowResizeEvent> windowSubscriber;
-	SubscribeTo(_hub.metalRenderContextEventHub.onResizeViewDispatcher, viewSubscriber);
-	SubscribeTo(_hub.cocoaWindowEventHub.onResizeMulticastDispatcher, windowSubscriber);
+	SubscribeTo(_hub.renderContextEventHub.onResizeViewDispatcher, viewSubscriber);
+	SubscribeTo(_hub.windowEventHub.onResizeMulticastDispatcher, windowSubscriber);
 
 	_hub.ReceiveContextResizeViewEvent(800.0, 600.0);
 
@@ -211,9 +211,9 @@ TEST_F(CocoaEventHubDispatcherTest, ApplicationCallbacks_AreRoutedToTheirOwnChan
 	HubSubscriber<Events::AppTickEvent> tick;
 	HubSubscriber<Events::AppUpdateEvent> update;
 	HubSubscriber<Events::AppRenderEvent> render;
-	SubscribeTo(_hub.cocoaApplicationEventHub.onTickMulticastDispatcher, tick);
-	SubscribeTo(_hub.cocoaApplicationEventHub.onUpdateMulticastDispatcher, update);
-	SubscribeTo(_hub.cocoaApplicationEventHub.onRenderMulticastDispatcher, render);
+	SubscribeTo(_hub.applicationEventHub.onTickMulticastDispatcher, tick);
+	SubscribeTo(_hub.applicationEventHub.onUpdateMulticastDispatcher, update);
+	SubscribeTo(_hub.applicationEventHub.onRenderMulticastDispatcher, render);
 
 	_hub.ReceiveAppTickEvent();
 	_hub.ReceiveAppRenderEvent();
@@ -230,8 +230,8 @@ TEST_F(CocoaEventHubDispatcherTest, ApplicationCallbacks_AreRoutedToTheirOwnChan
 TEST_F(CocoaEventHubDispatcherTest, ReceiveAppErrorEvent_ProducesErrorEvent) {
 	HubSubscriber<Events::ErrorEvent> appSubscriber;
 	HubSubscriber<Events::ErrorEvent> windowSubscriber;
-	SubscribeTo(_hub.cocoaApplicationEventHub.onErrorMulticastDispatcher, appSubscriber);
-	SubscribeTo(_hub.cocoaWindowEventHub.onErrorMulticastDispatcher, windowSubscriber);
+	SubscribeTo(_hub.applicationEventHub.onErrorMulticastDispatcher, appSubscriber);
+	SubscribeTo(_hub.windowEventHub.onErrorMulticastDispatcher, windowSubscriber);
 
 	_hub.ReceiveAppErrorEvent(3, "Cocoa application error");
 
@@ -250,8 +250,8 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveAppErrorEvent_ProducesErrorEvent) {
 TEST_F(CocoaEventHubDispatcherTest, Dispatch_FansOutTheSameEventToEverySubscriber) {
 	HubSubscriber<Events::WindowResizeEvent> first;
 	HubSubscriber<Events::WindowResizeEvent> second;
-	SubscribeTo(_hub.cocoaWindowEventHub.onResizeMulticastDispatcher, first);
-	SubscribeTo(_hub.cocoaWindowEventHub.onResizeMulticastDispatcher, second);
+	SubscribeTo(_hub.windowEventHub.onResizeMulticastDispatcher, first);
+	SubscribeTo(_hub.windowEventHub.onResizeMulticastDispatcher, second);
 
 	_hub.ReceiveWindowResizeEvent(320, 240);
 
@@ -274,10 +274,10 @@ TEST_F(CocoaEventHubDispatcherTest, Receive_WithoutSubscribers_IsNoOp) {
  */
 TEST_F(CocoaEventHubDispatcherTest, Unsubscribe_StopsDeliveringEvents) {
 	HubSubscriber<Events::WindowFocusEvent> subscriber;
-	const auto handle = SubscribeTo(_hub.cocoaWindowEventHub.onFocusMulticastDispatcher, subscriber);
+	const auto handle = SubscribeTo(_hub.windowEventHub.onFocusMulticastDispatcher, subscriber);
 
 	_hub.ReceiveWindowDidBecomeKeyEvent(nullptr);
-	_hub.cocoaWindowEventHub.onFocusMulticastDispatcher.Unsubscribe(handle);
+	_hub.windowEventHub.onFocusMulticastDispatcher.Unsubscribe(handle);
 	_hub.ReceiveWindowDidBecomeKeyEvent(nullptr);
 
 	EXPECT_EQ(subscriber.calls, 1);

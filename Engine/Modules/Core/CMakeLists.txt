@@ -104,6 +104,7 @@ set(LAYERS_INTERFACES
 
 set(HUB_INTERFACES
 	# Events
+	src/interface/Core/Hub/Events/I_EventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_MouseEventHubDispatcher.hpp

@@ -334,14 +334,14 @@ private:
 
 	/**
 	 * @brief Application-level reaction to a window close event dispatched by the event hub
-	 * @details Subscribed to CocoaEventHubDispatcher::cocoaApplicationEventHub.onCloseMulticastDispatcher. Routes the close
+	 * @details Subscribed to CocoaEventHubDispatcher::applicationEventHub.onCloseMulticastDispatcher. Routes the close
 	 *			through the engine's clean shutdown path.
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
 	/**
 	 * @brief Application-level reaction to a VSync change dispatched by the event hub
-	 * @details Subscribed to CocoaEventHubDispatcher::metalRenderContextEventHub.onChangeVSyncDispatcher. Reconciles the
+	 * @details Subscribed to CocoaEventHubDispatcher::renderContextEventHub.onChangeVSyncDispatcher. Reconciles the
 	 *			frame pacing with the new state via a stop/start of the run loop (tick loop vs CAMetalDisplayLink).
 	 */
 	void _OnVSyncChange(Events::VSyncEvent& event);

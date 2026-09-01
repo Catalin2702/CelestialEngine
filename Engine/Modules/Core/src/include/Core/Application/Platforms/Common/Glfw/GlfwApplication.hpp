@@ -227,13 +227,13 @@ public:
 private:
 	/**
 	 * @brief Application-level reaction to a window close event dispatched by the event hub
-	 * @details Subscribed to GlfwEventHubDispatcher::glfwWindowEventHub.onCloseMulticastDispatcher; quits the application.
+	 * @details Subscribed to GlfwEventHubDispatcher::windowEventHub.onCloseMulticastDispatcher; quits the application.
 	 */
 	void _OnWindowClose(Events::WindowCloseEvent& event);
 
 	/**
 	 * @brief Application-level reaction to a VSync change dispatched by the event hub
-	 * @details Subscribed to GlfwEventHubDispatcher::openGlRenderContextEventHub.onChangeVSyncDispatcher. Updates the
+	 * @details Subscribed to GlfwEventHubDispatcher::renderContextEventHub.onChangeVSyncDispatcher. Updates the
 	 *			frame limiter target: monitor refresh rate with VSync on, the configured refresh rate with VSync off.
 	 */
 	void _OnVSyncChange(const Events::VSyncEvent& event) const;

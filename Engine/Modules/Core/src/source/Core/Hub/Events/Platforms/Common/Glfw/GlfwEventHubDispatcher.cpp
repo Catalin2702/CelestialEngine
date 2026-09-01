@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
@@ -17,71 +17,71 @@
 namespace CE::Core {
 
 void GlfwEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
-	glfwApplicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
+	applicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) {
-	glfwApplicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
+	applicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) {
-	glfwApplicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
+	applicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
-	glfwApplicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
+	applicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) {
-	glfwKeyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
+	keyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) {
-	glfwKeyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
+	keyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) {
-	glfwKeyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
+	keyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) {
-	glfwMouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
+	mouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) {
-	glfwMouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
+	mouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) {
-	glfwMouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
+	mouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) {
-	glfwMouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
+	mouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) {
-	glfwMouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
+	mouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	glfwWindowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
+	windowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	glfwWindowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
+	windowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
-	glfwWindowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
+	windowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
-	glfwWindowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
+	windowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
 }
 
 void GlfwEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
-	openGlRenderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
+	renderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
 }
 
 void GlfwEventHubDispatcher::ReceiveAppTickEvent() {

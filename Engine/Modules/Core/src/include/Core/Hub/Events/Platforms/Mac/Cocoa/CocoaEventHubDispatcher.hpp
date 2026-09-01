@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -12,13 +12,7 @@
 #ifndef CE_CORE_MAINHUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
 #define CE_CORE_MAINHUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
 
-#include "Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_MouseEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_RenderContextEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_WindowEventHubDispatcher.hpp"
-
-#include "Utility/Delegate/Dispatcher.hpp"
+#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
 
 namespace NS {
@@ -31,47 +25,25 @@ namespace CE::Core {
 class MetalContext;
 class CocoaWindow;
 
-class CE_CORE_API CocoaEventHubDispatcher:
-	public I_ApplicationEventHubDispatcher,
-	public I_KeyboardEventHubDispatcher,
-	public I_MouseEventHubDispatcher,
-	public I_RenderContextEventHubDispatcher,
-	public I_WindowEventHubDispatcher
-{
-public:
-	struct CocoaApplicationEventHub {
-		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
-		MulticastDispatcher<Events::AppRenderEvent&> onRenderMulticastDispatcher;
-		MulticastDispatcher<Events::AppTickEvent&> onTickMulticastDispatcher;
-		MulticastDispatcher<Events::AppUpdateEvent&> onUpdateMulticastDispatcher;
-	};
+/**
+ * @struct MetalRenderContextEventHub
+ * @brief The render context channels, plus the one only the Metal path can raise
+ * @details MTK::View reports a drawable resize of its own, which has no OpenGL equivalent - the GL backend learns
+ *			about a resize from the window. So it is added here instead of in the shared struct, and a subscriber that
+ *			wants it holds the concrete hub rather than the interface.
+ */
+struct MetalRenderContextEventHub: RenderContextEventHub {
+	MulticastDispatcher<Events::ViewResizeEvent&> onResizeViewDispatcher;
+};
 
-	struct CocoaKeyboardEventHub {
-		MulticastDispatcher<Events::KeyPressedEvent&> onPressedMulticastDispatcher;
-		MulticastDispatcher<Events::KeyReleasedEvent&> onReleasedMulticastDispatcher;
-		MulticastDispatcher<Events::KeyTypedEvent&> onTypedMulticastDispatcher;
-	};
-
-	struct CocoaMouseEventHub {
-		MulticastDispatcher<Events::MouseMovedEvent&> onMovedMulticastDispatcher;
-		MulticastDispatcher<Events::MouseButtonPressedEvent&> onButtonPressedMulticastDispatcher;
-		MulticastDispatcher<Events::MouseButtonReleasedEvent&> onButtonReleasedMulticastDispatcher;
-		MulticastDispatcher<Events::MouseDraggedEvent&> onDraggedMulticastDispatcher;
-		MulticastDispatcher<Events::MouseWheelScrolledEvent&> onWheelScrolledMulticastDispatcher;
-	};
-
-	struct CocoaWindowEventHub {
-		MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
-		MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
-		MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
-		MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher;	///< Fired on didBecomeKey/didResignKey; input state resets held keys on focus loss
-	};
-
-	struct MetalRenderContextEventHub {
-		MulticastDispatcher<Events::VSyncEvent&> onChangeVSyncDispatcher;
-		MulticastDispatcher<Events::ViewResizeEvent&> onResizeViewDispatcher;
-	};
-
+/**
+ * @class CocoaEventHubDispatcher
+ * @brief The event hub fed by the AppKit and MetalKit callbacks
+ * @details Holds the shared channels and translates the NS::Event and MTK::View callbacks into engine events.
+ *			Everything backend-specific stops at the Receive* methods; what leaves through the hub is the same on
+ *			every platform, bar the Metal-only drawable resize.
+ */
+class CE_CORE_API CocoaEventHubDispatcher final: public I_EventHubDispatcherBase<Types::WindowApi::Cocoa> {
 public:
 	// The user-declared destructor suppresses the implicit move constructor and move assignment, so a move of an owner
 	// holding this dispatcher by value would silently fall back to a copy. They are re-declared here (memberwise: every
@@ -281,11 +253,28 @@ public:
 #pragma endregion
 
 public:
-	CocoaApplicationEventHub cocoaApplicationEventHub;
-	CocoaKeyboardEventHub cocoaKeyboardEventHub;
-	CocoaMouseEventHub cocoaMouseEventHub;
-	CocoaWindowEventHub cocoaWindowEventHub;
-	MetalRenderContextEventHub metalRenderContextEventHub;
+	[[nodiscard]] ApplicationEventHub& GetApplicationEventHub() override { return applicationEventHub; }
+	[[nodiscard]] const ApplicationEventHub& GetApplicationEventHub() const override { return applicationEventHub; }
+
+	[[nodiscard]] KeyboardEventHub& GetKeyboardEventHub() override { return keyboardEventHub; }
+	[[nodiscard]] const KeyboardEventHub& GetKeyboardEventHub() const override { return keyboardEventHub; }
+
+	[[nodiscard]] MouseEventHub& GetMouseEventHub() override { return mouseEventHub; }
+	[[nodiscard]] const MouseEventHub& GetMouseEventHub() const override { return mouseEventHub; }
+
+	[[nodiscard]] WindowEventHub& GetWindowEventHub() override { return windowEventHub; }
+	[[nodiscard]] const WindowEventHub& GetWindowEventHub() const override { return windowEventHub; }
+
+	// Hands out the base view of the extended struct: onResizeViewDispatcher is reachable only from this concrete type.
+	[[nodiscard]] RenderContextEventHub& GetRenderContextEventHub() override { return renderContextEventHub; }
+	[[nodiscard]] const RenderContextEventHub& GetRenderContextEventHub() const override { return renderContextEventHub; }
+
+public:
+	ApplicationEventHub applicationEventHub;
+	KeyboardEventHub keyboardEventHub;
+	MouseEventHub mouseEventHub;
+	WindowEventHub windowEventHub;
+	MetalRenderContextEventHub renderContextEventHub;
 
 private:
 	MetalContext* _context = nullptr; ///< Non-owning; used to convert native mouse coordinates

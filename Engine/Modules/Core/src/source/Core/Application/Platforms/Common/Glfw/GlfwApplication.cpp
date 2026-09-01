@@ -354,40 +354,40 @@ void GlfwApplication::SubscribeToHubDispatcher() {
 	// Input state MUST subscribe first: it has to be up to date before any other subscriber (ImGui, layers) handles
 	// the same event. Requires Input::Init to have run (it has: _InitWindow calls it right before this method).
 	Input::SubscribeToHub(
-		eventHubDispatcher.glfwKeyboardEventHub,
-		eventHubDispatcher.glfwMouseEventHub,
-		eventHubDispatcher.glfwWindowEventHub
+		eventHubDispatcher.keyboardEventHub,
+		eventHubDispatcher.mouseEventHub,
+		eventHubDispatcher.windowEventHub
 	);
 
-	_eventHubHandlers[AppError] = eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Subscribe(
+	_eventHubHandlers[AppError] = eventHubDispatcher.applicationEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 
-	_eventHubHandlers[VSyncChange] = eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Subscribe(
+	_eventHubHandlers[VSyncChange] = eventHubDispatcher.renderContextEventHub.onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromConstMethod<GlfwApplication, &GlfwApplication::_OnVSyncChange>(this)
 	);
 
-	_eventHubHandlers[WindowClose] = eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Subscribe(
+	_eventHubHandlers[WindowClose] = eventHubDispatcher.windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<GlfwApplication, &GlfwApplication::_OnWindowClose>(this)
 	);
-	_eventHubHandlers[WindowError] = eventHubDispatcher.glfwWindowEventHub.onErrorMulticastDispatcher.Subscribe(
+	_eventHubHandlers[WindowError] = eventHubDispatcher.windowEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromFunction<&LogError>()
 	);
 }
 
 void GlfwApplication::UnsubscribeFromDispatcher() {
 	Input::UnsubscribeFromHub(
-		eventHubDispatcher.glfwKeyboardEventHub,
-		eventHubDispatcher.glfwMouseEventHub,
-		eventHubDispatcher.glfwWindowEventHub
+		eventHubDispatcher.keyboardEventHub,
+		eventHubDispatcher.mouseEventHub,
+		eventHubDispatcher.windowEventHub
 	);
 
-	eventHubDispatcher.glfwApplicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
+	eventHubDispatcher.applicationEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[AppError]);
 
-	eventHubDispatcher.openGlRenderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
+	eventHubDispatcher.renderContextEventHub.onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[VSyncChange]);
 
-	eventHubDispatcher.glfwWindowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
-	eventHubDispatcher.glfwWindowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
+	eventHubDispatcher.windowEventHub.onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowClose]);
+	eventHubDispatcher.windowEventHub.onErrorMulticastDispatcher.Unsubscribe(_eventHubHandlers[WindowError]);
 }
 
 void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {

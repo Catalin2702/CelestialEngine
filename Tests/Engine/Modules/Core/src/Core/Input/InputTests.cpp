@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include <Core/Input/Input.hpp>
@@ -41,11 +41,11 @@ protected:
 		CE::Tools::Log::Init();
 
 		Input::Init();
-		Input::SubscribeToHub(_hub.glfwKeyboardEventHub, _hub.glfwMouseEventHub, _hub.glfwWindowEventHub);
+		Input::SubscribeToHub(_hub.keyboardEventHub, _hub.mouseEventHub, _hub.windowEventHub);
 	}
 
 	void TearDown() override {
-		Input::UnsubscribeFromHub(_hub.glfwKeyboardEventHub, _hub.glfwMouseEventHub, _hub.glfwWindowEventHub);
+		Input::UnsubscribeFromHub(_hub.keyboardEventHub, _hub.mouseEventHub, _hub.windowEventHub);
 		Input::Shutdown();
 
 		CE::Tools::Log::Shutdown();
@@ -405,14 +405,14 @@ TEST_F(InputTest, FocusGained_LeavesStateUntouched) {
  * @brief Test that the input state stops tracking once unsubscribed from the hub
  */
 TEST_F(InputTest, UnsubscribeFromHub_StopsTrackingEvents) {
-	Input::UnsubscribeFromHub(_hub.glfwKeyboardEventHub, _hub.glfwMouseEventHub, _hub.glfwWindowEventHub);
+	Input::UnsubscribeFromHub(_hub.keyboardEventHub, _hub.mouseEventHub, _hub.windowEventHub);
 
 	PressKey(KeyboardKeyCode::A);
 
 	EXPECT_FALSE(Input::IsKeyPressed(KeyboardKeyCode::A));
 
 	// Re-subscribe so the fixture teardown unsubscribes a live subscription
-	Input::SubscribeToHub(_hub.glfwKeyboardEventHub, _hub.glfwMouseEventHub, _hub.glfwWindowEventHub);
+	Input::SubscribeToHub(_hub.keyboardEventHub, _hub.mouseEventHub, _hub.windowEventHub);
 }
 
 /**
