@@ -132,6 +132,9 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Shader/I_ShaderModule.hpp
 	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
 
+	# Surface
+	src/interface/Core/Render/Surface/I_OpenGlSurface.hpp
+
 	# Swapchain
 	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
 )
