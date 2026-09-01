@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 
 #pragma once
 
@@ -325,7 +325,7 @@ private:
 	 *			that must happen after launch completes: promotes the process to a regular UI app, builds the main menu,
 	 *			activates the app and reveals the window.
 	 */
-	void _OnDidFinishLaunching(NS::Notification* notification) const;
+	void _OnDidFinishLaunching(NS::Notification* notification);
 
 	/**
 	 * @brief AppKit will-finish-launching hook (pre-run-loop setup)

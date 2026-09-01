@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
@@ -58,14 +58,14 @@ static void InstallNativeMenuBar() {
 // The window and the context are members held by value, so they are constructed in the initializer list, before the
 // constructor body ever runs - which is where the graphics/window API compatibility check used to live. It moves here so
 // it still runs before a window exists: the helper validates the configured pair and only then creates the window.
-static GlfwWindow CreateValidatedWindow() {
+static GlfwWindow CreateValidatedWindow(const GlfwPlatform& platform) {
 	if (const auto& windowProps = Utility::Config::StGetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("GlfwApplication::GlfwApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
-	return GlfwWindow{};
+	return GlfwWindow{platform};
 }
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
@@ -89,7 +89,7 @@ void GlfwApplicationEventHandler::DispatchRenderEvent() const {
 	applicationEvents.onRenderDispatcher.Dispatch();
 }
 
-GlfwApplication::GlfwApplication(): _window(CreateValidatedWindow()), _context(_window.GetGlfwWindow()) {
+GlfwApplication::GlfwApplication(): _window(CreateValidatedWindow(_platform)), _context(_window.GetGlfwWindow()) {
 	assert(_stInstance == nullptr && "GlfwApplication::GlfwApplication: GlfwApplication already exists!");
 	_stInstance = this;
 
@@ -172,7 +172,8 @@ void GlfwApplication::Tick(const f32 deltaTime) {
 	// to the next frame, so they must land on a clean transition state.
 	Input::EndFrame();
 
-	_window.OnUpdate();
+	// One event queue for the whole process, so it is drained here once rather than by each window.
+	_platform.PollEvents();
 	_context.SwapBuffers();
 }
 
@@ -328,7 +329,8 @@ void GlfwApplication::SetEventHubDispatcher() {
 	// Window resize is fired by the render context (framebuffer size), not the window: see _InitRenderer. The window-size
 	// callback still runs to keep the window's cached size in sync, it just no longer feeds the hub.
 	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveWindowCloseEvent>(&eventHubDispatcher));
-	windowStateEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveWindowErrorEvent>(&eventHubDispatcher));
+	// GLFW reports its errors per library, not per window, so this one comes from the platform.
+	_platform.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveWindowErrorEvent>(&eventHubDispatcher));
 
 	keyboardEvents.onKeyDispatcher.Bind(EventDelegate<int, int, int, int>::FromMethod<hub, &hub::ReceiveKeyEvent>(&eventHubDispatcher));
 	keyboardEvents.onCharDispatcher.Bind(EventDelegate<unsigned int>::FromMethod<hub, &hub::ReceiveCharEvent>(&eventHubDispatcher));

@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
-#include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Utility.hpp"
@@ -26,16 +25,11 @@
 #endif
 
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 
 namespace CE::Core {
-
-// Ensures glfwInit() is called only once during program execution
-static bool _st_GLFWInitialized = false;
-
-// Tracks the number of active windows to determine when to call glfwTerminate() (when count reaches 0)
-static int _st_GLFWWindowCount = 0;
 
 void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int height) const {
 	windowStateEvents.onResizeDispatcher.Dispatch(width, height);
@@ -43,10 +37,6 @@ void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int heig
 
 void GlfwWindowEventHandler::DispatchCloseEvent() const {
 	windowStateEvents.onCloseDispatcher.Dispatch();
-}
-
-void GlfwWindowEventHandler::DispatchErrorEvent(const int errorCode, const char* description) const {
-	windowStateEvents.onErrorDispatcher.Dispatch(errorCode, description);
 }
 
 void GlfwWindowEventHandler::DispatchFocusEvent(const int focused) const {
@@ -77,15 +67,34 @@ void GlfwWindowEventHandler::DispatchMouseWheelScrollEvent(const f64 xOffset, co
 	mouseEvents.onMouseWheelScrollDispatcher.Dispatch(xOffset, yOffset);
 }
 
-GlfwWindow::GlfwWindow() {
-	Init();
+namespace {
+
+/**
+ * @brief Recovers the GlfwWindow that owns a native handle
+ * @details Every GLFW C callback receives the native handle and nothing else; the owning object is found through the
+ *			user pointer installed by _AdoptNativeWindow. Null once that owner has been destroyed.
+ */
+GlfwWindow* WindowFrom(GLFWwindow* window) {
+	return static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window));
+}
+
+}
+
+GlfwWindow::GlfwWindow(const GlfwPlatform& platform) {
+	_InitWindow(platform);
+
+	_SetIOEventCallbacks();
+	_SetWindowEventCallbacks();
 }
 
 GlfwWindow::GlfwWindow(GlfwWindow&& other) noexcept:
-	windowEventHandler(std::move(other.windowEventHandler)),
+	windowEventHandler(other.windowEventHandler),
 	_glfwWindow(std::move(other._glfwWindow)),
-	_pressedMouseButtons(other._pressedMouseButtons),
-	_lastMouseMods(other._lastMouseMods) {
+	_width(other._width),
+	_height(other._height),
+	_frameWidth(other._frameWidth),
+	_frameHeight(other._frameHeight),
+	_pressedMouseButtons(other._pressedMouseButtons) {
 #if not CE_PLATFORM_MACOS
 	_windowedX = other._windowedX;
 	_windowedY = other._windowedY;
@@ -96,18 +105,24 @@ GlfwWindow::GlfwWindow(GlfwWindow&& other) noexcept:
 	_AdoptNativeWindow();
 }
 
+GlfwWindow::~GlfwWindow() {
+	_Shutdown();
+}
+
 GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 
-	// Release the window this object currently owns before taking over other's, otherwise that handle would leak and the
-	// window count would drift.
+	// Release the window this object currently owns before taking over other's, otherwise that handle would leak.
 	_Shutdown();
 
-	windowEventHandler = std::move(other.windowEventHandler);
+	windowEventHandler = other.windowEventHandler;
 	_glfwWindow = std::move(other._glfwWindow);
+	_width = other._width;
+	_height = other._height;
+	_frameWidth = other._frameWidth;
+	_frameHeight = other._frameHeight;
 	_pressedMouseButtons = other._pressedMouseButtons;
-	_lastMouseMods = other._lastMouseMods;
 
 #if not CE_PLATFORM_MACOS
 	_windowedX = other._windowedX;
@@ -121,169 +136,30 @@ GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 	return *this;
 }
 
-GlfwWindow::~GlfwWindow() {
-	_Shutdown();
+void GlfwWindow::Show() {
+	if (const auto window = _Native()) [[likely]]
+		glfwShowWindow(window);
 }
 
-void GlfwWindow::_AdoptNativeWindow() {
-	if (not _glfwWindow) [[unlikely]]
+void GlfwWindow::Miniaturize() {
+	if (const auto window = _Native()) [[likely]]
+		glfwIconifyWindow(window);
+}
+
+void GlfwWindow::Deminiaturize() {
+	if (const auto window = _Native()) [[likely]]
+		glfwRestoreWindow(window);
+}
+
+void GlfwWindow::ToggleFullScreen() {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
 		return;
-
-	glfwSetWindowUserPointer(_glfwWindow.get(), this);
-}
-
-void GlfwWindow::OnUpdate() const {
-	glfwPollEvents();
-}
-
-std::pair<f32, f32> GlfwWindow::GetWindowSize() const {
-	int width = 0, height = 0;
-	glfwGetWindowSize(_glfwWindow.get(), &width, &height);
-	return {static_cast<f32>(width), static_cast<f32>(height)};
-}
-
-unsigned int GlfwWindow::GetRefreshRate() const {
-	if (not _glfwWindow) [[unlikely]]
-		return 0;
-
-	// When fullscreen the window owns a monitor; otherwise fall back to the primary monitor.
-	auto monitor = glfwGetWindowMonitor(_glfwWindow.get());
-	if (not monitor) [[unlikely]]
-		monitor = glfwGetPrimaryMonitor();
-	if (not monitor) [[unlikely]]
-		return 0;
-
-	const auto mode = glfwGetVideoMode(monitor);
-	return mode ? static_cast<unsigned int>(mode->refreshRate) : 0;
-}
-
-std::pair<f32, f32> GlfwWindow::GetFrameSize() const {
-	if (not _glfwWindow) [[unlikely]] {
-		CE_CORE_WARN("GlfwWindow::GetFrameSize Could not get frame size because window is not initialized.");
-		return {0.0f, 0.0f};
-	}
-	int width = 0, height = 0;
-	glfwGetFramebufferSize(_glfwWindow.get(), &width, &height);
-	return {static_cast<f32>(width), static_cast<f32>(height)};
-}
-
-void GlfwWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
-	glfwSetWindowSize(_glfwWindow.get(), static_cast<int>(width), static_cast<int>(height));
-}
-
-void GlfwWindow::SetCurrentContext(GLFWwindow* window) const {
-	const auto ptr = window ? window : _glfwWindow.get();
-	glfwMakeContextCurrent(ptr);
-}
-
-void GlfwWindow::_SetIOEventCallbacks() {
-	if (not _glfwWindow) [[unlikely]]
-		return;
-
-	glfwSetKeyCallback(_glfwWindow.get(), [](GLFWwindow* window, const int key, const int scancode, const int action, const int mods) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchKeyEvent(key, action, scancode, mods);
-		}
-	});
-
-	glfwSetCharCallback(_glfwWindow.get(), [](GLFWwindow* window, const unsigned int codepoint) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchCharEvent(codepoint);
-		}
-	});
-
-	glfwSetMouseButtonCallback(_glfwWindow.get(), [](GLFWwindow* window, const int button, const int action, const int mods) {
-		// GLFW has no native drag event, so we track button state here to synthesize
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			if (button >= 0 && button < static_cast<int>(_this->_pressedMouseButtons.size()))
-				_this->_pressedMouseButtons[button] = (action == GLFW_PRESS);
-			_this->_lastMouseMods = mods;
-
-			_this->windowEventHandler.DispatchMouseButtonEvent(button, action, mods);
-		}
-	});
-
-	glfwSetCursorPosCallback(_glfwWindow.get(), [](GLFWwindow* window, const f64 xPos, const f64 yPos) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchMousePositionEvent(xPos, yPos);
-
-			// GLFW has no native drag event: if the cursor moves while a mouse button is
-			// held, synthesize a drag event for each pressed button.
-			for (int button = 0; button < static_cast<int>(_this->_pressedMouseButtons.size()); ++button) {
-				if (_this->_pressedMouseButtons[button])
-					_this->windowEventHandler.DispatchMouseDraggedEvent(button, GLFW_PRESS, _this->_lastMouseMods, xPos, yPos);
-			}
-		}
-	});
-
-	glfwSetScrollCallback(_glfwWindow.get(), [](GLFWwindow* window, const f64 xOffset, const f64 yOffset) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
-		}
-	});
-}
-
-void GlfwWindow::_SetWindowEventCallbacks() {
-	if (not _glfwWindow) [[unlikely]]
-		return;
-
-	glfwSetWindowSizeCallback(_glfwWindow.get(), [](GLFWwindow* window, const int width, const int height) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchResizeEvent(width, height);
-			_this->SetWindowSize(width, height);
-		}
-	});
-
-	glfwSetWindowCloseCallback(_glfwWindow.get(), [](GLFWwindow* window) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchCloseEvent();
-		}
-	});
-
-	glfwSetWindowFocusCallback(_glfwWindow.get(), [](GLFWwindow* window, const int focused) {
-		if (const auto _this = static_cast<GlfwWindow*>(glfwGetWindowUserPointer(window))) [[likely]] {
-			_this->windowEventHandler.DispatchFocusEvent(focused);
-		}
-	});
-}
-
-void GlfwWindow::Init() {
-	_InitWindow();
-
-	_SetIOEventCallbacks();
-	_SetWindowEventCallbacks();
-
-	_st_GLFWWindowCount++;
-}
-
-void GlfwWindow::Miniaturize() const {
-	if (not _glfwWindow) [[unlikely]] {
-		CE_CORE_WARN("GlfwWindow::Miniaturize: Cannot miniaturize because window is not initialized");
-		return;
-	}
-
-	glfwIconifyWindow(_glfwWindow.get());
-}
-
-void GlfwWindow::Deminiaturize() const {
-	if (not _glfwWindow) [[unlikely]] {
-		CE_CORE_WARN("GlfwWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
-		return;
-	}
-
-	glfwRestoreWindow(_glfwWindow.get());
-}
-
-void GlfwWindow::ToggleFullScreen() const {
-	if (not _glfwWindow) [[unlikely]] {
-		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
-		return;
-	}
 
 #if CE_PLATFORM_MACOS
 	// GLFW hosts a real NSWindow on macOS: use the native (Spaces) fullscreen so the transition animates and keeps the
 	// title-bar controls, instead of the exclusive glfwSetWindowMonitor fullscreen that covers them and hides the traffic lights.
-	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(_glfwWindow.get()));
+	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(window));
 	if (not nsWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because the native Cocoa window is unavailable");
 		return;
@@ -293,8 +169,6 @@ void GlfwWindow::ToggleFullScreen() const {
 	nsWindow->setCollectionBehavior(nsWindow->collectionBehavior() | NS::WindowCollectionBehaviorFullScreenPrimary);
 	nsWindow->toggleFullScreen(nullptr);
 #else
-	const auto window = _glfwWindow.get();
-
 	// Already fullscreen (the window is attached to a monitor): restore the saved windowed placement.
 	if (glfwGetWindowMonitor(window)) {
 		glfwSetWindowMonitor(window, nullptr, _windowedX, _windowedY, _windowedWidth, _windowedHeight, GLFW_DONT_CARE);
@@ -321,26 +195,73 @@ void GlfwWindow::ToggleFullScreen() const {
 #endif
 }
 
-void GlfwWindow::_InitWindow() {
-	if (not _st_GLFWInitialized) [[likely]] {
-		if (const int success = glfwInit(); not success) [[unlikely]] {
-			constexpr auto error = "GlfwWindow::_InitWindow: Could not initialize GLFW!";
-			windowEventHandler.DispatchErrorEvent(-1, error);
-			throw std::runtime_error(error);
-		}
-		glfwSetErrorCallback([](const int error_code, const char* description) {
-			const auto& app = dynamic_cast<GlfwApplication&>(I_Application::StGet());
-			app.GetGlfwWindow().windowEventHandler.DispatchErrorEvent(error_code, description);
-		});
-		_st_GLFWInitialized = true;
-	}
+void GlfwWindow::MakeContextCurrent() {
+	if (const auto window = _Native()) [[likely]]
+		glfwMakeContextCurrent(window);
+}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+void GlfwWindow::SwapBuffers() {
+	if (const auto window = _Native()) [[likely]]
+		glfwSwapBuffers(window);
+}
 
+void GlfwWindow::SetWindowSize(const u32 width, const u32 height) {
+	if (const auto window = _Native()) [[likely]]
+		glfwSetWindowSize(window, static_cast<int>(width), static_cast<int>(height));
+}
+
+void GlfwWindow::SetTitle(const std::string_view title) {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	// glfwSetWindowTitle takes a C string, and a string_view carries no terminator of its own.
+	const std::string terminated(title);
+	glfwSetWindowTitle(window, terminated.c_str());
+}
+
+void GlfwWindow::SetSwapInterval(const i32 interval) {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(interval);
+}
+
+f32 GlfwWindow::GetContentScale() const {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return 1.0f;
+
+	f32 xScale = 1.0f;
+	f32 yScale = 1.0f;
+	glfwGetWindowContentScale(window, &xScale, &yScale);
+
+	// The two axes only differ on configurations the engine does not target, and every caller wants a single factor.
+	return xScale;
+}
+
+u32 GlfwWindow::GetRefreshRate() const {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return 0;
+
+	// When fullscreen the window owns a monitor; otherwise fall back to the primary monitor.
+	auto monitor = glfwGetWindowMonitor(window);
+	if (not monitor) [[unlikely]]
+		monitor = glfwGetPrimaryMonitor();
+	if (not monitor) [[unlikely]]
+		return 0;
+
+	const auto mode = glfwGetVideoMode(monitor);
+	return mode ? static_cast<u32>(mode->refreshRate) : 0;
+}
+
+void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
 	const auto& windowProps = Utility::Config::StGetWindowProps();
+
+	platform.ApplyWindowHints(windowProps.graphicsApi);
 
 	_glfwWindow.reset(glfwCreateWindow(
 		static_cast<int>(windowProps.width),
@@ -352,26 +273,165 @@ void GlfwWindow::_InitWindow() {
 
 	if (not _glfwWindow) [[unlikely]] {
 		constexpr auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";
-		windowEventHandler.DispatchErrorEvent(-1, error);
+		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
 	_AdoptNativeWindow();
+	_CacheSizes();
 }
 
 void GlfwWindow::_Shutdown() {
-	// A moved-from window holds no handle and never ran Init, so it must not decrement the window count: doing so would
-	// terminate GLFW while the window that took its handle over is still alive.
-	if (not _glfwWindow)
+	_glfwWindow.reset();
+}
+
+void GlfwWindow::_AdoptNativeWindow() {
+	if (not _glfwWindow) [[unlikely]]
 		return;
 
-	_glfwWindow.reset();
+	glfwSetWindowUserPointer(_glfwWindow.get(), this);
+}
 
-	_st_GLFWWindowCount--;
-	if (_st_GLFWWindowCount == 0 && _st_GLFWInitialized) [[likely]] {
-		glfwTerminate();
-		_st_GLFWInitialized = false;
+GLFWwindow* GlfwWindow::_Native(const std::source_location& location) const {
+	if (not _glfwWindow) [[unlikely]] {
+		CE_CORE_WARN("GlfwWindow::{}: the window is not initialized.", location.function_name());
+		return nullptr;
 	}
+
+	return _glfwWindow.get();
+}
+
+int GlfwWindow::_CurrentModifiers() const {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return 0;
+
+	const auto held = [window](const int leftKey, const int rightKey) {
+		return glfwGetKey(window, leftKey) == GLFW_PRESS or glfwGetKey(window, rightKey) == GLFW_PRESS;
+	};
+
+	int modifiers = 0;
+	if (held(GLFW_KEY_LEFT_SHIFT, GLFW_KEY_RIGHT_SHIFT))
+		modifiers |= GLFW_MOD_SHIFT;
+	if (held(GLFW_KEY_LEFT_CONTROL, GLFW_KEY_RIGHT_CONTROL))
+		modifiers |= GLFW_MOD_CONTROL;
+	if (held(GLFW_KEY_LEFT_ALT, GLFW_KEY_RIGHT_ALT))
+		modifiers |= GLFW_MOD_ALT;
+	if (held(GLFW_KEY_LEFT_SUPER, GLFW_KEY_RIGHT_SUPER))
+		modifiers |= GLFW_MOD_SUPER;
+
+	// GLFW only reports the lock keys when GLFW_LOCK_KEY_MODS is enabled, which it is not, so they are left out here too.
+	return modifiers;
+}
+
+void GlfwWindow::_SetIOEventCallbacks() const {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	glfwSetKeyCallback(window, [](GLFWwindow* nativeWindow, const int key, const int scancode, const int action, const int mods) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+			self->windowEventHandler.DispatchKeyEvent(key, action, scancode, mods);
+	});
+
+	glfwSetCharCallback(window, [](GLFWwindow* nativeWindow, const unsigned int codepoint) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+			self->windowEventHandler.DispatchCharEvent(codepoint);
+	});
+
+	glfwSetMouseButtonCallback(window, [](GLFWwindow* nativeWindow, const int button, const int action, const int mods) {
+		const auto self = WindowFrom(nativeWindow);
+		if (not self) [[unlikely]]
+			return;
+
+		// GLFW has no native drag event, so the held buttons are tracked here to synthesize one on cursor motion.
+		if (button >= 0 and button < 8) {
+			const auto mask = static_cast<u8>(1u << button);
+			self->_pressedMouseButtons = action == GLFW_PRESS
+				? static_cast<u8>(self->_pressedMouseButtons | mask)
+				: static_cast<u8>(self->_pressedMouseButtons & ~mask);
+		}
+
+		self->windowEventHandler.DispatchMouseButtonEvent(button, action, mods);
+	});
+
+	glfwSetCursorPosCallback(window, [](GLFWwindow* nativeWindow, const f64 xPos, const f64 yPos) {
+		const auto self = WindowFrom(nativeWindow);
+		if (not self) [[unlikely]]
+			return;
+
+		self->windowEventHandler.DispatchMousePositionEvent(xPos, yPos);
+
+		// Nothing held: no drag to synthesize, which is every plain cursor move.
+		if (self->_pressedMouseButtons == 0) [[likely]]
+			return;
+
+		const auto modifiers = self->_CurrentModifiers();
+		for (int button = 0; button < 8; ++button) {
+			if (self->_pressedMouseButtons & static_cast<u8>(1u << button))
+				self->windowEventHandler.DispatchMouseDraggedEvent(button, GLFW_PRESS, modifiers, xPos, yPos);
+		}
+	});
+
+	glfwSetScrollCallback(window, [](GLFWwindow* nativeWindow, const f64 xOffset, const f64 yOffset) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+			self->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
+	});
+}
+
+void GlfwWindow::_SetWindowEventCallbacks() const {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	glfwSetWindowSizeCallback(window, [](GLFWwindow* nativeWindow, const int width, const int height) {
+		const auto self = WindowFrom(nativeWindow);
+		if (not self) [[unlikely]]
+			return;
+
+		// Refresh the cache rather than calling back into GLFW: the window already has this size, it is why the
+		// callback fired.
+		self->_width = static_cast<u32>(width);
+		self->_height = static_cast<u32>(height);
+
+		self->windowEventHandler.DispatchResizeEvent(width, height);
+	});
+
+	// The framebuffer has a callback of its own because it can change without the window size changing - dragging the
+	// window onto a display with a different scale factor resizes the drawable and nothing else.
+	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* nativeWindow, const int width, const int height) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]] {
+			self->_frameWidth = static_cast<u32>(width);
+			self->_frameHeight = static_cast<u32>(height);
+		}
+	});
+
+	glfwSetWindowCloseCallback(window, [](GLFWwindow* nativeWindow) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+			self->windowEventHandler.DispatchCloseEvent();
+	});
+
+	glfwSetWindowFocusCallback(window, [](GLFWwindow* nativeWindow, const int focused) {
+		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+			self->windowEventHandler.DispatchFocusEvent(focused);
+	});
+}
+
+void GlfwWindow::_CacheSizes() {
+	const auto window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	int width = 0;
+	int height = 0;
+
+	glfwGetWindowSize(window, &width, &height);
+	_width = static_cast<u32>(width);
+	_height = static_cast<u32>(height);
+
+	glfwGetFramebufferSize(window, &width, &height);
+	_frameWidth = static_cast<u32>(width);
+	_frameHeight = static_cast<u32>(height);
 }
 
 }

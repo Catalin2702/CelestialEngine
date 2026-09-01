@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -13,14 +13,15 @@
 #define CE_CORE_WINDOW_COMMON_GLFWWINDOW_HPP
 
 #include "Core/Window/I_Window.hpp"
-
+#include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
+#include "Core/Render/Surface/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Define/Window.hpp"
-#include "Types/Window/WindowProps.hpp"
-#include "Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
+#include "Types/Types.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
-#include <array>
+#include <source_location>
+#include <string_view>
 #include <utility>
 
 
@@ -33,7 +34,6 @@ public:
 	struct GlfwWindowStateEvents {
 		UnicastDispatcher<int, int> onResizeDispatcher;
 		UnicastDispatcher<> onCloseDispatcher;
-		UnicastDispatcher<int, const char*> onErrorDispatcher;
 		UnicastDispatcher<int> onFocusDispatcher;	///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
 	};
 
@@ -58,10 +58,6 @@ public:
 	 * @brief Forwards the close callback to the bound listener
 	 */
 	void DispatchCloseEvent() const;
-	/**
-	 * @brief Forwards the error callback to the bound listener
-	 */
-	void DispatchErrorEvent(int errorCode, const char* description) const;
 	/**
 	 * @brief Forwards a window focus change to the bound listener (the event hub)
 	 * @param focused GLFW_TRUE when the window gained input focus, GLFW_FALSE when it lost it
@@ -103,18 +99,21 @@ public:
 /**
  * @class GlfwWindow
  * @brief Cross-platform window implementation using GLFW
- * @details Concrete implementation of I_Window that uses GLFW for window management
- *			and OpenGL for rendering. This is the primary cross-platform implementation
- *			that works on Windows, Linux, and macOS. It provides a complete windowing
- *			system with event handling, VSync control, and OpenGL context management.
+ * @details Concrete implementation of I_Window that uses GLFW for window management, and of I_OpenGlSurface so an
+ *			OpenGL swapchain can present into it. Works on Windows, Linux and macOS.
+ *
+ *			It owns one native window and nothing else: the library's own lifetime, its event queue and its window
+ *			hints belong to GlfwPlatform, which must outlive every window built from it.
  */
-class CE_CORE_API GlfwWindow final: public I_Window {
+class CE_CORE_API GlfwWindow final: public I_Window, public I_OpenGlSurface {
 public:
 	/**
-	 * @brief Constructor
-	 * @details Creates and initializes a GLFW window using the properties specified in Config::Config
+	 * @brief Creates the native window, fully initialized
+	 * @param platform The live GLFW library, which applies the window hints and must outlive this window
+	 * @details Taking the platform by reference is what makes the ordering requirement a compile-time one: a window
+	 *			cannot be built before the library that hosts it.
 	 */
-	explicit GlfwWindow();
+	explicit GlfwWindow(const GlfwPlatform& platform);
 
 	GlfwWindow(const GlfwWindow&) = delete;
 
@@ -129,7 +128,7 @@ public:
 
 	/**
 	 * @brief Destructor
-	 * @details Cleans up GLFW window resources by calling _Shutdown()
+	 * @details Destroys the native window. Terminating GLFW is GlfwPlatform's job, not this one's.
 	 */
 	~GlfwWindow() override;
 
@@ -145,117 +144,122 @@ public:
 
 public:
 	/**
-	 * @brief Updates the window state each frame
-	 * @details Polls all pending events via glfwPollEvents() and swaps the front/back
-	 *			rendering buffers via glfwSwapBuffers() to display the rendered content
+	 * @brief Makes the window visible and gives it input focus
 	 */
-	void OnUpdate() const override;
-
-	/**
-	 * @brief Initializes the OpenGL window
-	 */
-	void Init() override;
+	void Show() override;
 
 	/**
 	 * @brief Minimizes the window via glfwIconifyWindow
 	 */
-	void Miniaturize() const override;
+	void Miniaturize() override;
 
 	/**
 	 * @brief Restores the window via glfwRestoreWindow
 	 */
-	void Deminiaturize() const override;
+	void Deminiaturize() override;
 
 	/**
 	 * @brief Toggles fullscreen by moving the window on/off the monitor video mode
 	 */
-	void ToggleFullScreen() const override;
+	void ToggleFullScreen() override;
+
+	/**
+	 * @brief Makes this window's OpenGL context current on the calling thread
+	 */
+	void MakeContextCurrent() override;
+
+	/**
+	 * @brief Presents the back buffer
+	 */
+	void SwapBuffers() override;
 
 public:
 	/**
-	 * @brief Gets the current size of the window
-	 * @return std::pair<unsigned int, unsigned int> Pair of width and height in pixels
+	 * @brief Resizes the native window
 	 */
-	[[nodiscard]] std::pair<f32, f32> GetWindowSize() const override;
+	void SetWindowSize(u32 width, u32 height) override;
 
 	/**
-	 * @brief Gets the current size of the frame
-	 * @return std::pair<f32, f32> Pair of frame width and height in pixels
-	 * @details The frame size is the actual size of the window's drawable area, which may differ from the window size due to scaling or platform-specific behavior. This method returns the current frame width and height in pixels, which is important for rendering at the correct resolution.
+	 * @brief Sets the text shown in the window's title bar
 	 */
-	[[nodiscard]] std::pair<f32, f32> GetFrameSize() const override;
+	void SetTitle(std::string_view title) override;
+
+	/**
+	 * @brief Sets the swap interval on this window's context
+	 * @details Makes the context current first: glfwSwapInterval takes no window and applies to whichever context is
+	 *			current on the calling thread, so without that the setting could land on another window entirely.
+	 */
+	void SetSwapInterval(i32 interval) override;
+
+public:
+	/**
+	 * @brief Gets the size of the window, in screen coordinates
+	 * @details Served from the value the size callback cached, not by asking GLFW: the query is a round-trip into the
+	 *			window system (a synchronous request to the X server, on X11) and this is read every frame.
+	 */
+	[[nodiscard]] std::pair<u32, u32> GetWindowSize() const override { return {_width, _height}; }
+
+	/**
+	 * @brief Gets the size of the drawable, in backing pixels
+	 * @details Differs from GetWindowSize by the content scale on a high-DPI display. Cached like it, from the
+	 *			framebuffer size callback.
+	 */
+	[[nodiscard]] std::pair<u32, u32> GetFrameSize() const override { return {_frameWidth, _frameHeight}; }
+
+	/**
+	 * @brief Gets the ratio between backing pixels and screen coordinates
+	 */
+	[[nodiscard]] f32 GetContentScale() const override;
 
 	/**
 	 * @brief Gets the refresh rate of the monitor the window is on
-	 * @return unsigned int Refresh rate in Hz, or 0 if it cannot be determined
+	 * @return u32 Refresh rate in Hz, or 0 if it cannot be determined
 	 * @details Returns the video mode refresh rate of the window's monitor when fullscreen, otherwise the primary monitor.
 	 *			Used to drive the frame limiter at the real display rate while VSync is on.
 	 */
-	[[nodiscard]] unsigned int GetRefreshRate() const;
+	[[nodiscard]] u32 GetRefreshRate() const override;
 
 	/**
 	 * @brief Gets the underlying GLFW window pointer
-	 * @return GLFWwindow* Raw pointer to the GLFW window
-	 * @details Provides access to the GLFW window for platform-specific operations.
-	 *			Returns the raw pointer from the smart pointer wrapper.
+	 * @return void* Raw pointer to the GLFW window
+	 * @details The escape hatch for platform-specific operations this interface does not cover.
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return _glfwWindow.get(); }
 
 	/**
-	 * @brief Gets the underlying GLFW window pointer
-	 * @return GLFWwindow* Raw pointer to the GLFW window
-	 * @details Provides access to the GLFW window for platform-specific operations.
-	 *			Returns the raw pointer from the smart pointer wrapper.
+	 * @brief Gets the underlying GLFW window pointer, typed
 	 */
 	[[nodiscard]] GLFWwindow* GetGlfwWindow() const { return _glfwWindow.get(); }
 
 public:
 	/**
-	 * @brief Sets the window size
-	 * @param width New width in pixels
-	 * @param height New height in pixels
-	 * @details Convenience method to set both width and height at once. Updates the cached width and height values in _data. Note: this only updates
-	 *			the stored values, the actual window resize is handled by GLFW events
+	 * @brief Gets the size of the drawable, in backing pixels
+	 * @details The same measurement I_Window already exposes as GetFrameSize; named differently on I_OpenGlSurface
+	 *			because that is what the swapchain calls it.
 	 */
-	void SetWindowSize(unsigned int width, unsigned int height) override;
+	[[nodiscard]] std::pair<u32, u32> GetDrawableSize() const override { return GetFrameSize(); }
 
 	/**
-	 * @brief Prepares the window for rendering
-	 * @details This method can be used to perform any necessary setup before the rendering loop starts.
-	 *			For example, it can be used to ensure that the OpenGL context is properly configured and ready for rendering.
-	 *			In this implementation, it sets the VSync state according to the configuration in _data.
+	 * @brief Gets the colour format of the default framebuffer
+	 * @details GLFW creates it as 8 bits per channel in RGBA order and offers no way to ask for anything else, so this
+	 *			is fixed rather than queried.
 	 */
-	void SetCurrentContext(GLFWwindow* window = nullptr) const;
+	[[nodiscard]] Types::PixelFormat GetColorFormat() const override { return Types::PixelFormat::RGBA8Unorm; }
 
-protected:
-	/**
-	 * @brief Sets internal callbacks for I/O events
-	 * @details Registers GLFW callbacks for keyboard input, mouse movement, mouse button presses/releases, and scroll events.
-	 *			Each callback retrieves the user data pointer (which points to the _callbacks structure) and invokes the appropriate event callback function with the corresponding event data.
-	 */
-	void _SetIOEventCallbacks() override;
-
-	/**
-	 * @brief Sets internal callbacks for window events
-	 * @details Registers GLFW callbacks for window resizing and closing events. Each callback retrieves the user data pointer (which points to the _callbacks structure) and invokes the appropriate event callback function with the corresponding event data.
-	 */
-	void _SetWindowEventCallbacks() override;
-
-protected:
-	/**
-	 * @brief Initializes the GLFW window and OpenGL context
-	 * @details This method is called by _Init() to perform the actual creation of the GLFW window and setup of the OpenGL context. It handles GLFW initialization, window creation, OpenGL context configuration, and error handling. If any step fails (e.g., GLFW initialization, window creation, GLAD initialization), it logs an error message and throws a runtime exception.
-	 */
-	void _InitWindow() override;
-
-	/**
-	 * @brief Cleans up and releases window resources
-	 * @details Resets the GLFW window smart pointer, which automatically destroys
-	 *			the GLFW window when there are no more references to it
-	 */
-	void _Shutdown() override;
+public:
+	WINDOW_API_TYPE(GLFW)
 
 private:
+	/**
+	 * @brief Creates the native window and registers every callback on it
+	 */
+	void _InitWindow(const GlfwPlatform& platform);
+
+	/**
+	 * @brief Destroys the native window, if this object still owns one
+	 */
+	void _Shutdown();
+
 	/**
 	 * @brief Points the native window's GLFW user pointer at this object
 	 * @details Called on creation and again after every move: the GLFW C callbacks resolve their GlfwWindow through
@@ -263,8 +267,38 @@ private:
 	 */
 	void _AdoptNativeWindow();
 
-public:
-	WINDOW_API_TYPE(GLFW)
+	/**
+	 * @brief Gets the native handle, or null with a warning when the window is not initialized
+	 * @details Every call into GLFW has to survive being made on a moved-from window, which holds no handle. Taking the
+	 *			source location as a default argument - evaluated at the call site, not here - means the warning names
+	 *			the caller, so no call site has to carry a message of its own and none of them can drift out of date.
+	 */
+	[[nodiscard]] GLFWwindow* _Native(const std::source_location& location = std::source_location::current()) const;
+
+	/**
+	 * @brief Reads the modifier keys currently held down, in GLFW's mods encoding
+	 * @details GLFW reports modifiers only with key and button events, never with cursor motion, so a synthesized drag
+	 *			has to ask for them: caching the ones from the last button press would report Shift as up for the whole
+	 *			drag if it was pressed after the button went down.
+	 */
+	[[nodiscard]] int _CurrentModifiers() const;
+
+private:
+	/**
+	 * @brief Registers the GLFW callbacks for keyboard, mouse button, cursor and scroll input
+	 */
+	void _SetIOEventCallbacks() const;
+
+	/**
+	 * @brief Registers the GLFW callbacks for resize, framebuffer resize, close and focus
+	 */
+	void _SetWindowEventCallbacks() const;
+
+	/**
+	 * @brief Seeds the cached sizes from the freshly created window
+	 * @details The size callbacks only fire on a change, so the initial values have to be read once by hand.
+	 */
+	void _CacheSizes();
 
 public:
 	GlfwWindowEventHandler windowEventHandler;
@@ -272,24 +306,27 @@ public:
 private:
 	Types::GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
 
-	/// @brief Tracks the pressed/released state of each mouse button (indexed by GLFW button code).
-	/// @details GLFW has no native drag event, so a drag is synthesized when the cursor moves while a button is held.
-	std::array<bool, 8> _pressedMouseButtons{};
+	u32 _width = 0;								///< Cached window width, in screen coordinates
+	u32 _height = 0;							///< Cached window height, in screen coordinates
 
-	/// @brief Latest keyboard modifier flags reported by the mouse button callback, forwarded with synthesized drag events.
-	int _lastMouseMods = 0;
+	u32 _frameWidth = 0;						///< Cached framebuffer width, in backing pixels
+	u32 _frameHeight = 0;						///< Cached framebuffer height, in backing pixels
+
+	/// @brief Bitmask of the mouse buttons currently held, indexed by GLFW button code.
+	/// @details GLFW has no native drag event, so a drag is synthesized when the cursor moves while a button is held.
+	///			 A mask rather than an array of bool so the common case - nothing held - costs one comparison.
+	u8 _pressedMouseButtons = 0;
 
 #if not CE_PLATFORM_MACOS
 	/// @brief Windowed-mode placement saved when entering fullscreen, so ToggleFullScreen can restore it on exit.
 	/// @details Only used by the glfwSetWindowMonitor fullscreen path; macOS defers to the native NSWindow fullscreen instead.
-	///			 Mutable because ToggleFullScreen is const yet must cache the pre-fullscreen rect (position and size).
-	mutable int _windowedX = 0;
-	mutable int _windowedY = 0;
-	mutable int _windowedWidth = 0;
-	mutable int _windowedHeight = 0;
+	int _windowedX = 0;
+	int _windowedY = 0;
+	int _windowedWidth = 0;
+	int _windowedHeight = 0;
 #endif
 };
 
 }
 
-#endif //CE_WINDOW_COMMON_GLFWWINDOW_HPP
+#endif //CE_CORE_WINDOW_COMMON_GLFWWINDOW_HPP

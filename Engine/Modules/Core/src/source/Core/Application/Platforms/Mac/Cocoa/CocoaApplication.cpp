@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -169,7 +169,7 @@ void CocoaApplication::Init() {
 	// App-level launch setup (activation policy, menu bar, activation, window reveal) is deferred to the run loop via the
 	// applicationDidFinishLaunching hook, the canonical Cocoa place for it.
 	_appDelegate.SetApplicationDidFinishLaunchingDelegate(
-		EventDelegate<NS::Notification*>::FromConstMethod<CocoaApplication, &CocoaApplication::_OnDidFinishLaunching>(this)
+		EventDelegate<NS::Notification*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDidFinishLaunching>(this)
 	);
 
 	_appDelegate.SetApplicationWillFinishLaunchingDelegate(
@@ -465,7 +465,7 @@ void CocoaApplication::_BindContextDelegates() {
 	_context.SetDrawDelegate(EventDelegate<MTK::View*>::FromMethod<CocoaApplication, &CocoaApplication::_OnDraw>(this));
 }
 
-void CocoaApplication::_OnDidFinishLaunching(NS::Notification*) const {
+void CocoaApplication::_OnDidFinishLaunching(NS::Notification*) {
 	// Bring the app to the foreground and reveal the window now that the run loop is active.
 	_appCocoa->activateIgnoringOtherApps(true);
 	_window.Show();

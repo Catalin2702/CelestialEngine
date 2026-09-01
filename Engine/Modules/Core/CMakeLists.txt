@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-01
+# Updated: 2026-09-02
 #
 
 set(APPLICATION_HEADERS
@@ -84,6 +84,7 @@ set(RUNLOOP_HEADERS
 )
 
 set(WINDOW_HEADERS
+	src/include/Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -223,6 +224,7 @@ set(RUNLOOP_SOURCES
 )
 
 set(WINDOW_SOURCES
+	src/source/Core/Window/Platforms/Common/Glfw/GlfwPlatform.cpp
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:

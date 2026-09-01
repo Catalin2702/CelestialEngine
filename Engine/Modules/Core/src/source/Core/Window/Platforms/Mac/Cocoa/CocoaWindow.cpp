@@ -19,6 +19,7 @@
 #include <objc/runtime.h>
 
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 
@@ -73,27 +74,59 @@ CocoaWindow::~CocoaWindow() {
 	_Shutdown();
 }
 
-std::pair<f32, f32> CocoaWindow::GetWindowSize() const {
+std::pair<u32, u32> CocoaWindow::GetWindowSize() const {
 	if (not _window) [[unlikely]] {
-		CE_CORE_WARN("CocoaWindow::GetSize: Could not get size because window is not initialized.");
+		CE_CORE_WARN("CocoaWindow::GetWindowSize: Could not get size because window is not initialized.");
 		return {0, 0};
 	}
 
 	const auto [origin, size] = _window->frame();
-	return {static_cast<f32>(size.width), static_cast<f32>(size.height)};
+	return {static_cast<u32>(size.width), static_cast<u32>(size.height)};
 }
 
-std::pair<f32, f32> CocoaWindow::GetFrameSize() const {
+std::pair<u32, u32> CocoaWindow::GetFrameSize() const {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetFrameSize: Could not get frame size because window is not initialized.");
 		return {0, 0};
 	}
 
+	// The content rect is in points; the drawable is in backing pixels, which is the same thing scaled.
 	const auto [origin, size] = _window->contentRectForFrameRect();
-	return {static_cast<f32>(size.width), static_cast<f32>(size.height)};
+	const auto scale = GetContentScale();
+
+	return {static_cast<u32>(size.width * scale), static_cast<u32>(size.height * scale)};
 }
 
-void CocoaWindow::SetWindowSize(const unsigned int width, const unsigned int height) {
+f32 CocoaWindow::GetContentScale() const {
+	if (not _window) [[unlikely]]
+		return 1.0f;
+
+	return static_cast<f32>(_window->backingScaleFactor());
+}
+
+u32 CocoaWindow::GetRefreshRate() const {
+	if (not _window) [[unlikely]]
+		return 0;
+
+	const auto screen = _window->screen();
+	if (not screen) [[unlikely]]
+		return 0;
+
+	return static_cast<u32>(screen->maximumFramesPerSecond());
+}
+
+void CocoaWindow::SetTitle(const std::string_view title) {
+	if (not _window) [[unlikely]] {
+		CE_CORE_WARN("CocoaWindow::SetTitle: Could not set the title because window is not initialized.");
+		return;
+	}
+
+	// NS::String::string takes a C string, and a string_view carries no terminator of its own.
+	const std::string terminated(title);
+	_window->setTitle(NS::String::string(terminated.c_str(), NS::UTF8StringEncoding));
+}
+
+void CocoaWindow::SetWindowSize(const u32 width, const u32 height) {
 	if (not _window) [[unlikely]]
 		return;
 
@@ -123,7 +156,7 @@ void CocoaWindow::SetContentView(const MTK::View* view) const {
 	_window->setAcceptsMouseMovedEvents(true);
 }
 
-void CocoaWindow::Show() const {
+void CocoaWindow::Show() {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Show: Cannot show window because it is not initialized.");
 		return;
@@ -142,7 +175,7 @@ void CocoaWindow::Init() {
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
 }
 
-void CocoaWindow::Miniaturize() const {
+void CocoaWindow::Miniaturize() {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Miniaturize: Cannot miniaturize because window is not initialized");
 		return;
@@ -151,7 +184,7 @@ void CocoaWindow::Miniaturize() const {
 	_window->miniaturize(nullptr);
 }
 
-void CocoaWindow::Deminiaturize() const {
+void CocoaWindow::Deminiaturize() {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::Deminiaturize: Cannot deminiaturize because window is not initialized");
 		return;
@@ -160,7 +193,7 @@ void CocoaWindow::Deminiaturize() const {
 	_window->deminiaturize(nullptr);
 }
 
-void CocoaWindow::ToggleFullScreen() const {
+void CocoaWindow::ToggleFullScreen() {
 	if (not _window) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::ToggleFullScreen: Cannot toggle fullscreen because window is not initialized");
 		return;

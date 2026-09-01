@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -22,6 +22,7 @@
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
+#include <string_view>
 #include <utility>
 
 
@@ -94,38 +95,58 @@ public:
 
 public:
 	/**
-	 * @brief Initializes the window with the provided Metal device
+	 * @brief Creates the native window
+	 * @details Not part of I_Window: the Cocoa window is brought up from applicationDidFinishLaunching rather than
+	 *			from the constructor, because AppKit will not give a usable window before the run loop is up.
 	 */
-	void Init() override;
+	void Init();
+
+	/**
+	 * @brief Makes the window key and brings it to the front
+	 * @details Deferred until the application has finished launching (see NsApplicationDelegate::applicationDidFinishLaunching)
+	 *			so the window is revealed once the run loop is active, following the canonical Cocoa lifecycle. Also
+	 *			restores the native fullscreen state saved on the previous shutdown.
+	 */
+	void Show() override;
 
 public:
 	/**
 	 * @brief Minimizes the window to the dock
 	 */
-	void Miniaturize() const override;
+	void Miniaturize() override;
 
 	/**
 	 * @brief Restores the window from the dock
 	 */
-	void Deminiaturize() const override;
+	void Deminiaturize() override;
 
 	/**
 	 * @brief Toggles the native macOS fullscreen mode
 	 */
-	void ToggleFullScreen() const override;
+	void ToggleFullScreen() override;
 
 public:
 	/**
 	 * @brief Gets the current size of the window
 	 * @return std::pair<f32, f32> Pair of width and height in pixels
 	 */
-	[[nodiscard]] std::pair<f32, f32> GetWindowSize() const override;
+	[[nodiscard]] std::pair<u32, u32> GetWindowSize() const override;
 
 	/**
 	 * @brief Gets the current size of the frame
-	 * @return std::pair<f32, f32> Pair of frame width and height in pixels
+	 * @return std::pair<u32, u32> Pair of frame width and height in backing pixels
 	 */
-	[[nodiscard]] std::pair<f32, f32> GetFrameSize() const override;
+	[[nodiscard]] std::pair<u32, u32> GetFrameSize() const override;
+
+	/**
+	 * @brief Gets the ratio between backing pixels and screen coordinates
+	 */
+	[[nodiscard]] f32 GetContentScale() const override;
+
+	/**
+	 * @brief Gets the refresh rate of the screen the window is on
+	 */
+	[[nodiscard]] u32 GetRefreshRate() const override;
 
 	/**
 	 * @brief Gets the native macOS window
@@ -141,7 +162,12 @@ public:
 	 * @param height New height in pixels
 	 * @details Convenience method to set both width and height at once. Updates the window's dimensions and resizes the Metal layer accordingly to ensure proper rendering.
 	 */
-	void SetWindowSize(unsigned int width, unsigned int height) override;
+	void SetWindowSize(u32 width, u32 height) override;
+
+	/**
+	 * @brief Sets the text shown in the window's title bar
+	 */
+	void SetTitle(std::string_view title) override;
 
 public:
 	/**
@@ -160,27 +186,19 @@ public:
 	 */
 	void SetContentView(const MTK::View* view) const;
 
-	/**
-	 * @brief Makes the window key and brings it to the front
-	 * @details Orders the window front and gives it key status so it starts receiving input. This is deferred until the
-	 *			application has finished launching (see NsApplicationDelegate::applicationDidFinishLaunching) so the window is
-	 *			revealed once the run loop is active, following the canonical Cocoa lifecycle.
-	 */
-	void Show() const;
-
-protected:
+private:
 	/**
 	 * @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering.
 	 *			This includes configuring the layer's properties and attaching it to the window's content view.
 	 */
-	void _InitWindow() override;
+	void _InitWindow();
 
 	/**
 	 * @brief Shuts down the window and cleans up resources
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
 	 */
-	void _Shutdown() override;
+	void _Shutdown();
 
 public:
 	WINDOW_API_TYPE(Cocoa)

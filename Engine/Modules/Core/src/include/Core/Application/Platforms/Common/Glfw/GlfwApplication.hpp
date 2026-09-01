@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -293,8 +293,10 @@ public:
 	GlfwApplicationEventHandler applicationEventHandler; ///< Fires the application's own AppTick/Update/Render/Error events into the hub
 
 private:
-	// Declaration order is construction order: OpenGlContext is built from the window's native handle, so the window has
-	// to come first. Swapping these two lines would hand the context a handle from a not-yet-constructed window.
+	// Declaration order is construction order, and all three lines are load-bearing. GlfwPlatform brings the library up
+	// and must outlive every window built from it; OpenGlContext is built from the window's native handle, so the window
+	// has to exist first. Destruction runs in reverse, which is exactly the order these need to be torn down in.
+	GlfwPlatform _platform;	///< The GLFW library itself, initialized for as long as the application lives
 	GlfwWindow _window;		///< The application window, owned by value
 	OpenGlContext _context;	///< The OpenGL rendering context, owned by value
 
