@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-25
+# Updated: 2026-09-02
 #
 
 set(HEADERS
@@ -14,7 +14,6 @@ set(HEADERS
 	src/include/Define/Event.hpp
 	src/include/Define/Log.hpp
 	src/include/Define/Type.hpp
-	src/include/Define/Window.hpp
 	src/include/Define/Render.hpp
 )
 

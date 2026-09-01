@@ -16,6 +16,7 @@
 #include "Types/Var/Vars.hpp"
 #include "Types/Window/WindowProps.hpp"
 
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -26,6 +27,8 @@ class WindowResizeEvent;
 }
 
 namespace CE::Core {
+
+class I_Platform;
 
 /**
  * @class I_Window
@@ -46,6 +49,17 @@ public:
 	 * @details Ensures proper cleanup of derived window implementations
 	 */
 	virtual ~I_Window() = default;
+
+public:
+	/**
+	 * @brief Creates a fully initialized window on the given windowing backend
+	 * @param platform The live windowing library, which must outlive the returned window
+	 * @param windowApi Which backend to create the window on
+	 * @return std::unique_ptr<I_Window> The window, ready to be shown
+	 * @details Taking the platform by reference rather than looking one up says the dependency out loud: a window
+	 *			cannot exist before the library that hosts it, and cannot outlive it either.
+	 */
+	[[nodiscard]] static std::unique_ptr<I_Window> MakeWindow(I_Platform& platform, Types::WindowApi windowApi);
 
 public:
 	/**
@@ -135,6 +149,15 @@ public:
 	 *			used for platform-specific handling or optimizations.
 	 */
 	[[nodiscard]] virtual Types::WindowApi GetWindowApi() const = 0;
+};
+
+template<Types::WindowApi Api>
+class I_WindowBase: public I_Window {
+public:
+	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return _api; }
+
+private:
+	static constexpr Types::WindowApi _api = Api;
 };
 
 }

@@ -13,7 +13,6 @@
 #define CE_CORE_WINDOW_MAC_COCOAWINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Define/Window.hpp"
 
 #include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
 #include "Core/Window/I_Window.hpp"
@@ -79,7 +78,7 @@ public:
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CE_CORE_API CocoaWindow final: public I_Window {
+class CE_CORE_API CocoaWindow final: public I_WindowBase<Types::WindowApi::Cocoa> {
 public:
 	/**
 	 * @brief Constructor
@@ -199,9 +198,6 @@ private:
 	 * @details This method is called by the destructor to clean up Metal and Cocoa resources, including closing the window and releasing any allocated resources.
 	 */
 	void _Shutdown();
-
-public:
-	WINDOW_API_TYPE(Cocoa)
 
 public:
 	CocoaWindowEventHandler cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events

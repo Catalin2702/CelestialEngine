@@ -16,7 +16,6 @@
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
 #include "Core/Render/Surface/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "Define/Window.hpp"
 #include "Types/Types.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
@@ -105,7 +104,7 @@ public:
  *			It owns one native window and nothing else: the library's own lifetime, its event queue and its window
  *			hints belong to GlfwPlatform, which must outlive every window built from it.
  */
-class CE_CORE_API GlfwWindow final: public I_Window, public I_OpenGlSurface {
+class CE_CORE_API GlfwWindow final: public I_WindowBase<Types::WindowApi::GLFW>, public I_OpenGlSurface {
 public:
 	/**
 	 * @brief Creates the native window, fully initialized
@@ -245,9 +244,6 @@ public:
 	 *			is fixed rather than queried.
 	 */
 	[[nodiscard]] Types::PixelFormat GetColorFormat() const override { return Types::PixelFormat::RGBA8Unorm; }
-
-public:
-	WINDOW_API_TYPE(GLFW)
 
 private:
 	/**
