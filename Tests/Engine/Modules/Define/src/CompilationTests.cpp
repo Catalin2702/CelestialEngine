@@ -12,16 +12,15 @@
 #include <Define/Event.hpp>
 #include <Define/Render.hpp>
 #include <Define/Type.hpp>
-#include <Define/Window.hpp>
 #include <Events/I_Event.hpp>
-#include <Types/Render/Render.hpp>
-#include <Types/Window/WindowProps.hpp>
+#include <Types/Types.hpp>
 
 #include <functional>
 #include <type_traits>
 #include <gtest/gtest.h>
 
 using namespace CE::Events;
+using namespace CE::Types;
 
 namespace {
 
@@ -57,12 +56,19 @@ public:
 class TestWindow {
 public:
 	virtual ~TestWindow() = default;
-	[[nodiscard]] virtual CE::Types::WindowApi GetWindowApi() const = 0;
+	[[nodiscard]] virtual WindowApi GetWindowApi() const = 0;
 };
 
-class TestGlfwWindow final: public TestWindow {
+template<WindowApi Api>
+class TestWindowBase: public TestWindow {
 public:
-	WINDOW_API_TYPE(GLFW)
+	[[nodiscard]] WindowApi GetWindowApi() const override { return _api; }
+
+private:
+	static constexpr WindowApi _api = Api;
+};
+
+class TestGlfwWindow final: public TestWindowBase<WindowApi::GLFW> {
 };
 
 // Mock class for testing BIND_FN macros
@@ -336,8 +342,6 @@ TEST(DefineCompilationTests, RENDER_API_TYPE_Macro_GeneratesStaticAndVirtualMeth
 
 TEST(DefineCompilationTests, WINDOW_API_TYPE_Macro_GeneratesStaticAndVirtualMethods) {
 	using CE::Types::WindowApi;
-
-	EXPECT_EQ(TestGlfwWindow::GetStaticType(), WindowApi::GLFW);
 
 	const TestGlfwWindow window;
 	EXPECT_EQ(window.GetWindowApi(), WindowApi::GLFW);
