@@ -30,7 +30,9 @@ std::unique_ptr<I_Swapchain> I_Swapchain::MakeSwapchain(I_Window& window, const 
 			}
 			return std::make_unique<OpenGlSwapchain>(*surface);
 		}
+#if CE_PLATFORM_MACOS
 		case Types::GraphicsApi::Metal:
+#endif
 		default: {
 			constexpr auto error = "I_Swapchain::MakeSwapchain: Not yet implemented!";
 			CE_CORE_ERROR(error);

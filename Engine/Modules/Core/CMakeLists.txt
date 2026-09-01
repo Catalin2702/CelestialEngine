@@ -88,6 +88,7 @@ set(WINDOW_HEADERS
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp
 		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp
 	>
 )
@@ -145,6 +146,7 @@ set(RUNLOOP_INTERFACES
 )
 
 set(WINDOW_INTERFACES
+	src/interface/Core/Window/I_Platform.hpp
 	src/interface/Core/Window/I_Window.hpp
 )
 
@@ -199,6 +201,7 @@ set(RENDER_SOURCES
 	>
 
 	# Device
+	src/source/Core/Render/Device/GraphicDeviceFactory.cpp
 	src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
 
 	# Pipeline
@@ -225,6 +228,9 @@ set(RUNLOOP_SOURCES
 )
 
 set(WINDOW_SOURCES
+	src/source/Core/Window/PlatformFactory.cpp
+	src/source/Core/Window/WindowFactory.cpp
+
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwPlatform.cpp
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 

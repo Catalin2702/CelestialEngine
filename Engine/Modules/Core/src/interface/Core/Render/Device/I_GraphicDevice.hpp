@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -37,6 +37,9 @@ class BufferLayout;
 class I_GraphicDevice {
 public:
 	virtual ~I_GraphicDevice() = default;
+
+public:
+	[[nodiscard]] static std::unique_ptr<I_GraphicDevice> MakeDevice(Types::GraphicsApi api);
 
 public:
 	/// Compiles (OpenGL) or resolves (Metal) one shader stage. Shared, so the same module can back several pipelines

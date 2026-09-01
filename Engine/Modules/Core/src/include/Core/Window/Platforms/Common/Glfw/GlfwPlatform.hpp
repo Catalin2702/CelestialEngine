@@ -12,9 +12,10 @@
 #ifndef CE_CORE_WINDOW_COMMON_GLFWPLATFORM_HPP
 #define CE_CORE_WINDOW_COMMON_GLFWPLATFORM_HPP
 
+#include "Core/Window/I_Platform.hpp"
+
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
-#include "Utility/Delegate/Dispatcher.hpp"
 
 
 namespace CE::Core {
@@ -30,7 +31,7 @@ namespace CE::Core {
  *			Owned by the application and declared before the window, so the library is up before a window needs it and
  *			torn down after the last one is gone.
  */
-class CE_CORE_API GlfwPlatform {
+class CE_CORE_API GlfwPlatform final: public I_PlatformBase<Types::WindowApi::GLFW> {
 public:
 	/**
 	 * @brief Registers the error callback, then initialises GLFW
@@ -46,7 +47,7 @@ public:
 	/**
 	 * @brief Terminates GLFW, destroying any window still open
 	 */
-	~GlfwPlatform();
+	~GlfwPlatform() override;
 
 public:
 	GlfwPlatform& operator = (const GlfwPlatform&) = delete;
@@ -58,7 +59,7 @@ public:
 	 * @details One queue for the whole process, whatever the number of windows, which is why this is called once per
 	 *			frame by the run loop and never by a window.
 	 */
-	void PollEvents() const;
+	void PollEvents() const override;
 
 	/**
 	 * @brief Applies the window hints the next window creation will use
@@ -67,9 +68,6 @@ public:
 	 *			Resets to the defaults first, so hints never leak from one window to the next.
 	 */
 	void ApplyWindowHints(Types::GraphicsApi graphicsApi) const;
-
-public:
-	UnicastDispatcher<int, const char*> onErrorDispatcher;	///< Fires for every GLFW error, including init failures
 };
 
 }
