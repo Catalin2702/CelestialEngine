@@ -328,7 +328,7 @@ TEST_F(GlfwEventHubDispatcherTest, ApplicationCallbacks_AreRoutedToTheirOwnChann
 		EventDelegate<Events::AppRenderEvent&>::FromMethod<HubSubscriber<Events::AppRenderEvent>,
 			&HubSubscriber<Events::AppRenderEvent>::OnEvent>(&render));
 
-	_hub.ReceiveAppTickEvent();
+	_hub.ReceiveAppTickEvent(0.016f);
 	_hub.ReceiveAppUpdateEvent();
 	_hub.ReceiveAppUpdateEvent();
 

@@ -22,8 +22,8 @@
 
 namespace CE::Core {
 
-std::unique_ptr<I_Window> I_Window::MakeWindow(I_Platform& platform, const Types::WindowApi windowApi) {
-	switch (windowApi) {
+std::unique_ptr<I_Window> I_Window::MakeWindow(I_Platform& platform) {
+	switch (platform.GetWindowApi()) {
 		case Types::WindowApi::GLFW: {
 			// GLFW configures the next window through global, sticky hints, which is an idiom no other backend has -
 			// so applying them stays on GlfwPlatform rather than being forced onto I_Platform, and reaching it costs

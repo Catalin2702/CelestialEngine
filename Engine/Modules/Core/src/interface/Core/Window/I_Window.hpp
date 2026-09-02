@@ -28,6 +28,7 @@ class WindowResizeEvent;
 
 namespace CE::Core {
 
+class I_EventHubDispatcher;
 class I_Platform;
 
 /**
@@ -54,12 +55,11 @@ public:
 	/**
 	 * @brief Creates a fully initialized window on the given windowing backend
 	 * @param platform The live windowing library, which must outlive the returned window
-	 * @param windowApi Which backend to create the window on
 	 * @return std::unique_ptr<I_Window> The window, ready to be shown
 	 * @details Taking the platform by reference rather than looking one up says the dependency out loud: a window
 	 *			cannot exist before the library that hosts it, and cannot outlive it either.
 	 */
-	[[nodiscard]] static std::unique_ptr<I_Window> MakeWindow(I_Platform& platform, Types::WindowApi windowApi);
+	[[nodiscard]] static std::unique_ptr<I_Window> MakeWindow(I_Platform& platform);
 
 public:
 	/**
@@ -69,6 +69,13 @@ public:
 	 *			lifecycle on that platform.
 	 */
 	virtual void Show() = 0;
+
+	/**
+	 * @brief Routes this window's raw callbacks into the event hub
+	 * @details See I_Platform::ConnectToEventHub: each backend does its own wiring, because it is the only one that
+	 *			knows what shape its native callbacks have.
+	 */
+	virtual void ConnectToEventHub(I_EventHubDispatcher& eventHub) = 0;
 
 	/**
 	 * @brief Minimizes the window to the dock/taskbar

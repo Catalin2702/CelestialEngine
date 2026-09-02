@@ -9,6 +9,7 @@
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
 
+#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Tools/Log/Log.hpp"
 
 #include <GLFW/glfw3.h>
@@ -57,6 +58,21 @@ GlfwPlatform::~GlfwPlatform() {
 
 void GlfwPlatform::PollEvents() const {
 	glfwPollEvents();
+}
+
+void GlfwPlatform::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
+	// The hub's Receive* methods are not on the interface - they take this backend's raw argument shapes - so reaching
+	// them means naming the concrete hub. Legitimate here: a GLFW platform can only ever be fed into a GLFW hub, and
+	// the check turns a mismatched pair into a message instead of undefined behaviour.
+	auto* const glfwEventHub = dynamic_cast<GlfwEventHubDispatcher*>(&eventHub);
+	if (not glfwEventHub) [[unlikely]] {
+		constexpr auto error = "GlfwPlatform::ConnectToEventHub: a GLFW platform needs a GLFW event hub!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<
+		GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveWindowErrorEvent>(glfwEventHub));
 }
 
 void GlfwPlatform::ApplyWindowHints(const Types::GraphicsApi graphicsApi) const {

@@ -62,6 +62,11 @@ public:
 	void PollEvents() const override;
 
 	/**
+	 * @brief Routes the GLFW error callback into the hub
+	 */
+	void ConnectToEventHub(I_EventHubDispatcher& eventHub) override;
+
+	/**
 	 * @brief Applies the window hints the next window creation will use
 	 * @details Which hints is a graphics decision, not a windowing one: OpenGL wants the 4.1 core profile macOS caps
 	 *			out at, while Metal and Vulkan bring their own surface and need GLFW to create no context at all.

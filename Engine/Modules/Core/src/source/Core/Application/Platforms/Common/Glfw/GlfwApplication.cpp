@@ -77,8 +77,8 @@ void GlfwApplicationEventHandler::DispatchErrorEvent(const int errorCode, const 
 	applicationEvents.onErrorDispatcher.Dispatch(errorCode, description);
 }
 
-void GlfwApplicationEventHandler::DispatchTickEvent() const {
-	applicationEvents.onTickDispatcher.Dispatch();
+void GlfwApplicationEventHandler::DispatchTickEvent(const f32 deltaTime) const {
+	applicationEvents.onTickDispatcher.Dispatch(deltaTime);
 }
 
 void GlfwApplicationEventHandler::DispatchUpdateEvent() const {
@@ -146,7 +146,7 @@ void GlfwApplication::Quit() {
 }
 
 void GlfwApplication::Tick(const f32 deltaTime) {
-	applicationEventHandler.DispatchTickEvent();
+	applicationEventHandler.DispatchTickEvent(deltaTime);
 
 	OpenGlContext::ClearBuffers(Types::BufferBit::Color | Types::BufferBit::Depth);
 
@@ -347,7 +347,7 @@ void GlfwApplication::SetEventHubDispatcher() {
 
 	// The application fires its own lifecycle events (tick/update/render each frame, plus errors) into the hub.
 	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
-	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<f32>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onUpdateDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppUpdateEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onRenderDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppRenderEvent>(&eventHubDispatcher));
 }

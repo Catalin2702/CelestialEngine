@@ -8,6 +8,7 @@
 #
 
 set(APPLICATION_HEADERS
+	src/include/Core/Application/Application.hpp
 	src/include/Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -152,6 +153,7 @@ set(WINDOW_INTERFACES
 )
 
 set(APPLICATION_SOURCES
+	src/source/Core/Application/Application.cpp
 	src/source/Core/Application/ApplicationImpl.cpp
 
 	src/source/Core/Application/Platforms/Common/Glfw/GlfwApplication.cpp
@@ -177,6 +179,9 @@ set(LAYERS_SOURCES
 
 set(HUB_SOURCES
 	#Events
+	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
+	src/source/Core/Hub/Events/EventHubDispatcherFactory.cpp
+
 	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -225,6 +230,7 @@ set(RENDER_SOURCES
 )
 
 set(RUNLOOP_SOURCES
+	src/source/Core/RunLoop/RunLoopFactory.cpp
 	src/source/Core/RunLoop/PacedRunLoop.cpp
 )
 

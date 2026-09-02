@@ -9,9 +9,12 @@
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
+#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Utility.hpp"
+
+#include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
 
@@ -143,6 +146,35 @@ GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 void GlfwWindow::Show() {
 	if (const auto window = _Native()) [[likely]]
 		glfwShowWindow(window);
+}
+
+void GlfwWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
+	// See GlfwPlatform::ConnectToEventHub: the Receive* methods take GLFW's own argument shapes, so they are reachable
+	// only from the concrete hub.
+	auto* const hub = dynamic_cast<GlfwEventHubDispatcher*>(&eventHub);
+	if (not hub) [[unlikely]] {
+		constexpr auto error = "GlfwWindow::ConnectToEventHub: a GLFW window needs a GLFW event hub!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	using Hub = GlfwEventHubDispatcher;
+	auto& [windowStateEvents, keyboardEvents, mouseEvents] = windowEventHandler;
+
+	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<Hub, &Hub::ReceiveWindowCloseEvent>(hub));
+	windowStateEvents.onFocusDispatcher.Bind(EventDelegate<int>::FromMethod<Hub, &Hub::ReceiveWindowFocusEvent>(hub));
+
+	// The hub's resize event carries the drawable size, not the window size, because that is what the renderer and
+	// ImGui measure in - so it is the framebuffer callback that feeds it, not the window one.
+	windowStateEvents.onFramebufferResizeDispatcher.Bind(EventDelegate<int, int>::FromMethod<Hub, &Hub::ReceiveWindowResizeEvent>(hub));
+
+	keyboardEvents.onKeyDispatcher.Bind(EventDelegate<int, int, int, int>::FromMethod<Hub, &Hub::ReceiveKeyEvent>(hub));
+	keyboardEvents.onCharDispatcher.Bind(EventDelegate<unsigned int>::FromMethod<Hub, &Hub::ReceiveCharEvent>(hub));
+
+	mouseEvents.onMouseButtonDispatcher.Bind(EventDelegate<int, int, int>::FromMethod<Hub, &Hub::ReceiveMouseButtonEvent>(hub));
+	mouseEvents.onMousePositionDispatcher.Bind(EventDelegate<f64, f64>::FromMethod<Hub, &Hub::ReceiveMousePositionEvent>(hub));
+	mouseEvents.onMouseDraggedDispatcher.Bind(EventDelegate<int, int, int, f64, f64>::FromMethod<Hub, &Hub::ReceiveMouseDraggedEvent>(hub));
+	mouseEvents.onMouseWheelScrollDispatcher.Bind(EventDelegate<f64, f64>::FromMethod<Hub, &Hub::ReceiveMouseWheelScrollEvent>(hub));
 }
 
 void GlfwWindow::Miniaturize() {
@@ -283,6 +315,20 @@ void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
 
 	_AdoptNativeWindow();
 	_CacheSizes();
+
+	// OpenGL has no entry points until a context is current and the loader has resolved them, and both are per-context
+	// facts the window owns - GLFW documents this exact sequence right after glfwCreateWindow. Every gl* call in the
+	// engine, including the first one the device makes, dereferences a pointer that does not exist until this runs.
+	// The other backends create no context at all (GLFW_NO_API), so there is nothing to make current or resolve.
+	if (windowProps.graphicsApi == Types::GraphicsApi::OpenGL) {
+		glfwMakeContextCurrent(_glfwWindow.get());
+
+		if (not gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) [[unlikely]] {
+			constexpr auto error = "GlfwWindow::_InitWindow: Could not load the OpenGL function pointers!";
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
+		}
+	}
 }
 
 void GlfwWindow::_Shutdown() {

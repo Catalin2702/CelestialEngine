@@ -52,8 +52,8 @@ void CocoaApplicationEventHandler::DispatchErrorEvent(const int errorCode, const
 	applicationEvents.onErrorDispatcher.Dispatch(errorCode, description);
 }
 
-void CocoaApplicationEventHandler::DispatchTickEvent() const {
-	applicationEvents.onTickDispatcher.Dispatch();
+void CocoaApplicationEventHandler::DispatchTickEvent(const f32 deltaTime) const {
+	applicationEvents.onTickDispatcher.Dispatch(deltaTime);
 }
 
 void CocoaApplicationEventHandler::DispatchUpdateEvent() const {
@@ -140,7 +140,7 @@ void CocoaApplication::Quit() {
 }
 
 void CocoaApplication::Tick(const f32 deltaTime) {
-	applicationEventHandler.DispatchTickEvent();
+	applicationEventHandler.DispatchTickEvent(deltaTime);
 
 	for (const auto& layer: _layerStack)
 		layer->OnUpdate();
@@ -367,7 +367,7 @@ void CocoaApplication::SetEventHubDispatcher() {
 
 #pragma region ApplicationEvents
 	applicationEventHandler.applicationEvents.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveAppErrorEvent>(&eventHubDispatcher));
-	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
+	applicationEventHandler.applicationEvents.onTickDispatcher.Bind(EventDelegate<f32>::FromMethod<hub, &hub::ReceiveAppTickEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onUpdateDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppUpdateEvent>(&eventHubDispatcher));
 	applicationEventHandler.applicationEvents.onRenderDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveAppRenderEvent>(&eventHubDispatcher));
 #pragma endregion

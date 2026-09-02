@@ -16,7 +16,6 @@
 
 #include <AppKit/AppKit.hpp>
 
-
 namespace CE::Core {
 
 // Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
@@ -39,76 +38,8 @@ void CocoaEventHubDispatcher::SetSources(MetalContext* context, CocoaWindow* win
 	_window = window;
 }
 
-void CocoaEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
-	applicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) {
-	applicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) {
-	applicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
-	applicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) {
-	keyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) {
-	keyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) {
-	keyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) {
-	mouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) {
-	mouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) {
-	mouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) {
-	mouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) {
-	mouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
-	renderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
-}
-
 void CocoaEventHubDispatcher::DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent) {
 	renderContextEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	windowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
-	windowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	windowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
-}
-
-void CocoaEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
-	windowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
@@ -121,8 +52,8 @@ void CocoaEventHubDispatcher::ReceiveAppRenderEvent() {
 	DispatchAppRenderEvent(appRenderEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveAppTickEvent() {
-	Events::AppTickEvent appTickEvent;
+void CocoaEventHubDispatcher::ReceiveAppTickEvent(const f32 deltaTime) {
+	Events::AppTickEvent appTickEvent{deltaTime};
 	DispatchAppTickEvent(appTickEvent);
 }
 
@@ -135,7 +66,9 @@ void CocoaEventHubDispatcher::ReceiveKeyDownEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode()), 0};
+	// AppKit marks an auto-repeated keyDown instead of sending a distinct event, which is how GLFW's GLFW_REPEAT
+	// maps onto it: without this a held key repeats on the OpenGL backend and does not on the Metal one.
+	Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode()), event->isARepeat() ? 1 : 0};
 	DispatchKeyPressedEvent(keyPressedEvent);
 
 	if (const auto* characters = event->characters(); characters and characters->length() > 0) [[likely]] {

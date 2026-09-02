@@ -49,6 +49,13 @@ public:
 	 *			Calling this every frame is correct and free; it is the GLFW backend that needs the call.
 	 */
 	void PollEvents() const override {}
+
+	/**
+	 * @brief Does nothing
+	 * @details AppKit reports no library-level errors of its own: what would be a GLFW error here is either an
+	 *			exception at creation or a native event the window already routes.
+	 */
+	void ConnectToEventHub(I_EventHubDispatcher&) override {}
 };
 
 }

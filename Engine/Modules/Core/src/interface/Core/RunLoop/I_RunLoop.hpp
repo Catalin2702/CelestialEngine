@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-01
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -15,8 +15,12 @@
 #include "Types/Var/Vars.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 
+#include <memory>
+
 
 namespace CE::Core {
+
+class I_Platform;
 
 /**
  * @class I_RunLoop
@@ -33,12 +37,32 @@ class I_RunLoop {
 public:
 	virtual ~I_RunLoop() = default;
 
+public:
+	/**
+	 * @brief Creates the run loop that suits who owns the thread of control on this backend
+	 * @param platform The live windowing library, which is what decides who owns the thread
+	 * @return std::unique_ptr<I_RunLoop> The loop, with no delegates bound yet
+	 * @details Chosen from the platform rather than from the graphics API because the question it answers is who owns
+	 *			the thread: GLFW, Win32, X11 and Wayland all hand it to us, and only AppKit keeps it. Asking the live
+	 *			platform instead of taking a WindowApi means the loop can never be built for a backend other than the
+	 *			one actually running.
+	 *
+	 *			This is the one factory whose default branch is an answer rather than an error - the paced loop is
+	 *			correct everywhere the thread is ours, so a new backend needs a case here only if it takes it away.
+	 *
+	 *			How frames are *paced* is a second question, and it stays inside the implementation: a loop driven by
+	 *			the display swaps its pacing source when VSync changes, which is what SetPaused and SetTargetFrameRate
+	 *			exist for.
+	 */
+	[[nodiscard]] static std::unique_ptr<I_RunLoop> MakeRunLoop(const I_Platform& platform);
+
+public:
 	/**
 	 * @brief Takes the thread of control and drives frames until Stop()
 	 * @details Blocking: it returns only once the loop has ended, so it is the last thing an application's Start()
 	 *			does. Throws when no frame delegate is bound, since a loop with nothing to call is a spin.
 	 */
-	virtual void Run() = 0;
+	virtual void Start() = 0;
 
 	/**
 	 * @brief Ends the loop, so that Run() returns
@@ -48,11 +72,14 @@ public:
 
 public:
 	/**
-	 * @brief Suspends and resumes frame delivery without ending the loop
-	 * @details What a minimised window wants, and what a VSync switch needs on the backends where changing the pacing
-	 *			source means tearing one down and building the other. Run() stays blocked throughout.
+	 * @brief Resume frame delivery
 	 */
-	virtual void SetPaused(bool paused) = 0;
+	virtual void Run() = 0;
+
+	/**
+	 * @brief Suspends frame delivery without ending the loop
+	 */
+	virtual void Pause() = 0;
 
 	/**
 	 * @brief Sets the frame rate to aim for

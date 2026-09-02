@@ -16,8 +16,8 @@
 
 namespace CE::Core {
 
-void PacedRunLoop::Run() {
-	if (_running) [[unlikely]] {
+void PacedRunLoop::Start() {
+	if (_started) [[unlikely]] {
 		CE_CORE_WARN("PacedRunLoop::Run: The loop is already running!");
 		return;
 	}
@@ -28,14 +28,14 @@ void PacedRunLoop::Run() {
 		throw std::runtime_error(error);
 	}
 
-	_running = true;
+	_started = true;
 	_paused = false;
 
 	_onDidStart.Dispatch();
 
 	auto nextFrame = std::chrono::steady_clock::now();
 
-	while (_running) [[likely]] {
+	while (_started) [[likely]] {
 		if (_paused) [[unlikely]] {
 			std::this_thread::sleep_for(_pausedFromPolling);
 			nextFrame = std::chrono::steady_clock::now();

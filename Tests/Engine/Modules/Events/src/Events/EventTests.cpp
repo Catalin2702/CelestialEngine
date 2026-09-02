@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include <Events/ApplicationEvent.hpp>
@@ -62,7 +62,7 @@ TEST_F(EventTest, GetEventType_IsPolymorphic) {
  */
 TEST_F(EventTest, GetName_ReturnsEventTypeName) {
 	const WindowCloseEvent closeEvent;
-	const AppTickEvent tickEvent;
+	const AppTickEvent tickEvent{0.016f};
 
 	EXPECT_STREQ(closeEvent.GetName(), "WindowClose");
 	EXPECT_STREQ(tickEvent.GetName(), "AppTick");

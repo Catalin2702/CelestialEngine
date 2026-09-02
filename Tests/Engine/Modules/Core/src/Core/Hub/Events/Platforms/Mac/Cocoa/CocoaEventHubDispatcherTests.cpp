@@ -215,7 +215,7 @@ TEST_F(CocoaEventHubDispatcherTest, ApplicationCallbacks_AreRoutedToTheirOwnChan
 	SubscribeTo(_hub.applicationEventHub.onUpdateMulticastDispatcher, update);
 	SubscribeTo(_hub.applicationEventHub.onRenderMulticastDispatcher, render);
 
-	_hub.ReceiveAppTickEvent();
+	_hub.ReceiveAppTickEvent(0.016f);
 	_hub.ReceiveAppRenderEvent();
 	_hub.ReceiveAppRenderEvent();
 

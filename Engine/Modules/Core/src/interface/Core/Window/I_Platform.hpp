@@ -21,6 +21,8 @@
 
 namespace CE::Core {
 
+class I_EventHubDispatcher;
+
 /**
  * @class I_Platform
  * @brief The windowing library's own lifetime and its process-wide event queue
@@ -53,6 +55,14 @@ public:
 	 *			as on Cocoa, has nothing to do here.
 	 */
 	virtual void PollEvents() const = 0;
+
+	/**
+	 * @brief Routes this backend's raw callbacks into the event hub
+	 * @details The translation from a native callback to an engine event is backend-specific - GLFW hands out ints,
+	 *			AppKit hands out NS::Event* - so the wiring lives here, where the backend is already known, instead of
+	 *			in the application, which would otherwise have to downcast to do it.
+	 */
+	virtual void ConnectToEventHub(I_EventHubDispatcher& eventHub) = 0;
 
 public:
 	/**

@@ -108,6 +108,11 @@ public:
 	 */
 	void Show() override;
 
+	/**
+	 * @brief Routes the NS::Window lifecycle and focus notifications into the hub
+	 */
+	void ConnectToEventHub(I_EventHubDispatcher& eventHub) override;
+
 public:
 	/**
 	 * @brief Minimizes the window to the dock

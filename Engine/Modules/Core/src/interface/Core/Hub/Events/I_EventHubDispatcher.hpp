@@ -110,6 +110,43 @@ public:
 
 public:
 	/**
+	 * @brief Creates the event hub fed by the given windowing backend
+	 * @param windowApi Which backend's raw callbacks will feed the hub
+	 * @return std::unique_ptr<I_EventHubDispatcher> The hub, with no subscribers yet
+	 * @details Only the Receive* half varies with the backend, so this is the one place that has to know which one is
+	 *			in use; everything downstream of the hub is written against this interface.
+	 */
+	[[nodiscard]] static std::unique_ptr<I_EventHubDispatcher> MakeEventHubDispatcher(Types::WindowApi windowApi);
+
+public:
+	// Every one of these forwards its event to the matching channel and does nothing else, which is why they are
+	// implemented here instead of being overridden per backend: the channels are reached through the accessors below,
+	// so the body no longer needs to name a concrete hub. What genuinely differs between backends is the Receive* half
+	// - the translation from raw platform callbacks - and that stays in the concrete classes.
+	void DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) override;
+	void DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) override;
+	void DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) override;
+	void DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) override;
+
+	void DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) override;
+	void DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) override;
+	void DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) override;
+
+	void DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) override;
+	void DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) override;
+	void DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) override;
+	void DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) override;
+	void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) override;
+
+	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
+	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
+	void DispatchWindowErrorEvent(Events::ErrorEvent& windowErrorEvent) override;
+	void DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) override;
+
+	void DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) override;
+
+public:
+	/**
 	 * @brief Gets the channels the application lifecycle events are delivered on
 	 */
 	[[nodiscard]] virtual ApplicationEventHub& GetApplicationEventHub() = 0;

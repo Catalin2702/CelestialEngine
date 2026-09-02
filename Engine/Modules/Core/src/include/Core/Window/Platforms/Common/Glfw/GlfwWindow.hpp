@@ -155,6 +155,11 @@ public:
 	void Show() override;
 
 	/**
+	 * @brief Routes every GLFW window and input callback into the hub
+	 */
+	void ConnectToEventHub(I_EventHubDispatcher& eventHub) override;
+
+	/**
 	 * @brief Minimizes the window via glfwIconifyWindow
 	 */
 	void Miniaturize() override;

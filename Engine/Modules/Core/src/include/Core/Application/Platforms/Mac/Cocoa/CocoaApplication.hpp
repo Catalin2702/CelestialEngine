@@ -60,7 +60,7 @@ class CocoaApplicationEventHandler {
 public:
 	struct CocoaApplicationEvents {
 		UnicastDispatcher<int, const char*> onErrorDispatcher;
-		UnicastDispatcher<> onTickDispatcher;
+		UnicastDispatcher<f32> onTickDispatcher;
 		UnicastDispatcher<> onUpdateDispatcher;
 		UnicastDispatcher<> onRenderDispatcher;
 	};
@@ -73,7 +73,7 @@ public:
 	/**
 	 * @brief Fires the application's tick event into the event hub
 	 */
-	void DispatchTickEvent() const;
+	void DispatchTickEvent(f32 deltaTime) const;
 	/**
 	 * @brief Fires the application's update event into the event hub
 	 */

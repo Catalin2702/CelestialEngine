@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP
 #define CE_CORE_LAYERS_IMGUIOPENGLLAYER_HPP
 
+#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
@@ -158,9 +159,8 @@ protected:
 	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	std::optional<std::reference_wrapper<OpenGlContext>> _context; ///< Cached OpenGL context pointer
-	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached OpenGL window pointer
-	std::optional<std::reference_wrapper<GlfwEventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
+	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached window (non-owning); the GLFW backend needs the native handle
+	std::optional<std::reference_wrapper<I_EventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
 	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };

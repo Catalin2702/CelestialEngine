@@ -16,76 +16,8 @@
 
 namespace CE::Core {
 
-void GlfwEventHubDispatcher::DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) {
-	applicationEventHub.onTickMulticastDispatcher.Dispatch(appTickEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) {
-	applicationEventHub.onUpdateMulticastDispatcher.Dispatch(appUpdateEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) {
-	applicationEventHub.onRenderMulticastDispatcher.Dispatch(appRenderEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) {
-	applicationEventHub.onErrorMulticastDispatcher.Dispatch(appErrorEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) {
-	keyboardEventHub.onPressedMulticastDispatcher.Dispatch(keyPressedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) {
-	keyboardEventHub.onReleasedMulticastDispatcher.Dispatch(keyReleasedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) {
-	keyboardEventHub.onTypedMulticastDispatcher.Dispatch(keyTypedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) {
-	mouseEventHub.onMovedMulticastDispatcher.Dispatch(mouseMovedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) {
-	mouseEventHub.onButtonPressedMulticastDispatcher.Dispatch(mouseButtonPressedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) {
-	mouseEventHub.onButtonReleasedMulticastDispatcher.Dispatch(mouseButtonReleasedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) {
-	mouseEventHub.onDraggedMulticastDispatcher.Dispatch(mouseDraggedEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) {
-	mouseEventHub.onWheelScrolledMulticastDispatcher.Dispatch(mouseWheelScrolledEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) {
-	windowEventHub.onResizeMulticastDispatcher.Dispatch(windowResizeEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) {
-	windowEventHub.onCloseMulticastDispatcher.Dispatch(windowCloseEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& errorEvent) {
-	windowEventHub.onErrorMulticastDispatcher.Dispatch(errorEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
-	windowEventHub.onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
-}
-
-void GlfwEventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) {
-	renderContextEventHub.onChangeVSyncDispatcher.Dispatch(VSyncChangeEvent);
-}
-
-void GlfwEventHubDispatcher::ReceiveAppTickEvent() {
-	Events::AppTickEvent appTickEvent;
+void GlfwEventHubDispatcher::ReceiveAppTickEvent(const f32 deltaTime) {
+	Events::AppTickEvent appTickEvent{deltaTime};
 	DispatchAppTickEvent(appTickEvent);
 }
 

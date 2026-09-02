@@ -14,7 +14,6 @@
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
-
 namespace NS {
 	class Event;
 	class Notification;
@@ -66,92 +65,12 @@ public:
 	void SetSources(MetalContext* context, CocoaWindow* window);
 
 public:
-#pragma region DispatchApplicationEvent
-	/**
-	 * @brief Multicasts the app tick event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchAppTickEvent(Events::AppTickEvent& appTickEvent) override;
-	/**
-	 * @brief Multicasts the app update event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchAppUpdateEvent(Events::AppUpdateEvent& appUpdateEvent) override;
-	/**
-	 * @brief Multicasts the app render event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchAppRenderEvent(Events::AppRenderEvent& appRenderEvent) override;
-	/**
-	 * @brief Multicasts the app error event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchAppErrorEvent(Events::ErrorEvent& appErrorEvent) override;
-#pragma endregion
 
-#pragma region DispatchKeyboardEvent
 	/**
-	 * @brief Multicasts the key pressed event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchKeyPressedEvent(Events::KeyPressedEvent& keyPressedEvent) override;
-	/**
-	 * @brief Multicasts the key released event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchKeyReleasedEvent(Events::KeyReleasedEvent& keyReleasedEvent) override;
-	/**
-	 * @brief Multicasts the key typed event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchKeyTypedEvent(Events::KeyTypedEvent& keyTypedEvent) override;
-#pragma endregion
-
-#pragma region DispatchMouseEvent
-	/**
-	 * @brief Multicasts the mouse moved event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchMouseMovedEvent(Events::MouseMovedEvent& mouseMovedEvent) override;
-	/**
-	 * @brief Multicasts the mouse button pressed event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchMouseButtonPressedEvent(Events::MouseButtonPressedEvent& mouseButtonPressedEvent) override;
-	/**
-	 * @brief Multicasts the mouse button released event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchMouseButtonReleasedEvent(Events::MouseButtonReleasedEvent& mouseButtonReleasedEvent) override;
-	/**
-	 * @brief Multicasts the mouse dragged event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchMouseDraggedEvent(Events::MouseDraggedEvent& mouseDraggedEvent) override;
-	/**
-	 * @brief Multicasts the mouse wheel scrolled event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchMouseWheelScrolledEvent(Events::MouseWheelScrolledEvent& mouseWheelScrolledEvent) override;
-#pragma endregion
-
-#pragma region DispatchRenderContextEvent
-	/**
-	 * @brief Multicasts the render context change v sync event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& VSyncChangeEvent) override;
-	/**
-	 * @brief Multicasts the render context resize view event to every subscriber of the matching hub dispatcher
+	 * @brief Multicasts the drawable resize the MetalKit view raises to every subscriber
+	 * @details The one hook with no shared counterpart: OpenGL learns about a resize from the window instead.
 	 */
 	void DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent);
-#pragma endregion
-
-#pragma region DispatchWindowEvent
-	/**
-	 * @brief Multicasts the window close event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
-	/**
-	 * @brief Multicasts the window error event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchWindowErrorEvent(Events::ErrorEvent&) override;
-	/**
-	 * @brief Multicasts the window resize event to every subscriber of the matching hub dispatcher
-	 */
-	void DispatchWindowResizeEvent(Events::WindowResizeEvent& windowResizeEvent) override;
-	/**
-	 * @brief Multicasts a window focus change to every subscriber of the window focus hub
-	 */
-	void DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) override;
-#pragma endregion
 
 public:
 #pragma region ReceiveApplicationEvent
@@ -166,7 +85,7 @@ public:
 	/**
 	 * @brief Translates the raw app tick callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveAppTickEvent();
+	void ReceiveAppTickEvent(f32 deltaTime);
 	/**
 	 * @brief Translates the raw app update callback into the engine event and dispatches it through the hub
 	 */

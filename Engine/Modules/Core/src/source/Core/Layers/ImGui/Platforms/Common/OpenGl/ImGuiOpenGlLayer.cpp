@@ -9,17 +9,17 @@
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
-#include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
-#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
-#include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
+#include "Core/Application/Application.hpp"
+#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Tools/Log/Log.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/ImGui/ImGui.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#include <glad/glad.h>
+
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
@@ -59,36 +59,38 @@ void ImGuiOpenGlLayer::SubscribeToEventHub() {
 	if (_eventHub) [[unlikely]]
 		UnsubscribeFromEventHub();
 
-	_eventHub = dynamic_cast<GlfwApplication&>(I_Application::StGet()).eventHubDispatcher;
+	// Reached through the interface: the hub's subscribable channels are the same on every backend, so this layer no
+	// longer has to know which application it belongs to.
+	_eventHub = Application::Get().GetEventHubDispatcher();
 
-	_eventHubHandles[MouseMoved] = _eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
-	_eventHubHandles[MouseDragged] = _eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
-	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
-	_eventHubHandles[MouseButtonPressed] = _eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
-	_eventHubHandles[MouseButtonReleased] = _eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandles[MouseMoved] = _eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
+	_eventHubHandles[MouseDragged] = _eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
+	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
+	_eventHubHandles[MouseButtonPressed] = _eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandles[MouseButtonReleased] = _eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
 
-	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
-	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
-	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
+	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
+	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
+	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
 
-	_eventHubHandles[ViewResize] = _eventHub->get().windowEventHub.onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
+	_eventHubHandles[ViewResize] = _eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
 	if (not _eventHub) [[unlikely]]
 		return;
 
-	_eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
-	_eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseDragged]);
-	_eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
-	_eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
-	_eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonReleased]);
+	_eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
+	_eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseDragged]);
+	_eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
+	_eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
+	_eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonReleased]);
 
-	_eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
-	_eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
-	_eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
+	_eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
+	_eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
+	_eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
 
-	_eventHub->get().windowEventHub.onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
+	_eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
 
 	_eventHub = std::nullopt;
 	_eventHubHandles = {};
@@ -116,7 +118,7 @@ void ImGuiOpenGlLayer::End() {
 
 	const auto [width, height] = _window->get().GetFrameSize();
 
-	OpenGlContext::SetViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
+	glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -135,13 +137,9 @@ void ImGuiOpenGlLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		// The window and the context are owned by value by GlfwApplication and exposed with their concrete types, so the
-		// dynamic_cast through the I_Window / I_Context interfaces (which only hand out const references) is gone: there is
-		// nothing left to check at runtime either, a reference cannot be null and the type is fixed at compile time.
-		auto& app = GlfwApplication::StGet();
-
-		_window = app.GetGlfwWindow();
-		_context = app.GetOpenGlContext();
+		// The application holds its window behind I_Window, but the ImGui GLFW backend wants the native handle, so this
+		// layer - which is the GLFW one - asks for the concrete type. It is the only place that needs it.
+		_window = dynamic_cast<GlfwWindow&>(Application::Get().GetWindow());
 
 		// io.DisplaySize must be in the same (logical/screen) coordinate space as the mouse position
 		// events fed in _OnMouseMoved/_OnMouseDragged - those come straight from GLFW's cursor
@@ -152,10 +150,10 @@ void ImGuiOpenGlLayer::_Init() {
 		// DisplayFramebufferScale is the separate framebuffer/window ratio used to scale draw calls
 		// for crisp rendering on such displays, and is unaffected by this.
 		const auto [width, height] = _window->get().GetWindowSize();
-		const auto [xScale, yScale] = _context->get().GetContentScale();
+		const auto contentScale = _window->get().GetContentScale();
 
-		io.DisplaySize = ImVec2(width,height);
-		io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+		io.DisplaySize = ImVec2(static_cast<f32>(width), static_cast<f32>(height));
+		io.DisplayFramebufferScale = ImVec2(contentScale, contentScale);
 
 		assert(_window->get().GetGlfwWindow() != nullptr);
 
@@ -246,8 +244,10 @@ void ImGuiOpenGlLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<f32>(event.GetWidth()), static_cast<f32>(event.GetHeight()));
 
-	const auto [xScale, yScale] = _context->get().GetContentScale();
-	io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+	// The scale can change without a resize (dragging onto a display with a different one), and it can change with a
+	// resize too, so it is re-read here rather than cached at init.
+	const auto contentScale = _window->get().GetContentScale();
+	io.DisplayFramebufferScale = ImVec2(contentScale, contentScale);
 }
 
 }

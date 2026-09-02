@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include <Events/ApplicationEvent.hpp>
@@ -31,7 +31,7 @@ class ApplicationEventTest: public ::testing::Test {};
  * @brief Test that AppTickEvent has correct event type and name
  */
 TEST_F(ApplicationEventTest, AppTickEvent_GetEventType_ReturnsCorrectType) {
-	const AppTickEvent event;
+	const AppTickEvent event{0.016f};
 
 	EXPECT_EQ(event.GetEventType(), EventType::AppTick);
 	EXPECT_EQ(AppTickEvent::GetStaticType(), EventType::AppTick);
@@ -42,7 +42,7 @@ TEST_F(ApplicationEventTest, AppTickEvent_GetEventType_ReturnsCorrectType) {
  * @brief Test that AppTickEvent is in the Application category only
  */
 TEST_F(ApplicationEventTest, AppTickEvent_IsInCategory_ApplicationCategory) {
-	const AppTickEvent event;
+	const AppTickEvent event{0.016f};
 
 	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryApplication));
 	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
@@ -105,7 +105,7 @@ TEST_F(ApplicationEventTest, AppRenderEvent_IsInCategory_ApplicationCategory) {
  * @brief Test that application events are mutable by default and can be consumed
  */
 TEST_F(ApplicationEventTest, ApplicationEvents_AreMutableByDefault) {
-	const AppTickEvent tickEvent;
+	const AppTickEvent tickEvent{0.016f};
 	const AppUpdateEvent updateEvent;
 	const AppRenderEvent renderEvent;
 

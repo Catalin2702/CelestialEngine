@@ -45,12 +45,13 @@ public:
 	PacedRunLoop& operator = (PacedRunLoop&&) noexcept = delete;
 
 public:
-	void Run() override;
+	void Start() override;
 
-	void Stop() override { _running = false; }
+	void Stop() override { _started = false; }
 
 public:
-	void SetPaused(const bool paused) override { _paused = paused; }
+	void Run() override { _paused = false; }
+	void Pause() override { _paused = true; }
 
 	void SetTargetFrameRate(const u32 framesPerSecond) override { _targetFrameRate = framesPerSecond; }
 
@@ -60,7 +61,7 @@ public:
 	void SetDidStartDelegate(const EventDelegate<>& onDidStart) override { _onDidStart.Bind(onDidStart); }
 
 public:
-	[[nodiscard]] bool IsRunning() const override { return _running; }
+	[[nodiscard]] bool IsRunning() const override { return _started; }
 	[[nodiscard]] bool IsPaused() const override { return _paused; }
 	[[nodiscard]] u32 GetTargetFrameRate() const override { return _targetFrameRate; }
 
@@ -71,7 +72,7 @@ private:
 	UnicastDispatcher<> _onFrame;
 	UnicastDispatcher<> _onDidStart;
 
-	bool _running = false;
+	bool _started = false;
 	bool _paused = false;
 
 	u32 _targetFrameRate = 0;

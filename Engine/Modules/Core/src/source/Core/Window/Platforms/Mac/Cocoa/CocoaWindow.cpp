@@ -9,6 +9,7 @@
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
+#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Tools/Log/Log.hpp"
 #include "Utility/Utility.hpp"
 
@@ -173,6 +174,27 @@ void CocoaWindow::Show() {
 void CocoaWindow::Init() {
 	_InitWindow();
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
+}
+
+void CocoaWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
+	// The Receive* methods take NS::Notification*, so they are reachable only from the concrete hub - and a Cocoa
+	// window can only ever be paired with a Cocoa hub.
+	auto* const hub = dynamic_cast<CocoaEventHubDispatcher*>(&eventHub);
+	if (not hub) [[unlikely]] {
+		constexpr auto error = "CocoaWindow::ConnectToEventHub: a Cocoa window needs a Cocoa event hub!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	using Hub = CocoaEventHubDispatcher;
+	auto& lifecycle = cocoaWindowEventDispatcher.nsWindowLifecycleEvents;
+	auto& focus = cocoaWindowEventDispatcher.nsWindowFocusEvents;
+
+	lifecycle.willCloseDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowWillCloseEvent>(hub));
+
+	// Focus changes feed the hub so the input state can release held keys once the window stops receiving events.
+	focus.didBecomeKeyDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowDidBecomeKeyEvent>(hub));
+	focus.didResignKeyDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowDidResignKeyEvent>(hub));
 }
 
 void CocoaWindow::Miniaturize() {
