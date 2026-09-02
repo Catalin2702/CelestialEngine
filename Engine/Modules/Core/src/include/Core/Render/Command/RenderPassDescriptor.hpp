@@ -15,6 +15,8 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 
+#include <glm/glm.hpp>
+
 #include <array>
 
 
@@ -39,7 +41,7 @@ struct CE_CORE_API RenderPassColorAttachment {
 	Types::StoreAction storeAction = Types::StoreAction::Store;
 
 	/// Used only when loadAction is Clear.
-	std::array<f32, 4> clearColor = {0.f, 0.f, 0.f, 1.f};
+	glm::vec4 clearColor = {0.f, 0.f, 0.f, 1.f};
 };
 
 /**

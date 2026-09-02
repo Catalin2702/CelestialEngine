@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-03
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
@@ -31,8 +31,8 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 	// Only attachment 0 is reachable while every target is the default framebuffer; several attachments would need
 	// glClearBufferfv per index, since glClearColor holds a single colour for all of them.
 	if (descriptor.colorCount > 0 and descriptor.colors[0].loadAction == Types::LoadAction::Clear) {
-		const auto& [r, g, b, a] = descriptor.colors[0].clearColor;
-		glClearColor(r, g, b, a);
+		const auto& color = descriptor.colors[0].clearColor;
+		glClearColor(color.r, color.g, color.b, color.a);
 
 		clearMask = clearMask | Types::BufferBit::Color;
 		clears = true;
