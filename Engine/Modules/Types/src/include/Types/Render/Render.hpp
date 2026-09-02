@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -30,11 +30,11 @@ namespace CE::Types {
  */
 enum class GraphicsApi: u8 {
 	None = 0,											///< No graphics API specified
-	OpenGL = BIT(0),											///< OpenGL graphics API
-	Metal = BIT(1),											///< Metal graphics API (macOS)
-	DirectX11 = BIT(2),										///< DirectX 11 graphics API (Windows)
-	DirectX12 = BIT(3),										///< DirectX 12 graphics API (Windows)
-	Vulkan = BIT(4),											///< Vulkan graphics API
+	OpenGL = BIT(0),									///< OpenGL graphics API
+	Metal = BIT(1),										///< Metal graphics API (macOS)
+	DirectX11 = BIT(2),									///< DirectX 11 graphics API (Windows)
+	DirectX12 = BIT(3),									///< DirectX 12 graphics API (Windows)
+	Vulkan = BIT(4),									///< Vulkan graphics API
 };
 
 constexpr GraphicsApi operator & (GraphicsApi x, GraphicsApi y) {
