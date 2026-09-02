@@ -64,6 +64,13 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
 	src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
 
+
+	# Renderer
+	src/include/Core/Render/Renderer/DrawCommand.hpp
+	src/include/Core/Render/Renderer/ForwardRenderer.hpp
+	src/include/Core/Render/Renderer/RenderStats.hpp
+
+
 	# Shader
 	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
@@ -130,6 +137,9 @@ set(RENDER_INTERFACES
 
 	# Pipeline
 	src/interface/Core/Render/Pipeline/I_PipelineState.hpp
+
+	# Renderer
+	src/interface/Core/Render/Renderer/I_Renderer.hpp
 
 	# Shader
 	src/interface/Core/Render/Shader/I_Shader.hpp
@@ -212,6 +222,12 @@ set(RENDER_SOURCES
 
 	# Pipeline
 	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
+
+
+	# Renderer
+	src/source/Core/Render/Renderer/RendererFactory.cpp
+	src/source/Core/Render/Renderer/ForwardRenderer.cpp
+
 
 	# Shader
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp

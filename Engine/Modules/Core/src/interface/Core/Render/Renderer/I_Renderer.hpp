@@ -103,7 +103,7 @@ public:
 	/**
 	 * @brief Sets the colour a default pass clears its target to
 	 */
-	virtual void SetClearColor(glm::vec4 color);
+	virtual void SetClearColor(glm::vec4 color) = 0;
 
 public:
 	[[nodiscard]] virtual const I_GraphicDevice& GetGraphicDevice() const = 0;
