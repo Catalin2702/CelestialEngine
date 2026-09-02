@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -23,13 +23,12 @@
 
 namespace CE::Core {
 
-class I_GraphicDevice;
 class I_ImGuiLayer;
 class I_IndexBuffer;
 class I_PipelineState;
 class I_Platform;
+class I_Renderer;
 class I_RunLoop;
-class I_Swapchain;
 class I_VertexBuffer;
 class I_Window;
 
@@ -51,6 +50,7 @@ class CE_CORE_API Application {
 	/// @brief Names the slots of _eventHubHandlers, so a subscription and its unsubscription cannot drift apart.
 	enum EventHubSubscription: std::size_t {
 		_WindowClose = 0,
+		_WindowResize,
 		_VSyncChange,
 
 		_EventHubSubscriptionCount
@@ -140,11 +140,8 @@ public:
 	[[nodiscard]] const I_Window& GetWindow() const { return *_window; }
 	[[nodiscard]] I_Window& GetWindow() { return *_window; }
 
-	[[nodiscard]] const I_GraphicDevice& GetGraphicDevice() const { return *_graphicDevice; }
-	[[nodiscard]] I_GraphicDevice& GetGraphicDevice() { return *_graphicDevice; }
-
-	[[nodiscard]] const I_Swapchain& GetSwapchain() const { return *_swapchain; }
-	[[nodiscard]] I_Swapchain& GetSwapchain() { return *_swapchain; }
+	[[nodiscard]] const I_Renderer& GetRenderer() const { return *_renderer; }
+	[[nodiscard]] I_Renderer& GetRenderer() { return *_renderer; }
 
 	[[nodiscard]] const I_RunLoop& GetRunLoop() const { return *_runLoop; }
 	[[nodiscard]] I_RunLoop& GetRunLoop() { return *_runLoop; }
@@ -178,6 +175,8 @@ private:
 
 	void _OnWindowClose(const Events::WindowCloseEvent& event) const;
 
+	void _OnWindowResize(const Events::WindowResizeEvent& event) const;
+
 	void _OnVSyncChange(const Events::VSyncEvent& event) const;
 
 	/// @todo Renderer territory: an application should not know what a vertex buffer is.
@@ -191,8 +190,7 @@ private:
 
 	std::unique_ptr<I_Platform> _platform;
 	std::unique_ptr<I_Window> _window;
-	std::unique_ptr<I_GraphicDevice> _graphicDevice;
-	std::unique_ptr<I_Swapchain> _swapchain;
+	std::unique_ptr<I_Renderer> _renderer;
 	std::unique_ptr<I_RunLoop> _runLoop;
 
 	/// @todo Renderer territory: an application should not know what a vertex buffer is.

@@ -4,20 +4,20 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-03
 //
 
 #include "Core/Application/Application.hpp"
 
 #include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
+#include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Core/Render/Buffer/I_Buffer.hpp"
-#include "Core/Render/Command/I_CommandEncoder.hpp"
-#include "Core/Render/Command/RenderPassDescriptor.hpp"
-#include "Core/Render/Command/Viewport.hpp"
-#include "Core/Render/Surface/I_OpenGlSurface.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
+#include "Core/Render/Surface/I_OpenGlSurface.hpp"
 #include "Core/Render/Pipeline/PipelineDescriptor.hpp"
+#include "Core/Render/Renderer/I_Renderer.hpp"
+#include "Core/Render/Renderer/DrawCommand.hpp"
 #include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
 #include "Core/RunLoop/I_RunLoop.hpp"
@@ -26,14 +26,14 @@
 #include "Tools/Log/Log.hpp"
 #include "Utility/Utility.hpp"
 
+#include <glm/glm.hpp>
+
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <stdexcept>
 #include <utility>
 #include <string>
-
-#include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
 
 namespace CE::Core {
@@ -53,8 +53,8 @@ Application::Application():
 	_dispatcher(I_EventHubDispatcher::MakeEventHubDispatcher(Props().windowApi)),
 	_platform(I_Platform::MakePlatform(Props().windowApi)),
 	_window(I_Window::MakeWindow(*_platform)),
-	_graphicDevice(I_GraphicDevice::MakeDevice(Props().graphicsApi)),
-	_swapchain(I_Swapchain::MakeSwapchain(*_window, Props().graphicsApi)),
+	// _graphicDevice(I_GraphicDevice::MakeDevice(Props().graphicsApi)),
+	// _swapchain(I_Swapchain::MakeSwapchain(*_window, Props().graphicsApi)),
 	_runLoop(I_RunLoop::MakeRunLoop(*_platform))
 {
 	assert(_instance == nullptr && "Application::Application: An application already exists!");
@@ -155,9 +155,9 @@ void Application::Tick(const f32 deltaTime) {
 
 	// A false here is a minimised or zero-sized window: skip the frame, never the event pump below, or the window
 	// could never be restored.
-	if (_swapchain->AcquireNextTarget()) {
+	if (_renderer->BeginFrame()) {
 		_RenderFrame(deltaTime);
-		_swapchain->Present();
+		_renderer->EndFrame();
 	}
 
 	// Clear this frame's input transitions BEFORE pumping: the events drained below belong to the next frame, so they
@@ -178,7 +178,7 @@ void Application::Init() {
 	_runLoop->SetFrameDelegate(EventDelegate<>::FromMethod<Application, &Application::_OnFrame>(this));
 	_runLoop->SetDidStartDelegate(EventDelegate<>::FromConstMethod<Application, &Application::_OnLoopStarted>(this));
 
-	_swapchain->SetVSync(Props().VSync);
+	_renderer->SetVSync(Props().VSync);
 }
 
 void Application::InitImguiLayer() {
@@ -235,6 +235,9 @@ void Application::_SubscribeToEventHubDispatcher() {
 	_eventHubHandlers[_WindowClose] = windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromConstMethod<Application, &Application::_OnWindowClose>(this)
 	);
+	_eventHubHandlers[_WindowResize] = windowEventHub.onResizeMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<Application, &Application::_OnWindowResize>(this)
+	);
 	_eventHubHandlers[_VSyncChange] = onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromConstMethod<Application, &Application::_OnVSyncChange>(this)
 	);
@@ -242,6 +245,7 @@ void Application::_SubscribeToEventHubDispatcher() {
 
 void Application::_UnsubscribeFromEventHubDispatcher() {
 	_dispatcher->GetWindowEventHub().onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowClose]);
+	_dispatcher->GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowResize]);
 	_dispatcher->GetRenderContextEventHub().onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[_VSyncChange]);
 
 	_eventHubHandlers = {};
@@ -272,6 +276,11 @@ void Application::_InitRenderer() {
 	if (auto* const surface = dynamic_cast<I_OpenGlSurface*>(_window.get()))
 		surface->MakeContextCurrent();
 
+	_renderer = I_Renderer::MakeRenderer(*_window, Props().graphicsApi);
+	_renderer->SetClearColor(glm::vec4{
+		0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32
+	});
+
 	_CreateRenderResources();
 }
 
@@ -290,35 +299,18 @@ void Application::_OnLoopStarted() const {
 }
 
 void Application::_RenderFrame(const f32 deltaTime) {
-	const auto [width, height] = _swapchain->GetSize();
-
-	RenderPassDescriptor descriptor{};
-	descriptor.width = width;
-	descriptor.height = height;
-	descriptor.colorCount = 1;
-	descriptor.colors[0].loadAction = Types::LoadAction::Clear;
-	descriptor.colors[0].storeAction = Types::StoreAction::Store;
-	descriptor.colors[0].clearColor = {0.1f, 0.1f, 0.1f, 1.f};
-	descriptor.depth.enabled = true;
-	descriptor.depth.loadAction = Types::LoadAction::Clear;
-
-	const auto encoder = _graphicDevice->BeginRenderPass(descriptor);
+	_renderer->BeginPass();
 
 	if (_pipeline and _vertexBuffer and _indexBuffer) [[likely]] {
-		encoder->SetPipelineState(*_pipeline);
-		encoder->SetVertexBuffer(*_vertexBuffer);
-		encoder->SetIndexBuffer(*_indexBuffer);
-		encoder->SetViewport(Viewport{
-			_graphicDevice->GetGraphicApi(),
-			0.f, 0.f,
-			static_cast<f32>(width), static_cast<f32>(height),
-			static_cast<f32>(height)
-		});
+		DrawCommand command{};
+		command.pipelineState = _pipeline.get();
+		command.vertexBuffer = _vertexBuffer.get();
+		command.indexBuffer = _indexBuffer.get();
 
-		encoder->DrawIndexed(_indexBuffer->GetCount(), 0, 0);
+		_renderer->Submit(command);
 	}
 
-	encoder->End();
+	_renderer->EndPass();
 
 	// The overlay draws on top of the pass above, which is why it is not inside it.
 	if (const auto imguiLayer = _imguiLayer.lock()) [[likely]] {
@@ -342,6 +334,11 @@ void Application::_OnWindowClose(const Events::WindowCloseEvent& event) const {
 	event.Consume();
 }
 
+void Application::_OnWindowResize(const Events::WindowResizeEvent&) const {
+	const auto [width, height] = _window->GetFrameSize();
+	_renderer->OnResize(width, height);
+}
+
 void Application::_OnVSyncChange(const Events::VSyncEvent& event) const {
 	// The pacing target follows the swap behaviour: the display's rate while it waits for the display, the configured
 	// one while it runs free.
@@ -352,6 +349,8 @@ void Application::_OnVSyncChange(const Events::VSyncEvent& event) const {
 }
 
 void Application::_CreateRenderResources() {
+	auto& graphicDevice = _renderer->GetGraphicDevice();
+	auto& swapchain = _renderer->GetSwapchain();
 	constexpr std::array vertices {
 		// Front face
 		-0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 0
@@ -378,11 +377,11 @@ void Application::_CreateRenderResources() {
 		8_u32, 9_u32, 10_u32, 10_u32, 11_u32, 8_u32		// Upper face
 	};
 
-	_vertexBuffer = _graphicDevice->CreateVertexBuffer(vertices, BufferLayout{
+	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, BufferLayout{
 		{ShaderDataType::Float3, "inputPosition"},
 		{ShaderDataType::Float4, "inputColor"}
 	});
-	_indexBuffer = _graphicDevice->CreateIndexBuffer(indices);
+	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
 
 	// The descriptor borrows its strings for the duration of the call only, so these have to outlive it - which is why
 	// the contents are pulled out into named locals rather than passed inline.
@@ -390,19 +389,19 @@ void Application::_CreateRenderResources() {
 	const auto fragmentSource = Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl").GetContentString();
 
 	PipelineDescriptor pipelineDescriptor{};
-	pipelineDescriptor.vertexShader = _graphicDevice->CreateShaderModule({
+	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({
 		.stage = Types::ShaderType::Vertex, .source = vertexSource, .debugName = "Vertex"
 	});
-	pipelineDescriptor.fragmentShader = _graphicDevice->CreateShaderModule({
+	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({
 		.stage = Types::ShaderType::Fragment, .source = fragmentSource, .debugName = "Fragment"
 	});
 
 	// Asked rather than assumed: the descriptor defaults to BGRA8Unorm, GLFW only ever gives RGBA8Unorm, and every
 	// backend but OpenGL rejects a pipeline whose format disagrees with the swapchain it draws into.
-	pipelineDescriptor.formats.colors[0] = _swapchain->GetColorFormat();
+	pipelineDescriptor.formats.colors[0] = swapchain.GetColorFormat();
 	pipelineDescriptor.formats.colorCount = 1;
 
-	_pipeline = _graphicDevice->CreatePipelineState(pipelineDescriptor);
+	_pipeline = graphicDevice.CreatePipelineState(pipelineDescriptor);
 }
 
 }
