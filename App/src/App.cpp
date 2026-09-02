@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-02
 //
 
 #include <CelestialEngine.hpp>
@@ -13,8 +13,8 @@
 #include <memory>
 
 std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, const char* argv[]) {
-	Utility::Config::StSetWindowProps(Utility::GetWindowProps(argc, argv));
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
+	const auto& windowProps = Utility::Config::GetWindowProps();
 	std::unique_ptr<I_Application> app;
 	switch (windowProps.windowApi) {
 		case Types::WindowApi::GLFW: {

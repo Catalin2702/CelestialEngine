@@ -75,7 +75,7 @@ void MetalContext::Init() {
 }
 
 void MetalContext::_CreateView() {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::GetWindowProps();
 	const CGRect frame = {
 		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}

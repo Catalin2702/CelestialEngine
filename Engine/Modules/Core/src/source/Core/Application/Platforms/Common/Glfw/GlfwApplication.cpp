@@ -59,7 +59,7 @@ static void InstallNativeMenuBar() {
 // constructor body ever runs - which is where the graphics/window API compatibility check used to live. It moves here so
 // it still runs before a window exists: the helper validates the configured pair and only then creates the window.
 static GlfwWindow CreateValidatedWindow(const GlfwPlatform& platform) {
-	if (const auto& windowProps = Utility::Config::StGetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	if (const auto& windowProps = Utility::Config::GetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("GlfwApplication::GlfwApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -120,7 +120,7 @@ void GlfwApplication::Start() {
 
 	ResetDeltaTime();
 
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::GetWindowProps();
 	_st_TargetFPS = windowProps.VSync ? _window.GetRefreshRate() : windowProps.refreshRate;
 
 	auto nextFrame = std::chrono::steady_clock::now();
@@ -180,7 +180,7 @@ void GlfwApplication::Tick(const f32 deltaTime) {
 void GlfwApplication::Init() {
 	I_Application::SetRunning(false);
 
-	_context.SetVSync(Utility::Config::StGetWindowProps().VSync);
+	_context.SetVSync(Utility::Config::GetWindowProps().VSync);
 
 	InstallNativeMenuBar();
 }
@@ -196,9 +196,9 @@ void GlfwApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
 }
 
 void GlfwApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
-	Types::WindowProps windowProps = Utility::Config::StGetWindowProps();
+	Types::WindowProps windowProps = Utility::Config::GetWindowProps();
 	windowProps.VSync = !windowProps.VSync;
-	Utility::Config::StSetWindowProps(windowProps);
+	Utility::Config::SetWindowProps(windowProps);
 
 	// The menu action fires on the main thread during glfwPollEvents, where the GL context is current, so swapping the swap
 	// interval here is safe.
@@ -237,11 +237,8 @@ void GlfwApplication::_InitWindow() {
 }
 
 void GlfwApplication::_InitRenderer() {
-	// The context is created after the window (and after SetEventHubDispatcher), so its resize dispatcher is bound to the hub
+	// The context is created after the window (and after SetEventHubDispatcher), so its VSync dispatcher is bound to the hub
 	// here rather than in SetEventHubDispatcher.
-	_context.openGlContextEventDispatcher.openGlContextLifeCycle.onResizeDispatcher.Bind(
-		EventDelegate<int, int>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveWindowResizeEvent>(&eventHubDispatcher)
-	);
 	_context.openGlContextEventDispatcher.openGlContextLifeCycle.onVSyncChangedDispatcher.Bind(
 		EventDelegate<bool>::FromMethod<GlfwEventHubDispatcher, &GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent>(&eventHubDispatcher)
 	);
@@ -329,6 +326,11 @@ void GlfwApplication::SetEventHubDispatcher() {
 	// Window resize is fired by the render context (framebuffer size), not the window: see _InitRenderer. The window-size
 	// callback still runs to keep the window's cached size in sync, it just no longer feeds the hub.
 	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<hub, &hub::ReceiveWindowCloseEvent>(&eventHubDispatcher));
+
+	// The hub's resize event carries the drawable size, not the window size, because that is what the renderer and ImGui
+	// measure in - so it is the framebuffer callback that feeds it. It comes from the window rather than from the render
+	// context: the drawable belongs to the window, and the context is on its way out.
+	windowStateEvents.onFramebufferResizeDispatcher.Bind(EventDelegate<int, int>::FromMethod<hub, &hub::ReceiveWindowResizeEvent>(&eventHubDispatcher));
 	// GLFW reports its errors per library, not per window, so this one comes from the platform.
 	_platform.onErrorDispatcher.Bind(EventDelegate<int, const char*>::FromMethod<hub, &hub::ReceiveWindowErrorEvent>(&eventHubDispatcher));
 
@@ -395,7 +397,7 @@ void GlfwApplication::_OnWindowClose(Events::WindowCloseEvent&) {
 }
 
 void GlfwApplication::_OnVSyncChange(const Events::VSyncEvent& event) const {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::GetWindowProps();
 	_st_TargetFPS = event.GetState() ? _window.GetRefreshRate() : windowProps.refreshRate;
 }
 

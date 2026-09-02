@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -203,7 +203,7 @@ void CocoaWindow::ToggleFullScreen() {
 }
 
 void CocoaWindow::_InitWindow() {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::GetWindowProps();
 	const CGRect frame = {
 		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}

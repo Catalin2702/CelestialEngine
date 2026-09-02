@@ -35,6 +35,10 @@ void GlfwWindowEventHandler::DispatchResizeEvent(const int width, const int heig
 	windowStateEvents.onResizeDispatcher.Dispatch(width, height);
 }
 
+void GlfwWindowEventHandler::DispatchFramebufferResizeEvent(const int width, const int height) const {
+	windowStateEvents.onFramebufferResizeDispatcher.Dispatch(width, height);
+}
+
 void GlfwWindowEventHandler::DispatchCloseEvent() const {
 	windowStateEvents.onCloseDispatcher.Dispatch();
 }
@@ -259,7 +263,7 @@ u32 GlfwWindow::GetRefreshRate() const {
 }
 
 void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
-	const auto& windowProps = Utility::Config::StGetWindowProps();
+	const auto& windowProps = Utility::Config::GetWindowProps();
 
 	platform.ApplyWindowHints(windowProps.graphicsApi);
 
@@ -403,6 +407,8 @@ void GlfwWindow::_SetWindowEventCallbacks() const {
 		if (const auto self = WindowFrom(nativeWindow)) [[likely]] {
 			self->_frameWidth = static_cast<u32>(width);
 			self->_frameHeight = static_cast<u32>(height);
+
+			self->windowEventHandler.DispatchFramebufferResizeEvent(width, height);
 		}
 	});
 

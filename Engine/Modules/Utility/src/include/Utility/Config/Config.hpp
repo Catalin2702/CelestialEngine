@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -53,17 +53,17 @@ public:
 	 * @brief Gets the current window properties
 	 * @return const Types::WindowProps& The stored window configuration (size, APIs, VSync, ...)
 	 */
-	static const Types::WindowProps& StGetWindowProps();
+	static const Types::WindowProps& GetWindowProps();
 
 public:
 	/**
 	 * @brief Replaces the stored window properties
 	 * @param windowProps The new window configuration
 	 */
-	static void StSetWindowProps(Types::WindowProps windowProps);
+	static void SetWindowProps(Types::WindowProps windowProps);
 
 private:
-	static std::atomic<Config*> _stInstance;		///< Singleton instance (atomic for thread-safe first access)
+	static std::atomic<Config*> _instance;		///< Singleton instance (atomic for thread-safe first access)
 
 	Types::WindowProps _windowProps;				///< Stored window configuration
 };

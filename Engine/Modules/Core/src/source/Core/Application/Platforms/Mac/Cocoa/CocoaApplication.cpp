@@ -39,7 +39,7 @@ static void LogError(Events::ErrorEvent& appErrorEvent) {
 // before any of them exists: the helper validates the configured pair and only then builds the context (the first of the
 // two, see the member declaration order). Mirrors GlfwApplication::CreateValidatedWindow.
 static MetalContext CreateValidatedContext() {
-	if (const auto& windowProps = Utility::Config::StGetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
+	if (const auto& windowProps = Utility::Config::GetWindowProps(); not Types::IsGraphicsApiCompatible(windowProps.graphicsApi, windowProps.windowApi)) [[unlikely]] {
 		const auto error = std::format("CocoaApplication::CocoaApplication: Incompatible graphics API and window API specified in window properties. Graphics API: {}, Window API: {}", windowProps.graphicsApi, windowProps.windowApi);
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
@@ -178,7 +178,7 @@ void CocoaApplication::Init() {
 
 	// Last: SetVSync fires the context's VSync dispatcher, and _OnVSyncChange (which reconciles the frame pacing with it)
 	// only reaches this application once _InitWindow has wired the hub and subscribed the app-level handlers.
-	_context.SetVSync(Utility::Config::StGetWindowProps().VSync);
+	_context.SetVSync(Utility::Config::GetWindowProps().VSync);
 }
 
 void CocoaApplication::_InitWindow() {
@@ -420,9 +420,9 @@ void CocoaApplication::StOnQuitMenuCallback(void*, SEL, const NS::Object*) {
 }
 
 void CocoaApplication::StOnToggleVSyncCallback(void*, SEL, const NS::Object*) {
-	Types::WindowProps windowProps = Utility::Config::StGetWindowProps();
+	Types::WindowProps windowProps = Utility::Config::GetWindowProps();
 	windowProps.VSync = !windowProps.VSync;
-	Utility::Config::StSetWindowProps(windowProps);
+	Utility::Config::SetWindowProps(windowProps);
 
 	StGet().GetMetalContext().SetVSync(windowProps.VSync);
 }
@@ -440,7 +440,7 @@ void CocoaApplication::StOnToggleFullscreenCallback(void*, SEL, const NS::Object
 }
 
 void CocoaApplication::_Run() {
-	if (Utility::Config::StGetWindowProps().VSync) {
+	if (Utility::Config::GetWindowProps().VSync) {
 		// VSync on: the CAMetalDisplayLink paces rendering. Tear down the tick loop first so no stale frame calls
 		// CAMetalLayer::nextDrawable() once a display link exists for the layer, then build/resume the link.
 		_StopTickLoop();

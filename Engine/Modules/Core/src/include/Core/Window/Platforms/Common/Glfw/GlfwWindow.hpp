@@ -31,7 +31,8 @@ namespace CE::Core {
 class GlfwWindowEventHandler {
 public:
 	struct GlfwWindowStateEvents {
-		UnicastDispatcher<int, int> onResizeDispatcher;
+		UnicastDispatcher<int, int> onResizeDispatcher;			///< Window size, in screen coordinates
+		UnicastDispatcher<int, int> onFramebufferResizeDispatcher;	///< Drawable size, in backing pixels - what the renderer needs
 		UnicastDispatcher<> onCloseDispatcher;
 		UnicastDispatcher<int> onFocusDispatcher;	///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
 	};
@@ -53,6 +54,12 @@ public:
 	 * @brief Forwards the resize callback to the bound listener
 	 */
 	void DispatchResizeEvent(int width, int height) const;
+	/**
+	 * @brief Forwards the framebuffer resize callback to the bound listener
+	 * @details Separate from the window resize because the two do not always move together: dragging the window onto a
+	 *			display with a different scale factor changes the drawable and nothing else.
+	 */
+	void DispatchFramebufferResizeEvent(int width, int height) const;
 	/**
 	 * @brief Forwards the close callback to the bound listener
 	 */

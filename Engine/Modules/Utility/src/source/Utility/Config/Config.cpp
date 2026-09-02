@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-09-02
 //
 
 #include "Utility/Config/Config.hpp"
@@ -12,21 +12,21 @@
 
 namespace CE::Utility {
 
-std::atomic<Config*> Config::_stInstance = nullptr;
+std::atomic<Config*> Config::_instance = nullptr;
 
 Config& Config::StGet() {
-	return *_stInstance;
+	return *_instance;
 }
 
-const Types::WindowProps& Config::StGetWindowProps() {
+const Types::WindowProps& Config::GetWindowProps() {
 	return StGet()._windowProps;
 }
 
-void Config::StSetWindowProps(Types::WindowProps windowProps) {
-	if (_stInstance == nullptr) [[unlikely]] {
-		_stInstance = new Config();
+void Config::SetWindowProps(Types::WindowProps windowProps) {
+	if (_instance == nullptr) [[unlikely]] {
+		_instance = new Config();
 	}
-	_stInstance.load()->_windowProps = std::move(windowProps);
+	_instance.load()->_windowProps = std::move(windowProps);
 }
 
 }

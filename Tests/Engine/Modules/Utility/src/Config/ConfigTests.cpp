@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-09-02
 //
 
 #include <Utility/Config/Config.hpp>
@@ -30,7 +30,7 @@ namespace {
 class ConfigTest: public ::testing::Test {
 protected:
 	void SetUp() override {
-		Config::StSetWindowProps(WindowProps{"ConfigTest", 800, 600, false, 0, GraphicsApi::OpenGL, WindowApi::GLFW});
+		Config::SetWindowProps(WindowProps{"ConfigTest", 800, 600, false, 0, GraphicsApi::OpenGL, WindowApi::GLFW});
 	}
 };
 
@@ -40,7 +40,7 @@ protected:
  * @brief Test that the window properties written are the ones read back
  */
 TEST_F(ConfigTest, StSetWindowProps_StoresProperties) {
-	const auto& props = Config::StGetWindowProps();
+	const auto& props = Config::GetWindowProps();
 
 	EXPECT_EQ(props.title, "ConfigTest");
 	EXPECT_EQ(props.width, 800);
@@ -55,9 +55,9 @@ TEST_F(ConfigTest, StSetWindowProps_StoresProperties) {
  * @brief Test that a second write replaces the stored properties
  */
 TEST_F(ConfigTest, StSetWindowProps_OverwritesPreviousProperties) {
-	Config::StSetWindowProps(WindowProps{"Replaced", 1920, 1080, true, 144, GraphicsApi::Metal, WindowApi::Cocoa});
+	Config::SetWindowProps(WindowProps{"Replaced", 1920, 1080, true, 144, GraphicsApi::Metal, WindowApi::Cocoa});
 
-	const auto& props = Config::StGetWindowProps();
+	const auto& props = Config::GetWindowProps();
 
 	EXPECT_EQ(props.title, "Replaced");
 	EXPECT_EQ(props.width, 1920);
@@ -82,10 +82,10 @@ TEST_F(ConfigTest, StGet_ReturnsSameInstance) {
  * @brief Test that StGetWindowProps reads from the singleton instance
  */
 TEST_F(ConfigTest, StGetWindowProps_ReadsFromSingletonInstance) {
-	Config::StSetWindowProps(WindowProps{"Shared", 640, 480, false, 60, GraphicsApi::OpenGL, WindowApi::GLFW});
+	Config::SetWindowProps(WindowProps{"Shared", 640, 480, false, 60, GraphicsApi::OpenGL, WindowApi::GLFW});
 
-	const auto* firstRead = &Config::StGetWindowProps();
-	const auto* secondRead = &Config::StGetWindowProps();
+	const auto* firstRead = &Config::GetWindowProps();
+	const auto* secondRead = &Config::GetWindowProps();
 
 	EXPECT_EQ(firstRead, secondRead);
 	EXPECT_EQ(firstRead->title, "Shared");
