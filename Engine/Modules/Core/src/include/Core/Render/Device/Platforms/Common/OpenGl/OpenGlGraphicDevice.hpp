@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_CORE_RENDER_DEVICE_OPENGLGRAPHICDEVICE_HPP
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
+#include "Define/DynamicLinker.hpp"
 #include "Types/Render/Render.hpp"
 
 #include <memory>
@@ -20,7 +21,7 @@
 
 namespace CE::Core {
 
-class OpenGlGraphicDevice final: public I_GraphicDeviceBase<Types::GraphicsApi::OpenGL> {
+class CE_CORE_API OpenGlGraphicDevice final: public I_GraphicDeviceBase<Types::GraphicsApi::OpenGL> {
 public:
 	[[nodiscard]] std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) override;
 	[[nodiscard]] std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) override;
