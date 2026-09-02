@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-02
+# Updated: 2026-09-03
 #
 
 set(APPLICATION_HEADERS
@@ -45,10 +45,12 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
+
 	# Command
 	src/include/Core/Render/Command/RenderPassDescriptor.hpp
 	src/include/Core/Render/Command/Viewport.hpp
 	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
+
 
 	# Context
 	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
@@ -57,8 +59,13 @@ set(RENDER_HEADERS
 		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
 
+
 	# Device
 	src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp
+	>
 
 	# Pipeline
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
@@ -82,6 +89,7 @@ set(RENDER_HEADERS
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp
 	>
+
 
 	# Swapchain
 	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
@@ -205,9 +213,11 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
 
+
 	# Command
 	src/source/Core/Render/Command/Viewport.cpp
 	src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
+
 
 	# Context
 	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
@@ -216,9 +226,15 @@ set(RENDER_SOURCES
 		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
 
+
 	# Device
 	src/source/Core/Render/Device/GraphicDeviceFactory.cpp
 	src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.cpp
+	>
+
 
 	# Pipeline
 	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
@@ -239,6 +255,7 @@ set(RENDER_SOURCES
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.cpp
 	>
+
 
 	# Swapchain
 	src/source/Core/Render/Swapchain/SwapchainFactory.cpp
