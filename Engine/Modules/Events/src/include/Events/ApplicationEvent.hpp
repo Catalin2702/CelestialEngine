@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-02
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Define/Event.hpp"
 #include "Events/I_Event.hpp"
+#include "Types/Var/Vars.hpp"
 
 
 namespace CE::Events {
@@ -29,13 +30,22 @@ class AppTickEvent: public I_Event {
 public:
 	/**
 	 * @brief Default constructor
+	 * @param deltaTime Time elapsed since the last tick
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppTickEvent(const bool isMutable = true): I_Event(isMutable) {}
+	AppTickEvent(const f32 deltaTime, const bool isMutable = true): I_Event(isMutable), _deltaTime(deltaTime){}
+
+public:
+	[[nodiscard]] std::string ToString() const override;
+
+	[[nodiscard]] f32 GetDeltaTime() const { return _deltaTime; }
 
 public:
 	EVENT_CLASS_TYPE(AppTick)
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
+
+private:
+	f32 _deltaTime;
 };
 
 /**

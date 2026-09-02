@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-09-02
 //
 
 #include "Events/GenericEvent.hpp"
 
 #include <format>
+
 
 namespace CE::Events {
 
