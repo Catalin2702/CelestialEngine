@@ -45,6 +45,10 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp
+	>
+
 
 	# Command
 	src/include/Core/Render/Command/RenderPassDescriptor.hpp
@@ -212,6 +216,10 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Buffer/Buffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
 	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.cpp
+	>
 
 
 	# Command
