@@ -11,15 +11,19 @@ set(HEADERS
 	# Build
 	src/include/Types/Build/Build.hpp
 
+
 	# Compare
 	src/include/Types/Compare/Compare.hpp
+
 
 	# FileSystem
 	src/include/Types/FileSystem/File.hpp
 
+
 	# KeyCode
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
+
 
 	# Render
 	src/include/Types/Render/AttachmentAction.hpp
@@ -31,8 +35,14 @@ set(HEADERS
 	src/include/Types/Render/Shader.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
 
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Types/Render/Platforms/Mac/Metal/Metal.hpp
+	>
+
+
 	# Var
 	src/include/Types/Var/Vars.hpp
+
 
 	# Window
 	src/include/Types/Window/WindowProps.hpp
@@ -47,12 +57,15 @@ set(SOURCES
 	# Build
 	src/source/Types/Build/Build.cpp
 
+
 	# Compare
 	src/source/Types/Compare/Compare.cpp
+
 
 	# KeyCode
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
+
 
 	# Render
 	src/source/Types/Render/AttachmentAction.cpp
@@ -63,6 +76,11 @@ set(SOURCES
 	src/source/Types/Render/Render.cpp
 	src/source/Types/Render/Shader.cpp
 	src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Types/Render/Platforms/Mac/Metal/Metal.cpp
+	>
+
 
 	# Window
 	src/source/Types/Window/WindowProps.cpp

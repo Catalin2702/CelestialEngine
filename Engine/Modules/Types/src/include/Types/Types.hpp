@@ -29,6 +29,9 @@
 #include "Render/Render.hpp"
 #include "Render/Shader.hpp"
 #include "Render/Platforms/Common/OpenGl/OpenGl.hpp"
+#if CE_PLATFORM_MACOS
+#include "Render/Platforms/Mac/Metal/Metal.hpp"
+#endif
 
 #include "Var/Vars.hpp"
 
