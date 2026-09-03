@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -114,21 +114,29 @@ CE_TYPES_API bool IsWindowApiSupported(const WindowApi& api);
  */
 CE_TYPES_API bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
+/**
+ * @brief Names a WindowApi, for fmt/spdlog and - through the formatter below - for std::format
+ * @param windowApi The value to name
+ * @return std::string_view The enumerator's name, or "Unknown Window API" for a value outside the enum
+ */
+constexpr std::string_view format_as(const WindowApi windowApi) {
+	switch (windowApi) {
+		case WindowApi::None: return "None";
+		case WindowApi::GLFW: return "GLFW";
+		case WindowApi::Win32: return "Win32";
+		case WindowApi::X11: return "X11";
+		case WindowApi::Wayland: return "Wayland";
+		case WindowApi::Cocoa: return "Cocoa";
+		default: return "Unknown Window API";
+	}
+}
+
 }
 
 template <>
 struct std::formatter<CE::Types::WindowApi>: std::formatter<std::string_view> {
 	auto format(const CE::Types::WindowApi value, std::format_context& ctx) const {
-		using CE::Types::WindowApi;
-		switch (value) {
-			case WindowApi::None: return std::formatter<std::string_view>::format("None", ctx);
-			case WindowApi::GLFW: return std::formatter<std::string_view>::format("GLFW", ctx);
-			case WindowApi::Win32: return std::formatter<std::string_view>::format("Win32", ctx);
-			case WindowApi::X11: return std::formatter<std::string_view>::format("X11", ctx);
-			case WindowApi::Wayland: return std::formatter<std::string_view>::format("Wayland", ctx);
-			case WindowApi::Cocoa: return std::formatter<std::string_view>::format("Cocoa", ctx);
-			default: return std::formatter<std::string_view>::format("Unknown Window API", ctx);
-		}
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 

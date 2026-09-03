@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -41,13 +44,6 @@ enum class PrimitiveTopology: u8 {
 };
 
 /**
- * @brief Converts a PrimitiveTopology enum value to its string representation
- * @param topology The PrimitiveTopology to convert to a string
- * @return const char* A string representation of the PrimitiveTopology, or "Unknown" if the value is out of range
- */
-CE_TYPES_API const char* ToString(PrimitiveTopology topology);
-
-/**
  * @brief Returns how many primitives a given number of vertices produces under this topology
  * @param topology The PrimitiveTopology in use
  * @param vertexCount Number of vertices (or indices, when drawing indexed) submitted
@@ -64,6 +60,30 @@ CE_TYPES_API u32 GetPrimitiveCount(PrimitiveTopology topology, u32 vertexCount);
  */
 CE_TYPES_API u32 ToOpenGl(PrimitiveTopology topology);
 
+/**
+ * @brief Names a PrimitiveTopology, for fmt/spdlog and - through the formatter below - for std::format
+ * @param topology The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const PrimitiveTopology topology) {
+	switch (topology) {
+		case PrimitiveTopology::None: return "None";
+		case PrimitiveTopology::PointList: return "PointList";
+		case PrimitiveTopology::LineList: return "LineList";
+		case PrimitiveTopology::LineStrip: return "LineStrip";
+		case PrimitiveTopology::TriangleList: return "TriangleList";
+		case PrimitiveTopology::TriangleStrip: return "TriangleStrip";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::PrimitiveTopology>: std::formatter<std::string_view> {
+	auto format(const CE::Types::PrimitiveTopology value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_PRIMITIVETOPOLOGY_HPP

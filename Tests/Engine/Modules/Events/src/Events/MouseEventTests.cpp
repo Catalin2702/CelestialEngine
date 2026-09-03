@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #include <Events/I_Event.hpp>
@@ -13,6 +13,9 @@
 #include <Types/Var/Vars.hpp>
 
 #include <gtest/gtest.h>
+
+#include <format>
+
 
 using namespace CE::Events;
 using CE::Types::MouseButtonCode;
@@ -70,7 +73,7 @@ TEST_F(MouseEventTest, MouseButtonPressedEvent_IsInCategory_MouseAndInputCategor
 TEST_F(MouseEventTest, MouseButtonPressedEvent_ToString_ContainsButton) {
 	const MouseButtonPressedEvent event{MouseButtonCode::Middle};
 
-	EXPECT_NE(event.ToString().find(CE::Types::ToString(MouseButtonCode::Middle)), std::string::npos);
+	EXPECT_NE(event.ToString().find(std::format("{}", MouseButtonCode::Middle)), std::string::npos);
 }
 
 // ============================================================================
@@ -225,7 +228,7 @@ TEST_F(MouseEventTest, MouseDraggedEvent_ToString_ContainsButtonAndPosition) {
 	const MouseDraggedEvent event{MouseButtonCode::Right, 12.0_f32, 34.0_f32};
 	const std::string str = event.ToString();
 
-	EXPECT_NE(str.find(CE::Types::ToString(MouseButtonCode::Right)), std::string::npos);
+	EXPECT_NE(str.find(std::format("{}", MouseButtonCode::Right)), std::string::npos);
 	EXPECT_NE(str.find("12"), std::string::npos);
 	EXPECT_NE(str.find("34"), std::string::npos);
 }

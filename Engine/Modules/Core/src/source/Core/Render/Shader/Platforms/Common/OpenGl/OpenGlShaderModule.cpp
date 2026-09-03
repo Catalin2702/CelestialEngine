@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-03
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
@@ -25,10 +25,10 @@ namespace CE::Core {
 OpenGlShaderModule::OpenGlShaderModule(const ShaderModuleDescriptor& descriptor):
 	_entryPoint(descriptor.entryPoint), _stage(descriptor.stage) {
 	// Owned, not a view: it feeds std::format calls that outlive the ternary's temporaries.
-	const std::string name = descriptor.debugName.empty() ? Types::ToString(descriptor.stage) : std::string(descriptor.debugName);
+	const std::string name = descriptor.debugName.empty() ? std::format("{}", descriptor.stage) : std::string(descriptor.debugName);
 
 	if (not Types::IsShaderTypeSupported(Types::GraphicsApi::OpenGL, descriptor.stage)) [[unlikely]] {
-		const auto message = std::format("OpenGlShaderModule: stage '{}' of module '{}' does not exist in OpenGL.", Types::ToString(descriptor.stage), name);
+		const auto message = std::format("OpenGlShaderModule: stage '{}' of module '{}' does not exist in OpenGL.", descriptor.stage, name);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}

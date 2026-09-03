@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-03
 //
 
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 
 #include <format>
+
 
 using namespace CE::Types;
 
@@ -42,14 +43,14 @@ TEST_F(KeyboardKeyCodeTest, ToInt_PreservesEnumValue) {
 }
 
 /**
- * @brief Test that ToString names the key
+ * @brief Test that formatting a key gives its name
  */
-TEST_F(KeyboardKeyCodeTest, ToString_NamesTheKey) {
-	EXPECT_STREQ(ToString(KeyboardKeyCode::A), "A");
-	EXPECT_STREQ(ToString(KeyboardKeyCode::Num0), "0");
-	EXPECT_STREQ(ToString(KeyboardKeyCode::Space), "Space");
-	EXPECT_STREQ(ToString(KeyboardKeyCode::F12), "F12");
-	EXPECT_STREQ(ToString(KeyboardKeyCode::Unknown), "Unknown");
+TEST_F(KeyboardKeyCodeTest, Format_NamesTheKey) {
+	EXPECT_EQ(std::format("{}", KeyboardKeyCode::A), "A");
+	EXPECT_EQ(std::format("{}", KeyboardKeyCode::Num0), "0");
+	EXPECT_EQ(std::format("{}", KeyboardKeyCode::Space), "Space");
+	EXPECT_EQ(std::format("{}", KeyboardKeyCode::F12), "F12");
+	EXPECT_EQ(std::format("{}", KeyboardKeyCode::Unknown), "Unknown");
 }
 
 // ============================================================================
@@ -80,7 +81,7 @@ TEST_F(KeyboardKeyCodeTest, GlfwMapping_RoundTrips) {
 	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::Z, KeyboardKeyCode::Num5, KeyboardKeyCode::F1,
 			KeyboardKeyCode::Space, KeyboardKeyCode::Enter, KeyboardKeyCode::Escape, KeyboardKeyCode::Left,
 			KeyboardKeyCode::LeftControl, KeyboardKeyCode::RightSuper}) {
-		EXPECT_EQ(KeyboardKeyCodeFromGlfw(GlfwKeyCodeFromKeyboard(key)), key) << "Key: " << ToString(key);
+		EXPECT_EQ(KeyboardKeyCodeFromGlfw(GlfwKeyCodeFromKeyboard(key)), key) << "Key: " << format_as(key);
 	}
 }
 
@@ -110,7 +111,7 @@ TEST_F(KeyboardKeyCodeTest, KeyboardKeyCodeFromCocoa_UnmappedKey_ReturnsUnknown)
 TEST_F(KeyboardKeyCodeTest, CocoaMapping_RoundTrips) {
 	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::W, KeyboardKeyCode::S, KeyboardKeyCode::D,
 			KeyboardKeyCode::Space, KeyboardKeyCode::Escape}) {
-		EXPECT_EQ(KeyboardKeyCodeFromCocoa(CocoaKeyCodeFromKeyboard(key)), key) << "Key: " << ToString(key);
+		EXPECT_EQ(KeyboardKeyCodeFromCocoa(CocoaKeyCodeFromKeyboard(key)), key) << "Key: " << format_as(key);
 	}
 }
 

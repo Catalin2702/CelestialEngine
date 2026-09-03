@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-03
 //
 
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
@@ -13,9 +13,10 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <GLFW/glfw3.h>
 
+
 namespace CE::Types {
 
-const char* ToString(const KeyboardKeyCode key) {
+std::string_view format_as(const KeyboardKeyCode key) {
 	switch (key) {
 		case KeyboardKeyCode::A: return "A";
 		case KeyboardKeyCode::B: return "B";

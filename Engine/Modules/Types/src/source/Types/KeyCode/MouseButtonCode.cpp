@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-09-03
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -12,26 +12,8 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <GLFW/glfw3.h>
 
+
 namespace CE::Types {
-
-const char* ToString(const MouseButtonCode buttonCode) {
-	switch (buttonCode) {
-		case MouseButtonCode::Left: return "Left";
-		case MouseButtonCode::Right: return "Right";
-		case MouseButtonCode::Middle: return "Middle";
-		case MouseButtonCode::Button4: return "Button4";
-		case MouseButtonCode::Button5: return "Button5";
-		case MouseButtonCode::Button6: return "Button6";
-		case MouseButtonCode::Button7: return "Button7";
-		case MouseButtonCode::Button8: return "Button8";
-
-		case MouseButtonCode::WheelX: return "WheelX";
-		case MouseButtonCode::WheelY: return "WheelY";
-
-		case MouseButtonCode::Unknown:
-		default: return "Unknown";
-	}
-}
 
 MouseButtonCode MouseButtonKeyCodeFromGlfw(const int buttonCode) {
 	switch (buttonCode) {

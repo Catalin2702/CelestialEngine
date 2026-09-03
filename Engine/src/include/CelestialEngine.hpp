@@ -19,6 +19,7 @@
 // ---- Use in CelestialEngine applications ------
 // #include <Core/Application.hpp>
 #include <Core/Application/I_Application.hpp>
+#include <Core/Application/Application.hpp>
 #include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
 #if CE_PLATFORM_MACOS
 #include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
@@ -46,7 +47,7 @@
 // -----------------------------------------------
 
 // ---- Tools ------------------------------------
-#include <Tools/Log/Log.hpp>
+#include <Tools/Tools.hpp>
 // -----------------------------------------------
 
 // ---- Types ------------------------------------

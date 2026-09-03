@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -54,13 +57,6 @@ enum class BlendFactor: u8 {
 };
 
 /**
- * @brief Converts a BlendFactor enum value to its string representation
- * @param blendFactor The BlendFactor to convert to a string
- * @return const char* A string representation of the BlendFactor, or "Unknown" if the value is out of range
- */
-CE_TYPES_API const char* ToString(BlendFactor blendFactor);
-
-/**
  * @brief Checks whether a blend factor is legal on the destination side of the blend equation
  * @param blendFactor The BlendFactor to check
  * @return bool False only for SrcAlphaSaturated, true otherwise
@@ -71,6 +67,39 @@ CE_TYPES_API bool IsValidDestinationFactor(BlendFactor blendFactor);
 
 CE_TYPES_API u32 ToOpenGl(BlendFactor blendFactor);
 
+/**
+ * @brief Names a BlendFactor, for fmt/spdlog and - through the formatter below - for std::format
+ * @param blendFactor The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const BlendFactor blendFactor) {
+	switch (blendFactor) {
+		case BlendFactor::Zero: return "Zero";
+		case BlendFactor::One: return "One";
+		case BlendFactor::SrcColor: return "SrcColor";
+		case BlendFactor::OneMinusSrcColor: return "OneMinusSrcColor";
+		case BlendFactor::DstColor: return "DstColor";
+		case BlendFactor::OneMinusDstColor: return "OneMinusDstColor";
+		case BlendFactor::SrcAlpha: return "SrcAlpha";
+		case BlendFactor::OneMinusSrcAlpha: return "OneMinusSrcAlpha";
+		case BlendFactor::DstAlpha: return "DstAlpha";
+		case BlendFactor::OneMinusDstAlpha: return "OneMinusDstAlpha";
+		case BlendFactor::ConstantColor: return "ConstantColor";
+		case BlendFactor::OneMinusConstantColor: return "OneMinusConstantColor";
+		case BlendFactor::ConstantAlpha: return "ConstantAlpha";
+		case BlendFactor::OneMinusConstantAlpha: return "OneMinusConstantAlpha";
+		case BlendFactor::SrcAlphaSaturated: return "SrcAlphaSaturated";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::BlendFactor>: std::formatter<std::string_view> {
+	auto format(const CE::Types::BlendFactor value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_BLENDFACTOR_HPP

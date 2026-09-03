@@ -68,7 +68,6 @@ set(SOURCES
 
 
 	# Render
-	src/source/Types/Render/AttachmentAction.cpp
 	src/source/Types/Render/BlendFactor.cpp
 	src/source/Types/Render/CullMode.cpp
 	src/source/Types/Render/PixelFormat.cpp

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-03-13
+// Updated: 2026-09-03
 //
 
 #include "Types/Build/Build.hpp"
@@ -14,22 +14,9 @@
 
 namespace CE::Types {
 
-std::string GetBuildTypeString(const BuildType type) {
-	switch (type) {
-		case BuildType::Debug:
-			return "Debug";
-		case BuildType::Release:
-			return "Release";
-		case BuildType::Dist:
-			return "Dist";
-		default:
-			return "Unknown";
-	}
-}
-
 // NOLINTNEXTLINE
 std::string GetCurrentBuildTypeString() {
-	return GetBuildTypeString(GetCurrentBuildType());
+	return std::string(format_as(GetCurrentBuildType()));
 }
 
 }

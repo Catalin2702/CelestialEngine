@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -15,6 +15,9 @@
 #include "Define/DynamicLinker.hpp"
 #include "Define/Type.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -68,17 +71,36 @@ constexpr bool HasAnyFlags(const CompareFunc x, const CompareFunc y) {
 	return (x & y) != CompareFunc::Never;
 }
 
-/**
- * @brief Converts a CompareFunc enum value to its string representation
- * @param compareFunc The CompareFunc to convert to a string
- * @return const char* A string representation of the CompareFunc, or "Unknown" if the value is not one of the eight
- * @details Useful for logging a pipeline's depth state. A value outside the eight defined ones can only be produced
- *			by casting an out-of-range integer, since the three bits are exhaustive.
- */
-CE_TYPES_API const char* ToString(CompareFunc compareFunc);
-
 CE_TYPES_API u32 ToOpenGl(CompareFunc compareFunc);
 
+/**
+ * @brief Names a CompareFunc, for fmt/spdlog and - through the formatter below - for std::format
+ * @param compareFunc The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ * @details A value outside the eight can only come from casting an out-of-range integer: the three bits are
+ *			exhaustive.
+ */
+constexpr std::string_view format_as(const CompareFunc compareFunc) {
+	switch (compareFunc) {
+		case CompareFunc::Never: return "Never";
+		case CompareFunc::Less: return "Less";
+		case CompareFunc::Greater: return "Greater";
+		case CompareFunc::Equal: return "Equal";
+		case CompareFunc::NotEqual: return "NotEqual";
+		case CompareFunc::LessEqual: return "LessEqual";
+		case CompareFunc::GreaterEqual: return "GreaterEqual";
+		case CompareFunc::Always: return "Always";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::CompareFunc>: std::formatter<std::string_view> {
+	auto format(const CE::Types::CompareFunc value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_COMPARE_COMPARE_HPP

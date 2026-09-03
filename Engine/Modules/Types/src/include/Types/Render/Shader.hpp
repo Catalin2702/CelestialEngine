@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -41,15 +44,6 @@ enum class ShaderType: u8 {
 };
 
 /**
- * @brief Converts a ShaderType enum value to its string representation
- * @param shaderType The ShaderType to convert to a string
- * @return const char* A string representation of the ShaderType
- * @details Provides a human-readable string representation of the ShaderType enum value. This is useful for debugging, logging, or displaying shader type names in the user interface.
- *			The function uses a switch statement to map each ShaderType value to its corresponding string name. If the ShaderType does not match any known value, it returns "Unknown".
- */
-CE_TYPES_API const char* ToString(ShaderType shaderType);
-
-/**
  * @brief Checks if the specified shader type is supported by the given graphics API
  * @param graphicsApi Graphics API the shader type must run on
  * @param shaderType Shader type to check
@@ -67,6 +61,35 @@ CE_TYPES_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shad
  */
 CE_TYPES_API int ToOpenGlShaderType(ShaderType type);
 
+/**
+ * @brief Names a ShaderType, for fmt/spdlog and - through the formatter below - for std::format
+ * @param shaderType The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const ShaderType shaderType) {
+	switch (shaderType) {
+		case ShaderType::None: return "None";
+		case ShaderType::Vertex: return "Vertex";
+		case ShaderType::Fragment: return "Fragment";
+		case ShaderType::Compute: return "Compute";
+		case ShaderType::Geometry: return "Geometry";
+		case ShaderType::TessellationControl: return "TessellationControl";
+		case ShaderType::TessellationEvaluation: return "TessellationEvaluation";
+		case ShaderType::Mesh: return "Mesh";
+		case ShaderType::Amplification: return "Amplification";
+		case ShaderType::RayGeneration: return "RayGeneration";
+		case ShaderType::Unknown: return "Unknown";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::ShaderType>: std::formatter<std::string_view> {
+	auto format(const CE::Types::ShaderType value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_SHADER_HPP

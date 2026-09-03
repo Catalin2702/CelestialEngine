@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -13,6 +13,9 @@
 #define CE_TYPES_FILESYSTEM_FILE_HPP
 
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -28,6 +31,27 @@ enum class FileLoadState: u8 {
 	LazyLoading,
 };
 
+/**
+ * @brief Names a FileLoadState, for fmt/spdlog and - through the formatter below - for std::format
+ * @param fileLoadState The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const FileLoadState fileLoadState) {
+	switch (fileLoadState) {
+		case FileLoadState::NotLoaded: return "NotLoaded";
+		case FileLoadState::Loaded: return "Loaded";
+		case FileLoadState::LazyLoading: return "LazyLoading";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::FileLoadState>: std::formatter<std::string_view> {
+	auto format(const CE::Types::FileLoadState value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_FILESYSTEM_FILE_HPP

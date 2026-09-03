@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-03
 //
 
 #include <Types/KeyCode/MouseButtonCode.hpp>
@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 
 #include <format>
+
 
 using namespace CE::Types;
 
@@ -40,13 +41,13 @@ TEST_F(MouseButtonCodeTest, ToInt_PreservesEnumValue) {
 }
 
 /**
- * @brief Test that ToString names the button
+ * @brief Test that formatting a button gives its name
  */
-TEST_F(MouseButtonCodeTest, ToString_NamesTheButton) {
-	EXPECT_STREQ(ToString(MouseButtonCode::Left), "Left");
-	EXPECT_STREQ(ToString(MouseButtonCode::Right), "Right");
-	EXPECT_STREQ(ToString(MouseButtonCode::Middle), "Middle");
-	EXPECT_STREQ(ToString(MouseButtonCode::Unknown), "Unknown");
+TEST_F(MouseButtonCodeTest, Format_NamesTheButton) {
+	EXPECT_EQ(std::format("{}", MouseButtonCode::Left), "Left");
+	EXPECT_EQ(std::format("{}", MouseButtonCode::Right), "Right");
+	EXPECT_EQ(std::format("{}", MouseButtonCode::Middle), "Middle");
+	EXPECT_EQ(std::format("{}", MouseButtonCode::Unknown), "Unknown");
 }
 
 // ============================================================================
@@ -78,7 +79,7 @@ TEST_F(MouseButtonCodeTest, GlfwMapping_RoundTripsForPhysicalButtons) {
 			MouseButtonCode::Button4, MouseButtonCode::Button5, MouseButtonCode::Button6,
 			MouseButtonCode::Button7, MouseButtonCode::Button8}) {
 		EXPECT_EQ(MouseButtonKeyCodeFromGlfw(GlfwKeyCodeFromMouseButton(button)), button)
-			<< "Button: " << ToString(button);
+			<< "Button: " << format_as(button);
 	}
 }
 
@@ -109,7 +110,7 @@ TEST_F(MouseButtonCodeTest, MouseButtonKeyCodeFromCocoa_MapsKnownButtons) {
 TEST_F(MouseButtonCodeTest, CocoaMapping_RoundTripsForMainButtons) {
 	for (const auto button: {MouseButtonCode::Left, MouseButtonCode::Right, MouseButtonCode::Middle}) {
 		EXPECT_EQ(MouseButtonKeyCodeFromCocoa(CocoaButtonNumberFromMouseButton(button)), button)
-			<< "Button: " << ToString(button);
+			<< "Button: " << format_as(button);
 	}
 }
 

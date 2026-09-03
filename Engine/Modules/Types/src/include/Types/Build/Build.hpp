@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,7 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 
+#include <format>
 #include <string>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -46,18 +48,35 @@ inline BuildType GetCurrentBuildType() {
 }
 
 /**
- * @brief Converts a BuildType to its human-readable name
- * @param type The build type to convert
- * @return std::string "Debug", "Release" or "Dist"
- */
-CE_TYPES_API std::string GetBuildTypeString(BuildType type);
-
-/**
  * @brief Gets the human-readable name of the current build configuration
  * @return std::string "Debug", "Release" or "Dist"
+ * @details Kept as a function returning an owning string because its callers hand it to ImGui::Text's %s; anywhere
+ *			else, format the BuildType directly.
  */
 CE_TYPES_API std::string GetCurrentBuildTypeString();
 
+/**
+ * @brief Names a BuildType, for fmt/spdlog and - through the formatter below - for std::format
+ * @param buildType The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const BuildType buildType) {
+	switch (buildType) {
+		case BuildType::None: return "None";
+		case BuildType::Debug: return "Debug";
+		case BuildType::Release: return "Release";
+		case BuildType::Dist: return "Dist";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::BuildType>: std::formatter<std::string_view> {
+	auto format(const CE::Types::BuildType value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_BUILD_BUILD_HPP

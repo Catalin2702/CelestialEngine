@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-03
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -25,10 +25,9 @@ namespace {
 
 /// Checks one stage of the descriptor and returns the OpenGL shader name to attach.
 u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::ShaderType expectedStage) {
-	const auto stageName = Types::ToString(expectedStage);
 
 	if (not module) [[unlikely]] {
-		const auto message = std::format("OpenGlPipelineState: the descriptor has no {} shader module.", stageName);
+		const auto message = std::format("OpenGlPipelineState: the descriptor has no {} shader module.", expectedStage);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
@@ -36,19 +35,19 @@ u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::Sha
 	// The descriptor is API-agnostic, so nothing but this check stops a Metal module from reaching an OpenGL pipeline.
 	const auto openGlModule = dynamic_cast<const OpenGlShaderModule*>(module.get());
 	if (not openGlModule) [[unlikely]] {
-		const auto message = std::format("OpenGlPipelineState: the {} shader module is not an OpenGl module.", stageName);
+		const auto message = std::format("OpenGlPipelineState: the {} shader module is not an OpenGl module.", expectedStage);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
 
 	if (openGlModule->GetStage() != expectedStage) [[unlikely]] {
-		const auto message = std::format("OpenGlPipelineState: a {} module was expected, but the descriptor holds a {} one.", stageName, Types::ToString(openGlModule->GetStage()));
+		const auto message = std::format("OpenGlPipelineState: a {} module was expected, but the descriptor holds a {} one.", expectedStage, openGlModule->GetStage());
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
 
 	if (not openGlModule->IsValid()) [[unlikely]] {
-		const auto message = std::format("OpenGlPipelineState: the {} shader module holds no compiled shader.", stageName);
+		const auto message = std::format("OpenGlPipelineState: the {} shader module holds no compiled shader.", expectedStage);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
@@ -80,7 +79,7 @@ u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::Sha
 OpenGlPipelineState::OpenGlPipelineState(PipelineDescriptor descriptor): _descriptor(std::move(descriptor)) {
 	// GL_SRC_ALPHA_SATURATE is a source-only factor; caught here rather than left to a GL_INVALID_ENUM at draw time.
 	if (not _descriptor.blendState.HasValidDestinationFactors()) [[unlikely]] {
-		const auto message = std::format("OpenGlPipelineState: '{}' is not a valid destination blend factor.", Types::ToString(Types::BlendFactor::SrcAlphaSaturated));
+		const auto message = std::format("OpenGlPipelineState: '{}' is not a valid destination blend factor.", Types::BlendFactor::SrcAlphaSaturated);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}

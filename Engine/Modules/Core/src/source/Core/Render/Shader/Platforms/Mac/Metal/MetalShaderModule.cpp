@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-03
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
@@ -28,7 +28,7 @@ MetalShaderModule::MetalShaderModule(const MetalShaderLibrary& library, const Sh
 	const std::string name = descriptor.debugName.empty() ? _entryPoint : std::string(descriptor.debugName);
 
 	if (not Types::IsShaderTypeSupported(Types::GraphicsApi::Metal, descriptor.stage)) [[unlikely]] {
-		const auto message = std::format("MetalShaderModule: stage '{}' of module '{}' does not exist in Metal.", Types::ToString(descriptor.stage), name);
+		const auto message = std::format("MetalShaderModule: stage '{}' of module '{}' does not exist in Metal.", descriptor.stage, name);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}

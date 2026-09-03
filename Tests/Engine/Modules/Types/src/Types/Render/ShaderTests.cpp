@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-09-03
 //
 
 #include <Types/Render/Shader.hpp>
@@ -14,7 +14,10 @@
 #include <glad/glad.h>
 #include <gtest/gtest.h>
 
+#include <format>
+
 using namespace CE::Types;
+
 
 namespace {
 
@@ -30,19 +33,19 @@ class ShaderTypesTest: public ::testing::Test {};
 // ============================================================================
 
 /**
- * @brief Test that ToString names every shader stage
+ * @brief Test that formatting a shader stage gives its name
  */
-TEST_F(ShaderTypesTest, ToString_NamesTheShaderStage) {
-	EXPECT_STREQ(ToString(ShaderType::Vertex), "Vertex");
-	EXPECT_STREQ(ToString(ShaderType::Fragment), "Fragment");
-	EXPECT_STREQ(ToString(ShaderType::Compute), "Compute");
-	EXPECT_STREQ(ToString(ShaderType::Geometry), "Geometry");
-	EXPECT_STREQ(ToString(ShaderType::TessellationControl), "TessellationControl");
-	EXPECT_STREQ(ToString(ShaderType::TessellationEvaluation), "TessellationEvaluation");
-	EXPECT_STREQ(ToString(ShaderType::Mesh), "Mesh");
-	EXPECT_STREQ(ToString(ShaderType::Amplification), "Amplification");
-	EXPECT_STREQ(ToString(ShaderType::RayGeneration), "RayGeneration");
-	EXPECT_STREQ(ToString(ShaderType::Unknown), "Unknown");
+TEST_F(ShaderTypesTest, Format_NamesTheShaderStage) {
+	EXPECT_EQ(std::format("{}", ShaderType::Vertex), "Vertex");
+	EXPECT_EQ(std::format("{}", ShaderType::Fragment), "Fragment");
+	EXPECT_EQ(std::format("{}", ShaderType::Compute), "Compute");
+	EXPECT_EQ(std::format("{}", ShaderType::Geometry), "Geometry");
+	EXPECT_EQ(std::format("{}", ShaderType::TessellationControl), "TessellationControl");
+	EXPECT_EQ(std::format("{}", ShaderType::TessellationEvaluation), "TessellationEvaluation");
+	EXPECT_EQ(std::format("{}", ShaderType::Mesh), "Mesh");
+	EXPECT_EQ(std::format("{}", ShaderType::Amplification), "Amplification");
+	EXPECT_EQ(std::format("{}", ShaderType::RayGeneration), "RayGeneration");
+	EXPECT_EQ(std::format("{}", ShaderType::Unknown), "Unknown");
 }
 
 // ============================================================================

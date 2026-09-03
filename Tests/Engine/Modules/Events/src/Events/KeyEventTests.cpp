@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #include <Events/I_Event.hpp>
@@ -12,6 +12,9 @@
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 
 #include <gtest/gtest.h>
+
+#include <format>
+
 
 using namespace CE::Events;
 using CE::Types::KeyboardKeyCode;
@@ -81,7 +84,7 @@ TEST_F(KeyEventTest, KeyPressedEvent_ToString_ContainsKeyAndRepeatCount) {
 	const KeyPressedEvent event{KeyboardKeyCode::Space, 3};
 	const std::string str = event.ToString();
 
-	EXPECT_NE(str.find(CE::Types::ToString(KeyboardKeyCode::Space)), std::string::npos);
+	EXPECT_NE(str.find(std::format("{}", KeyboardKeyCode::Space)), std::string::npos);
 	EXPECT_NE(str.find('3'), std::string::npos);
 }
 
@@ -127,7 +130,7 @@ TEST_F(KeyEventTest, KeyReleasedEvent_IsInCategory_KeyboardAndInputCategories) {
 TEST_F(KeyEventTest, KeyReleasedEvent_ToString_ContainsKey) {
 	const KeyReleasedEvent event{KeyboardKeyCode::Escape};
 
-	EXPECT_NE(event.ToString().find(CE::Types::ToString(KeyboardKeyCode::Escape)), std::string::npos);
+	EXPECT_NE(event.ToString().find(std::format("{}", KeyboardKeyCode::Escape)), std::string::npos);
 }
 
 // ============================================================================

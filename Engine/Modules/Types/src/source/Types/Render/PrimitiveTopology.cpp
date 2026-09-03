@@ -4,25 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-03
 //
 
 #include "Types/Render/PrimitiveTopology.hpp"
 
 #include <glad/glad.h>
 
-namespace CE::Types {
 
-const char* ToString(const PrimitiveTopology topology) {
-	switch (topology) {
-		case PrimitiveTopology::PointList: return "PointList";
-		case PrimitiveTopology::LineList: return "LineList";
-		case PrimitiveTopology::LineStrip: return "LineStrip";
-		case PrimitiveTopology::TriangleList: return "TriangleList";
-		case PrimitiveTopology::TriangleStrip: return "TriangleStrip";
-		default: return "Unknown";
-	}
-}
+namespace CE::Types {
 
 u32 GetPrimitiveCount(const PrimitiveTopology topology, const u32 vertexCount) {
 	switch (topology) {

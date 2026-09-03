@@ -4,37 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #include "Types/Render/PixelFormat.hpp"
 
-namespace CE::Types {
 
-const char* ToString(const PixelFormat pixelFormat) {
-	switch (pixelFormat) {
-		case PixelFormat::None: return "None";
-		case PixelFormat::R8Unorm: return "R8Unorm";
-		case PixelFormat::RG8Unorm: return "RG8Unorm";
-		case PixelFormat::RGBA8Unorm: return "RGBA8Unorm";
-		case PixelFormat::RGBA8UnormSrgb: return "RGBA8UnormSrgb";
-		case PixelFormat::BGRA8Unorm: return "BGRA8Unorm";
-		case PixelFormat::BGRA8UnormSrgb: return "BGRA8UnormSrgb";
-		case PixelFormat::R16Float: return "R16Float";
-		case PixelFormat::RG16Float: return "RG16Float";
-		case PixelFormat::RGBA16Float: return "RGBA16Float";
-		case PixelFormat::R32Float: return "R32Float";
-		case PixelFormat::RG32Float: return "RG32Float";
-		case PixelFormat::RGBA32Float: return "RGBA32Float";
-		case PixelFormat::RGB10A2Unorm: return "RGB10A2Unorm";
-		case PixelFormat::RG11B10Float: return "RG11B10Float";
-		case PixelFormat::Depth16Unorm: return "Depth16Unorm";
-		case PixelFormat::Depth32Float: return "Depth32Float";
-		case PixelFormat::Depth24UnormStencil8: return "Depth24UnormStencil8";
-		case PixelFormat::Depth32FloatStencil8: return "Depth32FloatStencil8";
-		default: return "Unknown";
-	}
-}
+namespace CE::Types {
 
 bool IsDepthFormat(const PixelFormat pixelFormat) {
 	switch (pixelFormat) {

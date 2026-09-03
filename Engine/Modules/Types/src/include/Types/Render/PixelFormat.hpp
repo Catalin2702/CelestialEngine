@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -59,13 +62,6 @@ enum class PixelFormat: u8 {
 };
 
 /**
- * @brief Converts a PixelFormat enum value to its string representation
- * @param pixelFormat The PixelFormat to convert to a string
- * @return const char* A string representation of the PixelFormat, or "Unknown" if the value is out of range
- */
-CE_TYPES_API const char* ToString(PixelFormat pixelFormat);
-
-/**
  * @brief Checks whether a format can be used as a depth attachment
  * @param pixelFormat The PixelFormat to check
  * @return bool True for the Depth* formats, false otherwise
@@ -88,6 +84,43 @@ CE_TYPES_API bool HasStencil(PixelFormat pixelFormat);
  */
 CE_TYPES_API u32 GetBytesPerPixel(PixelFormat pixelFormat);
 
+/**
+ * @brief Names a PixelFormat, for fmt/spdlog and - through the formatter below - for std::format
+ * @param pixelFormat The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const PixelFormat pixelFormat) {
+	switch (pixelFormat) {
+		case PixelFormat::None: return "None";
+		case PixelFormat::R8Unorm: return "R8Unorm";
+		case PixelFormat::RG8Unorm: return "RG8Unorm";
+		case PixelFormat::RGBA8Unorm: return "RGBA8Unorm";
+		case PixelFormat::RGBA8UnormSrgb: return "RGBA8UnormSrgb";
+		case PixelFormat::BGRA8Unorm: return "BGRA8Unorm";
+		case PixelFormat::BGRA8UnormSrgb: return "BGRA8UnormSrgb";
+		case PixelFormat::R16Float: return "R16Float";
+		case PixelFormat::RG16Float: return "RG16Float";
+		case PixelFormat::RGBA16Float: return "RGBA16Float";
+		case PixelFormat::R32Float: return "R32Float";
+		case PixelFormat::RG32Float: return "RG32Float";
+		case PixelFormat::RGBA32Float: return "RGBA32Float";
+		case PixelFormat::RGB10A2Unorm: return "RGB10A2Unorm";
+		case PixelFormat::RG11B10Float: return "RG11B10Float";
+		case PixelFormat::Depth16Unorm: return "Depth16Unorm";
+		case PixelFormat::Depth32Float: return "Depth32Float";
+		case PixelFormat::Depth24UnormStencil8: return "Depth24UnormStencil8";
+		case PixelFormat::Depth32FloatStencil8: return "Depth32FloatStencil8";
+		default: return "Unknown";
+	}
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::PixelFormat>: std::formatter<std::string_view> {
+	auto format(const CE::Types::PixelFormat value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_PIXELFORMAT_HPP

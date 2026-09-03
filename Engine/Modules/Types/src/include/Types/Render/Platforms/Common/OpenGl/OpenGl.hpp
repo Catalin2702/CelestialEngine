@@ -15,6 +15,10 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
 
+#include <format>
+#include <string>
+#include <string_view>
+
 
 namespace CE::Types {
 
@@ -45,6 +49,39 @@ constexpr BufferBit operator ^ (BufferBit x, BufferBit y) {
 	return static_cast<BufferBit>(static_cast<u32>(x) ^ static_cast<u32>(y));
 }
 
+/**
+ * @brief Names the bits set in a BufferBit mask, for fmt/spdlog and - through the formatter below - for std::format
+ * @param bufferBit The mask to name
+ * @return std::string A '|'-separated list of the bits set, or "None" when no known bit is
+ * @details Returns an owning string, unlike the other enums here: a mask is a set, so "Color|Depth" has to be built
+ *			rather than looked up. The temporary lives to the end of the full expression that formats it, which is
+ *			all the formatter below needs.
+ */
+inline std::string format_as(const BufferBit bufferBit) {
+	std::string name;
+
+	const auto append = [&name](const BufferBit bit, const char* text) {
+		if (static_cast<u32>(bit) == 0)
+			return;
+		if (not name.empty())
+			name += '|';
+		name += text;
+	};
+
+	append(bufferBit & BufferBit::Color, "Color");
+	append(bufferBit & BufferBit::Depth, "Depth");
+	append(bufferBit & BufferBit::Stencil, "Stencil");
+
+	return name.empty() ? "None" : name;
 }
+
+}
+
+template <>
+struct std::formatter<CE::Types::BufferBit>: std::formatter<std::string_view> {
+	auto format(const CE::Types::BufferBit value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_OPENGL_HPP

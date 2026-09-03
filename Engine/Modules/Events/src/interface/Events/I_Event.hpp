@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -16,7 +16,9 @@
 #include "Define/Type.hpp"
 #include "Types/Var/Vars.hpp"
 
+#include <format>
 #include <string>
+#include <string_view>
 
 
 namespace CE::Events {
@@ -88,6 +90,67 @@ constexpr EventCategory operator ^ (EventCategory x, EventCategory y) {
 
 constexpr bool HasAnyFlags(const EventCategory x, const EventCategory y) {
 	return (x & y) != EventCategory::None;
+}
+
+/**
+ * @brief Names an EventType, for fmt/spdlog and - through the formatter below - for std::format
+ * @param eventType The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ * @details Not the same string as I_Event::GetName(): this names the type, that names the instance and may carry
+ *			the event's payload with it.
+ */
+constexpr std::string_view format_as(const EventType eventType) {
+	switch (eventType) {
+		case EventType::None: return "None";
+		case EventType::Error: return "Error";
+		case EventType::VSyncChange: return "VSyncChange";
+		case EventType::WindowClose: return "WindowClose";
+		case EventType::WindowResize: return "WindowResize";
+		case EventType::WindowFocus: return "WindowFocus";
+		case EventType::WindowMoved: return "WindowMoved";
+		case EventType::AppTick: return "AppTick";
+		case EventType::AppUpdate: return "AppUpdate";
+		case EventType::AppRender: return "AppRender";
+		case EventType::KeyPressed: return "KeyPressed";
+		case EventType::KeyReleased: return "KeyReleased";
+		case EventType::KeyTyped: return "KeyTyped";
+		case EventType::MouseButtonPressed: return "MouseButtonPressed";
+		case EventType::MouseButtonReleased: return "MouseButtonReleased";
+		case EventType::MouseMoved: return "MouseMoved";
+		case EventType::MouseScrolled: return "MouseScrolled";
+		case EventType::MouseDragged: return "MouseDragged";
+		default: return "Unknown";
+	}
+}
+
+/**
+ * @brief Names the categories set in an EventCategory mask, for fmt/spdlog and for std::format
+ * @param eventCategory The mask to name
+ * @return std::string A '|'-separated list of the categories set, or "None" when none is
+ * @details Returns an owning string because a category mask is a set: an input event is Input|Keyboard, and there is
+ *			no single name to look up. The EventCategory prefix the enumerators carry is dropped, so the result reads
+ *			"Input|Keyboard" rather than "EventCategoryInput|EventCategoryKeyboard".
+ */
+inline std::string format_as(const EventCategory eventCategory) {
+	std::string name;
+
+	const auto append = [&name, eventCategory](const EventCategory category, const char* text) {
+		if (not HasAnyFlags(eventCategory, category))
+			return;
+		if (not name.empty())
+			name += '|';
+		name += text;
+	};
+
+	append(EventCategory::EventCategoryApplication, "Application");
+	append(EventCategory::EventCategoryInput, "Input");
+	append(EventCategory::EventCategoryKeyboard, "Keyboard");
+	append(EventCategory::EventCategoryMouse, "Mouse");
+	append(EventCategory::EventCategoryMouseButton, "MouseButton");
+	append(EventCategory::EventCategoryRender, "Render");
+	append(EventCategory::EventCategoryWindow, "Window");
+
+	return name.empty() ? "None" : name;
 }
 
 /**
@@ -188,5 +251,19 @@ inline std::string format_as(const I_Event& event) {
 }
 
 }
+
+template <>
+struct std::formatter<CE::Events::EventType>: std::formatter<std::string_view> {
+	auto format(const CE::Events::EventType value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
+
+template <>
+struct std::formatter<CE::Events::EventCategory>: std::formatter<std::string_view> {
+	auto format(const CE::Events::EventCategory value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_EVENTS_I_EVENT_HPP

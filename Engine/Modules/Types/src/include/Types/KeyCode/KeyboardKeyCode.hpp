@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -90,13 +90,13 @@ inline int ToInt(KeyboardKeyCode key) { return static_cast<int>(key); }
 inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned int>(key); }
 
 /**
- * @brief Converts a KeyCode enum value to its string representation
- * @param key The KeyCode to convert to a string
- * @return const char* A string representation of the KeyCode
- * @details Provides a human-readable string representation of the KeyCode enum value. This is useful for debugging, logging, or displaying key names in the user interface.
- *			The function uses a switch statement to map each KeyCode value to its corresponding string name. If the KeyCode does not match any known value, it returns "Unknown".
+ * @brief Names a KeyboardKeyCode, for fmt/spdlog and - through the formatter below - for std::format
+ * @param key The value to name
+ * @return std::string_view The key's name, or "Unknown" for a value outside the enum
+ * @details The only one of these switches kept out of line: it maps over a hundred keys, and every translation unit
+ *			that touches input includes this header.
  */
-CE_TYPES_API const char* ToString(KeyboardKeyCode key);
+CE_TYPES_API std::string_view format_as(KeyboardKeyCode key);
 
 /**
  * @brief Converts a GLFW key code to a KeyCode enum value
@@ -141,14 +141,14 @@ CE_TYPES_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
  * @brief Converts CE::KeyCode::KeyboardKeyCode to macOS/Cocoa virtual key codes
  * @details Maps the engine's keyboard key codes to NSEvent keyCode values
  */
-CE_TYPES_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keycode);
+CE_TYPES_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keyCode);
 
 }
 
 template <>
 struct std::formatter<CE::Types::KeyboardKeyCode>: std::formatter<std::string_view> {
 	auto format(const CE::Types::KeyboardKeyCode value, std::format_context& ctx) const {
-		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 

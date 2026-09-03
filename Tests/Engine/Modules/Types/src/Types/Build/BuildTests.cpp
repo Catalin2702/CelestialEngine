@@ -4,12 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-03
 //
 
 #include <Types/Build/Build.hpp>
 
 #include <gtest/gtest.h>
+
+#include <format>
+
 
 using namespace CE::Types;
 
@@ -25,10 +28,10 @@ class BuildTypeTest: public ::testing::Test {};
 /**
  * @brief Test that every build type has a name
  */
-TEST_F(BuildTypeTest, GetBuildTypeString_NamesTheBuildType) {
-	EXPECT_EQ(GetBuildTypeString(BuildType::Debug), "Debug");
-	EXPECT_EQ(GetBuildTypeString(BuildType::Release), "Release");
-	EXPECT_EQ(GetBuildTypeString(BuildType::Dist), "Dist");
+TEST_F(BuildTypeTest, Format_NamesTheBuildType) {
+	EXPECT_EQ(std::format("{}", BuildType::Debug), "Debug");
+	EXPECT_EQ(std::format("{}", BuildType::Release), "Release");
+	EXPECT_EQ(std::format("{}", BuildType::Dist), "Dist");
 }
 
 /**
@@ -50,5 +53,5 @@ TEST_F(BuildTypeTest, GetCurrentBuildType_MatchesTheConfigurationMacro) {
  * @brief Test that the current build type string matches the current build type
  */
 TEST_F(BuildTypeTest, GetCurrentBuildTypeString_MatchesGetCurrentBuildType) {
-	EXPECT_EQ(GetCurrentBuildTypeString(), GetBuildTypeString(GetCurrentBuildType()));
+	EXPECT_EQ(GetCurrentBuildTypeString(), std::format("{}", GetCurrentBuildType()));
 }

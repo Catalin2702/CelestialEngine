@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -12,8 +12,10 @@
 #ifndef CE_TYPES_RENDER_ATTACHMENTACTION_HPP
 #define CE_TYPES_RENDER_ATTACHMENTACTION_HPP
 
-#include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -41,10 +43,48 @@ enum class StoreAction: u8 {
 	DontCare,	///< Discard it; the attachment was scaffolding for this pass only
 };
 
-CE_TYPES_API const char* ToString(LoadAction loadAction);
 
-CE_TYPES_API const char* ToString(StoreAction storeAction);
+/**
+ * @brief Names a LoadAction, for fmt/spdlog and - through the formatter below - for std::format
+ * @param loadAction The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const LoadAction loadAction) {
+	switch (loadAction) {
+		case LoadAction::Load: return "Load";
+		case LoadAction::Clear: return "Clear";
+		case LoadAction::DontCare: return "DontCare";
+		default: return "Unknown";
+	}
+}
+
+/**
+ * @brief Names a StoreAction, for fmt/spdlog and - through the formatter below - for std::format
+ * @param storeAction The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const StoreAction storeAction) {
+	switch (storeAction) {
+		case StoreAction::Store: return "Store";
+		case StoreAction::DontCare: return "DontCare";
+		default: return "Unknown";
+	}
+}
 
 }
+
+template <>
+struct std::formatter<CE::Types::LoadAction>: std::formatter<std::string_view> {
+	auto format(const CE::Types::LoadAction value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
+
+template <>
+struct std::formatter<CE::Types::StoreAction>: std::formatter<std::string_view> {
+	auto format(const CE::Types::StoreAction value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_ATTACHMENTACTION_HPP

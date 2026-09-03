@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -61,16 +61,6 @@ inline int ToInt(const MouseButtonCode buttonCode) { return static_cast<int>(but
 inline unsigned int ToUInt(const MouseButtonCode buttonCode) { return static_cast<unsigned int>(buttonCode); }
 
 /**
- * @brief Converts a MouseButton enum value to a human-readable string
- * @param buttonCode The MouseButton enum value to convert
- * @return const char* A string representation of the MouseButton
- * @details This function provides a way to get a human-readable name for each MouseButton enum value.
- *			It uses a switch statement to return the corresponding string for each defined button.
- *			If the button value is not recognized, it returns "Unknown".
- */
-CE_TYPES_API const char* ToString(MouseButtonCode buttonCode);
-
-/**
  * @brief Converts a GLFW mouse button code to a MouseButton enum value
  * @param buttonCode The integer mouse button code from GLFW to convert
  * @return MouseButton The corresponding MouseButton enum value
@@ -115,12 +105,33 @@ CE_TYPES_API MouseButtonCode MouseButtonKeyCodeFromCocoa(long buttonNumber);
  */
 CE_TYPES_API int CocoaButtonNumberFromMouseButton(MouseButtonCode buttonCode);
 
+/**
+ * @brief Names a MouseButtonCode, for fmt/spdlog and - through the formatter below - for std::format
+ * @param buttonCode The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const MouseButtonCode buttonCode) {
+	switch (buttonCode) {
+		case MouseButtonCode::Left: return "Left";
+		case MouseButtonCode::Right: return "Right";
+		case MouseButtonCode::Middle: return "Middle";
+		case MouseButtonCode::Button4: return "Button4";
+		case MouseButtonCode::Button5: return "Button5";
+		case MouseButtonCode::Button6: return "Button6";
+		case MouseButtonCode::Button7: return "Button7";
+		case MouseButtonCode::Button8: return "Button8";
+		case MouseButtonCode::WheelX: return "WheelX";
+		case MouseButtonCode::WheelY: return "WheelY";
+		default: return "Unknown";
+	}
+}
+
 }
 
 template <>
 struct std::formatter<CE::Types::MouseButtonCode>: std::formatter<std::string_view> {
 	auto format(const CE::Types::MouseButtonCode value, std::format_context& ctx) const {
-		return std::formatter<std::string_view>::format(CE::Types::ToString(value), ctx);
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 

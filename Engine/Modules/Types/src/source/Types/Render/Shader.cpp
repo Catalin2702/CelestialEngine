@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-13
+// Updated: 2026-09-03
 //
 
 #include "Types/Render/Shader.hpp"
@@ -13,32 +13,8 @@
 
 #include "Types/Render/Render.hpp"
 
-namespace CE::Types {
 
-const char* ToString(const ShaderType type) {
-	switch (type) {
-		case ShaderType::Vertex:
-			return "Vertex";
-		case ShaderType::Fragment:
-			return "Fragment";
-		case ShaderType::Compute:
-			return "Compute";
-		case ShaderType::Geometry:
-			return "Geometry";
-		case ShaderType::TessellationControl:
-			return "TessellationControl";
-		case ShaderType::TessellationEvaluation:
-			return "TessellationEvaluation";
-		case ShaderType::Mesh:
-			return "Mesh";
-		case ShaderType::Amplification:
-			return "Amplification";
-		case ShaderType::RayGeneration:
-			return "RayGeneration";
-		default:
-			return "Unknown";
-	}
-}
+namespace CE::Types {
 
 bool IsShaderTypeSupported(const GraphicsApi graphicsApi, const ShaderType shaderType) {
 	switch (graphicsApi) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-03
 //
 
 #pragma once
@@ -14,6 +14,9 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <format>
+#include <string_view>
 
 
 namespace CE::Types {
@@ -48,20 +51,6 @@ enum class CullMode: u8 {
 };
 
 /**
- * @brief Converts a CullMode enum value to its string representation
- * @param cullMode The CullMode to convert to a string
- * @return const char* A string representation of the CullMode, or "Unknown" if the value is out of range
- */
-CE_TYPES_API const char* ToString(CullMode cullMode);
-
-/**
- * @brief Converts a FrontFace enum value to its string representation
- * @param frontFace The FrontFace to convert to a string
- * @return const char* A string representation of the FrontFace, or "Unknown" if the value is out of range
- */
-CE_TYPES_API const char* ToString(FrontFace frontFace);
-
-/**
  * @brief Converts a CullMode to the face constant glCullFace expects
  * @return u32 GL_FRONT or GL_BACK; GL_BACK for None, which has no face of its own
  * @details CullMode::None is not a face but the absence of culling: the caller must glDisable(GL_CULL_FACE) for it
@@ -74,6 +63,47 @@ CE_TYPES_API u32 ToOpenGl(CullMode cullMode);
  */
 CE_TYPES_API u32 ToOpenGl(FrontFace frontFace);
 
+/**
+ * @brief Names a CullMode, for fmt/spdlog and - through the formatter below - for std::format
+ * @param cullMode The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const CullMode cullMode) {
+	switch (cullMode) {
+		case CullMode::None: return "None";
+		case CullMode::Front: return "Front";
+		case CullMode::Back: return "Back";
+		default: return "Unknown";
+	}
 }
+
+/**
+ * @brief Names a FrontFace, for fmt/spdlog and - through the formatter below - for std::format
+ * @param frontFace The value to name
+ * @return std::string_view The enumerator's name, or "Unknown" for a value outside the enum
+ */
+constexpr std::string_view format_as(const FrontFace frontFace) {
+	switch (frontFace) {
+		case FrontFace::CounterClockwise: return "CounterClockwise";
+		case FrontFace::Clockwise: return "Clockwise";
+		default: return "Unknown";
+	}
+}
+
+}
+
+template <>
+struct std::formatter<CE::Types::CullMode>: std::formatter<std::string_view> {
+	auto format(const CE::Types::CullMode value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
+
+template <>
+struct std::formatter<CE::Types::FrontFace>: std::formatter<std::string_view> {
+	auto format(const CE::Types::FrontFace value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_TYPES_RENDER_CULLMODE_HPP
