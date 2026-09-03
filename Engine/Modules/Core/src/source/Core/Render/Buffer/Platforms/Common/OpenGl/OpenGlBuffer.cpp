@@ -56,11 +56,11 @@ OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count) 
 }
 
 OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count, const BufferLayout& layout): OpenGlVertexBuffer(vertices, count) {
-	_layout = layout;
+	_vertexBufferLayout = layout;
 }
 
 OpenGlVertexBuffer::OpenGlVertexBuffer(const f32* vertices, const size_t count, BufferLayout&& layout): OpenGlVertexBuffer(vertices, count) {
-	_layout = std::move(layout);
+	_vertexBufferLayout = std::move(layout);
 }
 
 OpenGlVertexBuffer::OpenGlVertexBuffer(OpenGlVertexBuffer&& other) noexcept: _renderID(other._renderID) {
@@ -97,11 +97,11 @@ void OpenGlVertexBuffer::UnbindBuffer() const {
 }
 
 u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
-	assert(!_layout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
+	assert(!_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
 
-	const auto stride = static_cast<GLsizei>(_layout.GetStride());
+	const auto stride = static_cast<GLsizei>(_vertexBufferLayout.GetStride());
 
-	for (auto const [index, element]: Utility::Enumerate(_layout)) {
+	for (auto const [index, element]: Utility::Enumerate(_vertexBufferLayout)) {
 		// Offset by the slots already taken, otherwise a second buffer would overwrite the first one's attributes.
 		const auto attributeIndex = firstAttributeIndex + static_cast<u32>(index);
 
@@ -116,19 +116,19 @@ u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 		);
 	}
 
-	return static_cast<u32>(_layout.GetElements().size());
+	return static_cast<u32>(_vertexBufferLayout.GetElements().size());
 }
 
 void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
-	assert(_layout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
+	assert(_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
 
-	_layout = layout;
+	_vertexBufferLayout = layout;
 }
 
 void OpenGlVertexBuffer::SetLayout(BufferLayout&& layout) {
-	assert(_layout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
+	assert(_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
 
-	_layout = std::move(layout);
+	_vertexBufferLayout = std::move(layout);
 }
 
 #pragma endregion

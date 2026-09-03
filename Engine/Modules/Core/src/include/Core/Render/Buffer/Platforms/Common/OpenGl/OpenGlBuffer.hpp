@@ -52,10 +52,10 @@ public:
 
 	void SetLayout(const BufferLayout& layout) override;
 	void SetLayout(BufferLayout&& layout) override;
-	[[nodiscard]] const BufferLayout& GetLayout() const override { return _layout; }
+	[[nodiscard]] const BufferLayout& GetLayout() const override { return _vertexBufferLayout; }
 
 private:
-	BufferLayout _layout;
+	BufferLayout _vertexBufferLayout;
 	u32 _renderID = 0;
 };
 #pragma endregion
