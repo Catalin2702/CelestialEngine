@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-21
+// Updated: 2026-09-03
 //
 
 #pragma once
 
-#ifndef CE_CORE_APPLICATION_PLATFORMS_MAC_MACMENUBAR_HPP
-#define CE_CORE_APPLICATION_PLATFORMS_MAC_MACMENUBAR_HPP
+#ifndef CE_CORE_APPLICATION_MACMENUBAR_HPP
+#define CE_CORE_APPLICATION_MACMENUBAR_HPP
 
 #include <AppKit/AppKit.hpp>
 
@@ -90,4 +90,4 @@ NS::Menu* CreateMenuBar() {
 
 }
 
-#endif //CE_CORE_APPLICATION_PLATFORMS_MAC_MACMENUBAR_HPP
+#endif //CE_CORE_APPLICATION_MACMENUBAR_HPP

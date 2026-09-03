@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-03
 //
 
 #pragma once
 
-#ifndef CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
-#define CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
+#ifndef CE_TYPES_RENDER_OPENGL_HPP
+#define CE_TYPES_RENDER_OPENGL_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
@@ -47,4 +47,4 @@ constexpr BufferBit operator ^ (BufferBit x, BufferBit y) {
 
 }
 
-#endif //CE_TYPES_RENDER_PLATFORMS_COMMON_OPENGL_HPP
+#endif //CE_TYPES_RENDER_OPENGL_HPP
