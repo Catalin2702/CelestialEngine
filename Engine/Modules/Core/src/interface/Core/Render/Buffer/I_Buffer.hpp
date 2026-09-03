@@ -21,67 +21,11 @@
 
 namespace CE::Core {
 
-enum class CE_CORE_API ShaderDataType: u8 {
-	None = 0,
-	Float,
-	Float2,
-	Float3,
-	Float4,
-	Mat3,
-	Mat4,
-	Int,
-	Int2,
-	Int3,
-	Int4,
-	Bool
-};
-
-constexpr u32 ShaderDataTypeSize(const ShaderDataType type) {
-	constexpr u32 FLOAT_SIZE = sizeof(f32);
-	constexpr u32 INT_SIZE = sizeof(u32);
-	constexpr u32 BOOL_SIZE = sizeof(bool);
-	switch (type) {
-		case ShaderDataType::Float: return FLOAT_SIZE;
-		case ShaderDataType::Float2: return FLOAT_SIZE * 2;
-		case ShaderDataType::Float3: return FLOAT_SIZE * 3;
-		case ShaderDataType::Float4: return FLOAT_SIZE * 4;
-		case ShaderDataType::Mat3: return FLOAT_SIZE * 3 * 3;
-		case ShaderDataType::Mat4: return FLOAT_SIZE * 4 * 4;
-		case ShaderDataType::Int: return INT_SIZE;
-		case ShaderDataType::Int2: return INT_SIZE * 2;
-		case ShaderDataType::Int3: return INT_SIZE * 3;
-		case ShaderDataType::Int4: return INT_SIZE * 4;
-		case ShaderDataType::Bool: return BOOL_SIZE;
-		case ShaderDataType::None:
-		default:
-			return 0;
-	}
-}
-
-constexpr u32 ShaderDataTypeComponentCount(const ShaderDataType type) {
-	switch (type) {
-		case ShaderDataType::Float: return 1;
-		case ShaderDataType::Float2: return 2;
-		case ShaderDataType::Float3: return 3;
-		case ShaderDataType::Float4: return 4;
-		case ShaderDataType::Mat3: return 3 * 3;
-		case ShaderDataType::Mat4: return 4 * 4;
-		case ShaderDataType::Int: return 1;
-		case ShaderDataType::Int2: return 2;
-		case ShaderDataType::Int3: return 3;
-		case ShaderDataType::Int4: return 4;
-		case ShaderDataType::Bool: return 1;
-		case ShaderDataType::None:
-		default:
-			return 0;
-	}
-}
-
 struct CE_CORE_API BufferElement {
-	BufferElement(const ShaderDataType type, const char* name, const bool normalized = false):
-		type(type), size(ShaderDataTypeSize(type)), componentCount(ShaderDataTypeComponentCount(type)), normalized(normalized), name(name) {}
+	BufferElement(const Types::ShaderDataType type, const char* name, const bool normalized = false):
+		type(type), size(Types::ShaderDataTypeSize(type)), componentCount(Types::ShaderDataTypeComponentCount(type)), normalized(normalized), name(name) {}
 
-	ShaderDataType type = ShaderDataType::None;
+	Types::ShaderDataType type = Types::ShaderDataType::None;
 	u32 size = 0;
 	u32 offset = 0;
 	u32 componentCount = 0;

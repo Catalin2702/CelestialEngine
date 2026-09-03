@@ -275,7 +275,7 @@ void GlfwApplication::_InitRenderer() {
 	_vertexArray.SetIndexBuffer(std::make_shared<OpenGlIndexBuffer>(indices.begin(), indices.size()));
 	_vertexArray.AddVertexBuffer(std::make_shared<OpenGlVertexBuffer>(
 		vertices.begin(), vertices.size(),
-		BufferLayout{{ShaderDataType::Float3, "inputPosition"}, {ShaderDataType::Float4, "inputColor"}}
+		BufferLayout{{Types::ShaderDataType::Float3, "inputPosition"}, {Types::ShaderDataType::Float4, "inputColor"}}
 	));
 
 	_shaderProgram = OpenGlShaderProgram({{

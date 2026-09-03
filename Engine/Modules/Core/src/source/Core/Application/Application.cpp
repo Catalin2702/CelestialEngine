@@ -378,8 +378,8 @@ void Application::_CreateRenderResources() {
 	};
 
 	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, BufferLayout{
-		{ShaderDataType::Float3, "inputPosition"},
-		{ShaderDataType::Float4, "inputColor"}
+		{Types::ShaderDataType::Float3, "inputPosition"},
+		{Types::ShaderDataType::Float4, "inputColor"}
 	});
 	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
 

@@ -21,23 +21,23 @@ namespace CE::Core {
 constexpr u32 FLOAT_SIZE = sizeof(f32);
 constexpr u32 UINT32_SIZE = sizeof(u32);
 
-static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const ShaderDataType type) {
+static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const Types::ShaderDataType type) {
 	switch (type) {
-		case ShaderDataType::Float:
-		case ShaderDataType::Float2:
-		case ShaderDataType::Float3:
-		case ShaderDataType::Float4:
-		case ShaderDataType::Mat3:
-		case ShaderDataType::Mat4:
+		case Types::ShaderDataType::Float:
+		case Types::ShaderDataType::Float2:
+		case Types::ShaderDataType::Float3:
+		case Types::ShaderDataType::Float4:
+		case Types::ShaderDataType::Mat3:
+		case Types::ShaderDataType::Mat4:
 			return GL_FLOAT;
-		case ShaderDataType::Int:
-		case ShaderDataType::Int2:
-		case ShaderDataType::Int3:
-		case ShaderDataType::Int4:
+		case Types::ShaderDataType::Int:
+		case Types::ShaderDataType::Int2:
+		case Types::ShaderDataType::Int3:
+		case Types::ShaderDataType::Int4:
 			return GL_INT;
-		case ShaderDataType::Bool:
+		case Types::ShaderDataType::Bool:
 			return GL_BOOL;
-		case ShaderDataType::None:
+		case Types::ShaderDataType::None:
 		default:
 			return GL_NONE;
 	}
