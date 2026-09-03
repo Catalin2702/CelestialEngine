@@ -8,7 +8,7 @@
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
 

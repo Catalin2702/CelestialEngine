@@ -9,7 +9,7 @@
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 
 #include <stdexcept>

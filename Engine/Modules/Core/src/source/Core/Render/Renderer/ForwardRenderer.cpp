@@ -15,7 +15,7 @@
 #include "Core/Render/Renderer/ForwardRenderer.hpp"
 #include "Core/Render/Renderer/DrawCommand.hpp"
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <cassert>
 

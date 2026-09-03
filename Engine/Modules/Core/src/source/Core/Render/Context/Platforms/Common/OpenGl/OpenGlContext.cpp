@@ -11,7 +11,7 @@
 
 #include "Core/Application/I_Application.hpp"
 #include "Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 
 #include <cassert>

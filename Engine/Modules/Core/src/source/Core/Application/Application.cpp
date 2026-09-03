@@ -23,7 +23,7 @@
 #include "Core/RunLoop/I_RunLoop.hpp"
 #include "Core/Window/I_Platform.hpp"
 #include "Core/Window/I_Window.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
 
 #include <glm/glm.hpp>

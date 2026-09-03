@@ -9,7 +9,7 @@
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <glad/glad.h>
 

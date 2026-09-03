@@ -10,7 +10,7 @@
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
 
 #include <AppKit/AppKit.hpp>

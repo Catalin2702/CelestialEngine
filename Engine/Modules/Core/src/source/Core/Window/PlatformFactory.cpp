@@ -9,7 +9,7 @@
 
 #include "Core/Window/I_Platform.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #if CE_PLATFORM_MACOS
 	#include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"

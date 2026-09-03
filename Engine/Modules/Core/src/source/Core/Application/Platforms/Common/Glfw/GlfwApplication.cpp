@@ -14,7 +14,7 @@
 #include "Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/FileSystem/File.hpp"

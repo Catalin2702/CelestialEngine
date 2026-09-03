@@ -11,7 +11,7 @@
 #include "Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp"
 #include "Core/Render/Surface/I_OpenGlSurface.hpp"
 #include "Core/Window/I_Window.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 
 #include <stdexcept>

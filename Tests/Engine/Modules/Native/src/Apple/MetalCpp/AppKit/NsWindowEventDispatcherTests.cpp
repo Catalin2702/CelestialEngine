@@ -9,7 +9,7 @@
 
 #include <Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp>
 
-#include <Tools/Log/Log.hpp>
+#include <Tools/Tools.hpp>
 
 #include <gtest/gtest.h>
 

@@ -15,7 +15,7 @@
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 

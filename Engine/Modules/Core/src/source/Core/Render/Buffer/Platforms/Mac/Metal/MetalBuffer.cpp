@@ -8,7 +8,7 @@
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
 

@@ -9,7 +9,7 @@
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <glad/glad.h>
 

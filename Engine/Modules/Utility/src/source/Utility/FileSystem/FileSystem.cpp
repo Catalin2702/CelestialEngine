@@ -9,7 +9,7 @@
 
 #include "Utility/FileSystem/FileSystem.hpp"
 
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/FileSystem/File.hpp"
 #include "Types/Var/Vars.hpp"
 #include "Utility/FileSystem/File.hpp"

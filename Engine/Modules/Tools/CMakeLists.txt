@@ -9,6 +9,9 @@
 
 set(HEADERS
 	src/include/Tools/Log/Log.hpp
+
+	# Main
+	src/include/Tools/Tools.hpp
 )
 
 set(SOURCES

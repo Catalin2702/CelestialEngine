@@ -9,7 +9,7 @@
 
 #include <Utility/Time/Chronometer.hpp>
 
-#include <Tools/Log/Log.hpp>
+#include <Tools/Tools.hpp>
 
 #include <gtest/gtest.h>
 

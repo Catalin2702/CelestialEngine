@@ -9,7 +9,7 @@
 
 #include "Utility/Time/Chronometer.hpp"
 
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 
 namespace CE::Utility {

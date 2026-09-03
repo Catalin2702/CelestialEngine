@@ -8,7 +8,7 @@
 //
 
 #include "Core/RunLoop/PacedRunLoop.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <stdexcept>
 #include <thread>

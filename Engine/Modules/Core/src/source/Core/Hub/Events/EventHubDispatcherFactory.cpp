@@ -9,7 +9,7 @@
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #if CE_PLATFORM_MACOS
 	#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"

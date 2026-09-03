@@ -13,7 +13,7 @@
 #include <Events/KeyEvent.hpp>
 #include <Events/MouseEvent.hpp>
 #include <Events/WindowEvent.hpp>
-#include <Tools/Log/Log.hpp>
+#include <Tools/Tools.hpp>
 #include <Types/KeyCode/KeyboardKeyCode.hpp>
 #include <Types/KeyCode/MouseButtonCode.hpp>
 

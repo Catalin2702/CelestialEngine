@@ -10,7 +10,7 @@
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
 
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 #include <GLFW/glfw3.h>
 

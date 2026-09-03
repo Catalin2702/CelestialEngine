@@ -9,7 +9,7 @@
 
 #include <Utility/Delegate/Dispatcher.hpp>
 
-#include <Tools/Log/Log.hpp>
+#include <Tools/Tools.hpp>
 
 #include <gtest/gtest.h>
 

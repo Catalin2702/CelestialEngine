@@ -8,7 +8,7 @@
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Render/Shader.hpp"
 
 #include <glad/glad.h>

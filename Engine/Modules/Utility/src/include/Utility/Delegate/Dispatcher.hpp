@@ -12,7 +12,7 @@
 #ifndef CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 #define CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Var/Vars.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 

@@ -9,7 +9,7 @@
 
 #include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Utility/Config/Config.hpp"
 
 #include "Foundation/Foundation.hpp"

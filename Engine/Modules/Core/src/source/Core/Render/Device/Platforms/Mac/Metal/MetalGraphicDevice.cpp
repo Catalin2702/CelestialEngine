@@ -8,7 +8,7 @@
 //
 
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 
 
 namespace CE::Core {

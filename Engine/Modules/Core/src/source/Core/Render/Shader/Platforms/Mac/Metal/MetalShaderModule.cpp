@@ -10,7 +10,7 @@
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Render/Render.hpp"
 
 #include <Metal/Metal.hpp>

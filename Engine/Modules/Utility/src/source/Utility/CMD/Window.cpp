@@ -9,7 +9,7 @@
 
 #include "Utility/CMD/Window.hpp"
 
-#include "Tools/Log/Log.hpp"
+#include "Tools/Tools.hpp"
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Manipulation/String.hpp"
 
