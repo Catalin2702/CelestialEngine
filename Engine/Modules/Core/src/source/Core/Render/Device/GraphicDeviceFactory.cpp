@@ -12,6 +12,10 @@
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 
+#if CE_PLATFORM_MACOS
+#include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
+#endif
+
 #include <stdexcept>
 
 
@@ -22,6 +26,11 @@ std::unique_ptr<I_GraphicDevice> I_GraphicDevice::MakeDevice(const Types::Graphi
 		case Types::GraphicsApi::OpenGL: {
 			return std::make_unique<OpenGlGraphicDevice>();
 		}
+#if CE_PLATFORM_MACOS
+		case Types::GraphicsApi::Metal: {
+			return std::make_unique<MetalGraphicDevice>();
+		}
+#endif
 		default: {
 			constexpr auto error = "I_GraphicDevice::MakeDevice: Not yet implemented!";
 			CE_CORE_ERROR(error);
