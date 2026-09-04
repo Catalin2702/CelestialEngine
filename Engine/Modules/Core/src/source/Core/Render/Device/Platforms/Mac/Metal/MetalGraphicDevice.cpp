@@ -74,6 +74,8 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 	if (not _nativeFrameDrawable) [[unlikely]] {
 		// No drawable was acquired for this frame - the layer had none free, or BeginFrame was never called. Skipped,
 		// not fatal: the next frame gets one.
+		CE_CORE_WARN("MetalGraphicDevice::BeginRenderPass: No frame target was published; the pass is skipped.");
+		return nullptr;
 	}
 
 	assert(descriptor.colors[0].target == nullptr and descriptor.depth.target == nullptr and "MetalGraphicDevice::BeginRenderPass: Rendering to a texutre is not supported yet!");
