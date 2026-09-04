@@ -2,9 +2,9 @@
 // Module: CelestialEngine/Engine/Modules/Core/Render/Pipeline/Platforms/Mac/Metal
 // File: MetalPipelineState.cpp
 // Created by: Catalin Chirosca
-// Created: 2026-09-03
+// Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-04
 //
 
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
