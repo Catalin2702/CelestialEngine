@@ -55,6 +55,10 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Command/Viewport.hpp
 	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
 
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp
+	>
+
 
 	# Context
 	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
@@ -229,6 +233,10 @@ set(RENDER_SOURCES
 	# Command
 	src/source/Core/Render/Command/Viewport.cpp
 	src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.cpp
+	>
 
 
 	# Context
