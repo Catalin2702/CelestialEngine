@@ -138,23 +138,23 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 	// topology, and PrimitiveTopology exists precisely so the descriptor does not have to choose.
 	pipelineDescriptor->setInputPrimitiveTopology(Types::ToMetalTopologyClass(_descriptor.topology));
 
-	const auto& formats = _descriptor.formats;
+	const auto& [colors, colorCount, depth] = _descriptor.formats;
 
-	if (formats.colorCount > formats.colors.size()) {
-		const auto error = std::format("MetalPipelineState::MetalPipelineState: The color count ({}) is higher than the colors size ({})!", formats.colorCount, formats.colors.size());
+	if (colorCount > colors.size()) [[unlikely]] {
+		const auto error = std::format("MetalPipelineState::MetalPipelineState: The color count ({}) is higher than the colors size ({})!", colorCount, colors.size());
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
 
-	for (u32 i = 0; i < formats.colorCount; ++i) {
-		ConfigureColorAttachment(pipelineDescriptor->colorAttachments()->object(i), formats.colors[i], _descriptor.blendState);
+	for (u32 i = 0; i < colorCount; ++i) {
+		ConfigureColorAttachment(pipelineDescriptor->colorAttachments()->object(i), colors[i], _descriptor.blendState);
 	}
 
 	if (_descriptor.depthState.testEnabled or _descriptor.depthState.writeEnabled) {
-		pipelineDescriptor->setDepthAttachmentPixelFormat(Types::ToMetal(formats.depth));
+		pipelineDescriptor->setDepthAttachmentPixelFormat(Types::ToMetal(depth));
 
-		if (Types::HasStencil(formats.depth)) {
-			pipelineDescriptor->setStencilAttachmentPixelFormat(Types::ToMetal(formats.depth));
+		if (Types::HasStencil(depth)) {
+			pipelineDescriptor->setStencilAttachmentPixelFormat(Types::ToMetal(depth));
 		}
 	}
 
