@@ -75,6 +75,10 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
 	src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
 
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp
+	>
+
 
 	# Renderer
 	src/include/Core/Render/Renderer/DrawCommand.hpp
@@ -246,6 +250,10 @@ set(RENDER_SOURCES
 
 	# Pipeline
 	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.cpp
+	>
 
 
 	# Renderer
