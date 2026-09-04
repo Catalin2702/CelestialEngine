@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -125,6 +125,21 @@ void CocoaWindow::SetTitle(const std::string_view title) {
 	// NS::String::string takes a C string, and a string_view carries no terminator of its own.
 	const std::string terminated(title);
 	_window->setTitle(NS::String::string(terminated.c_str(), NS::UTF8StringEncoding));
+}
+
+CA::MetalLayer* CocoaWindow::GetMetalLayer() const {
+	if (not _window) [[unlikely]] {
+		CE_CORE_WARN("CocoaWindow::GetMetalLayer: Cannot get the layer because the window is not initialized.");
+		return nullptr;
+	}
+
+	const auto contentView = _window->contentView();
+	if (not contentView) [[unlikely]] {
+		CE_CORE_WARN("CocoaWindow::GetMetalLayer: Cannot get the layer because the window has no content view yet.");
+		return nullptr;
+	}
+
+	return contentView->layer();
 }
 
 void CocoaWindow::SetWindowSize(const u32 width, const u32 height) {

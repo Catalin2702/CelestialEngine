@@ -14,7 +14,7 @@
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Core/Render/Buffer/I_Buffer.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
-#include "Core/Render/Surface/I_OpenGlSurface.hpp"
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Core/Render/Pipeline/PipelineDescriptor.hpp"
 #include "Core/Render/Renderer/I_Renderer.hpp"
 #include "Core/Render/Renderer/DrawCommand.hpp"

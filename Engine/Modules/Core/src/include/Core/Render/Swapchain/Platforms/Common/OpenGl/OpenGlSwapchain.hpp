@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-01
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -13,7 +13,7 @@
 #define CE_CORE_RENDER_SWAPCHAIN_OPENGLSWAPCHAIN_HPP
 
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
-#include "Core/Render/Surface/I_OpenGlSurface.hpp"
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
 
 

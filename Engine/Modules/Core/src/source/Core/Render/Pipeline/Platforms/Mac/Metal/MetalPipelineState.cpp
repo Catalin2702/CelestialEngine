@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-04
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
@@ -179,5 +179,7 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 		throw std::runtime_error(error);
 	}
 }
+
+MetalPipelineState::~MetalPipelineState() = default;
 
 }

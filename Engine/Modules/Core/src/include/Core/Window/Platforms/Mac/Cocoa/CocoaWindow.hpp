@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
+#include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -78,7 +79,7 @@ public:
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CE_CORE_API CocoaWindow final: public I_WindowBase<Types::WindowApi::Cocoa> {
+class CE_CORE_API CocoaWindow final: public I_WindowBase<Types::WindowApi::Cocoa>, public I_MetalSurface {
 public:
 	/**
 	 * @brief Constructor
@@ -158,6 +159,16 @@ public:
 	 * @details Provides access to the underlying macOS window for platform-specific operations. The returned pointer can be cast to NS::Window* for use with Cocoa APIs.
 	 */
 	[[nodiscard]] void* GetNativeWindow() const override { return _window.get(); }
+
+	/**
+	 * @brief Gets the Core Animation layer the window is presented through
+	 * @return CA::MetalLayer* The MetalKit view's layer, or null before the content view has been installed
+	 * @details The surface *is* whatever the window is currently showing: the content view is the MTK::View the render
+	 *			context created, and a MetalKit view is always backed by a CAMetalLayer. That is what makes this a
+	 *			one-line implementation and why nothing has to be stored - the window already knows its content view,
+	 *			and asking it every time cannot go stale when the view is replaced.
+	 */
+	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const override;
 
 public:
 	/**

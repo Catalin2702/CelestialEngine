@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-04
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -60,6 +60,13 @@ public:
 
 	MetalPipelineState(const MetalPipelineState&) = delete;
 	MetalPipelineState(MetalPipelineState&&) noexcept = default;
+
+	/**
+	 * @brief Implemented by default in the .cpp file because of the forward declarations
+	 * @details Implemented by default in the .cpp file because otherwise the destructor calls made by `NS::SharedPtr`
+	 *			for the forward declared classes would cause the linker to fail.
+	 */
+	~MetalPipelineState() override;
 
 public:
 	MetalPipelineState& operator = (const MetalPipelineState&) = delete;

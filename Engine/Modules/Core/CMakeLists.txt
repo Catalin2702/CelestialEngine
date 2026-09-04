@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-03
+# Updated: 2026-09-05
 #
 
 set(APPLICATION_HEADERS
@@ -105,6 +105,10 @@ set(RENDER_HEADERS
 
 	# Swapchain
 	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp
+	>
 )
 
 set(RUNLOOP_HEADERS
@@ -167,7 +171,11 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
 
 	# Surface
-	src/interface/Core/Render/Surface/I_OpenGlSurface.hpp
+	src/interface/Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/interface/Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp
+	>
 
 	# Swapchain
 	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
@@ -284,6 +292,10 @@ set(RENDER_SOURCES
 	# Swapchain
 	src/source/Core/Render/Swapchain/SwapchainFactory.cpp
 	src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.cpp
+	>
 )
 
 set(RUNLOOP_SOURCES

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Core/Window/I_Window.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
-#include "Core/Render/Surface/I_OpenGlSurface.hpp"
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"

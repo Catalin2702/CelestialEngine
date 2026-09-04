@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
 #include "Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp"
-#include "Core/Render/Surface/I_OpenGlSurface.hpp"
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"

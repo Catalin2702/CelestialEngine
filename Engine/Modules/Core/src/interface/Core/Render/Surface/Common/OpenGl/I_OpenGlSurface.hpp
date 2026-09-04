@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/Render/Surface
+// Module: CelestialEngine/Engine/Modules/Core/Render/Surface/Common/OpenGl
 // File: I_OpenGlSurface.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-09-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-01
+// Updated: 2026-09-05
 //
 
 #pragma once

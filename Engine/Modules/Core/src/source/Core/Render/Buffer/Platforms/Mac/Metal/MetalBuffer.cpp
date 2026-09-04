@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -58,6 +58,8 @@ MetalVertexBuffer::MetalVertexBuffer(MTL::Device* nativeDevice, const f32* verti
 	_vertexBufferLayout(std::move(layout)), _sizeInBytes(count * F32_SIZE) {
 	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, count, "MetalVertexBuffer");
 }
+
+MetalVertexBuffer::~MetalVertexBuffer() = default;
 
 u32 MetalVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 	// Nothing to record: see the note in the header. The count is still truthful, so a caller walking several buffers

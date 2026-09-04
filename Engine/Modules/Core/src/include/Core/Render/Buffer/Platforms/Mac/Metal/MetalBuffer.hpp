@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -57,6 +57,13 @@ public:
 
 	MetalVertexBuffer(const MetalVertexBuffer&) = delete;
 	MetalVertexBuffer(MetalVertexBuffer&&) noexcept = default;
+
+	/**
+	 * @brief Implemented by default in the .cpp file because of the forward declarations
+	 * @details Implemented by default in the .cpp file because otherwise the destructor calls made by `NS::SharedPtr`
+	 *			for the forward declared classes would cause the linker to fail.
+	 */
+	~MetalVertexBuffer() override;
 
 public:
 	MetalVertexBuffer& operator = (const MetalVertexBuffer&) = delete;

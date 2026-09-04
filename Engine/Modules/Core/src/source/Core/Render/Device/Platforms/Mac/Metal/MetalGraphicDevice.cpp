@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -42,6 +42,8 @@ MetalGraphicDevice::MetalGraphicDevice() {
 	// Throws on its own if the bundled Main.metallib is missing or unreadable.
 	_shaderLibrary = MetalShaderLibrary(_nativeDevice.get());
 }
+
+MetalGraphicDevice::~MetalGraphicDevice() = default;
 
 std::shared_ptr<I_ShaderModule> MetalGraphicDevice::CreateShaderModule(const ShaderModuleDescriptor& descriptor) {
 	// A lookup, not a compile: the .metallib was built by CMake, so descriptor.source is ignored here and
