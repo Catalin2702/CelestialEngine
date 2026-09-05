@@ -33,6 +33,7 @@ set(HEADERS
 	src/include/Types/Render/PrimitiveTopology.hpp
 	src/include/Types/Render/Render.hpp
 	src/include/Types/Render/Shader.hpp
+	src/include/Types/Render/TextureUsage.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
