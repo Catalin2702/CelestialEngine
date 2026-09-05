@@ -15,6 +15,9 @@ set(HEADERS
 	src/include/Define/Log.hpp
 	src/include/Define/Types.hpp
 	src/include/Define/Render.hpp
+
+	# Main
+	src/include/Define/Define.hpp
 )
 
 add_library(CE_Define INTERFACE
