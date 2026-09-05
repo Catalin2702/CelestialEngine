@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -82,10 +82,7 @@ public:
 template<Types::GraphicsApi Api>
 class I_VertexBufferBase: public I_VertexBuffer {
 public:
-	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _api; }
-
-private:
-	static constexpr Types::GraphicsApi _api = Api;
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return Api; }
 };
 
 class I_IndexBuffer {
@@ -99,10 +96,7 @@ public:
 template<Types::GraphicsApi Api>
 class I_IndexBufferBase: public I_IndexBuffer {
 public:
-	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _api; }
-
-private:
-	static constexpr Types::GraphicsApi _api = Api;
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return Api; }
 };
 
 }

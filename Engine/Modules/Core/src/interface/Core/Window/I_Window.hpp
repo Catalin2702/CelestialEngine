@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -170,10 +170,7 @@ public:
 template<Types::WindowApi Api>
 class I_WindowBase: public I_Window {
 public:
-	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return _api; }
-
-private:
-	static constexpr Types::WindowApi _api = Api;
+	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return Api; }
 };
 
 }
