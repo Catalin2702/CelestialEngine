@@ -13,7 +13,7 @@
 #define CE_TYPES_RENDER_RENDER_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Define/Type.hpp"
+#include "Define/Types.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include <format>

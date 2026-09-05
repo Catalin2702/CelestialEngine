@@ -13,7 +13,7 @@
 #define CE_TYPES_WINDOW_WINDOWPROPS_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Define/Type.hpp"
+#include "Define/Types.hpp"
 #include "Types/Render/Render.hpp"
 #include "Types/Var/Vars.hpp"
 

@@ -11,7 +11,7 @@
 #include <Define/Bind.hpp>
 #include <Define/Event.hpp>
 #include <Define/Render.hpp>
-#include <Define/Type.hpp>
+#include <Define/Types.hpp>
 #include <Events/I_Event.hpp>
 #include <Types/Types.hpp>
 

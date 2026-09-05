@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Define
-// File: Type.hpp
+// File: Types.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_DEFINE_TYPE_HPP
-#define CE_DEFINE_TYPE_HPP
+#ifndef CE_DEFINE_TYPES_HPP
+#define CE_DEFINE_TYPES_HPP
 
 /**
  * @def BIT(x)
@@ -29,4 +29,4 @@
  */
 #define BIT(x) (1 << (x))
 
-#endif //CE_DEFINE_TYPE_HPP
+#endif //CE_DEFINE_TYPES_HPP

@@ -13,7 +13,7 @@ set(HEADERS
 	src/include/Define/DynamicLinker.hpp
 	src/include/Define/Event.hpp
 	src/include/Define/Log.hpp
-	src/include/Define/Type.hpp
+	src/include/Define/Types.hpp
 	src/include/Define/Render.hpp
 )
 
