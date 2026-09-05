@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -14,7 +14,6 @@
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
-#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
@@ -42,6 +41,8 @@ namespace CE::Events {
 namespace CE::Core {
 
 class CocoaEventHubDispatcher;
+class MetalGraphicDevice;
+class MetalSwapchain;
 
 class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: std::size_t {
@@ -158,8 +159,13 @@ protected:
 	void _OnViewResized(Events::WindowResizeEvent& event) const override;
 
 private:
-	std::optional<std::reference_wrapper<MetalContext>> _context;	///< Cached Metal context for rendering
-	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for event handling and context access
+	/// The two halves of what used to be MetalContext: the device the ImGui backend allocates its font atlas and its
+	/// buffers on, and the swapchain that owns this frame's drawable. Borrowed - the renderer owns both, and it
+	/// outlives every layer.
+	MetalGraphicDevice* _graphicDevice = nullptr;
+	MetalSwapchain* _swapchain = nullptr;
+
+	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for the display size
 	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 

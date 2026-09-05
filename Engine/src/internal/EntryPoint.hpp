@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -39,9 +39,11 @@ int main(const int argc, const char* argv[]) {
 #if CE_DEBUG
 			Utility::Chronometer chronometer;
 #endif
+			Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
 			Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
-			const auto app = Core::CreateApplication(argc, argv);
-			app->Start();
+			Core::Application app{};
+			app.InitImguiLayer();
+			app.Start();
 		} catch ([[maybe_unused]] const std::runtime_error& _err) {
 			// Formatted with std::format and logged via Log::LogCoreError (not the CE_CORE_ERROR
 			// macro) so this file - compiled directly into the client executable - never touches

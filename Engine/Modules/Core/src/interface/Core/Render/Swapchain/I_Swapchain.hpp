@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 
 namespace CE::Core {
 
+class I_GraphicDevice;
 class I_Window;
 
 /**
@@ -38,7 +39,7 @@ public:
 	virtual ~I_Swapchain() = default;
 
 public:
-	[[nodiscard]] static std::unique_ptr<I_Swapchain> MakeSwapchain(I_Window& window, Types::GraphicsApi api);
+	[[nodiscard]] static std::unique_ptr<I_Swapchain> MakeSwapchain(I_Window& window, I_GraphicDevice& graphicDevice, Types::GraphicsApi api);
 
 public:
 	/**

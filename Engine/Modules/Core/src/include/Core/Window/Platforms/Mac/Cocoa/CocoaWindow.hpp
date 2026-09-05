@@ -14,6 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
+#include "Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp"
 #include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
 #include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Core/Window/I_Window.hpp"
@@ -46,6 +47,8 @@ namespace NS {
 }
 
 namespace CE::Core {
+
+class CocoaEventHubDispatcher;
 
 class CocoaWindowEventHandler: public Native::NsWindowEventDispatcher {
 	struct CocoaWindowLifecycleEvents {
@@ -95,11 +98,12 @@ public:
 
 public:
 	/**
-	 * @brief Creates the native window
-	 * @details Not part of I_Window: the Cocoa window is brought up from applicationDidFinishLaunching rather than
-	 *			from the constructor, because AppKit will not give a usable window before the run loop is up.
+	 * @brief Creates the native window and the layer-backed view it presents through
+	 * @details Called from the platform's ready handler, not from the constructor: AppKit will not give a usable
+	 *			window before NSApplication has finished launching. That is the whole reason I_Window has an Init at
+	 *			all - every other backend leaves it empty.
 	 */
-	void Init();
+	void Init() override;
 
 	/**
 	 * @brief Makes the window key and brings it to the front
@@ -170,6 +174,13 @@ public:
 	 */
 	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const override;
 
+	/**
+	 * @brief Gets the size the layer should present at, in backing pixels
+	 * @details The same measurement I_Window already exposes as GetFrameSize; named differently on I_MetalSurface
+	 *			because there it is the drawable's size, and a surface is not necessarily a window.
+	 */
+	[[nodiscard]] std::pair<u32, u32> GetDrawableSize() const override { return GetFrameSize(); }
+
 public:
 	/**
 	 * @brief Sets the window size
@@ -201,7 +212,46 @@ public:
 	 */
 	void SetContentView(const MTK::View* view) const;
 
+public:
+	/**
+	 * @brief Gets the view the window's content is drawn into
+	 * @details Not on any interface: it is here for the Metal-only code that needs the real object.
+	 */
+	[[nodiscard]] MTK::View* GetView() const { return _view.get(); }
+
 private:
+	/**
+	 * @brief Creates the layer-backed view, installs it as the content view and points input at it
+	 */
+	void _CreateView();
+
+	/**
+	 * @brief Reports the current size through the hub, as both a window resize and a view resize
+	 * @details Two events for one change because they answer different questions: the window resize is in screen
+	 *			coordinates and is what a layout reacts to, the view resize is in backing pixels and is what ImGui's
+	 *			display size and any render target are measured in.
+	 */
+	void _ReportSize() const;
+
+	/**
+	 * @brief Reports the size after AppKit has resized the window
+	 */
+	void _OnWindowDidResize(const NS::Notification* notification) const;
+
+	/**
+	 * @brief Reports the size after the window has been moved
+	 * @details Not redundant with the resize: a window dragged onto a display with a different backing scale keeps its
+	 *			size in points and changes it in pixels, and AppKit calls that a move.
+	 */
+	void _OnWindowDidMove(const NS::Notification* notification) const;
+
+	/**
+	 * @brief Reports the size after the view has been laid out
+	 * @details Not the same moment as the window resize: this is also the first one, when the view is installed and
+	 *			gets its initial size, which is where a subscriber's display size comes from before anything moves.
+	 */
+	void _OnViewDidLayout() const;
+
 	/**
 	 * @brief Initializes the Cocoa window and Metal layer
 	 * @details Creates the native macOS window using Cocoa APIs and sets up the Core Animation Metal layer for rendering.
@@ -218,8 +268,17 @@ private:
 public:
 	CocoaWindowEventHandler cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events
 
+	/// Keyboard and mouse arrive through the view, because AppKit delivers them to the first responder and not to the
+	/// window. Held here, beside the window's own dispatcher, so both halves of a window's input have one owner.
+	Native::NsViewEventDispatcher viewEventDispatcher;
+
 private:
+	/// Borrowed; set by ConnectToEventHub and used to report size changes. Null until then, which is why every use of
+	/// it is guarded rather than asserted: a window can exist before anything is listening to it.
+	CocoaEventHubDispatcher* _eventHub = nullptr;
+
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
+	NS::SharedPtr<MTK::View> _view; ///< The window's content view, backed by the CAMetalLayer everything presents into
 };
 
 }

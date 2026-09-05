@@ -21,6 +21,7 @@ namespace CE::Core {
 namespace {
 
 constexpr u32 F32_SIZE = sizeof(f32);
+constexpr u32 U32_SIZE = sizeof(u32);
 
 NS::SharedPtr<MTL::Buffer> MakeSharedBuffer(MTL::Device* nativeDevice, const void* data, const size_t sizeInBytes, std::string_view what) {
 	if (not nativeDevice) [[unlikely]] {
@@ -51,12 +52,12 @@ NS::SharedPtr<MTL::Buffer> MakeSharedBuffer(MTL::Device* nativeDevice, const voi
 
 MetalVertexBuffer::MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, const size_t count, const BufferLayout& layout):
 	_vertexBufferLayout(layout), _sizeInBytes(count * F32_SIZE) {
-	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, count, "MetalVertexBuffer");
+	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, _sizeInBytes, "MetalVertexBuffer");
 }
 
 MetalVertexBuffer::MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, const size_t count, BufferLayout&& layout):
 	_vertexBufferLayout(std::move(layout)), _sizeInBytes(count * F32_SIZE) {
-	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, count, "MetalVertexBuffer");
+	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, _sizeInBytes, "MetalVertexBuffer");
 }
 
 MetalVertexBuffer::~MetalVertexBuffer() = default;
@@ -72,7 +73,7 @@ u32 MetalVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 #pragma region MetalIndexBuffer
 
 MetalIndexBuffer::MetalIndexBuffer(MTL::Device* nativeDevice, const u32* indices, const size_t count): _count(count) {
-	_nativeBuffer = MakeSharedBuffer(nativeDevice, indices, count, "MetalIndexBuffer");
+	_nativeBuffer = MakeSharedBuffer(nativeDevice, indices, count * U32_SIZE, "MetalIndexBuffer");
 }
 
 #pragma endregion

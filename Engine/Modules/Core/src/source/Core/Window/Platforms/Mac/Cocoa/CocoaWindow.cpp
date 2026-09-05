@@ -188,7 +188,50 @@ void CocoaWindow::Show() {
 
 void CocoaWindow::Init() {
 	_InitWindow();
+	_CreateView();
+
 	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
+}
+
+void CocoaWindow::_CreateView() {
+	if (not _window) [[unlikely]] {
+		constexpr auto error = "CocoaWindow::_CreateView: Cannot create the content view because the window is not initialized!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	const auto& windowProps = Utility::Config::GetWindowProps();
+	const CGRect frame = {
+		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
+		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
+	};
+
+	// Created with no device, on purpose. MetalKit wants one only for the drawable and render-pass machinery the
+	// engine does not use - MetalSwapchain owns the layer and vends its own drawables - and the layer's device is set
+	// there, from the same MetalGraphicDevice the pipelines were compiled against. Asking for one here would mean the
+	// window creating a second MTL::Device before the renderer even exists.
+	_view = NS::TransferPtr(MTK::View::alloc()->init(frame, nullptr));
+	if (not _view) [[unlikely]] {
+		constexpr auto error = "CocoaWindow::_CreateView: Could not create the MetalKit view!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
+	// The engine paces frames from its own run loop, so the view must not repaint on its own: neither on a timer nor
+	// on setNeedsDisplay.
+	_view->setPaused(true);
+	_view->setEnableSetNeedsDisplay(false);
+
+	// Input arrives here rather than at the window: AppKit sends key and mouse events to the first responder, which is
+	// the view installed below.
+	_view->setEventDispatcher(&viewEventDispatcher);
+
+	_window->setContentView(_view.get());
+
+	// First responder for key events, and mouse-moved delivery for continuous cursor updates - without it the view's
+	// dispatcher only ever sees clicks, because there is no tracking area.
+	(void)_window->makeFirstResponder(_view.get());
+	_window->setAcceptsMouseMovedEvents(true);
 }
 
 void CocoaWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
@@ -201,15 +244,92 @@ void CocoaWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
 		throw std::runtime_error(error);
 	}
 
-	using Hub = CocoaEventHubDispatcher;
-	auto& lifecycle = cocoaWindowEventDispatcher.nsWindowLifecycleEvents;
-	auto& focus = cocoaWindowEventDispatcher.nsWindowFocusEvents;
+	_eventHub = hub;
 
-	lifecycle.willCloseDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowWillCloseEvent>(hub));
+	// The hub converts native (bottom-left) mouse positions out of this window's content view.
+	hub->SetSources(this);
+
+	using Hub = CocoaEventHubDispatcher;
+	using NsEvent = EventDelegate<const NS::Event*>;
+	using NsNotification = EventDelegate<const NS::Notification*>;
+
+	auto& [willCloseDispatcher] = cocoaWindowEventDispatcher.nsWindowLifecycleEvents;
+	auto& [didBecomeKeyDispatcher, didResignKeyDispatcher] = cocoaWindowEventDispatcher.nsWindowFocusEvents;
+
+	willCloseDispatcher.Bind(NsNotification::FromMethod<Hub, &Hub::ReceiveWindowWillCloseEvent>(hub));
 
 	// Focus changes feed the hub so the input state can release held keys once the window stops receiving events.
-	focus.didBecomeKeyDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowDidBecomeKeyEvent>(hub));
-	focus.didResignKeyDispatcher.Bind(EventDelegate<const NS::Notification*>::FromMethod<Hub, &Hub::ReceiveWindowDidResignKeyEvent>(hub));
+	didBecomeKeyDispatcher.Bind(NsNotification::FromMethod<Hub, &Hub::ReceiveWindowDidBecomeKeyEvent>(hub));
+	didResignKeyDispatcher.Bind(NsNotification::FromMethod<Hub, &Hub::ReceiveWindowDidResignKeyEvent>(hub));
+
+	auto& geometry = cocoaWindowEventDispatcher.nsWindowGeometryEvents;
+	geometry.didResizeDispatcher.Bind(NsNotification::FromConstMethod<CocoaWindow, &CocoaWindow::_OnWindowDidResize>(this));
+
+	// A move reports a size too, and it has to: dragging the window onto a display with a different backing scale
+	// changes how many pixels the same number of points is worth, without the window ever being resized. Nothing else
+	// tells us - AppKit sends no resize for it, and the view is not laid out again - so without this the drawable
+	// follows the new scale while everything measured in points stays on the old one.
+	geometry.didMoveDispatcher.Bind(NsNotification::FromConstMethod<CocoaWindow, &CocoaWindow::_OnWindowDidMove>(this));
+
+	// Keyboard and mouse come off the view, not the window: AppKit delivers them to the first responder. These
+	// bindings used to live in CocoaApplication, against the render context's dispatcher - the same wires, moved to
+	// where the view now is.
+	auto& mouse = viewEventDispatcher.mouseEvents;
+
+	// One handler per direction, three channels each: which button it was is read off the event, not off the channel.
+	mouse.mouseDownDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonDownEvent>(hub));
+	mouse.rightMouseDownDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonDownEvent>(hub));
+	mouse.otherMouseDownDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonDownEvent>(hub));
+
+	mouse.mouseUpDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonUpEvent>(hub));
+	mouse.rightMouseUpDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonUpEvent>(hub));
+	mouse.otherMouseUpDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseButtonUpEvent>(hub));
+
+	// A drag is a move with a button held, and AppKit reports it on its own channel rather than as a mouseMoved.
+	mouse.mouseDraggedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseDraggedEvent>(hub));
+	mouse.rightMouseDraggedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseDraggedEvent>(hub));
+	mouse.otherMouseDraggedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseDraggedEvent>(hub));
+
+	mouse.mouseMovedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveMouseMovedEvent>(hub));
+	mouse.scrollWheelDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveScrollWheelEvent>(hub));
+
+	auto& [keyDownDispatcher, keyUpDispatcher, flagsChangedDispatcher] = viewEventDispatcher.keyboardEvents;
+	keyDownDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveKeyDownEvent>(hub));
+	keyUpDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveKeyUpEvent>(hub));
+
+	// Modifier keys never arrive as keyDown/keyUp: AppKit reports Shift, Ctrl, Alt and Cmd through flagsChanged only.
+	flagsChangedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveFlagsChangedEvent>(hub));
+
+	viewEventDispatcher.stateEvents.viewDidLayoutDispatcher.Bind(
+		EventDelegate<>::FromConstMethod<CocoaWindow, &CocoaWindow::_OnViewDidLayout>(this)
+	);
+}
+
+void CocoaWindow::_ReportSize() const {
+	if (not _eventHub) [[unlikely]]
+		return;
+
+	const auto [windowWidth, windowHeight] = GetWindowSize();
+	_eventHub->ReceiveWindowResizeEvent(windowWidth, windowHeight);
+
+	// Backing pixels, and a separate event: this is the measurement a render target and ImGui's display size are in,
+	// and on a Retina display it is not the same number as the one above.
+	const auto [frameWidth, frameHeight] = GetFrameSize();
+	_eventHub->ReceiveContextResizeViewEvent(frameWidth, frameHeight);
+}
+
+void CocoaWindow::_OnWindowDidResize(const NS::Notification*) const {
+	_ReportSize();
+}
+
+void CocoaWindow::_OnWindowDidMove(const NS::Notification*) const {
+	// Fires all through a drag, and that is fine: _ReportSize is cheap, and the swapchain's Resize does nothing at all
+	// when the numbers have not changed. The one move that matters is the one that crosses onto another screen.
+	_ReportSize();
+}
+
+void CocoaWindow::_OnViewDidLayout() const {
+	_ReportSize();
 }
 
 void CocoaWindow::Miniaturize() {

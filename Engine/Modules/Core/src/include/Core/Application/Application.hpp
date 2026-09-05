@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -166,6 +166,21 @@ private:
 
 	void _InitRenderer();
 
+	/**
+	 * @brief Builds everything that needs a live window, once the platform says there is one
+	 * @details Bound to I_Platform::onReadyDispatcher and fired from Start(). This used to be the tail of the
+	 *			constructor, which worked only because GLFW has a usable window the moment it is constructed; AppKit
+	 *			does not, so the work moved to the moment both backends can name.
+	 */
+	void _OnPlatformReady();
+
+	/**
+	 * @brief Builds the ImGui layer the configured graphics API needs
+	 * @details Split from InitImguiLayer because the two answer different questions: that one is the client asking
+	 *			for an overlay, this one is the engine having something to build it against.
+	 */
+	void _MakeImGuiLayer();
+
 private:
 	void _OnFrame();
 
@@ -178,6 +193,29 @@ private:
 	void _OnWindowResize(const Events::WindowResizeEvent& event) const;
 
 	void _OnVSyncChange(const Events::VSyncEvent& event) const;
+
+	/**
+	 * @brief Works out what the run loop should be told to aim for
+	 * @return u32 Frames per second, or 0 to let the loop run as fast as presentation allows
+	 */
+	[[nodiscard]] u32 _TargetFrameRate(bool vsync) const;
+
+	/**
+	 * @brief Tells the backend how far apart to hold successive frames, where it can
+	 * @details Only Metal can do this, so only Metal is asked. It is the answer to wanting a high frame rate without
+	 *			tearing: VSync blocks the loop on the display, presenting as soon as possible tears, and this holds
+	 *			each frame back without blocking anything.
+	 */
+	void _ApplyPresentPacing(bool vsync) const;
+
+public:
+	/**
+	 * @brief Switches presentation between waiting for the display's refresh and running free
+	 * @details Not just a call through to the renderer: the run loop's pacing and every layer that shows the frame
+	 *			rate have to learn about the change too, so it is announced on the hub and _OnVSyncChange does the
+	 *			retargeting. That announcement used to come from the render context, which no longer exists.
+	 */
+	void SetVSync(bool enabled) const;
 
 	/// @todo Renderer territory: an application should not know what a vertex buffer is.
 	void _CreateRenderResources();
@@ -205,6 +243,10 @@ private:
 	/// @brief True once End() has torn the application down, so a second call does nothing.
 	/// @details Not derived from the run loop: End() runs precisely because the loop has already stopped, so asking
 	///			 the loop whether it is running would make the first call the one that gets skipped.
+	/// Set by InitImguiLayer when it is called before the renderer exists - which is the normal case, since the
+	/// entry point asks for the overlay between constructing the application and starting it.
+	bool _imguiLayerRequested = false;
+
 	bool _ended = false;
 	mutable std::atomic<TimePoint> _lastFrameTime = Clock::now(); ///< Timestamp of the last frame for delta time calculation
 	LayerStack _layerStack; ///< Stack of layers and overlays

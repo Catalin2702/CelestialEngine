@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-04
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
@@ -139,7 +139,7 @@ void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
 		.width = viewport.width,
 		.height = viewport.height,
 		.znear = viewport.minDepth,
-		.zfar = viewport.minDepth
+		.zfar = viewport.maxDepth
 	});
 }
 

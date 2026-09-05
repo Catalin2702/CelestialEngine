@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -21,7 +21,6 @@ namespace NS {
 
 namespace CE::Core {
 
-class MetalContext;
 class CocoaWindow;
 
 /**
@@ -58,11 +57,13 @@ public:
 
 public:
 	/**
-	 * @brief Sets the render view / window used to translate native mouse coordinates into engine (top-left) space
-	 * @param context Metal render context owning the view input is reported against (non-owning)
-	 * @param window Cocoa window used to resolve the frame size for the Y flip (non-owning)
+	 * @brief Sets the window whose coordinate system native mouse positions are translated out of
+	 * @param window Cocoa window input is reported against (non-owning; it must outlive this hub)
+	 * @details One source, where there used to be two. The view was asked of the render context because the context
+	 *			owned it; now the window does, and it is the window's own content view that input is actually
+	 *			delivered to - so asking the window for it is both shorter and harder to get wrong.
 	 */
-	void SetSources(MetalContext* context, CocoaWindow* window);
+	void SetSources(CocoaWindow* window);
 
 public:
 
@@ -196,7 +197,6 @@ public:
 	MetalRenderContextEventHub renderContextEventHub;
 
 private:
-	MetalContext* _context = nullptr; ///< Non-owning; used to convert native mouse coordinates
 	CocoaWindow* _window = nullptr;   ///< Non-owning; used to convert native mouse coordinates
 };
 

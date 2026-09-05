@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_TYPES_RENDER_METAL_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Metal/MTLPixelFormat.hpp"
 #include "Types/Types.hpp"
 
 
@@ -41,6 +42,12 @@ inline constexpr u32 METAL_VERTEX_BUFFER_INDEX = 0;
  * @details Returns MTL::PixelFormatInvalid for None, which is what the pipeline validation reports on.
  */
 [[nodiscard]] CE_TYPES_API MTL::PixelFormat ToMetal(PixelFormat pixelFormat);
+
+/**
+ * @brief Converts a Metal pixel format into the engine one
+ * @details Returns Types::PixelFormat None for MTL::pixelFormatInvalid
+ */
+[[nodiscard]] CE_TYPES_API PixelFormat FromMetal(MTL::PixelFormat pixelFormat);
 
 /**
  * @brief Converts a depth/stencil comparison into the Metal one

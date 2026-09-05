@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
@@ -23,7 +23,7 @@ std::unique_ptr<I_Renderer> I_Renderer::MakeRenderer(I_Window& window, const Typ
 
 	// After the device on purpose: a swapchain is created against one, and on OpenGL the device's creation is what
 	// leaves a context current for it to read its drawable from.
-	auto swapchain = I_Swapchain::MakeSwapchain(window, api);
+	auto swapchain = I_Swapchain::MakeSwapchain(window, *graphicDevice, api);
 
 	return std::make_unique<ForwardRenderer>(std::move(graphicDevice), std::move(swapchain));
 }

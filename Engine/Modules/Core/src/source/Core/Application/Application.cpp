@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #include "Core/Application/Application.hpp"
@@ -12,6 +12,10 @@
 #include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
+#if CE_PLATFORM_MACOS
+	#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
+	#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+#endif
 #include "Core/Render/Buffer/I_Buffer.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
@@ -28,10 +32,10 @@
 
 #include <glm/glm.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <chrono>
-#include <stdexcept>
 #include <utility>
 #include <string>
 
@@ -66,8 +70,11 @@ Application::Application():
 
 	try {
 		_InitWindow();
-		_InitRenderer();
-		Application::Init();
+
+		// The window, the renderer and the rest of the setup wait for the platform to say it has a usable window -
+		// see _OnPlatformReady. On GLFW that is immediate; on Cocoa it is after NSApplication has finished launching,
+		// which cannot happen while this constructor is still running.
+		_platform->onReadyDispatcher.Bind(EventDelegate<>::FromMethod<Application, &Application::_OnPlatformReady>(this));
 	}
 	catch (...) {
 		_instance = nullptr;
@@ -113,6 +120,11 @@ const Application& Application::GetConst() {
 }
 
 void Application::Start() {
+	// Brings the windowing backend up and fires onReadyDispatcher, which is what actually creates the window and the
+	// renderer. Here rather than in the constructor because AppKit reaches that point only once it has finished
+	// launching, and everything below needs a window that exists.
+	_platform->Prepare();
+
 	SetRunning(true);
 
 	// Reset the clock last, so the first frame's delta measures a frame and not the whole of initialisation.
@@ -178,12 +190,39 @@ void Application::Init() {
 	_runLoop->SetFrameDelegate(EventDelegate<>::FromMethod<Application, &Application::_OnFrame>(this));
 	_runLoop->SetDidStartDelegate(EventDelegate<>::FromConstMethod<Application, &Application::_OnLoopStarted>(this));
 
-	_renderer->SetVSync(Props().VSync);
+	SetVSync(Props().VSync);
 }
 
 void Application::InitImguiLayer() {
-	const auto imguiLayer = std::make_shared<ImGuiOpenGlLayer>();
-	SetImGuiLayer(imguiLayer);
+	// Deferred, not built: an ImGui layer is attached as soon as it is created, and attaching it runs its _Init, which
+	// asks the renderer for a device. The entry point calls this between constructing the application and starting it,
+	// so at this point there is no renderer yet - the same wait everything else moved to.
+	if (not _renderer) {
+		_imguiLayerRequested = true;
+		return;
+	}
+
+	_MakeImGuiLayer();
+}
+
+void Application::_MakeImGuiLayer() {
+	// One layer per backend, and the choice belongs here rather than to a factory of its own: each one wants the
+	// concrete window and the concrete device, so a layer that does not match the API cannot be built at all - the
+	// OpenGL one throws std::bad_cast the moment it asks the window for a GlfwWindow.
+	switch (Props().graphicsApi) {
+		case Types::GraphicsApi::OpenGL:
+			SetImGuiLayer(std::make_shared<ImGuiOpenGlLayer>());
+			return;
+
+#if CE_PLATFORM_MACOS
+		case Types::GraphicsApi::Metal:
+			SetImGuiLayer(std::make_shared<ImGuiMetalLayer>());
+			return;
+#endif
+
+		default:
+			CE_CORE_WARN("Application::InitImguiLayer: no ImGui layer for {} yet; the application runs without one.", Props().graphicsApi);
+	}
 }
 
 void Application::SetRunning(const bool running) const {
@@ -192,10 +231,8 @@ void Application::SetRunning(const bool running) const {
 		return;
 	}
 
-	// With VSync on the display sets the cadence, so the limiter is told the refresh rate rather than the configured
-	// one: asking for more frames than the display can show only burns the CPU.
-	const auto& windowProps = Props();
-	_runLoop->SetTargetFrameRate(windowProps.VSync ? _window->GetRefreshRate() : windowProps.refreshRate);
+	_runLoop->SetTargetFrameRate(_TargetFrameRate(Props().VSync));
+	_ApplyPresentPacing(Props().VSync);
 
 	_runLoop->Run();
 }
@@ -270,6 +307,20 @@ void Application::_InitWindow() {
 	_SubscribeToEventHubDispatcher();
 }
 
+void Application::_OnPlatformReady() {
+	// A no-op wherever the window was already usable at construction, which is every backend but Cocoa.
+	_window->Init();
+
+	_InitRenderer();
+
+	// Before the ImGui layer, because it binds the run loop's delegates and pushes the configured VSync into the
+	// renderer that _InitRenderer has just built.
+	Init();
+
+	if (std::exchange(_imguiLayerRequested, false))
+		_MakeImGuiLayer();
+}
+
 void Application::_InitRenderer() {
 	// On OpenGL every graphics call applies to whichever context is current on this thread, and nothing else makes it
 	// current. The other backends have no such notion, which is why this is asked of the surface and not of the window.
@@ -335,22 +386,83 @@ void Application::_OnWindowClose(const Events::WindowCloseEvent& event) const {
 }
 
 void Application::_OnWindowResize(const Events::WindowResizeEvent&) const {
+	// The window reports its first size while it is being built, which on Cocoa is before the renderer exists: the
+	// view is laid out the moment it becomes the content view, and that is a resize like any other. Nothing is lost by
+	// ignoring it - the swapchain reads the window's size on its first acquire anyway.
+	if (not _renderer)
+		return;
+
 	const auto [width, height] = _window->GetFrameSize();
 	_renderer->OnResize(width, height);
+
+	// A geometry change is also how a window arrives on a different screen, and the presentation pacing is measured
+	// against that screen's refresh. Nothing else would notice: the configured rate has not changed, only what the
+	// display can do with it.
+	_ApplyPresentPacing(_renderer->GetSwapchain().IsVSyncEnabled());
 }
 
 void Application::_OnVSyncChange(const Events::VSyncEvent& event) const {
-	// The pacing target follows the swap behaviour: the display's rate while it waits for the display, the configured
-	// one while it runs free.
-	const auto& windowProps = Props();
-	_runLoop->SetTargetFrameRate(event.GetState() ? _window->GetRefreshRate() : windowProps.refreshRate);
+	_runLoop->SetTargetFrameRate(_TargetFrameRate(event.GetState()));
+	_ApplyPresentPacing(event.GetState());
 
 	event.Consume();
 }
 
+void Application::_ApplyPresentPacing([[maybe_unused]] const bool vsync) const {
+#if CE_PLATFORM_MACOS
+	if (_renderer->GetGraphicApi() != Types::GraphicsApi::Metal)
+		return;
+
+	auto& swapchain = static_cast<MetalSwapchain&>(_renderer->GetSwapchain());
+
+	// With VSync on the acquire already blocks until the display is ready, so holding frames back on top of that
+	// would only be a second pacer. Uncapped is a choice too: asking for no limit is asking to present the moment the
+	// GPU is done, tearing included.
+	const auto configuredRate = Props().refreshRate;
+	if (vsync or configuredRate == 0) {
+		swapchain.SetMinimumPresentInterval(0.0_f32);
+		return;
+	}
+
+	// The longer of the two intervals, and the display's is the half that matters: presenting more often than the
+	// panel can scan is the definition of tearing, so a configured 240 on a 120 Hz screen has to become 120. Read
+	// rather than remembered, and recomputed whenever the window reports a new geometry - which is what makes this
+	// follow the window onto another monitor, and follow a refresh rate changed under it.
+	const auto displayRate = _window->GetRefreshRate();
+
+	const auto configuredInterval = 1.0_f32 / static_cast<f32>(configuredRate);
+	const auto displayInterval = displayRate != 0 ? 1.0_f32 / static_cast<f32>(displayRate) : 0.0_f32;
+
+	swapchain.SetMinimumPresentInterval(std::max(configuredInterval, displayInterval));
+#endif
+}
+
+u32 Application::_TargetFrameRate(const bool vsync) const {
+	// Zero - uncapped - is the right answer while VSync is on, and it is not a contradiction: the presentation call
+	// already blocks until the display is ready, on every backend. glfwSwapBuffers waits for the swap interval,
+	// CAMetalLayer::nextDrawable waits for the compositor to free a buffer. Sleeping on top of that would mean two
+	// pacers, with the software one deciding - and the software one samples the refresh rate once, so it goes on
+	// asking for 120 after the window has been dragged onto a 60 Hz display. Letting the display pace is what
+	// CAMetalDisplayLink used to give for free, and it follows the window from screen to screen on its own.
+	if (vsync)
+		return 0;
+
+	// Free-running: the only limit is the one the configuration asked for, and 0 there means genuinely uncapped.
+	return Props().refreshRate;
+}
+
+void Application::SetVSync(const bool enabled) const {
+	_renderer->SetVSync(enabled);
+
+	// Announced rather than applied here: the run loop's pacing, and any layer showing the frame rate, hang off this
+	// channel. It is the one the render context used to fire, and it had no one left to fire it.
+	Events::VSyncEvent vsyncEvent{enabled};
+	_dispatcher->DispatchRenderContextChangeVSyncEvent(vsyncEvent);
+}
+
 void Application::_CreateRenderResources() {
 	auto& graphicDevice = _renderer->GetGraphicDevice();
-	auto& swapchain = _renderer->GetSwapchain();
+	const auto& swapchain = _renderer->GetSwapchain();
 	constexpr std::array vertices {
 		// Front face
 		-0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 0
@@ -377,23 +489,44 @@ void Application::_CreateRenderResources() {
 		8_u32, 9_u32, 10_u32, 10_u32, 11_u32, 8_u32		// Upper face
 	};
 
-	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, BufferLayout{
+	// Named, because it is needed twice: the buffer uses it to compute its stride, and the pipeline needs it to build
+	// the vertex descriptor Metal and DirectX 12 compile into the pipeline. OpenGL only reads it in the first place,
+	// which is why leaving it off the pipeline goes unnoticed there and draws nothing at all on Metal.
+	const BufferLayout vertexLayout{
 		{Types::ShaderDataType::Float3, "inputPosition"},
 		{Types::ShaderDataType::Float4, "inputColor"}
-	});
+	};
+
+	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, vertexLayout);
 	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
+
+	// The two halves of ShaderModuleDescriptor, picked here because only the caller knows which backend it is talking
+	// to: OpenGL compiles GLSL loaded from the bundle and always enters at main, Metal looks a function up by name in
+	// the .metallib CMake already compiled and never reads the source.
+	const auto isOpenGl = graphicDevice.GetGraphicApi() == Types::GraphicsApi::OpenGL;
 
 	// The descriptor borrows its strings for the duration of the call only, so these have to outlive it - which is why
 	// the contents are pulled out into named locals rather than passed inline.
-	const auto vertexSource = Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl").GetContentString();
-	const auto fragmentSource = Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl").GetContentString();
+	const auto vertexSource = isOpenGl
+		? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl").GetContentString()
+		: std::string{};
+	const auto fragmentSource = isOpenGl
+		? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl").GetContentString()
+		: std::string{};
 
 	PipelineDescriptor pipelineDescriptor{};
+	pipelineDescriptor.vertexLayout = vertexLayout;
 	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({
-		.stage = Types::ShaderType::Vertex, .source = vertexSource, .debugName = "Vertex"
+		.stage = Types::ShaderType::Vertex,
+		.source = vertexSource,
+		.entryPoint = isOpenGl ? "main" : "vertexMain",
+		.debugName = "Vertex"
 	});
 	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({
-		.stage = Types::ShaderType::Fragment, .source = fragmentSource, .debugName = "Fragment"
+		.stage = Types::ShaderType::Fragment,
+		.source = fragmentSource,
+		.entryPoint = isOpenGl ? "main" : "fragmentMain",
+		.debugName = "Fragment"
 	});
 
 	// Asked rather than assumed: the descriptor defaults to BGRA8Unorm, GLFW only ever gives RGBA8Unorm, and every

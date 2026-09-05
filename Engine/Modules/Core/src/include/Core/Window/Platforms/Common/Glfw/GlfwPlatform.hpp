@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -54,6 +54,13 @@ public:
 	GlfwPlatform& operator = (GlfwPlatform&&) = delete;
 
 public:
+	/**
+	 * @brief Announces immediately that GLFW is ready for windows
+	 * @details Nothing to wait for: glfwInit already ran in the constructor. The call exists so the application can
+	 *			be written against one ordering, and it is the Cocoa side that makes that ordering worth having.
+	 */
+	void Prepare() override;
+
 	/**
 	 * @brief Drains the event queue and delivers the callbacks
 	 * @details One queue for the whole process, whatever the number of windows, which is why this is called once per

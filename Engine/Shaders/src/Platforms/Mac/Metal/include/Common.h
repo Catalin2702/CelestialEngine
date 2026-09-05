@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-05-16
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -15,21 +15,17 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constant float4 positions[] = {
-	float4(-0.5, -0.5, 0.0, 1.0),
-	float4(0.5, -0.5, 0.0, 1.0),
-	float4(0.0,  0.5, 0.0, 1.0)
-};
-
-constant half3 colors[] = {
-	half3(1.0, 0.0, 0.0),
-	half3(0.0, 1.0, 0.0),
-	half3(0.0, 0.0, 1.0)
+// Attribute indices, not names: Metal binds by [[attribute(i)]], and the pipeline's MTLVertexDescriptor is built
+// from the engine's BufferLayout in declaration order - so element i there is attribute i here. Getting the two out
+// of step is silent, and shows up as a window that clears and draws nothing.
+struct VertexInput {
+	float3 position [[attribute(0)]];
+	float4 color	[[attribute(1)]];
 };
 
 struct VertexPayload {
 	float4 position [[position]];
-	half3 color;
+	float4 color;
 };
 
 

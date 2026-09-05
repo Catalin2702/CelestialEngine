@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 
-#include "Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #include "Types/KeyCode/KeyboardKeyCode.hpp"
 #include "Types/KeyCode/MouseButtonCode.hpp"
@@ -21,20 +20,34 @@ namespace CE::Core {
 // Cocoa reports the cursor in the window's coordinate system, whose origin is the BOTTOM-left with Y growing upward.
 // Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
 // growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
-static std::pair<f32, f32> MouseLocationTopLeft(const MetalContext* context, const CocoaWindow* window, const NS::Event* event) {
-	if (not (context and context->GetView() and window)) [[unlikely]]
+static std::pair<f32, f32> MouseLocationTopLeft(const CocoaWindow* window, const NS::Event* event) {
+	if (not (window and window->GetWindow())) [[unlikely]]
 		return {0.0f, 0.0f};
 
-	const auto view = context->GetView();
+	// The content view, not the window's own MTK::View member: they are the same object on this path, but the legacy
+	// CocoaApplication installs the render context's view instead, and what input is delivered to is whatever is
+	// actually installed.
+	const auto view = window->GetWindow()->contentView();
+	if (not view) [[unlikely]]
+		return {0.0f, 0.0f};
 
 	const auto [x, y] = view->convertPointFromView(event->locationInWindow(), nullptr);
-	const auto [frameWidth, frameHeight] = window->GetFrameSize();
 
-	return {static_cast<f32>(x), frameHeight - static_cast<f32>(y)};
+	// Points, not pixels, and that is the whole subtlety here. convertPointFromView answers in the view's own
+	// coordinates, which are points; GetFrameSize is the drawable, which is pixels. Flipping one against the other
+	// put every cursor position half a window below where it belonged on a Retina display - inside the window by the
+	// engine's numbers, outside it by ImGui's, which is why events arrived and nothing ever reacted to them.
+	//
+	// Points is also what the rest of the engine means by a mouse position: GLFW reports screen coordinates, and
+	// ImGui's DisplaySize is in the same space with DisplayFramebufferScale applied on top.
+	const auto [frameWidth, frameHeight] = window->GetFrameSize();
+	const auto scale = window->GetContentScale();
+	const auto heightInPoints = scale > 0.0f ? static_cast<f32>(frameHeight) / scale : static_cast<f32>(frameHeight);
+
+	return {static_cast<f32>(x), heightInPoints - static_cast<f32>(y)};
 }
 
-void CocoaEventHubDispatcher::SetSources(MetalContext* context, CocoaWindow* window) {
-	_context = context;
+void CocoaEventHubDispatcher::SetSources(CocoaWindow* window) {
 	_window = window;
 }
 
@@ -143,7 +156,7 @@ void CocoaEventHubDispatcher::ReceiveMouseDraggedEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	const auto [x, y] = MouseLocationTopLeft(_context, _window, event);
+	const auto [x, y] = MouseLocationTopLeft(_window, event);
 	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber()), x, y};
 	DispatchMouseDraggedEvent(mouseDraggedEvent);
 }
@@ -152,7 +165,7 @@ void CocoaEventHubDispatcher::ReceiveMouseMovedEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	const auto [x, y] = MouseLocationTopLeft(_context, _window, event);
+	const auto [x, y] = MouseLocationTopLeft(_window, event);
 	Events::MouseMovedEvent mouseMovedEvent{x, y};
 	DispatchMouseMovedEvent(mouseMovedEvent);
 }

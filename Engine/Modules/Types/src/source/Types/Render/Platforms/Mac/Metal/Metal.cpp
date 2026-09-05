@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #include "Types/Render/Platforms/Mac/Metal/Metal.hpp"
@@ -45,6 +45,38 @@ MTL::PixelFormat ToMetal(const PixelFormat pixelFormat) {
 		case PixelFormat::None:
 		default:
 			return MTL::PixelFormatInvalid;
+	}
+}
+
+PixelFormat FromMetal(MTL::PixelFormat pixelFormat) {
+	switch (pixelFormat) {
+		case MTL::PixelFormatR8Unorm: return PixelFormat::R8Unorm;
+		case MTL::PixelFormatRG8Unorm: return PixelFormat::RG8Unorm;
+		case MTL::PixelFormatRGBA8Unorm: return PixelFormat::RGBA8Unorm;
+		case MTL::PixelFormatRGBA8Unorm_sRGB: return PixelFormat::RGBA8UnormSrgb;
+		case MTL::PixelFormatBGRA8Unorm: return PixelFormat::BGRA8Unorm;
+		case MTL::PixelFormatBGRA8Unorm_sRGB: return PixelFormat::BGRA8UnormSrgb;
+
+		case MTL::PixelFormatR16Float: return PixelFormat::R16Float;
+		case MTL::PixelFormatRG16Float: return PixelFormat::RG16Float;
+		case MTL::PixelFormatRGBA16Float: return PixelFormat::RGBA16Float;
+		case MTL::PixelFormatR32Float: return PixelFormat::R32Float;
+		case MTL::PixelFormatRG32Float: return PixelFormat::RG32Float;
+		case MTL::PixelFormatRGBA32Float: return PixelFormat::RGBA32Float;
+
+		case MTL::PixelFormatRGB10A2Unorm: return PixelFormat::RGB10A2Unorm;
+		case MTL::PixelFormatRG11B10Float: return PixelFormat::RG11B10Float;
+
+		case MTL::PixelFormatDepth16Unorm: return PixelFormat::Depth16Unorm;
+		case MTL::PixelFormatDepth32Float: return PixelFormat::Depth32Float;
+			// Not present on Apple silicon: the device reports it unsupported and pipeline creation fails, which is the
+			// right place for that to be caught - the conversion's job is only to name the format.
+		case MTL::PixelFormatDepth24Unorm_Stencil8: return PixelFormat::Depth24UnormStencil8;
+		case MTL::PixelFormatDepth32Float_Stencil8: return PixelFormat::Depth32FloatStencil8;
+
+		case MTL::PixelFormatInvalid:
+		default:
+			return PixelFormat::None;
 	}
 }
 

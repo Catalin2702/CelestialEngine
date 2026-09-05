@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
@@ -310,8 +310,8 @@ void CocoaApplication::InitImGuiLayer() {
 }
 
 void CocoaApplication::SetEventHubDispatcher() {
-	// The hub needs the render view and window to convert native (bottom-left) mouse coordinates into engine space.
-	eventHubDispatcher.SetSources(&_context, &_window);
+	// The hub needs the window to convert native (bottom-left) mouse coordinates into engine space.
+	eventHubDispatcher.SetSources(&_window);
 
 	using hub = CocoaEventHubDispatcher;
 

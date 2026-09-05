@@ -4,13 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Apple/Bridge/ImGui/ImGuiBridge.h"
-#include "Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp"
+#include "Core/Application/Application.hpp"
+#include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
+#include "Core/Render/Renderer/I_Renderer.hpp"
+#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -26,7 +29,7 @@
 
 namespace CE::Core {
 
-ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _context(std::nullopt), _window(std::nullopt) {
+ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _window(std::nullopt) {
 }
 
 ImGuiMetalLayer::~ImGuiMetalLayer() {
@@ -53,21 +56,20 @@ void ImGuiMetalLayer::OnRender() const {
 
 	static bool show = true;
 	ImGui::ShowDemoWindow(&show);
-
-	_frameContext.renderCommandEncoder->setRenderPipelineState(CocoaApplication::StGet().defaultRenderPipelineState);
-
-	_frameContext.renderCommandEncoder->drawPrimitives(
-		MTL::PrimitiveType::PrimitiveTypeTriangle,
-		static_cast<NS::UInteger>(0),
-		3
-	);
 }
 
 void ImGuiMetalLayer::SubscribeToEventHub() {
 	if (_eventHub) [[unlikely]]
 		UnsubscribeFromEventHub();
 
-	_eventHub = dynamic_cast<CocoaApplication&>(I_Application::StGet()).eventHubDispatcher;
+	// The hub the application owns, named concretely: the Metal-only view-resize channel lives on the derived type.
+	auto* const hub = dynamic_cast<CocoaEventHubDispatcher*>(&Application::Get().GetEventHubDispatcher());
+	if (not hub) [[unlikely]] {
+		constexpr auto error = "ImGuiMetalLayer::SubscribeToEventHub: the Metal ImGui layer needs a Cocoa event hub!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+	_eventHub = *hub;
 
 	_eventHubHandles[MouseMoved] = _eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseMoved>(this));
 	_eventHubHandles[MouseDragged] = _eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseDragged>(this));
@@ -107,21 +109,28 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
-	_frameContext.drawable = _context->get().AcquireDrawable();
+	// The frame's drawable, not a new one: the swapchain acquired it in BeginFrame and will present it in EndFrame.
+	// Pulling a second one here - which is what this used to do - would either starve the layer or put two different
+	// back buffers on screen for the same frame.
+	_frameContext.drawable = _swapchain->GetCurrentDrawable();
 	if (not _frameContext.drawable) [[unlikely]] {
-		CE_CORE_WARN("Failed to get drawable");
+		// No drawable means the renderer skipped this frame; the overlay skips it too, and says nothing - the
+		// swapchain has already reported it once.
 		_renderSemaphore.release();
 		return;
 	}
 
-	_frameContext.commandBuffer = _context->get().GetCommandQueue()->commandBuffer();
+	_frameContext.commandBuffer = _graphicDevice->GetCommandQueue()->commandBuffer();
 
 	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
-	colorAttachment->setClearColor(MTL::ClearColor::Make(0, 0, 0, 0));
 	colorAttachment->setTexture(_frameContext.drawable->texture());
-	colorAttachment->setLoadAction(MTL::LoadActionClear);
+
+	// Load, never clear: this is a second pass over a back buffer the scene has already been drawn into. A clear here
+	// would leave nothing on screen but the UI - which is exactly what happened while this layer presented its own
+	// drawable and was, in effect, the only pass that reached the display.
+	colorAttachment->setLoadAction(MTL::LoadActionLoad);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
@@ -143,11 +152,14 @@ void ImGuiMetalLayer::End() {
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
+	// Still on this command buffer, and still needed: it paces ImGui's own ring of vertex buffers, which the backend
+	// reuses once the GPU is done with them. It has nothing to do with presentation.
 	_frameContext.commandBuffer->addCompletedHandler([this](...) {
 		_renderSemaphore.release();
 	});
 
-	_frameContext.commandBuffer->presentDrawable(_frameContext.drawable);
+	// Committed, not presented. MetalSwapchain::Present puts this same drawable on screen on its own command buffer,
+	// which the queue starts after this one.
 	_frameContext.commandBuffer->commit();
 }
 
@@ -165,21 +177,42 @@ void ImGuiMetalLayer::_Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		// Non-const: the window and the context are owned by value by CocoaApplication, so the const getters hand out const
-		// references, which the (non-const) cached reference_wrappers below cannot bind to.
-		auto& app = CocoaApplication::StGet();
+		auto& app = Application::Get();
 
-		_window = app.GetCocoaWindow();
+		auto* const window = dynamic_cast<CocoaWindow*>(&app.GetWindow());
+		if (not window) [[unlikely]] {
+			constexpr auto error = "ImGuiMetalLayer::_Init: the Metal ImGui layer needs a Cocoa window!";
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
+		}
+		_window = *window;
 
-		_context = app.GetMetalContext();
+		// Checked, not asserted, and once: the renderer is built before any layer is attached, but a mismatched pair
+		// would otherwise show up as a crash inside the ImGui backend rather than as a sentence.
+		auto& renderer = app.GetRenderer();
+		if (renderer.GetGraphicApi() != Types::GraphicsApi::Metal) [[unlikely]] {
+			constexpr auto error = "ImGuiMetalLayer::_Init: the Metal ImGui layer needs a Metal renderer!";
+			CE_CORE_ERROR(error);
+			throw std::runtime_error(error);
+		}
 
-		Native::ImGuiMetalInit(_context->get().GetDevice());
+		_graphicDevice = &static_cast<MetalGraphicDevice&>(renderer.GetGraphicDevice());
+		_swapchain = &static_cast<MetalSwapchain&>(renderer.GetSwapchain());
+
+		// The backend builds its font atlas and its buffer pool on this device, and never touches the engine's RHI -
+		// which is why ImGui needs no I_Texture and no 16-bit index buffer to run here.
+		Native::ImGuiMetalInit(_graphicDevice->GetDevice());
 
 		const auto [width, height] = _window->get().GetFrameSize();
-		const auto [xScale, yScale] = _context->get().GetContentScale();
+		const auto scale = _window->get().GetContentScale();
+		const auto safeScale = scale > 0.0f ? scale : 1.0f;
 
-		io.DisplaySize = ImVec2(width, height);
-		io.DisplayFramebufferScale = ImVec2(xScale, yScale);
+		// Points, with the scale declared separately - the same pair _OnViewResized computes. Setting pixels here and
+		// points there left the two disagreeing by the content scale until the first resize arrived, and ImGui derives
+		// its render target size from DisplaySize * DisplayFramebufferScale: twice the drawable, so every scissor
+		// rectangle landed off the part of the buffer that is actually shown.
+		io.DisplaySize = ImVec2(static_cast<f32>(width) / safeScale, static_cast<f32>(height) / safeScale);
+		io.DisplayFramebufferScale = ImVec2(safeScale, safeScale);
 
 		_initialized = true;
 	}
@@ -256,10 +289,10 @@ void ImGuiMetalLayer::_OnKeyTyped(Events::KeyTypedEvent& event) const {
 void ImGuiMetalLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 	auto& io = ImGui::GetIO();
 
-	// The context reports the resize in backing pixels (the drawable size). ImGui expects DisplaySize in logical points and
+	// The event reports the resize in backing pixels (the drawable size). ImGui expects DisplaySize in logical points and
 	// applies DisplayFramebufferScale on top, so feeding pixels here would f64-count the scale and render the UI zoomed in
 	// with its right/bottom pushed off the drawable. Convert back to points.
-	const auto scale = static_cast<f32>(_context->get().GetView()->layer()->contentsScale());
+	const auto scale = _window ? _window->get().GetContentScale() : 1.0f;
 	const auto safeScale = scale > 0.0f ? scale : 1.0f;
 
 	io.DisplaySize = ImVec2(static_cast<f32>(event.GetWidth()) / safeScale, static_cast<f32>(event.GetHeight()) / safeScale);

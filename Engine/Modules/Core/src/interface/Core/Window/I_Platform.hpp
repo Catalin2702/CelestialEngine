@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -54,6 +54,19 @@ public:
 	 *			by the run loop and never by a window. A backend whose events are delivered by the OS run loop itself,
 	 *			as on Cocoa, has nothing to do here.
 	 */
+	/**
+	 * @brief Brings the backend to the point where a window can be created, then fires onReadyDispatcher
+	 * @details The moment that exists only because AppKit has it, and that every other backend reaches instantly.
+	 *			GLFW is usable the moment glfwInit returns, so its implementation fires straight away; AppKit will not
+	 *			hand out a usable window until NSApplication has finished launching, which is a step of its own that
+	 *			has to happen after the constructor - by then whoever wants to be told is subscribed.
+	 *
+	 *			Called once, by the application, before the run loop takes the thread. Everything that needs a live
+	 *			window - the window itself, the renderer built against it - hangs off the dispatcher rather than off
+	 *			the application's constructor, which is what makes the same ordering correct on both backends.
+	 */
+	virtual void Prepare() = 0;
+
 	virtual void PollEvents() const = 0;
 
 	/**
@@ -76,6 +89,11 @@ public:
 	/// @details A plain member rather than a virtual getter because it is the same channel on every backend, and one
 	///			 a backend with nothing to report simply never fires.
 	UnicastDispatcher<int, const char*> onErrorDispatcher;
+
+	/// @brief Fires once, from Prepare(), when the backend is ready for windows to be created.
+	/// @details A plain member for the same reason as the one above: it is the same moment on every backend, only
+	///			 reached at a different time, and a subscriber cannot tell the two apart - which is the point.
+	UnicastDispatcher<> onReadyDispatcher;
 };
 
 template<Types::WindowApi Api>

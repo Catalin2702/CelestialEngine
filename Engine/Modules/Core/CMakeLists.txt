@@ -311,6 +311,7 @@ set(WINDOW_SOURCES
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.cpp
 		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.cpp
 	>
 )
