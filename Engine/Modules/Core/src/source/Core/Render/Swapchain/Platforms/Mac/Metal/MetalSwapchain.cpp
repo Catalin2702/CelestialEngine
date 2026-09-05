@@ -109,9 +109,6 @@ void MetalSwapchain::Present() {
 		// The scheduling is Core Animation's either way; the interval only tells it how long to hold this frame back
 		// before showing it. Zero is the plain call, and the two are separate methods rather than one with a default
 		// because "as soon as possible" is not the same request as "not before now".
-		// The scheduling is Core Animation's either way; the interval only tells it how long to hold this frame back
-		// before showing it. Zero is the plain call, and the two are separate methods rather than one with a default
-		// because "as soon as possible" is not the same request as "not before now".
 		if (_minimumPresentInterval > 0.0f)
 			nativeCommandBuffer->presentDrawableAfterMinimumDuration(_nativeDrawable.get(), _minimumPresentInterval);
 		else

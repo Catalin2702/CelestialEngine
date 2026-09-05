@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Engine/Modules/Core/Render/Command/Platforms/Mac/Metal
-// File: MetalCommandEncoder.cpp
+// File: MetalCommandEncoder.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
@@ -38,10 +38,10 @@ class MetalGraphicDevice;
  *			lands in a command buffer that the GPU only sees at End(). That is the model I_CommandEncoder was shaped
  *			for, and the reason the interface has an End() at all.
  *
- *			One command buffer per pass. It is the simplest arrangement that is correct - buffers submitted to a queue
- *			begin in submission order - and it is what a frame graph would later replace with one buffer per frame,
- *			holding several encoders. Presentation is deliberately not here: MetalSwapchain presents on its own
- *			command buffer, which the queue orders after this one.
+ *			One command buffer per frame, not per pass: the device opens it and every encoder of the frame writes into
+ *			it. That is what makes Metal order a pass that loads an attachment after the pass that wrote it - a
+ *			guarantee that holds within a command buffer and not between two of them. The swapchain commits it once,
+ *			together with the present, after the last pass has closed.
  *
  *			It owns the command buffer and the encoder, and nothing that is drawn: the resources passed to the setters
  *			are borrowed until the pass ends, the same contract a Vulkan command buffer carries.
