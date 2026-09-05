@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 /**
@@ -45,6 +45,8 @@
 #include "Render/Render.hpp"
 #include "Render/Shader.hpp"
 #include "Render/Platforms/Common/OpenGl/OpenGl.hpp"
+#include "Render/TextureUsage.hpp"
+
 #if CE_PLATFORM_MACOS
 #include "Render/Platforms/Mac/Metal/Metal.hpp"
 #endif
