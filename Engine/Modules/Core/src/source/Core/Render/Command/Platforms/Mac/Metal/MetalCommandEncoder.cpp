@@ -9,6 +9,7 @@
 
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
+#include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
 #include "Tools/Tools.hpp"
@@ -24,18 +25,11 @@ namespace {
 constexpr u32 U32_SIZE = sizeof(u32);
 }
 
-MetalCommandEncoder::MetalCommandEncoder(MTL::CommandQueue* nativeQueue, const MTL::RenderPassDescriptor* nativePassDescriptor) {
-	if (not nativeQueue or not nativePassDescriptor) [[unlikely]] {
-		constexpr auto error = "MetalCommandEncoder::MetalCommandEncoder: The pass was given no command queue or no descriptor!";
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
-
-	// Autoreleased by Metal, so it is retained rather than transferred: RetainPtr adds our own reference, TransferPtr
-	// would adopt one we were never given and over-release it when the encoder dies.
-	_nativeCommandBuffer = NS::RetainPtr(nativeQueue->commandBuffer());
-	if (not _nativeCommandBuffer) [[unlikely]] {
-		constexpr auto error = "MetalCommandEncoder::MetalCommandEncoder: The queue handed back no command buffer!";
+MetalCommandEncoder::MetalCommandEncoder(MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor):
+	_nativeCommandBuffer(nativeCommandBuffer)
+{
+	if (not _nativeCommandBuffer or not nativePassDescriptor) [[unlikely]] {
+		constexpr auto error = "MetalCommandEncoder::MetalCommandEncoder: The pass was given no command buffer or no descriptor!";
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -87,10 +81,9 @@ void MetalCommandEncoder::End() {
 
 	_nativeCommandEncoder->endEncoding();
 
-	// Handed to the GPU here. Nothing waits on it: the swapchain's present is a separate command buffer on the same
-	// queue, and the queue is what orders the two.
-	_nativeCommandBuffer->commit();
-
+	// Nothing else. The command buffer belongs to the frame, and the swapchain commits it once, with the present, when
+	// every pass has closed - so all the passes of a frame share one buffer and Metal can see the dependency between
+	// what one writes and the next loads.
 	_ended = true;
 }
 

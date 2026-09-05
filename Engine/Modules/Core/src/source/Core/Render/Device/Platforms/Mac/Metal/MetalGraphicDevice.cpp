@@ -17,6 +17,7 @@
 #include <Metal/Metal.hpp>
 
 #include <cassert>
+#include <utility>
 
 #include "Core/Render/Command/RenderPassDescriptor.hpp"
 #include "QuartzCore/CAMetalDrawable.hpp"
@@ -105,12 +106,43 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 	passDescriptor->setRenderTargetWidth(descriptor.width);
 	passDescriptor->setRenderTargetHeight(descriptor.height);
 
-	return std::make_unique<MetalCommandEncoder>(_nativeCommandQueue.get(), passDescriptor.get());
+	return std::make_unique<MetalCommandEncoder>(GetFrameCommandBuffer(), passDescriptor.get());
 }
 
 void MetalGraphicDevice::SetFrameTarget(CA::MetalDrawable* drawable, MTL::Texture* depthTexture) {
+	// A buffer still held while the target is being cleared belongs to a frame nobody presented - a renderer torn
+	// down mid-frame, or a pass opened outside one. It has to reach the GPU anyway: the encoder is closed and the
+	// resources it read are about to be released.
+	if (not drawable and _nativeFrameCommandBuffer) [[unlikely]] {
+		_nativeFrameCommandBuffer->commit();
+		_nativeFrameCommandBuffer.reset();
+	}
+
 	_nativeFrameDrawable = drawable;
 	_nativeFrameDepthTexture = depthTexture;
+}
+
+MTL::CommandBuffer* MetalGraphicDevice::GetFrameCommandBuffer() {
+	if (not _nativeFrameCommandBuffer) {
+		// Autoreleased by the queue, so retained: it has to survive until the swapchain commits it at the end of the
+		// frame, which is well past the pool this was handed out in.
+		_nativeFrameCommandBuffer = NS::RetainPtr(_nativeCommandQueue->commandBuffer());
+		if (not _nativeFrameCommandBuffer) [[unlikely]]
+			CE_CORE_ERROR("MetalGraphicDevice::GetFrameCommandBuffer: The queue handed back no command buffer!");
+	}
+
+	return _nativeFrameCommandBuffer.get();
+}
+
+void MetalGraphicDevice::HoldFrameCommandBuffer(NS::SharedPtr<MTL::CommandBuffer> commandBuffer) {
+	if (_nativeFrameCommandBuffer)
+		_nativeFrameCommandBuffer->commit();
+
+	_nativeFrameCommandBuffer = std::move(commandBuffer);
+}
+
+NS::SharedPtr<MTL::CommandBuffer> MetalGraphicDevice::TakeFrameCommandBuffer() {
+	return std::move(_nativeFrameCommandBuffer);
 }
 
 }

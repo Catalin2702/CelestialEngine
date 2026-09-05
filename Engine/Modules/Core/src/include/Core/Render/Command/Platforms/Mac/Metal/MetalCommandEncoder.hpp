@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-04
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -29,6 +29,8 @@ namespace MTL {
 
 namespace CE::Core {
 
+class MetalGraphicDevice;
+
 /**
  * @class MetalCommandEncoder
  * @brief One render pass, recorded into an MTL::CommandBuffer and committed when the pass ends
@@ -48,12 +50,12 @@ class CE_CORE_API MetalCommandEncoder final: public I_CommandEncoderBase<Types::
 public:
 	/**
 	 * @brief Opens a command buffer on the queue and starts encoding the pass described by the descriptor
-	 * @param nativeQueue The queue the command buffer is taken from
+	 * @param nativeCommandBuffer The frame's command buffer, shared with every other pass of the same frame
 	 * @param nativePassDescriptor The already built MTL render pass descriptor - attachments, load and store actions
 	 * @details Throws std::runtime_error when the queue hands back no command buffer, or when the descriptor is one
 	 *			Metal will not encode against; both are fatal for the frame, not skippable.
 	 */
-	MetalCommandEncoder(MTL::CommandQueue* nativeQueue, const MTL::RenderPassDescriptor* nativePassDescriptor);
+	MetalCommandEncoder(MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor);
 
 	MetalCommandEncoder(const MetalCommandEncoder&) = delete;
 	MetalCommandEncoder(MetalCommandEncoder&&) noexcept = default;
@@ -72,8 +74,8 @@ public:
 
 	/**
 	 * @brief Ends the pass and commits its command buffer to the GPU
-	 * @details Committed, not waited on: the CPU carries on while the GPU works, which is the whole point of a
-	 *			command buffer. The swapchain's presentation is ordered after this by the queue.
+	 * @details Closes the encoder and nothing else. The command buffer is the frame's, not this pass', and the
+	 *			swapchain commits it once - with the present - after the last pass has closed.
 	 */
 	void End() override;
 
@@ -102,7 +104,8 @@ public:
 	void SetViewport(const Viewport& viewport) override;
 
 private:
-	NS::SharedPtr<MTL::CommandBuffer> _nativeCommandBuffer;
+	/// Borrowed, and shared with every other pass of this frame: the device owns it and the swapchain commits it.
+	MTL::CommandBuffer* _nativeCommandBuffer = nullptr;
 	NS::SharedPtr<MTL::RenderCommandEncoder> _nativeCommandEncoder;
 
 	/// Taken from the pipeline: Metal wants the primitive type as an argument of the draw call, as OpenGL does.

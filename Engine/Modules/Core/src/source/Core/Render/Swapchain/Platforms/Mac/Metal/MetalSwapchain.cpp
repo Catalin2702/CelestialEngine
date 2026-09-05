@@ -94,10 +94,21 @@ void MetalSwapchain::Present() {
 	if (not _nativeDrawable)
 		return;
 
-	// Presentation on its own command buffer, not on the pass'. Buffers committed to one queue start in commit order,
-	// so this is scheduled behind the pass that drew into the drawable without the two having to know about each
-	// other - which is what keeps MetalCommandEncoder free of any notion of where its output ends up.
-	if (const auto nativeCommandBuffer = NS::RetainPtr(_graphicDevice->GetCommandQueue()->commandBuffer())) [[likely]] {
+	// The buffer that drew the frame, not one of our own. presentDrawable shows the drawable when its own command
+	// buffer is *scheduled*, and a buffer carrying nothing but a present is scheduled at once - so it could put the
+	// drawable on screen while the pass that filled it was still running. Adding the present to the last buffer that
+	// wrote it is the only arrangement where that cannot happen.
+	//
+	// Null when the frame opened no pass at all, which is legal: a frame can be acquired and presented untouched, and
+	// then a bare command buffer is exactly right because there is nothing to wait for.
+	auto nativeCommandBuffer = _graphicDevice->TakeFrameCommandBuffer();
+	if (not nativeCommandBuffer)
+		nativeCommandBuffer = NS::RetainPtr(_graphicDevice->GetCommandQueue()->commandBuffer());
+
+	if (nativeCommandBuffer) [[likely]] {
+		// The scheduling is Core Animation's either way; the interval only tells it how long to hold this frame back
+		// before showing it. Zero is the plain call, and the two are separate methods rather than one with a default
+		// because "as soon as possible" is not the same request as "not before now".
 		// The scheduling is Core Animation's either way; the interval only tells it how long to hold this frame back
 		// before showing it. Zero is the plain call, and the two are separate methods rather than one with a default
 		// because "as soon as possible" is not the same request as "not before now".

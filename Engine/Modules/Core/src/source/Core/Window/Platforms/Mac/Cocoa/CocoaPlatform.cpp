@@ -12,6 +12,8 @@
 #include "Tools/Tools.hpp"
 
 #include <AppKit/AppKit.hpp>
+
+#include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.hpp>
 
 #include <objc/message.h>
@@ -93,6 +95,17 @@ void CocoaPlatform::PollEvents() const {
 	{
 		_application->sendEvent(event);
 	}
+
+	// Draining the AppKit queue is not the same as turning the run loop, and both are needed. Blocks posted to the
+	// main dispatch queue are delivered by the run loop, not by sendEvent - and ImGui's Metal backend returns its
+	// vertex buffers to its pool from exactly such a block, posted out of a command buffer's completion handler.
+	// Never turning the loop means those buffers never come back: every frame allocates a new pair, and at several
+	// hundred frames a second that is a thousand allocations a second that are never released.
+	//
+	// NSApplication::run() did this for us, which is why the problem arrived with our own loop and not before. Zero
+	// seconds and returnAfterSourceHandled keep it non-blocking; the loop repeats while there is something to handle,
+	// so nothing is left queued for the next frame.
+	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) == kCFRunLoopRunHandledSource) {}
 }
 
 void CocoaPlatform::_OnDidFinishLaunching(NS::Notification*) const {

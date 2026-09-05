@@ -25,6 +25,7 @@ namespace CA {
 }
 
 namespace MTL {
+	class CommandBuffer;
 	class CommandQueue;
 	class Device;
 	class Texture;
@@ -92,6 +93,38 @@ public:
 	 */
 	void SetFrameTarget(CA::MetalDrawable* drawable, MTL::Texture* depthTexture);
 
+	/**
+	 * @brief Gets the command buffer every pass of this frame encodes into, opening one if the frame has none yet
+	 * @return MTL::CommandBuffer* The frame's buffer, or null when the queue refuses one
+	 * @details One buffer per frame, several encoders on it - not one buffer per pass. Metal tracks the dependency
+	 *			between a pass that writes an attachment and a later pass that loads it *within* a command buffer; it
+	 *			does not do so between separate ones, where all that is guaranteed is the order they execute in. On a
+	 *			tile-based GPU that difference is visible: the second pass loads tiles the first has not resolved yet,
+	 *			and redraws them as it found them.
+	 */
+	[[nodiscard]] MTL::CommandBuffer* GetFrameCommandBuffer();
+
+	/**
+	 * @brief Takes over a command buffer that has finished encoding into the frame's target
+	 * @param commandBuffer The buffer, encoded but not committed
+	 * @details The frame's passes hand their buffers here instead of committing them, and the swapchain commits the
+	 *			last one together with the present. That ordering is not a tidiness: presentDrawable shows the drawable
+	 *			when *its own* command buffer is scheduled, and a buffer holding nothing but a present is scheduled at
+	 *			once - possibly while the pass that draws the frame is still running on the GPU. Presenting from the
+	 *			buffer that did the drawing is the only arrangement in which that cannot happen.
+	 *
+	 *			A buffer already held is committed on the spot: it is no longer the last one, so it no longer carries
+	 *			the present, and it must still reach the GPU before the one replacing it.
+	 */
+	void HoldFrameCommandBuffer(NS::SharedPtr<MTL::CommandBuffer> commandBuffer);
+
+	/**
+	 * @brief Hands the held command buffer over, leaving none behind
+	 * @return NS::SharedPtr<MTL::CommandBuffer> The frame's last buffer, or null when nothing was encoded
+	 * @details The caller owns it, and owes it a commit - it is the one that presents.
+	 */
+	[[nodiscard]] NS::SharedPtr<MTL::CommandBuffer> TakeFrameCommandBuffer();
+
 public:
 	[[nodiscard]] MTL::Device* GetDevice() const { return _nativeDevice.get(); }
 	[[nodiscard]] MTL::CommandQueue* GetCommandQueue() const { return _nativeCommandQueue.get(); }
@@ -104,6 +137,10 @@ private:
 
 	CA::MetalDrawable* _nativeFrameDrawable = nullptr; ///< Borrowed for the current frame; see SetFrameTarget
 	MTL::Texture* _nativeFrameDepthTexture = nullptr; ///< Borrowed for the current frame; owned by the swapchain
+
+	/// The last command buffer encoded into the frame's target, waiting for the present to be added to it. Owned only
+	/// until the swapchain takes it, which is once per frame.
+	NS::SharedPtr<MTL::CommandBuffer> _nativeFrameCommandBuffer;
 };
 
 }

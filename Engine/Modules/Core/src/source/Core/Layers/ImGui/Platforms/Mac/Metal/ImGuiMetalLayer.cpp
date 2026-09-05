@@ -120,16 +120,16 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 		return;
 	}
 
-	_frameContext.commandBuffer = _graphicDevice->GetCommandQueue()->commandBuffer();
+	// The frame's buffer, shared with the renderer's passes rather than one of our own: the overlay is another pass of
+	// the same frame, and Metal only orders a pass that loads against a pass that wrote within one command buffer.
+	_frameContext.commandBuffer = _graphicDevice->GetFrameCommandBuffer();
 
 	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setTexture(_frameContext.drawable->texture());
 
-	// Load, never clear: this is a second pass over a back buffer the scene has already been drawn into. A clear here
-	// would leave nothing on screen but the UI - which is exactly what happened while this layer presented its own
-	// drawable and was, in effect, the only pass that reached the display.
+	// Load, never clear: this is a second pass over a back buffer the scene has already been drawn into.
 	colorAttachment->setLoadAction(MTL::LoadActionLoad);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 
@@ -158,9 +158,9 @@ void ImGuiMetalLayer::End() {
 		_renderSemaphore.release();
 	});
 
-	// Committed, not presented. MetalSwapchain::Present puts this same drawable on screen on its own command buffer,
-	// which the queue starts after this one.
-	_frameContext.commandBuffer->commit();
+	// Neither presented nor committed: the buffer is the frame's, and the swapchain commits it with the present once
+	// every pass has closed.
+	_frameContext.commandBuffer = nullptr;
 }
 
 void ImGuiMetalLayer::_Init() {

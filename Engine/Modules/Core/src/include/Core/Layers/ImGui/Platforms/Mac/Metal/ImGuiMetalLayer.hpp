@@ -60,7 +60,8 @@ class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 
 	struct MetalFrameContext {
 		CA::MetalDrawable* drawable = nullptr;			///< Pointer to the Metal drawable
-		MTL::CommandBuffer* commandBuffer = nullptr;		//< Pointer to the Metal command buffer
+		/// Borrowed from the device: it is the frame's buffer, shared with every other pass.
+		MTL::CommandBuffer* commandBuffer = nullptr;
 		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder
 	};
 
