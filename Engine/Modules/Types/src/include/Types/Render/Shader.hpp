@@ -1,10 +1,10 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/Shader
+// Module: CelestialEngine/Engine/Modules/Types/Render
 // File: Shader.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-05
 //
 
 #pragma once
