@@ -9,6 +9,7 @@
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"
 
+#include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
 #include "Tools/Tools.hpp"
 
 #include <AppKit/AppKit.hpp>
@@ -31,10 +32,10 @@ CocoaPlatform::CocoaPlatform() {
 		throw std::runtime_error(error);
 	}
 
-	_applicationDelegate.SetApplicationDidFinishLaunchingDelegate(
-		EventDelegate<NS::Notification*>::FromConstMethod<CocoaPlatform, &CocoaPlatform::_OnDidFinishLaunching>(this)
-	);
-
+	// The delegate is installed for one answer only. applicationDidFinishLaunching is deliberately not handled: the
+	// notification arrives on the first pump, long after Prepare() has told everyone the backend is ready, so there is
+	// nothing left for it to say.
+	//
 	// AppKit would otherwise quit the process the moment the last window closes, which would run the teardown from
 	// under the engine instead of through it. The engine ends the loop itself when it sees the close event.
 	_applicationDelegate.SetApplicationShouldTerminateAfterLastWindowClosed(false);
@@ -59,6 +60,11 @@ void CocoaPlatform::Prepare() {
 			throw std::runtime_error(error);
 		}
 	}
+
+	// Before finishLaunching too, and for the same reason as the policy: AppKit reads the main menu while the process
+	// comes up, and a bar installed afterwards is one the first activation never sees. This is the moment
+	// applicationWillFinishLaunching used to be.
+	InstallMacMenuBar();
 
 	// The one step NSApplication::run() would have done for us. It posts applicationWillFinishLaunching and
 	// applicationDidFinishLaunching synchronously and then returns, instead of taking the thread - which is the whole
@@ -106,10 +112,6 @@ void CocoaPlatform::PollEvents() const {
 	// seconds and returnAfterSourceHandled keep it non-blocking; the loop repeats while there is something to handle,
 	// so nothing is left queued for the next frame.
 	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) == kCFRunLoopRunHandledSource) {}
-}
-
-void CocoaPlatform::_OnDidFinishLaunching(NS::Notification*) const {
-	CE_CORE_TRACE("CocoaPlatform: NSApplication finished launching.");
 }
 
 }

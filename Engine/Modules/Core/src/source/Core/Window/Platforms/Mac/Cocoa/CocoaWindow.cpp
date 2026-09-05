@@ -55,21 +55,7 @@ bool LoadFullScreenFlag(NS::String* key) {
 
 }
 
-void CocoaWindowEventHandler::DispatchCocoaWindowCreated() const {
-	cocoaWindowStateEvents.cocoaWindowCreatedDispatcher.Dispatch();
-}
-
-void CocoaWindowEventHandler::DispatchCocoaWindowInitialized() const {
-	cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
-}
-
-void CocoaWindowEventHandler::DispatchCocoaWindowWillShutdown() const {
-	cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
-}
-
-CocoaWindow::CocoaWindow() {
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowCreatedDispatcher.Dispatch();
-}
+CocoaWindow::CocoaWindow() = default;
 
 CocoaWindow::~CocoaWindow() {
 	_Shutdown();
@@ -190,7 +176,6 @@ void CocoaWindow::Init() {
 	_InitWindow();
 	_CreateView();
 
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowInitializedDispatcher.Dispatch();
 }
 
 void CocoaWindow::_CreateView() {
@@ -272,8 +257,8 @@ void CocoaWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
 	geometry.didMoveDispatcher.Bind(NsNotification::FromConstMethod<CocoaWindow, &CocoaWindow::_OnWindowDidMove>(this));
 
 	// Keyboard and mouse come off the view, not the window: AppKit delivers them to the first responder. These
-	// bindings used to live in CocoaApplication, against the render context's dispatcher - the same wires, moved to
-	// where the view now is.
+	// bindings used to live in the application, against a dispatcher the render context owned - the same wires, moved
+	// to where the view now is.
 	auto& mouse = viewEventDispatcher.mouseEvents;
 
 	// One handler per direction, three channels each: which button it was is read off the event, not off the channel.
@@ -315,7 +300,7 @@ void CocoaWindow::_ReportSize() const {
 	// Backing pixels, and a separate event: this is the measurement a render target and ImGui's display size are in,
 	// and on a Retina display it is not the same number as the one above.
 	const auto [frameWidth, frameHeight] = GetFrameSize();
-	_eventHub->ReceiveContextResizeViewEvent(frameWidth, frameHeight);
+	_eventHub->ReceiveRenderResizeViewEvent(frameWidth, frameHeight);
 }
 
 void CocoaWindow::_OnWindowDidResize(const NS::Notification*) const {
@@ -400,7 +385,6 @@ void CocoaWindow::_InitWindow() {
 }
 
 void CocoaWindow::_Shutdown() {
-	cocoaWindowEventDispatcher.cocoaWindowStateEvents.cocoaWindowWillShutdownDispatcher.Dispatch();
 	if (_window) [[unlikely]] {
 		// Persist the native fullscreen state so Show() can restore it on the next launch (mirrors the frame autosave).
 		SaveFullScreenFlag(FullScreenDefaultsKey(_window.get()), IsWindowFullScreen(_window.get()));

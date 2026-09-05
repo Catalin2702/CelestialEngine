@@ -97,8 +97,9 @@ girare anche senza display. Questo determina cosa è coperto:
 - **Events / Types / Define / Tools / Utility**: interamente coperti, non dipendono dalla piattaforma.
 
 Non sono coperti da test automatici i componenti che richiedono una finestra o una GPU reale: `GlfwWindow`,
-`CocoaWindow`, `GlfwApplication`, `CocoaApplication`, i context (`OpenGlContext`, `MetalContext`), gli shader e i
-layer ImGui concreti. Le parti *logiche* di quei percorsi (conversione dei codici tasto, creazione e instradamento
+`CocoaWindow`, `Application`, le piattaforme (`GlfwPlatform`, `CocoaPlatform`), i device e le swapchain
+(`OpenGlGraphicDevice`, `MetalGraphicDevice`, `OpenGlSwapchain`, `MetalSwapchain`), gli shader e i layer ImGui
+concreti. Le parti *logiche* di quei percorsi (conversione dei codici tasto, creazione e instradamento
 degli eventi, gestione dello stato) sono però testate attraverso gli hub e i moduli Types/Native.
 
 ## Aggiungere Nuovi Test

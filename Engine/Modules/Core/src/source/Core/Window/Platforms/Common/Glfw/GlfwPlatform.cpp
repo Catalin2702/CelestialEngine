@@ -12,6 +12,10 @@
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Tools/Tools.hpp"
 
+#if CE_PLATFORM_MACOS
+#include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include <cassert>
@@ -39,6 +43,12 @@ GlfwPlatform::GlfwPlatform() {
 			g_st_Platform->onErrorDispatcher.Dispatch(errorCode, description);
 	});
 
+#if CE_PLATFORM_MACOS
+	// GLFW builds a menu bar of its own during glfwInit unless told not to. Ours replaces it either way, and the two
+	// backends have to offer the same menu - so the one that would be thrown away is never built.
+	glfwInitHint(GLFW_COCOA_MENUBAR, GLFW_FALSE);
+#endif
+
 	if (not glfwInit()) [[unlikely]] {
 		glfwSetErrorCallback(nullptr);
 		g_st_Platform = nullptr;
@@ -57,6 +67,13 @@ GlfwPlatform::~GlfwPlatform() {
 }
 
 void GlfwPlatform::Prepare() {
+#if CE_PLATFORM_MACOS
+	// GLFW brought a real NSApplication up in glfwInit, so the menu bar is installed on it exactly as the Cocoa
+	// backend does - same items, same shortcuts, same actions. Here rather than in the constructor because the bar
+	// reaches the engine through Application::Get, and the platform is built before the application publishes itself.
+	InstallMacMenuBar();
+#endif
+
 	onReadyDispatcher.Dispatch();
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp"
 #include "Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp"
 #include "Core/Hub/Events/I_MouseEventHubDispatcher.hpp"
-#include "Core/Hub/Events/I_RenderContextEventHubDispatcher.hpp"
+#include "Core/Hub/Events/I_RenderEventHubDispatcher.hpp"
 #include "Core/Hub/Events/I_WindowEventHubDispatcher.hpp"
 
 #include "Define/DynamicLinker.hpp"
@@ -73,13 +73,13 @@ struct WindowEventHub {
 };
 
 /**
- * @struct RenderContextEventHub
- * @brief The multicast channels every render context event is delivered on
+ * @struct RenderEventHub
+ * @brief The multicast channels every rendering event is delivered on
  * @details The one hub a backend may legitimately extend, because render backends genuinely differ in what they can
  *			report - the Metal path adds a drawable resize its view raises and OpenGL has no equivalent of. A backend
  *			that extends it derives from this struct, so the shared channels stay reachable through the interface.
  */
-struct RenderContextEventHub {
+struct RenderEventHub {
 	MulticastDispatcher<Events::VSyncEvent&> onChangeVSyncDispatcher;
 };
 
@@ -102,7 +102,7 @@ class CE_CORE_API I_EventHubDispatcher:
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,
-	public I_RenderContextEventHubDispatcher,
+	public I_RenderEventHubDispatcher,
 	public I_WindowEventHubDispatcher
 {
 public:
@@ -143,7 +143,7 @@ public:
 	void DispatchWindowErrorEvent(Events::ErrorEvent& windowErrorEvent) override;
 	void DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) override;
 
-	void DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) override;
+	void DispatchRenderChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) override;
 
 public:
 	/**
@@ -171,12 +171,12 @@ public:
 	[[nodiscard]] virtual const WindowEventHub& GetWindowEventHub() const = 0;
 
 	/**
-	 * @brief Gets the channels the render context events are delivered on
+	 * @brief Gets the channels the rendering events are delivered on
 	 * @details Handed out as the shared struct even when the backend holds an extended one, so a subscriber that wants
 	 *			a backend-specific channel has to reach for the concrete hub and say so.
 	 */
-	[[nodiscard]] virtual RenderContextEventHub& GetRenderContextEventHub() = 0;
-	[[nodiscard]] virtual const RenderContextEventHub& GetRenderContextEventHub() const = 0;
+	[[nodiscard]] virtual RenderEventHub& GetRenderEventHub() = 0;
+	[[nodiscard]] virtual const RenderEventHub& GetRenderEventHub() const = 0;
 
 public:
 	/**

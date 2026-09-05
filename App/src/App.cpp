@@ -4,37 +4,17 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
+// The whole sandbox application, and it really is only this include: the umbrella header ends with
+// EntryPoint.hpp, which defines main(), and main() constructs the one Application there is.
+//
+// There used to be a CreateApplication factory here, returning a GlfwApplication or a
+// CocoaApplication behind an I_Application pointer. Both are gone: the window, the renderer and the
+// run loop are chosen at runtime from the command line, so a single concrete class serves every
+// backend and there is nothing left for a client to pick between.
+//
+// What a client adds is layers - pushed onto the application once it exists, not a subclass of it.
+
 #include <CelestialEngine.hpp>
-
-#include <format>
-#include <memory>
-
-std::unique_ptr<Core::I_Application> Core::CreateApplication(const int argc, const char* argv[]) {
-	Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
-	const auto& windowProps = Utility::Config::GetWindowProps();
-	std::unique_ptr<I_Application> app;
-	switch (windowProps.windowApi) {
-		case Types::WindowApi::GLFW: {
-			app = std::make_unique<GlfwApplication>();
-			break;
-		}
-#if CE_PLATFORM_MACOS
-		case Types::WindowApi::Cocoa: {
-			app = std::make_unique<CocoaApplication>();
-			break;
-		}
-#endif
-		default: {
-			const auto error = std::format("Application::CreateApplication: Unsupported window API specified in window properties. Window API: {}", windowProps.windowApi);
-			Tools::Log::LogCoreError(error);
-			throw std::runtime_error(error);
-		}
-	}
-	// Both backends bring themselves up in their constructor (window, renderer, event plumbing), so only the opt-in
-	// ImGui overlay is left to push here.
-	app->InitImGuiLayer();
-	return app;
-}

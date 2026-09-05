@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-29
+# Updated: 2026-09-05
 #
 
 set(INPUT_SOURCES
@@ -18,6 +18,7 @@ set(LAYERS_SOURCES
 
 set(MAINHUB_SOURCES
 	# Events
+	src/Core/Hub/Events/EventHubDispatcherTests.cpp
 	src/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -25,10 +26,18 @@ set(MAINHUB_SOURCES
 	>
 )
 
+set(RENDER_SOURCES
+	src/Core/Render/Buffer/BufferLayoutTests.cpp
+	src/Core/Render/Command/ViewportTests.cpp
+	src/Core/Render/Pipeline/PipelineDescriptorTests.cpp
+	src/Core/Render/Renderer/RenderStatsTests.cpp
+)
+
 add_executable(CE_TestsCore
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
 	${MAINHUB_SOURCES}
+	${RENDER_SOURCES}
 )
 
 set_target_properties(CE_TestsCore PROPERTIES

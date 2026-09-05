@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -17,13 +17,9 @@
 #include <Define/DynamicLinker.hpp>
 
 // ---- Use in CelestialEngine applications ------
-// #include <Core/Application.hpp>
-#include <Core/Application/I_Application.hpp>
+// One concrete class for every backend: the window, the renderer and the run loop are chosen at
+// runtime from the window properties, so there is nothing here for a client to pick between.
 #include <Core/Application/Application.hpp>
-#include <Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp>
-#if CE_PLATFORM_MACOS
-#include <Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp>
-#endif
 // -----------------------------------------------
 
 // ---- Event ------------------------------------

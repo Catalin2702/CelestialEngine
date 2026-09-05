@@ -9,12 +9,6 @@
 
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
-	src/include/Core/Application/Platforms/Common/Glfw/GlfwApplication.hpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/include/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.hpp
-		src/include/Core/Application/Platforms/Mac/Cocoa/MacMenuBar.hpp
-	>
 )
 
 set(INPUT_HEADERS
@@ -57,14 +51,6 @@ set(RENDER_HEADERS
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp
-	>
-
-
-	# Context
-	src/include/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.hpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/include/Core/Render/Context/Platforms/Mac/Metal/MetalContext.hpp
 	>
 
 
@@ -120,13 +106,14 @@ set(WINDOW_HEADERS
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Window/Platforms/Mac/MacMenuBar.hpp
+
 		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp
 		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp
 	>
 )
 
 set(APPLICATION_INTERFACES
-	src/interface/Core/Application/I_Application.hpp
 )
 
 set(LAYERS_INTERFACES
@@ -140,7 +127,7 @@ set(HUB_INTERFACES
 	src/interface/Core/Hub/Events/I_ApplicationEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_KeyboardEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_MouseEventHubDispatcher.hpp
-	src/interface/Core/Hub/Events/I_RenderContextEventHubDispatcher.hpp
+	src/interface/Core/Hub/Events/I_RenderEventHubDispatcher.hpp
 	src/interface/Core/Hub/Events/I_WindowEventHubDispatcher.hpp
 )
 
@@ -153,8 +140,6 @@ set(RENDER_INTERFACES
 	# Command
 	src/interface/Core/Render/Command/I_CommandEncoder.hpp
 
-	# Context
-	src/interface/Core/Render/Context/I_Context.hpp
 
 	# Device
 	src/interface/Core/Render/Device/I_GraphicDevice.hpp
@@ -192,13 +177,6 @@ set(WINDOW_INTERFACES
 
 set(APPLICATION_SOURCES
 	src/source/Core/Application/Application.cpp
-	src/source/Core/Application/ApplicationImpl.cpp
-
-	src/source/Core/Application/Platforms/Common/Glfw/GlfwApplication.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/source/Core/Application/Platforms/Mac/Cocoa/CocoaApplication.cpp
-	>
 )
 
 set(INPUT_SOURCES
@@ -244,14 +222,6 @@ set(RENDER_SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.cpp
-	>
-
-
-	# Context
-	src/source/Core/Render/Context/Platforms/Common/OpenGl/OpenGlContext.cpp
-
-	$<$<PLATFORM_ID:Darwin>:
-		src/source/Core/Render/Context/Platforms/Mac/Metal/MetalContext.cpp
 	>
 
 
@@ -311,6 +281,8 @@ set(WINDOW_SOURCES
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Window/Platforms/Mac/MacMenuBar.cpp
+
 		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.cpp
 		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.cpp
 	>

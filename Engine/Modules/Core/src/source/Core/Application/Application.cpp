@@ -267,7 +267,7 @@ void Application::RemoveImGuiLayer() {
 
 void Application::_SubscribeToEventHubDispatcher() {
 	auto& windowEventHub = _dispatcher->GetWindowEventHub();
-	auto& [onChangeVSyncDispatcher] = _dispatcher->GetRenderContextEventHub();
+	auto& [onChangeVSyncDispatcher] = _dispatcher->GetRenderEventHub();
 
 	_eventHubHandlers[_WindowClose] = windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromConstMethod<Application, &Application::_OnWindowClose>(this)
@@ -283,7 +283,7 @@ void Application::_SubscribeToEventHubDispatcher() {
 void Application::_UnsubscribeFromEventHubDispatcher() {
 	_dispatcher->GetWindowEventHub().onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowClose]);
 	_dispatcher->GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowResize]);
-	_dispatcher->GetRenderContextEventHub().onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[_VSyncChange]);
+	_dispatcher->GetRenderEventHub().onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[_VSyncChange]);
 
 	_eventHubHandlers = {};
 }
@@ -457,7 +457,7 @@ void Application::SetVSync(const bool enabled) const {
 	// Announced rather than applied here: the run loop's pacing, and any layer showing the frame rate, hang off this
 	// channel. It is the one the render context used to fire, and it had no one left to fire it.
 	Events::VSyncEvent vsyncEvent{enabled};
-	_dispatcher->DispatchRenderContextChangeVSyncEvent(vsyncEvent);
+	_dispatcher->DispatchRenderChangeVSyncEvent(vsyncEvent);
 }
 
 void Application::_CreateRenderResources() {

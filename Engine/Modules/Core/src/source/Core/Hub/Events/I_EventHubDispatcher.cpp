@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
@@ -76,8 +76,8 @@ void I_EventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& wi
 	GetWindowEventHub().onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
 }
 
-void I_EventHubDispatcher::DispatchRenderContextChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) {
-	GetRenderContextEventHub().onChangeVSyncDispatcher.Dispatch(vSyncChangeEvent);
+void I_EventHubDispatcher::DispatchRenderChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) {
+	GetRenderEventHub().onChangeVSyncDispatcher.Dispatch(vSyncChangeEvent);
 }
 
 }

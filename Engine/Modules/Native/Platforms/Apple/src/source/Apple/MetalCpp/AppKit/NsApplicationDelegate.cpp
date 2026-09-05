@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-04-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-09-05
 //
 
 #include "Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp"
@@ -16,9 +16,12 @@
 
 namespace CE::Native {
 
+// Both launch notifications are optional to handle, and AppKit posts them either way. Asking whether anyone is
+// listening is the whole of it: this used to assert instead, which made "I only care about the terminate flag" - the
+// commonest reason to install a delegate at all - an error rather than a choice.
 void NsApplicationDelegate::applicationDidFinishLaunching(NS::Notification* notification) {
-	assert(_appDidFinishLaunchingDispatcher.IsBound() and "NsApplicationDelegate::applicationDidFinishLaunching: The delegate is not bound.");
-	_appDidFinishLaunchingDispatcher.Execute(notification);
+	if (_appDidFinishLaunchingDispatcher.IsBound())
+		_appDidFinishLaunchingDispatcher.Execute(notification);
 }
 
 void NsApplicationDelegate::applicationWillFinishLaunching(NS::Notification* notification) {

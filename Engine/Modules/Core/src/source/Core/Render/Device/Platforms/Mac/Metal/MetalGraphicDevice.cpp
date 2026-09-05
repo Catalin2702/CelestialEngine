@@ -134,13 +134,6 @@ MTL::CommandBuffer* MetalGraphicDevice::GetFrameCommandBuffer() {
 	return _nativeFrameCommandBuffer.get();
 }
 
-void MetalGraphicDevice::HoldFrameCommandBuffer(NS::SharedPtr<MTL::CommandBuffer> commandBuffer) {
-	if (_nativeFrameCommandBuffer)
-		_nativeFrameCommandBuffer->commit();
-
-	_nativeFrameCommandBuffer = std::move(commandBuffer);
-}
-
 NS::SharedPtr<MTL::CommandBuffer> MetalGraphicDevice::TakeFrameCommandBuffer() {
 	return std::move(_nativeFrameCommandBuffer);
 }

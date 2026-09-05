@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-05
 //
 
-// Deliberately not including CelestialEngine.hpp: it pulls in EntryPoint.hpp's int main(), which
-// calls CE::Core::CreateApplication - a function only the client application defines. Linking that
-// into CE_Engine.dll itself would leave it with an unresolved external. Define/DynamicLinker.hpp
-// (for CE_ENGINE_API) is all this translation unit actually needs.
+// Deliberately not including CelestialEngine.hpp: it pulls in EntryPoint.hpp's int main(), and a
+// library with a main() in it is not a library any more - every executable linking CE_Engine would
+// get a second entry point. Define/DynamicLinker.hpp (for CE_ENGINE_API) is all this translation
+// unit actually needs.
 #include <Define/DynamicLinker.hpp>
 
 namespace CE {

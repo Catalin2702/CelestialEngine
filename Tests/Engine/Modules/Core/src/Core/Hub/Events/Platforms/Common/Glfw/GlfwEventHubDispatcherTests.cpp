@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
@@ -340,14 +340,14 @@ TEST_F(GlfwEventHubDispatcherTest, ApplicationCallbacks_AreRoutedToTheirOwnChann
 /**
  * @brief Test that a VSync change becomes a VSyncEvent carrying the new state
  */
-TEST_F(GlfwEventHubDispatcherTest, ReceiveContextChangeVSyncEvent_ProducesVSyncEvent) {
+TEST_F(GlfwEventHubDispatcherTest, ReceiveRenderChangeVSyncEvent_ProducesVSyncEvent) {
 	HubSubscriber<Events::VSyncEvent> subscriber;
-	_hub.renderContextEventHub.onChangeVSyncDispatcher.Subscribe(
+	_hub.renderEventHub.onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromMethod<HubSubscriber<Events::VSyncEvent>,
 			&HubSubscriber<Events::VSyncEvent>::OnEvent>(&subscriber)
 	);
 
-	_hub.ReceiveContextChangeVSyncEvent(true);
+	_hub.ReceiveRenderChangeVSyncEvent(true);
 
 	ASSERT_EQ(subscriber.calls, 1);
 	EXPECT_TRUE(subscriber.Last().GetState());

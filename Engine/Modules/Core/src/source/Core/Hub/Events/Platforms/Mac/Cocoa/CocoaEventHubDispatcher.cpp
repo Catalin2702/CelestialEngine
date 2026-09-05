@@ -24,9 +24,9 @@ static std::pair<f32, f32> MouseLocationTopLeft(const CocoaWindow* window, const
 	if (not (window and window->GetWindow())) [[unlikely]]
 		return {0.0f, 0.0f};
 
-	// The content view, not the window's own MTK::View member: they are the same object on this path, but the legacy
-	// CocoaApplication installs the render context's view instead, and what input is delivered to is whatever is
-	// actually installed.
+	// The content view, not the window's own MTK::View member. They are the same object today, and asking AppKit is
+	// still the right question: what input is delivered to is whatever is actually installed as the content view, not
+	// whatever this class happens to hold.
 	const auto view = window->GetWindow()->contentView();
 	if (not view) [[unlikely]]
 		return {0.0f, 0.0f};
@@ -51,8 +51,8 @@ void CocoaEventHubDispatcher::SetSources(CocoaWindow* window) {
 	_window = window;
 }
 
-void CocoaEventHubDispatcher::DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent) {
-	renderContextEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
+void CocoaEventHubDispatcher::DispatchRenderResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent) {
+	renderEventHub.onResizeViewDispatcher.Dispatch(viewResizeEvent);
 }
 
 void CocoaEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const char* description) {
@@ -181,14 +181,14 @@ void CocoaEventHubDispatcher::ReceiveScrollWheelEvent(const NS::Event* event) {
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
+void CocoaEventHubDispatcher::ReceiveRenderChangeVSyncEvent(const bool state) {
 	Events::VSyncEvent VSyncChangeEvent{state};
-	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
+	DispatchRenderChangeVSyncEvent(VSyncChangeEvent);
 }
 
-void CocoaEventHubDispatcher::ReceiveContextResizeViewEvent(const f64 width, const f64 height) {
+void CocoaEventHubDispatcher::ReceiveRenderResizeViewEvent(const f64 width, const f64 height) {
 	Events::ViewResizeEvent viewResizeEvent{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
-	DispatchRenderContextResizeViewEvent(viewResizeEvent);
+	DispatchRenderResizeViewEvent(viewResizeEvent);
 }
 void CocoaEventHubDispatcher::ReceiveWindowWillCloseEvent(const NS::Notification*) {
 	Events::WindowCloseEvent windowCloseEvent{false};

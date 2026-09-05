@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -38,7 +38,7 @@ public:
 
 public:
 	// Declared explicitly rather than left implicit: the dispatchers are held by value inside movable owners
-	// (OpenGlContext, GlfwWindow, ...), and a move that is not noexcept would silently degrade into a copy inside
+	// (GlfwWindow, CocoaWindow, ...), and a move that is not noexcept would silently degrade into a copy inside
 	// std::vector and friends. Copies stay available - a dispatcher is just a delegate holder, cheap and trivially copyable.
 	UnicastDispatcher() = default;
 	UnicastDispatcher(const UnicastDispatcher&) = default;

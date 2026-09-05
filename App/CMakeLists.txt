@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-09-05
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -70,7 +70,7 @@ else ()
 
 	# GLSL is loaded and compiled at runtime, so the .glsl files are copied next to the executable
 	# as-is, mirroring the macOS bundle's Resources/Shaders/OpenGL layout (see the platform-specific
-	# relative path chosen in GlfwApplication.cpp).
+	# relative path chosen in Application.cpp).
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL"
 		COMMENT "Creating Resources/Shaders/OpenGL"

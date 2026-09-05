@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
@@ -23,7 +23,6 @@
 
 
 namespace CE::Core {
-	class OpenGlContext;
 	class GlfwWindow;
 	class GlfwEventHubDispatcher;
 }

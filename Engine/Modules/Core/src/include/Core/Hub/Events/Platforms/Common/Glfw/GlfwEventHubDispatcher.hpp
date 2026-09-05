@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #pragma once
 
-#ifndef CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
-#define CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
+#ifndef CE_CORE_HUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
+#define CE_CORE_HUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
@@ -88,11 +88,11 @@ public:
 	void ReceiveMouseWheelScrollEvent(f64 xOffset, f64 yOffset);
 #pragma endregion
 
-#pragma region ReceiveRenderContextEvent
+#pragma region ReceiveRenderEvent
 	/**
 	 * @brief Translates the raw context change v sync callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveContextChangeVSyncEvent(bool state);
+	void ReceiveRenderChangeVSyncEvent(bool state);
 #pragma endregion
 
 #pragma region ReceiveWindowEvent
@@ -130,17 +130,17 @@ public:
 	[[nodiscard]] WindowEventHub& GetWindowEventHub() override { return windowEventHub; }
 	[[nodiscard]] const WindowEventHub& GetWindowEventHub() const override { return windowEventHub; }
 
-	[[nodiscard]] RenderContextEventHub& GetRenderContextEventHub() override { return renderContextEventHub; }
-	[[nodiscard]] const RenderContextEventHub& GetRenderContextEventHub() const override { return renderContextEventHub; }
+	[[nodiscard]] RenderEventHub& GetRenderEventHub() override { return renderEventHub; }
+	[[nodiscard]] const RenderEventHub& GetRenderEventHub() const override { return renderEventHub; }
 
 public:
 	ApplicationEventHub applicationEventHub;
 	KeyboardEventHub keyboardEventHub;
 	MouseEventHub mouseEventHub;
 	WindowEventHub windowEventHub;
-	RenderContextEventHub renderContextEventHub;
+	RenderEventHub renderEventHub;
 };
 
 }
 
-#endif //CE_CORE_MAINHUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP
+#endif //CE_CORE_HUB_EVENTS_GLFWEVENTHUBDISPATCHER_HPP

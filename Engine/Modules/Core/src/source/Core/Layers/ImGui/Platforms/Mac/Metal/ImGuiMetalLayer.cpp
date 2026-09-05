@@ -81,7 +81,7 @@ void ImGuiMetalLayer::SubscribeToEventHub() {
 	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyReleased>(this));
 	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyTyped>(this));
 
-	_eventHubHandles[ViewResize] = _eventHub->get().renderContextEventHub.onResizeViewDispatcher.Subscribe(EventDelegate<Events::ViewResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnViewResized>(this));
+	_eventHubHandles[ViewResize] = _eventHub->get().renderEventHub.onResizeViewDispatcher.Subscribe(EventDelegate<Events::ViewResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnViewResized>(this));
 }
 
 void ImGuiMetalLayer::UnsubscribeFromEventHub() {
@@ -98,7 +98,7 @@ void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 	_eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
 	_eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardCharTyped]);
 
-	_eventHub->get().renderContextEventHub.onResizeViewDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
+	_eventHub->get().renderEventHub.onResizeViewDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
 
 	_eventHub = std::nullopt;
 	_eventHubHandles = {};

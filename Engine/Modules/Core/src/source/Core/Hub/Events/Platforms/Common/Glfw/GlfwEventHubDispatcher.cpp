@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
@@ -94,9 +94,9 @@ void GlfwEventHubDispatcher::ReceiveMouseWheelScrollEvent(const f64 xOffset, con
 	DispatchMouseWheelScrolledEvent(mouseWheelScrolledEvent);
 }
 
-void GlfwEventHubDispatcher::ReceiveContextChangeVSyncEvent(const bool state) {
+void GlfwEventHubDispatcher::ReceiveRenderChangeVSyncEvent(const bool state) {
 	Events::VSyncEvent VSyncChangeEvent{state};
-	DispatchRenderContextChangeVSyncEvent(VSyncChangeEvent);
+	DispatchRenderChangeVSyncEvent(VSyncChangeEvent);
 }
 
 void GlfwEventHubDispatcher::ReceiveWindowResizeEvent(const int width, const int height) {

@@ -50,31 +50,6 @@ namespace CE::Core {
 
 class CocoaEventHubDispatcher;
 
-class CocoaWindowEventHandler: public Native::NsWindowEventDispatcher {
-	struct CocoaWindowLifecycleEvents {
-		UnicastDispatcher<> cocoaWindowCreatedDispatcher;
-		UnicastDispatcher<> cocoaWindowInitializedDispatcher;
-		UnicastDispatcher<> cocoaWindowWillShutdownDispatcher;
-	};
-
-public:
-	/**
-	 * @brief Forwards the cocoa window created callback to the bound listener
-	 */
-	void DispatchCocoaWindowCreated() const;
-	/**
-	 * @brief Forwards the cocoa window initialized callback to the bound listener
-	 */
-	void DispatchCocoaWindowInitialized() const;
-	/**
-	 * @brief Forwards the cocoa window will shutdown callback to the bound listener
-	 */
-	void DispatchCocoaWindowWillShutdown() const;
-
-public:
-	CocoaWindowLifecycleEvents cocoaWindowStateEvents;
-};
-
 /**
  * @class CocoaWindow
  * @brief macOS-specific window implementation using Metal API and Cocoa
@@ -266,7 +241,10 @@ private:
 	void _Shutdown();
 
 public:
-	CocoaWindowEventHandler cocoaWindowEventDispatcher; ///< Dispatch the NS::Window and CocoaWindow events
+	/// The window's own AppKit delegate: close, focus and geometry notifications. It used to be a CocoaWindowEventHandler,
+	/// a subclass that added three "the window was created / initialised / is closing" channels; nothing ever bound to
+	/// them once CocoaApplication went, so the subclass had nothing left to add.
+	Native::NsWindowEventDispatcher cocoaWindowEventDispatcher;
 
 	/// Keyboard and mouse arrive through the view, because AppKit delivers them to the first responder and not to the
 	/// window. Held here, beside the window's own dispatcher, so both halves of a window's input have one owner.

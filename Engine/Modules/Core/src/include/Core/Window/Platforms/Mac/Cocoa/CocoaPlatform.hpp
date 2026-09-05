@@ -21,7 +21,6 @@
 
 namespace NS {
 	class Application;
-	class Notification;
 }
 
 namespace CE::Core {
@@ -93,19 +92,12 @@ public:
 public:
 	/**
 	 * @brief Gets the NSApplication singleton
-	 * @details Not on the interface: it is here for the Cocoa-only code that has to reach AppKit itself - the menu
-	 *			bar, and Quit, which has to stop the application and not only the loop.
+	 * @details Not on the interface: it is here for the Cocoa-only code that has to reach AppKit itself. Nothing does
+	 *			today - the two callers it was written for, the menu bar and a Quit that terminates the application
+	 *			rather than only stopping the loop, both went with CocoaApplication - so it is API surface waiting for
+	 *			the first of those to come back, not machinery in use.
 	 */
 	[[nodiscard]] NS::Application* GetApplication() const { return _application; }
-
-private:
-	/**
-	 * @brief Notes that AppKit has finished launching
-	 * @details Informational only. The notification arrives on the first pump, long after Prepare() has already told
-	 *			everyone the backend is ready - which is why the readiness is announced there and not here. Bound all
-	 *			the same because NsApplicationDelegate asserts on an unbound dispatcher.
-	 */
-	void _OnDidFinishLaunching(NS::Notification* notification) const;
 
 private:
 	/// Borrowed, not owned: NSApplication is a singleton the process itself keeps alive, and releasing it would be

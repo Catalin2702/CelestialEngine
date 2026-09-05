@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-05
 //
 
 #include <Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp>
@@ -153,11 +153,11 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveWindowErrorEvent_ProducesImmutableErr
 /**
  * @brief Test that a VSync change becomes a VSyncEvent carrying the new state
  */
-TEST_F(CocoaEventHubDispatcherTest, ReceiveContextChangeVSyncEvent_ProducesVSyncEvent) {
+TEST_F(CocoaEventHubDispatcherTest, ReceiveRenderChangeVSyncEvent_ProducesVSyncEvent) {
 	HubSubscriber<Events::VSyncEvent> subscriber;
-	SubscribeTo(_hub.renderContextEventHub.onChangeVSyncDispatcher, subscriber);
+	SubscribeTo(_hub.renderEventHub.onChangeVSyncDispatcher, subscriber);
 
-	_hub.ReceiveContextChangeVSyncEvent(false);
+	_hub.ReceiveRenderChangeVSyncEvent(false);
 
 	ASSERT_EQ(subscriber.calls, 1);
 	EXPECT_FALSE(subscriber.Last().GetState());
@@ -167,11 +167,11 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveContextChangeVSyncEvent_ProducesVSync
  * @brief Test that a drawable-size change becomes a ViewResizeEvent
  * @details The Metal drawable size is reported in floating point; the event exposes it as integer pixels.
  */
-TEST_F(CocoaEventHubDispatcherTest, ReceiveContextResizeViewEvent_ProducesViewResizeEvent) {
+TEST_F(CocoaEventHubDispatcherTest, ReceiveRenderResizeViewEvent_ProducesViewResizeEvent) {
 	HubSubscriber<Events::ViewResizeEvent> subscriber;
-	SubscribeTo(_hub.renderContextEventHub.onResizeViewDispatcher, subscriber);
+	SubscribeTo(_hub.renderEventHub.onResizeViewDispatcher, subscriber);
 
-	_hub.ReceiveContextResizeViewEvent(1280.0, 720.0);
+	_hub.ReceiveRenderResizeViewEvent(1280.0, 720.0);
 
 	ASSERT_EQ(subscriber.calls, 1);
 	EXPECT_EQ(subscriber.Last().GetWidth(), 1280u);
@@ -186,10 +186,10 @@ TEST_F(CocoaEventHubDispatcherTest, ReceiveContextResizeViewEvent_ProducesViewRe
 TEST_F(CocoaEventHubDispatcherTest, ViewResizeAndWindowResize_AreDistinctChannels) {
 	HubSubscriber<Events::ViewResizeEvent> viewSubscriber;
 	HubSubscriber<Events::WindowResizeEvent> windowSubscriber;
-	SubscribeTo(_hub.renderContextEventHub.onResizeViewDispatcher, viewSubscriber);
+	SubscribeTo(_hub.renderEventHub.onResizeViewDispatcher, viewSubscriber);
 	SubscribeTo(_hub.windowEventHub.onResizeMulticastDispatcher, windowSubscriber);
 
-	_hub.ReceiveContextResizeViewEvent(800.0, 600.0);
+	_hub.ReceiveRenderResizeViewEvent(800.0, 600.0);
 
 	EXPECT_EQ(viewSubscriber.calls, 1);
 	EXPECT_EQ(windowSubscriber.calls, 0);
@@ -266,7 +266,7 @@ TEST_F(CocoaEventHubDispatcherTest, Dispatch_FansOutTheSameEventToEverySubscribe
 TEST_F(CocoaEventHubDispatcherTest, Receive_WithoutSubscribers_IsNoOp) {
 	EXPECT_NO_THROW(_hub.ReceiveWindowResizeEvent(100, 100));
 	EXPECT_NO_THROW(_hub.ReceiveWindowWillCloseEvent(nullptr));
-	EXPECT_NO_THROW(_hub.ReceiveContextChangeVSyncEvent(true));
+	EXPECT_NO_THROW(_hub.ReceiveRenderChangeVSyncEvent(true));
 }
 
 /**

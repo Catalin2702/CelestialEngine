@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-05
 //
 
 #pragma once
 
-#ifndef CE_CORE_MAINHUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP
-#define CE_CORE_MAINHUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP
+#ifndef CE_CORE_HUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP
+#define CE_CORE_HUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Events/MouseEvent.hpp"
@@ -54,4 +54,4 @@ public:
 
 }
 
-#endif //CE_CORE_MAINHUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP
+#endif //CE_CORE_HUB_EVENTS_I_MOUSEEVENTHUBDISPATCHER_HPP

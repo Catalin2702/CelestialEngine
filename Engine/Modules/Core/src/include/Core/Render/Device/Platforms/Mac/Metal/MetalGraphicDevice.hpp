@@ -88,8 +88,8 @@ public:
 	 *			Metal-only: the portable version of it is a RenderPassDescriptor carrying an I_Texture per attachment,
 	 *			which is what this collapses into the day the engine has a texture type.
 	 *
-	 *			The drawable is borrowed for the frame, not retained: it belongs to the display-link update or the
-	 *			layer's autorelease pool, exactly as MetalContext::AcquireDrawable already documents.
+	 *			The drawable is borrowed for the frame, not retained: it belongs to the layer's autorelease pool, and
+	 *			the swapchain is what holds a reference to it for the length of the frame.
 	 */
 	void SetFrameTarget(CA::MetalDrawable* drawable, MTL::Texture* depthTexture);
 
@@ -105,23 +105,13 @@ public:
 	[[nodiscard]] MTL::CommandBuffer* GetFrameCommandBuffer();
 
 	/**
-	 * @brief Takes over a command buffer that has finished encoding into the frame's target
-	 * @param commandBuffer The buffer, encoded but not committed
-	 * @details The frame's passes hand their buffers here instead of committing them, and the swapchain commits the
-	 *			last one together with the present. That ordering is not a tidiness: presentDrawable shows the drawable
-	 *			when *its own* command buffer is scheduled, and a buffer holding nothing but a present is scheduled at
-	 *			once - possibly while the pass that draws the frame is still running on the GPU. Presenting from the
-	 *			buffer that did the drawing is the only arrangement in which that cannot happen.
-	 *
-	 *			A buffer already held is committed on the spot: it is no longer the last one, so it no longer carries
-	 *			the present, and it must still reach the GPU before the one replacing it.
-	 */
-	void HoldFrameCommandBuffer(NS::SharedPtr<MTL::CommandBuffer> commandBuffer);
-
-	/**
-	 * @brief Hands the held command buffer over, leaving none behind
-	 * @return NS::SharedPtr<MTL::CommandBuffer> The frame's last buffer, or null when nothing was encoded
-	 * @details The caller owns it, and owes it a commit - it is the one that presents.
+	 * @brief Hands the frame's command buffer over, leaving none behind
+	 * @return NS::SharedPtr<MTL::CommandBuffer> The frame's buffer, or null when nothing was encoded
+	 * @details The caller owns it, and owes it a commit - it is the one that presents. That ordering is not a
+	 *			tidiness: presentDrawable shows the drawable when *its own* command buffer is scheduled, and a buffer
+	 *			holding nothing but a present is scheduled at once - possibly while the pass that draws the frame is
+	 *			still running on the GPU. Presenting from the buffer that did the drawing is the only arrangement in
+	 *			which that cannot happen.
 	 */
 	[[nodiscard]] NS::SharedPtr<MTL::CommandBuffer> TakeFrameCommandBuffer();
 

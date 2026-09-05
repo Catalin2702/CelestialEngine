@@ -9,8 +9,8 @@
 
 #pragma once
 
-#ifndef CE_CORE_MAINHUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
-#define CE_CORE_MAINHUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
+#ifndef CE_CORE_HUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
+#define CE_CORE_HUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
@@ -24,13 +24,13 @@ namespace CE::Core {
 class CocoaWindow;
 
 /**
- * @struct MetalRenderContextEventHub
- * @brief The render context channels, plus the one only the Metal path can raise
+ * @struct MetalRenderEventHub
+ * @brief The shared rendering channels, plus the one only the Metal path can raise
  * @details MTK::View reports a drawable resize of its own, which has no OpenGL equivalent - the GL backend learns
  *			about a resize from the window. So it is added here instead of in the shared struct, and a subscriber that
  *			wants it holds the concrete hub rather than the interface.
  */
-struct MetalRenderContextEventHub: RenderContextEventHub {
+struct MetalRenderEventHub: RenderEventHub {
 	MulticastDispatcher<Events::ViewResizeEvent&> onResizeViewDispatcher;
 };
 
@@ -60,8 +60,8 @@ public:
 	 * @brief Sets the window whose coordinate system native mouse positions are translated out of
 	 * @param window Cocoa window input is reported against (non-owning; it must outlive this hub)
 	 * @details One source, where there used to be two. The view was asked of the render context because the context
-	 *			owned it; now the window does, and it is the window's own content view that input is actually
-	 *			delivered to - so asking the window for it is both shorter and harder to get wrong.
+	 *			owned it; the context is gone, the window owns the view, and it is the window's own content view that
+	 *			input is actually delivered to - so asking the window for it is both shorter and harder to get wrong.
 	 */
 	void SetSources(CocoaWindow* window);
 
@@ -71,7 +71,7 @@ public:
 	 * @brief Multicasts the drawable resize the MetalKit view raises to every subscriber
 	 * @details The one hook with no shared counterpart: OpenGL learns about a resize from the window instead.
 	 */
-	void DispatchRenderContextResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent);
+	void DispatchRenderResizeViewEvent(Events::ViewResizeEvent& viewResizeEvent);
 
 public:
 #pragma region ReceiveApplicationEvent
@@ -136,15 +136,15 @@ public:
 	void ReceiveScrollWheelEvent(const NS::Event* event);
 #pragma endregion
 
-#pragma region ReceiveRenderContextEvent
+#pragma region ReceiveRenderEvent
 	/**
 	 * @brief Translates the raw context change v sync callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveContextChangeVSyncEvent(bool state);
+	void ReceiveRenderChangeVSyncEvent(bool state);
 	/**
 	 * @brief Translates the raw context resize view callback into the engine event and dispatches it through the hub
 	 */
-	void ReceiveContextResizeViewEvent(f64 width, f64 height);
+	void ReceiveRenderResizeViewEvent(f64 width, f64 height);
 #pragma endregion
 
 #pragma region ReceiveWindowEvent
@@ -186,15 +186,15 @@ public:
 	[[nodiscard]] const WindowEventHub& GetWindowEventHub() const override { return windowEventHub; }
 
 	// Hands out the base view of the extended struct: onResizeViewDispatcher is reachable only from this concrete type.
-	[[nodiscard]] RenderContextEventHub& GetRenderContextEventHub() override { return renderContextEventHub; }
-	[[nodiscard]] const RenderContextEventHub& GetRenderContextEventHub() const override { return renderContextEventHub; }
+	[[nodiscard]] RenderEventHub& GetRenderEventHub() override { return renderEventHub; }
+	[[nodiscard]] const RenderEventHub& GetRenderEventHub() const override { return renderEventHub; }
 
 public:
 	ApplicationEventHub applicationEventHub;
 	KeyboardEventHub keyboardEventHub;
 	MouseEventHub mouseEventHub;
 	WindowEventHub windowEventHub;
-	MetalRenderContextEventHub renderContextEventHub;
+	MetalRenderEventHub renderEventHub;
 
 private:
 	CocoaWindow* _window = nullptr;   ///< Non-owning; used to convert native mouse coordinates
@@ -202,4 +202,4 @@ private:
 
 }
 
-#endif //CE_CORE_MAINHUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
+#endif //CE_CORE_HUB_EVENTS_COCOAEVENTHUBDISPATCHER_HPP
