@@ -93,10 +93,39 @@ std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const Ren
 		return nullptr;
 	}
 
-	// Render-to-texture lands here once there is a texture type: for now every attachment is the default framebuffer,
-	// which is the window's back buffer.
-	assert(descriptor.colors[0].target == nullptr && descriptor.depth.target == nullptr && "OpenGlGraphicDevice::BeginRenderPass: Rendering to a texture is not supported yet.");
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (not (descriptor.colors[0].target != nullptr or descriptor.depth.target != nullptr)) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	else {
+		// One framebuffer object, re-attached per pass, rather than one per target combination. Attaching is cheap and
+		// a cache keyed on the attachments would have to be invalidated on every resize - which, since a resize
+		// replaces the textures, is exactly when it would be most likely to hand back a dangling id.
+		if (_frameBuffer == 0)
+			glGenFramebuffers(1, &_frameBuffer);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+
+		std::array<GLenum, Types::MAX_COLOR_ATTACHMENTS> drawBuffers{};
+		for (u32 i = 0; i < descriptor.colorCount; ++i) {
+			const auto* const target_i = descriptor.colors[i].target;
+			const auto nativeTexture = target_i ? static_cast<const OpenGlTexture*>(target_i)->GetTexture() : 0;
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, nativeTexture, 0);
+			drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+		}
+		glDrawBuffers(static_cast<GLsizei>(descriptor.colorCount), drawBuffers.data());
+
+		const auto* const depthTarget = descriptor.depth.enabled ? descriptor.depth.target : nullptr;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTarget ? static_cast<const OpenGlTexture*>(depthTarget)->GetTexture() : 0, 0);
+
+		// Checked every pass, not once: the attachments change with every resize, and an incomplete framebuffer draws
+		// nothing while reporting no GL error at all.
+		if (const auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER); status != GL_FRAMEBUFFER_COMPLETE) [[unlikely]] {
+			CE_CORE_WARN("OpenGlGraphicDevice::BeginRenderPass: The framebuffer is incomplete (0x{:}); the pass is skipped.", status);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			return nullptr;
+		}
+	}
 
 	ApplyLoadActions(descriptor);
 

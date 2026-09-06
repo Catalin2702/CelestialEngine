@@ -30,6 +30,9 @@ public:
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override;
 
 	[[nodiscard]] std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) override;
+
+private:
+	u32 _frameBuffer = 0;
 };
 
 }
