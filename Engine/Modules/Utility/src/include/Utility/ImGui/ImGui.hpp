@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -15,6 +15,8 @@
 #include "Define/DynamicLinker.hpp"
 
 #include <imgui.h>
+
+#include <format>
 
 
 namespace CE::Utility {
@@ -44,6 +46,13 @@ CE_UTILITY_API ImGuiKey GlfwKeyToImGuiKey(int key);
  *			pointer handed to a live context can never dangle.
  */
 CE_UTILITY_API void SetImGuiIniFile(ImGuiIO& io, const char* fileName = "imgui.ini");
+
+template<typename... Args>
+void ImguiText(const std::format_string<Args...> fmt, Args&&... args) {
+	std::array<char, 256> buffer{};
+	const auto result = std::format_to_n(buffer.data(), buffer.size(), fmt, std::forward<Args>(args)...);
+	::ImGui::TextUnformatted(buffer.data(), result.out);
+}
 
 }
 

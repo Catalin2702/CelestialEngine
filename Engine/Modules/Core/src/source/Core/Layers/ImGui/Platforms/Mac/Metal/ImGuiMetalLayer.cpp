@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -17,8 +17,8 @@
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
-#include "Tools/Tools.hpp"
 #include "Types/Build/Build.hpp"
+#include "Utility/Config/Config.hpp"
 #include "Utility/ImGui/ImGui.hpp"
 
 #include <Metal/Metal.hpp>
@@ -44,14 +44,17 @@ void ImGuiMetalLayer::OnRender() const {
 	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
+	const auto& windowProps = Utility::Config::GetWindowProps();
+
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	ImGui::Text("Hello from ImGui with Metal and Cocoa on macOS!");
-	ImGui::Text("Build type: %s", Types::GetCurrentBuildTypeString().c_str());
-	ImGui::Text("Application average: %.5f FPS", ImGui::GetIO().Framerate);
-	ImGui::Text("Application average delta time: %.5f s", _deltaTime);
+	Utility::ImguiText("W-API: {}", windowProps.windowApi);
+	Utility::ImguiText("G-API: {}", windowProps.graphicsApi);
+	Utility::ImguiText("Build: {}", Types::GetCurrentBuildTypeString().c_str());
+	Utility::ImguiText("FPS: {:.1f}", ImGui::GetIO().Framerate);
+	Utility::ImguiText("Delta: {:.5f} s", _deltaTime);
 	ImGui::End();
 
 	static bool show = true;
