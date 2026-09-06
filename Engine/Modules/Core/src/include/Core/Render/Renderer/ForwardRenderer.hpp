@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -26,6 +26,13 @@
 namespace CE::Core {
 
 class I_CommandEncoder;
+
+class I_VertexBuffer;
+class I_IndexBuffer;
+
+class I_PipelineState;
+
+class I_Texture;
 
 /**
  * @class ForwardRenderer
@@ -79,6 +86,46 @@ public:
 
 	[[nodiscard]] const RenderStats& GetRenderStats() const override { return _frameStats; }
 
+	/**
+	 * @brief Gets the texture the scene and the overlay are drawn into
+	 * @return const I_Texture* The scene colour target, or null before the first frame has sized it
+	 * @details Not the back buffer: nothing draws into the drawable except the composite pass this renderer runs at
+	 *			EndFrame. Anything that wants to add to the frame - the ImGui overlay does - opens its pass on this.
+	 */
+	[[nodiscard]] const I_Texture* GetSceneColorTarget() const override { return _sceneColor.get(); }
+
+	/**
+	 * @brief Gets the colour format a pipeline drawing into the scene must declare
+	 * @details Asked rather than taken from the swapchain, which is what every pipeline used to do: the two agree
+	 *			today and stop agreeing the moment the scene target becomes RGBA16Float for HDR.
+	 */
+	[[nodiscard]] Types::PixelFormat GetSceneColorFormat() const override { return _sceneColorFormat; }
+
+private:
+	/**
+	 * @brief Creates the scene colour and depth textures, or replaces them when the size changed
+	 * @details Called once per frame from BeginFrame, and a no-op on all but the first frame after a resize. The old
+	 *			textures are released only once the new pair exists, so a failed allocation leaves the renderer with a
+	 *			working target rather than none.
+	 */
+	void _EnsureSceneTarget(u32 width, u32 height);
+
+	/**
+	 * @brief Draws the scene target into the swapchain's back buffer
+	 * @details The one pass that touches the drawable. It writes every pixel, loads nothing and tests no depth, so
+	 *			the back buffer goes from whatever it held to the finished frame in a single pass - which is the whole
+	 *			reason the scene is rendered offscreen in the first place.
+	 */
+	void _Composite();
+
+	/**
+	 * @brief Builds the composite pipeline and its quad, once
+	 * @details Deferred to the first composite rather than done in the constructor: it needs the swapchain's colour
+	 *			format, and on OpenGL it loads GLSL off disk, neither of which belongs in a constructor that runs
+	 *			before the window is on screen.
+	 */
+	void _EnsureCompositeResources();
+
 private:
 	std::unique_ptr<I_GraphicDevice> _graphicDevice;
 	std::unique_ptr<I_Swapchain> _swapchain;
@@ -92,6 +139,17 @@ private:
 	RenderStats _frameStats; ///< Accumulating: what the frame in flight has cost so far
 
 	bool _inFrame = false;
+
+	std::shared_ptr<I_Texture> _sceneColor;
+	std::shared_ptr<I_Texture> _sceneDepth;
+
+	/// Fixed at construction so a pipeline can be built before the first frame sizes the target.
+	Types::PixelFormat _sceneColorFormat = Types::PixelFormat::None;
+	Types::PixelFormat _sceneDepthColor = Types::PixelFormat::Depth32Float;
+
+	std::shared_ptr<I_PipelineState> _compositePipeline;
+	std::shared_ptr<I_VertexBuffer> _compositeVertexBuffer;
+	std::shared_ptr<I_IndexBuffer> _compositeIndexBuffer;
 };
 
 }

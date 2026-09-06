@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -23,6 +23,7 @@ namespace CE::Core {
 
 class I_GraphicDevice;
 class I_Swapchain;
+class I_Texture;
 class I_Window;
 
 struct DrawCommand;
@@ -120,6 +121,10 @@ public:
 	[[nodiscard]] virtual const RenderStats& GetRenderStats() const = 0;
 
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
+
+	[[nodiscard]] virtual const I_Texture* GetSceneColorTarget() const = 0;
+
+	[[nodiscard]] virtual Types::PixelFormat GetSceneColorFormat() const = 0;
 };
 
 }

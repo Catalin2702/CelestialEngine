@@ -136,8 +136,8 @@ void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
 	});
 }
 
-void MetalCommandEncoder::SetTexture(const u32 slot, const I_Texture& texture) {
-	assert(texture.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetTexture: The texture is not Metal based!");
+void MetalCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& texture) {
+	assert(texture.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetFragmentTexture: The texture is not Metal based!");
 
 	_nativeCommandEncoder->setFragmentTexture(static_cast<const MetalTexture&>(texture).GetTexture(), slot);
 }

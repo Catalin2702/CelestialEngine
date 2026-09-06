@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -12,15 +12,23 @@
 #include "Core/Render/Command/RenderPassDescriptor.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
+#include "Core/Render/Pipeline/PipelineDescriptor.hpp"
 #include "Core/Render/Renderer/ForwardRenderer.hpp"
 #include "Core/Render/Renderer/DrawCommand.hpp"
+#include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
+#include "Core/Render/Texture/I_Texture.hpp"
 #include "Tools/Tools.hpp"
+#include "Utility/Utility.hpp"
 
 #include <cassert>
 
 
 namespace CE::Core {
+
+namespace {
+constexpr auto OpenGlShadersDirectory = CE_PLATFORM_MACOS ? "../Resources/Shaders/OpenGL/" : "Resources/Shaders/OpenGL/";
+}
 
 ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain):
 	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain))
@@ -28,6 +36,10 @@ ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice,
 	assert(_graphicDevice != nullptr && "ForwardRenderer::ForwardRenderer: The renderer was given no graphic device.");
 	assert(_swapchain != nullptr && "ForwardRenderer::ForwardRenderer: The renderer was given no swapchain.");
 	assert(_graphicDevice->GetGraphicApi() == _swapchain->GetGraphicApi() && "ForwardRenderer::ForwardRenderer: The device and the swapchain were created for different graphics APIs.");
+
+	// The scene is rendered at the swapchain's own format, so the composite is a straight copy and every pipeline
+	// written against the back buffer keeps working unchanged. It is the format to change for HDR, and the only one.
+	_sceneColorFormat = _swapchain->GetColorFormat();
 }
 
 ForwardRenderer::~ForwardRenderer() {
@@ -44,6 +56,12 @@ bool ForwardRenderer::BeginFrame() {
 	if (not _swapchain->AcquireNextTarget())
 		return false;
 
+	// After the acquire, because that is what refreshes the swapchain's idea of its own size after a resize.
+	const auto [width, height] = _swapchain->GetSize();
+	_EnsureSceneTarget(width, height);
+	if (not _sceneColor) [[unlikely]]
+		return false;
+
 	_frameStats.Reset();
 
 	_inFrame = true;
@@ -57,6 +75,10 @@ void ForwardRenderer::EndFrame() {
 	if (not _inFrame)
 		return;
 
+	// The scene pass and the overlay's are both closed before the drawable is touched at all.
+	EndPass();
+
+	_Composite();
 	EndPass();
 
 	_swapchain->Present();
@@ -66,20 +88,25 @@ void ForwardRenderer::EndFrame() {
 }
 
 void ForwardRenderer::BeginPass() {
+	using namespace Types;
+
 	// Backing pixels, which is what a render area and a viewport are measured in - not the window's screen coordinates.
 	const auto [width, height] = _swapchain->GetSize();
 
 	RenderPassDescriptor descriptor{};
 	descriptor.width = width;
 	descriptor.height = height;
-	auto& color0 = descriptor.colors[0];
-	color0.loadAction = Types::LoadAction::Clear;
-	color0.storeAction = Types::StoreAction::Store;
-	color0.clearColor = _clearColor;
 
+	auto& [target_0, loadAction_0, storeAction_0, clearColor_0] = descriptor.colors[0];
+	target_0 = _sceneColor.get();
+	loadAction_0 = LoadAction::Clear;
+	storeAction_0 = StoreAction::Store;
+	clearColor_0 = _clearColor;
+
+	descriptor.depth.target = _sceneDepth.get();
 	descriptor.depth.enabled = true;
-	descriptor.depth.loadAction = Types::LoadAction::Clear;
-	descriptor.depth.storeAction = Types::StoreAction::DontCare;
+	descriptor.depth.loadAction = LoadAction::Clear;
+	descriptor.depth.storeAction = StoreAction::DontCare;
 
 	BeginPass(descriptor);
 }
@@ -165,6 +192,158 @@ void ForwardRenderer::SetVSync(const bool enabled) {
 
 void ForwardRenderer::SetClearColor(const glm::vec4 color) {
 	_clearColor = color;
+}
+
+void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
+	using namespace Types;
+
+	if (width == 0 or height == 0)
+		return;
+
+	if (_sceneColor and _sceneColor->GetWidth() == width and _sceneColor->GetHeight() == height)
+		return;
+
+	const TextureDescriptor colorDescriptor{
+		.width = width,
+		.height = height,
+		.format = _sceneColorFormat,
+		.usage = TextureUsage::RenderTarget | TextureUsage::ShaderRead,
+		.debugName = "SceneColor"
+	};
+
+	const TextureDescriptor depthDescriptor {
+		.width = width,
+		.height = height,
+		.format = _sceneDepthColor,
+		// Render target only: nothing reads the depth buffer back, and saying so is what lets a tile-based GPU keep it in
+		// tile memory for the whole pass and never write a byte of it to RAM.
+		.usage = TextureUsage::RenderTarget,
+		.debugName = "SceneDepth"
+	};
+
+	try {
+		auto color = _graphicDevice->CreateTexture(colorDescriptor);
+		auto depth = _graphicDevice->CreateTexture(depthDescriptor);
+
+		// Assigned only once both exist: a half-replaced pair would leave the next pass drawing colour at the new size
+		// against depth at the old one, which every backend rejects.
+		_sceneColor = std::move(color);
+		_sceneDepth = std::move(depth);
+	}
+	catch (const std::exception& exception) {
+		CE_CORE_ERROR("ForwardRenderer::_EnsureSceneTarget: Could not size the scene target to {}x{}: {}", width, height, exception.what());
+	}
+}
+
+void ForwardRenderer::_Composite() {
+	using namespace Types;
+
+	if (not _sceneColor) [[unlikely]]
+		return;
+
+	_EnsureCompositeResources();
+	if (not _compositePipeline or not _compositeVertexBuffer or not _compositeIndexBuffer) [[unlikely]] {
+		CE_CORE_WARN("ForwardRenderer::_Composite: The composite pipeline is missing; the frame is not presented.");
+		return;
+	}
+
+	const auto [width, height] = _swapchain->GetSize();
+
+	RenderPassDescriptor descriptor{};
+	descriptor.width = width;
+	descriptor.height = height;
+
+	auto& color_0 = descriptor.colors[0];
+
+	// Null target: this is the pass that writes the swapchain, and the only one.
+	color_0.target = nullptr;
+
+	// DontCare, not Load and not Clear: the quad covers every pixel, so reading the previous contents into tile
+	// memory would be bandwidth spent on something about to be overwritten. Clear would cost a write for the same
+	// reason.
+	color_0.loadAction = LoadAction::DontCare;
+	color_0.storeAction = StoreAction::Store;
+
+	// No depth at all. A full-screen quad has nothing to test against, and asking for one would make the swapchain
+	// own a depth buffer again for no reason.
+	descriptor.depth.enabled = false;
+
+	BeginPass(descriptor);
+	if (not _commandEncoder) [[unlikely]]
+		return;
+
+	_commandEncoder->SetPipelineState(*_compositePipeline);
+	_commandEncoder->SetVertexBuffer(*_compositeVertexBuffer);
+	_commandEncoder->SetIndexBuffer(*_compositeIndexBuffer);
+
+	// After the pipeline: on OpenGL the sampler uniform lives in the program, and there is no current program before.
+	_commandEncoder->SetFragmentTexture(0, *_sceneColor);
+
+	_commandEncoder->DrawIndexed(6, 0, 0);
+
+	// Deliberately not counted in the frame stats: the composite is the renderer's own cost, not the scene's, and
+	// folding it in would make every frame report one draw call more than the application issued.
+}
+
+void ForwardRenderer::_EnsureCompositeResources() {
+	using namespace Types;
+	if (_compositePipeline)
+		return;
+
+	// Clip-space quad, two triangles. The colour column is there only so the layout matches the scene's, which is
+	// what lets the composite shaders share VertexInput and the engine share one vertex descriptor.
+	constexpr std::array vertices{
+		-1.0_f32, -1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
+		 1.0_f32, -1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
+		 1.0_f32,  1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
+		-1.0_f32,  1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
+	};
+
+	constexpr std::array indices{0_u32, 1_u32, 2_u32, 2_u32, 3_u32, 0_u32};
+
+	const BufferLayout vertexLayout {
+		{ShaderDataType::Float3, "inputPosition"},
+		{ShaderDataType::Float4, "inputColor"}
+	};
+
+	_compositeVertexBuffer = _graphicDevice->CreateVertexBuffer(vertices, vertexLayout);
+	_compositeIndexBuffer = _graphicDevice->CreateIndexBuffer(indices);
+
+	const auto isOpenGl = _graphicDevice->GetGraphicApi() == GraphicsApi::OpenGL;
+
+	const auto vertexSource = isOpenGl ? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "CompositeVertex.glsl").GetContentString() : std::string{};
+	const auto fragmentSource = isOpenGl ? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "CompositeFragment.glsl").GetContentString() : std::string{};
+
+	const PipelineDescriptor pipelineDescriptor{
+		.vertexShader = _graphicDevice->CreateShaderModule({
+			.stage = ShaderType::Vertex,
+			.source = vertexSource,
+			.entryPoint = isOpenGl ? "main": "compositeVertexMain",
+			.debugName = "CompositeVertex"
+		}),
+		.fragmentShader = _graphicDevice->CreateShaderModule({
+			.stage = ShaderType::Fragment,
+			.source = fragmentSource,
+			.entryPoint = isOpenGl ? "main": "compositeFragmentMain",
+			.debugName = "CompositeFragment"
+		}),
+		.vertexLayout = vertexLayout,
+		.cullMode = CullMode::None,
+		.depthState = {
+			.testEnabled = false,
+			.writeEnabled = false
+		},
+		.blendState = {
+			.enabled = false,
+		},
+		.formats = {
+			.colors = {_swapchain->GetColorFormat()},
+			.colorCount = 1,
+			.depth = PixelFormat::None
+		}
+	};
+
+	_compositePipeline = _graphicDevice->CreatePipelineState(pipelineDescriptor);
 }
 
 }

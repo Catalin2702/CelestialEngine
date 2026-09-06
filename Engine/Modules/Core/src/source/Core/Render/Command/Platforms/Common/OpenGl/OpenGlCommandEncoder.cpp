@@ -118,8 +118,8 @@ void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
 	glDepthRangef(viewport.minDepth, viewport.maxDepth);
 }
 
-void OpenGlCommandEncoder::SetTexture(const u32 slot, const I_Texture& texture) {
-	assert(texture.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetTexture: The texture is not OpenGl based!");
+void OpenGlCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& texture) {
+	assert(texture.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetFragmentTexture: The texture is not OpenGl based!");
 
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, static_cast<const OpenGlTexture&>(texture).GetTexture());

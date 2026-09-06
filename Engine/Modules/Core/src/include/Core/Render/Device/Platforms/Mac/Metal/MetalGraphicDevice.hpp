@@ -84,7 +84,6 @@ public:
 	/**
 	 * @brief Publishes the textures the current frame renders into
 	 * @param drawable The drawable MetalSwapchain acquired for this frame, or null to clear the target
-	 * @param depthTexture The swapchain's depth buffer, or null when the pass does no depth testing
 	 * @details Called by MetalSwapchain::AcquireNextTarget, and cleared at Present. It is the seam between "who owns
 	 *			the back buffer" (the swapchain) and "who builds render passes" (the device), and it is deliberately
 	 *			Metal-only: the portable version of it is a RenderPassDescriptor carrying an I_Texture per attachment,
@@ -93,7 +92,7 @@ public:
 	 *			The drawable is borrowed for the frame, not retained: it belongs to the layer's autorelease pool, and
 	 *			the swapchain is what holds a reference to it for the length of the frame.
 	 */
-	void SetFrameTarget(CA::MetalDrawable* drawable, MTL::Texture* depthTexture);
+	void SetFrameTarget(CA::MetalDrawable* drawable);
 
 	/**
 	 * @brief Gets the command buffer every pass of this frame encodes into, opening one if the frame has none yet
@@ -128,7 +127,6 @@ private:
 	MetalShaderLibrary _shaderLibrary;
 
 	CA::MetalDrawable* _nativeFrameDrawable = nullptr; ///< Borrowed for the current frame; see SetFrameTarget
-	MTL::Texture* _nativeFrameDepthTexture = nullptr; ///< Borrowed for the current frame; owned by the swapchain
 
 	/// The last command buffer encoded into the frame's target, waiting for the present to be added to it. Owned only
 	/// until the swapchain takes it, which is once per frame.

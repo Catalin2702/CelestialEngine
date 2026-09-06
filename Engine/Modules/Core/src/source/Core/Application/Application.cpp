@@ -468,7 +468,6 @@ void Application::SetVSync(const bool enabled) const {
 
 void Application::_CreateRenderResources() {
 	auto& graphicDevice = _renderer->GetGraphicDevice();
-	const auto& swapchain = _renderer->GetSwapchain();
 	constexpr std::array vertices {
 		// Front face
 		-0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 0
@@ -537,7 +536,7 @@ void Application::_CreateRenderResources() {
 
 	// Asked rather than assumed: the descriptor defaults to BGRA8Unorm, GLFW only ever gives RGBA8Unorm, and every
 	// backend but OpenGL rejects a pipeline whose format disagrees with the swapchain it draws into.
-	pipelineDescriptor.formats.colors[0] = swapchain.GetColorFormat();
+	pipelineDescriptor.formats.colors[0] = _renderer->GetSceneColorFormat();
 	pipelineDescriptor.formats.colorCount = 1;
 
 	_pipeline = graphicDevice.CreatePipelineState(pipelineDescriptor);

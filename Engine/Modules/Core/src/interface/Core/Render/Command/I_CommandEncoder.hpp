@@ -42,11 +42,12 @@ public:
 	/**
 	 * @brief Binds a texture the fragment stage can read, at the given slot
 	 * @param slot The binding index - [[texture(slot)]] in MSL, texture unit `slot` in GL
+	 * @param texture
 	 * @details No sampler goes with it, and that is deliberate: the only reader today is the composite pass, which
 	 *			fetches by integer pixel coordinate at a 1:1 ratio. A sampler describes filtering between texels, and
 	 *			there is none to describe until something samples at a different scale.
 	 */
-	virtual void SetTexture(u32 slot, const I_Texture& texture) = 0;
+	virtual void SetFragmentTexture(u32 slot, const I_Texture& texture) = 0;
 
 public:
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;

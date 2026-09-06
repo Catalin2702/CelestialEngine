@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -118,18 +118,6 @@ public:
 
 public:
 	/**
-	 * @brief Gets the layer being presented into
-	 * @details Not on the interface: it is here for the Metal-only code that needs the real object - the ImGui layer,
-	 *			and anything that has to read the colour space or the EDR settings.
-	 */
-	[[nodiscard]] CA::MetalLayer* GetMetalLayer() const { return _nativeLayer; }
-
-	/**
-	 * @brief Gets the depth buffer the frames are rendered against
-	 */
-	[[nodiscard]] MTL::Texture* GetDepthTexture() const { return _nativeDepthTexture.get(); }
-
-	/**
 	 * @brief Spaces presents at least this far apart, without blocking the loop
 	 * @param seconds The minimum time between two frames reaching the display; 0 presents as soon as possible
 	 * @details The third option between waiting for the display and not waiting at all. VSync makes the acquire block
@@ -161,19 +149,9 @@ public:
 	[[nodiscard]] CA::MetalDrawable* GetCurrentDrawable() const { return _nativeDrawable.get(); }
 
 private:
-	/**
-	 * @brief Allocates the depth buffer for a given size, replacing the previous one
-	 * @details Throws std::runtime_error if the allocation fails: at this size it only fails when the device is out of
-	 *			memory, and there is nothing sensible to render without a depth buffer.
-	 */
-	void _CreateDepthTexture(u32 width, u32 height);
-
-private:
 	I_MetalSurface* _surface = nullptr; ///< Borrowed; owned by the window
 	MetalGraphicDevice* _graphicDevice = nullptr; ///< Borrowed; owned by the renderer
 	CA::MetalLayer* _nativeLayer = nullptr; ///< Borrowed; owned by the window's view
-
-	NS::SharedPtr<MTL::Texture> _nativeDepthTexture;
 
 	/// Held only between AcquireNextTarget and Present, and retained for that span: the layer hands it back
 	/// autoreleased, and the pool it lives in is drained long before the frame ends.
@@ -181,10 +159,6 @@ private:
 
 	u32 _width = 0;
 	u32 _height = 0;
-
-	/// Not asked of the caller: the renderer's default pass wants a depth buffer, and this is the format that exists
-	/// on every GPU the engine targets. It becomes a parameter the day a pass wants a stencil too.
-	Types::PixelFormat _depthFormat = Types::PixelFormat::Depth32Float;
 
 	/// 0 means present as soon as the GPU is done, which is what VSync-off has always meant here. See the setter.
 	f32 _minimumPresentInterval = 0.0f;

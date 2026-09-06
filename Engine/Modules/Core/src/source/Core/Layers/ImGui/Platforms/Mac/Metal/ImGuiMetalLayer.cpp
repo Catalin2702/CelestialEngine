@@ -14,6 +14,7 @@
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Renderer/I_Renderer.hpp"
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+#include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -112,16 +113,19 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
-	// The frame's drawable, not a new one: the swapchain acquired it in BeginFrame and will present it in EndFrame.
-	// Pulling a second one here - which is what this used to do - would either starve the layer or put two different
-	// back buffers on screen for the same frame.
-	_frameContext.drawable = _swapchain->GetCurrentDrawable();
-	if (not _frameContext.drawable) [[unlikely]] {
-		// No drawable means the renderer skipped this frame; the overlay skips it too, and says nothing - the
-		// swapchain has already reported it once.
+	// The scene target, not the drawable. The overlay is a second pass over what the renderer has already drawn, and
+	// that image lives in a texture of ours until the composite pass copies it into the back buffer. Opening this on
+	// the drawable is what used to leave the scene's stored image in the buffer the display was scanning - visible,
+	// above about 240 fps with display sync off, as a band of the previous pass across the top of the window.
+	const auto* const sceneColor = Application::Get().GetRenderer().GetSceneColorTarget();
+	if (not sceneColor) [[unlikely]] {
+		// No target means the renderer skipped this frame; the overlay skips it too, and says nothing - the renderer
+		// has already reported it once.
 		_renderSemaphore.release();
 		return;
 	}
+
+	_frameContext.sceneTexture = static_cast<const MetalTexture*>(sceneColor)->GetTexture();
 
 	// The frame's buffer, shared with the renderer's passes rather than one of our own: the overlay is another pass of
 	// the same frame, and Metal only orders a pass that loads against a pass that wrote within one command buffer.
@@ -130,9 +134,9 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
 	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
-	colorAttachment->setTexture(_frameContext.drawable->texture());
+	colorAttachment->setTexture(_frameContext.sceneTexture);
 
-	// Load, never clear: this is a second pass over a back buffer the scene has already been drawn into.
+	// Load, never clear: this is a second pass over a target the scene has already been drawn into.
 	colorAttachment->setLoadAction(MTL::LoadActionLoad);
 	colorAttachment->setStoreAction(MTL::StoreActionStore);
 

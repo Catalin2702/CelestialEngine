@@ -25,13 +25,13 @@
 
 
 namespace CA {
-	class MetalDrawable;
 	class MetalLayer;
 }
 
 namespace MTL {
 	class CommandBuffer;
 	class RenderCommandEncoder;
+	class Texture;
 }
 
 namespace CE::Events {
@@ -59,7 +59,7 @@ class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	};
 
 	struct MetalFrameContext {
-		CA::MetalDrawable* drawable = nullptr;			///< Pointer to the Metal drawable
+		MTL::Texture* sceneTexture = nullptr;
 		/// Borrowed from the device: it is the frame's buffer, shared with every other pass.
 		MTL::CommandBuffer* commandBuffer = nullptr;
 		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder

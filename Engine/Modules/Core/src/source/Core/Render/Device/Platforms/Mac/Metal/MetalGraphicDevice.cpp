@@ -100,7 +100,7 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 	const auto passDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 
 	const auto colorAttachment_0 = passDescriptor->colorAttachments()->object(0);
-	colorAttachment_0->setTexture(_nativeFrameDrawable->texture());
+	colorAttachment_0->setTexture(nativeColorTexture);
 	colorAttachment_0->setLoadAction(Types::ToMetal(loadAction_0));
 	colorAttachment_0->setStoreAction(Types::ToMetal(storeAction_0));
 	colorAttachment_0->setClearColor(MTL::ClearColor::Make(clearColor_0.r, clearColor_0.g, clearColor_0.b, clearColor_0.a));
@@ -142,7 +142,7 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 	return std::make_unique<MetalCommandEncoder>(GetFrameCommandBuffer(), passDescriptor.get());
 }
 
-void MetalGraphicDevice::SetFrameTarget(CA::MetalDrawable* drawable, MTL::Texture* depthTexture) {
+void MetalGraphicDevice::SetFrameTarget(CA::MetalDrawable* drawable) {
 	// A buffer still held while the target is being cleared belongs to a frame nobody presented - a renderer torn
 	// down mid-frame, or a pass opened outside one. It has to reach the GPU anyway: the encoder is closed and the
 	// resources it read are about to be released.
@@ -152,7 +152,6 @@ void MetalGraphicDevice::SetFrameTarget(CA::MetalDrawable* drawable, MTL::Textur
 	}
 
 	_nativeFrameDrawable = drawable;
-	_nativeFrameDepthTexture = depthTexture;
 }
 
 MTL::CommandBuffer* MetalGraphicDevice::GetFrameCommandBuffer() {

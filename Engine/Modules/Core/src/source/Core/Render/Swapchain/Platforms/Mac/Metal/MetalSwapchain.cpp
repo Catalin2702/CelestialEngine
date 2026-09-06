@@ -56,7 +56,7 @@ MetalSwapchain::~MetalSwapchain() {
 
 	// Dying between an acquire and a present: the drawable is dropped without being shown, and the device must stop
 	// pointing at it before it goes.
-	_graphicDevice->SetFrameTarget(nullptr, nullptr);
+	_graphicDevice->SetFrameTarget(nullptr);
 	_nativeDrawable.reset();
 }
 
@@ -83,7 +83,7 @@ bool MetalSwapchain::AcquireNextTarget() {
 
 	// The seam: the swapchain owns the back buffers, the device builds the render passes, and this is where the two
 	// meet. Cleared again in Present, so a pass opened outside a frame cannot draw into a drawable that is gone.
-	_graphicDevice->SetFrameTarget(_nativeDrawable.get(), _nativeDepthTexture.get());
+	_graphicDevice->SetFrameTarget(_nativeDrawable.get());
 
 	return true;
 }
@@ -120,7 +120,7 @@ void MetalSwapchain::Present() {
 		CE_CORE_WARN("MetalSwapchain::Present: The queue handed back no command buffer; the frame is dropped.");
 	}
 
-	_graphicDevice->SetFrameTarget(nullptr, nullptr);
+	_graphicDevice->SetFrameTarget(nullptr);
 
 	// Released so Core Animation can recycle it. Holding one drawable longer than its frame is the classic way to
 	// starve the layer and halve the frame rate.
@@ -136,7 +136,7 @@ void MetalSwapchain::Resize(const u32 width, const u32 height) {
 	const auto newHeight = height != 0 ? height : surfaceHeight;
 
 	// Nothing changed and the depth buffer already exists: the common case, since this runs once per frame.
-	if (newWidth == _width and newHeight == _height and _nativeDepthTexture)
+	if (newWidth == _width and newHeight == _height)
 		return;
 
 	_width = newWidth;
@@ -148,10 +148,6 @@ void MetalSwapchain::Resize(const u32 width, const u32 height) {
 		return;
 
 	_nativeLayer->setDrawableSize(CGSizeMake(_width, _height));
-
-	// No texture can be resized, in any API: the depth buffer is a new object, and every render target handed out
-	// before this call is stale - which is what the interface warns about.
-	_CreateDepthTexture(_width, _height);
 }
 
 void MetalSwapchain::SetVSync(const bool enabled) {
@@ -176,28 +172,6 @@ Types::PixelFormat MetalSwapchain::GetColorFormat() const {
 
 u32 MetalSwapchain::GetBufferCount() const {
 	return static_cast<u32>(_nativeLayer->maximumDrawableCount());
-}
-
-void MetalSwapchain::_CreateDepthTexture(const u32 width, const u32 height) {
-	const auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
-	textureDescriptor->setTextureType(MTL::TextureType2D);
-	textureDescriptor->setPixelFormat(Types::ToMetal(_depthFormat));
-	textureDescriptor->setWidth(width);
-	textureDescriptor->setHeight(height);
-
-	// Private even on unified memory, and it is not a contradiction: shared memory means the CPU *could* see it, and
-	// nothing ever wants to. Saying private lets the driver keep it in whatever layout the GPU reads fastest - and,
-	// together with the DontCare store action the renderer asks for, lets a tile-based GPU keep the whole depth buffer
-	// in tile memory and never write a byte of it to RAM.
-	textureDescriptor->setStorageMode(MTL::StorageModePrivate);
-	textureDescriptor->setUsage(MTL::TextureUsageRenderTarget);
-
-	_nativeDepthTexture = NS::TransferPtr(_graphicDevice->GetDevice()->newTexture(textureDescriptor.get()));
-	if (not _nativeDepthTexture) [[unlikely]] {
-		constexpr auto error = "MetalSwapchain::_CreateDepthTexture: Could not allocate the depth buffer!";
-		CE_CORE_ERROR(error);
-		throw std::runtime_error(error);
-	}
 }
 
 }

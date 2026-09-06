@@ -81,7 +81,7 @@ public:
 	 */
 	void SetViewport(const Viewport& viewport) override;
 
-	void SetTexture(u32 slot, const I_Texture& texture) override;
+	void SetFragmentTexture(u32 slot, const I_Texture& texture) override;
 
 public:
 	/**
