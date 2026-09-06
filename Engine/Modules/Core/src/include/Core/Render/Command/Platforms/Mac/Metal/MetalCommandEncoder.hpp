@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -102,6 +102,8 @@ public:
 	 * @brief Sets the viewport rectangle and the depth range
 	 */
 	void SetViewport(const Viewport& viewport) override;
+
+	void SetTexture(u32 slot, const I_Texture& texture) override;
 
 private:
 	/// Borrowed, and shared with every other pass of this frame: the device owns it and the swapchain commits it.

@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
-#include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
+#include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -134,6 +134,12 @@ void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
 		.znear = viewport.minDepth,
 		.zfar = viewport.maxDepth
 	});
+}
+
+void MetalCommandEncoder::SetTexture(const u32 slot, const I_Texture& texture) {
+	assert(texture.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetTexture: The texture is not Metal based!");
+
+	_nativeCommandEncoder->setFragmentTexture(static_cast<const MetalTexture&>(texture).GetTexture(), slot);
 }
 
 }

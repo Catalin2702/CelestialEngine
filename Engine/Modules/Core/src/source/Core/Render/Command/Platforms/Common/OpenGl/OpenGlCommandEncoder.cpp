@@ -10,6 +10,7 @@
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Core/Render/Command/Viewport.hpp"
+#include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #include "Tools/Tools.hpp"
 
 #include <glad/glad.h>
@@ -67,8 +68,8 @@ OpenGlCommandEncoder::~OpenGlCommandEncoder() {
 }
 
 void OpenGlCommandEncoder::SetPipelineState(const I_PipelineState& pipelineState) {
-	assert(not _ended && "OpenGlCommandEncoder::SetPipelineState: The pass has already been ended.");
-	assert(pipelineState.GetGraphicApi() == Types::GraphicsApi::OpenGL && "OpenGlCommandEncoder::SetPipelineState: The pipeline is not OpenGL based.");
+	assert(not _ended and "OpenGlCommandEncoder::SetPipelineState: The pass has already been ended!");
+	assert(pipelineState.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetPipelineState: The pipeline is not OpenGL based!");
 
 	const auto& openGlPipeline = static_cast<const OpenGlPipelineState&>(pipelineState);
 
@@ -81,8 +82,8 @@ void OpenGlCommandEncoder::SetPipelineState(const I_PipelineState& pipelineState
 }
 
 void OpenGlCommandEncoder::SetIndexBuffer(const I_IndexBuffer& indexBuffer) {
-	assert(not _ended && "OpenGlCommandEncoder::SetIndexBuffer: The pass has already been ended.");
-	assert(indexBuffer.GetGraphicApi() == Types::GraphicsApi::OpenGL && "OpenGlCommandEncoder::SetIndexBuffer: The index buffer is not OpenGL based.");
+	assert(not _ended and "OpenGlCommandEncoder::SetIndexBuffer: The pass has already been ended!");
+	assert(indexBuffer.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetIndexBuffer: The index buffer is not OpenGL based!");
 
 	const auto& openGlIndexBuffer = static_cast<const OpenGlIndexBuffer&>(indexBuffer);
 
@@ -93,8 +94,8 @@ void OpenGlCommandEncoder::SetIndexBuffer(const I_IndexBuffer& indexBuffer) {
 }
 
 void OpenGlCommandEncoder::SetVertexBuffer(const I_VertexBuffer& vertexBuffer) {
-	assert(not _ended && "OpenGlCommandEncoder::SetVertexBuffer: The pass has already been ended.");
-	assert(vertexBuffer.GetGraphicApi() == Types::GraphicsApi::OpenGL && "OpenGlCommandEncoder::SetVertexBuffer: The vertex buffer is not OpenGL based.");
+	assert(not _ended and "OpenGlCommandEncoder::SetVertexBuffer: The pass has already been ended!");
+	assert(vertexBuffer.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetVertexBuffer: The vertex buffer is not OpenGL based!");
 
 	const auto& openGlVertexBuffer = static_cast<const OpenGlVertexBuffer&>(vertexBuffer);
 
@@ -104,8 +105,8 @@ void OpenGlCommandEncoder::SetVertexBuffer(const I_VertexBuffer& vertexBuffer) {
 }
 
 void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
-	assert(not _ended && "OpenGlCommandEncoder::SetViewport: The pass has already been ended.");
-	assert(viewport.GetGraphicsApi() == Types::GraphicsApi::OpenGL && "OpenGlCommandEncoder::SetViewport: The viewport was not built for OpenGl, so its origin is not flipped.");
+	assert(not _ended and "OpenGlCommandEncoder::SetViewport: The pass has already been ended!");
+	assert(viewport.GetGraphicsApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetViewport: The viewport is not OpenGl based!");
 
 	glViewport(
 		static_cast<GLint>(viewport.x),
@@ -117,11 +118,28 @@ void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
 	glDepthRangef(viewport.minDepth, viewport.maxDepth);
 }
 
+void OpenGlCommandEncoder::SetTexture(const u32 slot, const I_Texture& texture) {
+	assert(texture.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetTexture: The texture is not OpenGl based!");
+
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, static_cast<const OpenGlTexture&>(texture).GetTexture());
+
+	// GLSL 330 has no binding layout qualifier for samplers, so the uniform has to be told which unit to read. The
+	// composite shader declares exactly one, and its location is looked up by name once per bind - cheap enough at
+	// one call per frame, and it keeps the encoder from having to know the program's uniform table.
+	GLint program = 0;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+	if (program != 0) {
+		if (const auto location = glGetUniformLocation(program, "sceneColor"); location >= 0)
+			glUniform1i(location, static_cast<GLint>(slot));
+	}
+}
+
 void OpenGlCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstIndex, const u32 baseVertex) {
-	assert(not _ended && "OpenGlCommandEncoder::DrawIndexed: The pass has already been ended.");
-	assert(_topology != Types::PrimitiveTopology::None && "OpenGlCommandEncoder::DrawIndexed: No pipeline was set, so there is no primitive topology to draw with.");
-	assert(_indexCount != 0 && "OpenGlCommandEncoder::DrawIndexed: No index buffer was set.");
-	assert(static_cast<size_t>(firstIndex) + indexCount <= _indexCount && "OpenGlCommandEncoder::DrawIndexed: The draw reads past the end of the index buffer.");
+	assert(not _ended and "OpenGlCommandEncoder::DrawIndexed: The pass has already been ended!");
+	assert(_topology != Types::PrimitiveTopology::None and "OpenGlCommandEncoder::DrawIndexed: No pipeline was set, so there is no primitive topology to draw with!");
+	assert(_indexCount != 0 and "OpenGlCommandEncoder::DrawIndexed: No index buffer was set!");
+	assert(static_cast<size_t>(firstIndex) + indexCount <= _indexCount and "OpenGlCommandEncoder::DrawIndexed: The draw reads past the end of the index buffer!");
 
 	if (indexCount == 0) [[unlikely]]
 		return;

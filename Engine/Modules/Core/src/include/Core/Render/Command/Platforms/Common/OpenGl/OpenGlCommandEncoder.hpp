@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -80,6 +80,8 @@ public:
 	 * @brief Sets the viewport rectangle and the depth range
 	 */
 	void SetViewport(const Viewport& viewport) override;
+
+	void SetTexture(u32 slot, const I_Texture& texture) override;
 
 public:
 	/**
