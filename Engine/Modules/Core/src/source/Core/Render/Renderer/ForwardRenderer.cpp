@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-07
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -124,7 +124,16 @@ void ForwardRenderer::BeginPass() {
 }
 
 void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
-	assert(_inFrame && "ForwardRenderer::BeginPass: A pass outside a frame draws into a target nobody will present.");
+	_OpenPass(descriptor);
+
+	// Counted here rather than in _OpenPass, which is what makes the composite free: the stats describe what the
+	// application asked for, and the composite is a pass the application never opened.
+	if (_commandEncoder)
+		++_frameStats.passes;
+}
+
+void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
+	assert(_inFrame && "ForwardRenderer::_OpenPass: A pass outside a frame draws into a target nobody will present.");
 	if (not _inFrame) [[unlikely]]
 		return;
 
@@ -147,8 +156,6 @@ void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
 		static_cast<f32>(descriptor.height),
 		static_cast<f32>(descriptor.height)
 	});
-
-	++_frameStats.passes;
 }
 
 void ForwardRenderer::EndPass() {
@@ -274,7 +281,8 @@ void ForwardRenderer::_Composite() {
 	// own a depth buffer again for no reason.
 	descriptor.depth.enabled = false;
 
-	BeginPass(descriptor);
+	// _OpenPass, not BeginPass: this pass is the renderer's own cost and stays out of the frame stats entirely.
+	_OpenPass(descriptor);
 	if (not _commandEncoder) [[unlikely]]
 		return;
 
@@ -287,8 +295,9 @@ void ForwardRenderer::_Composite() {
 
 	_commandEncoder->DrawIndexed(6, 0, 0);
 
-	// Deliberately not counted in the frame stats: the composite is the renderer's own cost, not the scene's, and
-	// folding it in would make every frame report one draw call more than the application issued.
+	// DrawIndexed on the encoder rather than Submit, for the same reason the pass was opened with _OpenPass: nothing
+	// here is counted. Folding the composite in would make every frame report one draw call and one pass more than
+	// the application issued.
 }
 
 void ForwardRenderer::_CreateCompositeResources() {

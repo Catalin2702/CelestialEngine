@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-07
 //
 
 #pragma once
@@ -102,6 +102,13 @@ public:
 	[[nodiscard]] Types::PixelFormat GetSceneColorFormat() const override { return _sceneColorFormat; }
 
 private:
+	/**
+	 * @brief Opens a pass without counting it
+	 * @details The whole of BeginPass except the statistics. It exists so the composite - a pass the application
+	 *			never asked for - can be encoded without appearing in the numbers the application is shown.
+	 */
+	void _OpenPass(const RenderPassDescriptor& descriptor);
+
 	/**
 	 * @brief Creates the scene colour and depth textures, or replaces them when the size changed
 	 * @details Called once per frame from BeginFrame, and a no-op on all but the first frame after a resize. The old

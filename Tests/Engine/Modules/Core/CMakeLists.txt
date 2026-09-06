@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-05
+# Updated: 2026-09-07
 #
 
 set(INPUT_SOURCES
@@ -28,8 +28,10 @@ set(MAINHUB_SOURCES
 
 set(RENDER_SOURCES
 	src/Core/Render/Buffer/BufferLayoutTests.cpp
+	src/Core/Render/Command/RenderPassDescriptorTests.cpp
 	src/Core/Render/Command/ViewportTests.cpp
 	src/Core/Render/Pipeline/PipelineDescriptorTests.cpp
+	src/Core/Render/Renderer/ForwardRendererTests.cpp
 	src/Core/Render/Renderer/RenderStatsTests.cpp
 )
 
