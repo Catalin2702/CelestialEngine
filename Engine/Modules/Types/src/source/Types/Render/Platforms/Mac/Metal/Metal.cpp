@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #include "Types/Render/Platforms/Mac/Metal/Metal.hpp"
@@ -184,8 +184,8 @@ MTL::PrimitiveTopologyClass ToMetalTopologyClass(const PrimitiveTopology topolog
 	}
 }
 
-MTL::VertexFormat ToMetal(const ShaderDataType type) {
-	switch (type) {
+MTL::VertexFormat ToMetal(const ShaderDataType shaderDataType) {
+	switch (shaderDataType) {
 		case ShaderDataType::Float: return MTL::VertexFormatFloat;
 		case ShaderDataType::Float2: return MTL::VertexFormatFloat2;
 		case ShaderDataType::Float3: return MTL::VertexFormatFloat3;
@@ -206,6 +206,21 @@ MTL::VertexFormat ToMetal(const ShaderDataType type) {
 		default:
 			return MTL::VertexFormatInvalid;
 	}
+}
+
+MTL::TextureUsage ToMetal(const TextureUsage textureUsage) {
+	NS::UInteger nativeUsage = 0;
+
+	if (HasAnyFlags(textureUsage, TextureUsage::RenderTarget))
+		nativeUsage |= MTL::TextureUsageRenderTarget;
+
+	if (HasAnyFlags(textureUsage, TextureUsage::ShaderRead))
+		nativeUsage |= MTL::TextureUsageShaderRead;
+
+	if (HasAnyFlags(textureUsage, TextureUsage::ShaderWrite))
+		nativeUsage |= MTL::TextureUsageShaderWrite;
+
+	return nativeUsage;
 }
 
 }

@@ -7,7 +7,7 @@
 // Updated: 2026-09-03
 //
 
-#include "Types/Compare/Compare.hpp"
+#include "../../../include/Types/Render/Compare.hpp"
 
 #include <glad/glad.h>
 

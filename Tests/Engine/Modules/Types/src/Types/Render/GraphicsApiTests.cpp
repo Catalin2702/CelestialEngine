@@ -1,13 +1,13 @@
 //
 // Module: CelestialEngine/Tests/Engine/Modules/Types/Render
-// File: RenderTests.cpp
+// File: GraphicsApiTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-06
 //
 
-#include <Types/Render/Render.hpp>
+#include <Types/Render/GraphicsApi.hpp>
 
 #include <gtest/gtest.h>
 
@@ -20,7 +20,7 @@ namespace {
 /**
  * @brief Test fixture for GraphicsApi tests
  */
-class RenderTypesTest: public ::testing::Test {};
+class GraphicsApiTest: public ::testing::Test {};
 
 }
 
@@ -31,14 +31,14 @@ class RenderTypesTest: public ::testing::Test {};
 /**
  * @brief Test that "no API" is never reported as supported
  */
-TEST_F(RenderTypesTest, IsGraphicsApiSupported_None_IsNotSupported) {
+TEST_F(GraphicsApiTest, IsGraphicsApiSupported_None_IsNotSupported) {
 	EXPECT_FALSE(IsGraphicsApiSupported(GraphicsApi::None));
 }
 
 /**
  * @brief Test that the cross-platform APIs are supported everywhere
  */
-TEST_F(RenderTypesTest, IsGraphicsApiSupported_CrossPlatformApis_AreSupported) {
+TEST_F(GraphicsApiTest, IsGraphicsApiSupported_CrossPlatformApis_AreSupported) {
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::OpenGL));
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::Vulkan));
 }
@@ -46,7 +46,7 @@ TEST_F(RenderTypesTest, IsGraphicsApiSupported_CrossPlatformApis_AreSupported) {
 /**
  * @brief Test that the platform-exclusive APIs are only supported on their own platform
  */
-TEST_F(RenderTypesTest, IsGraphicsApiSupported_PlatformExclusiveApis_FollowThePlatform) {
+TEST_F(GraphicsApiTest, IsGraphicsApiSupported_PlatformExclusiveApis_FollowThePlatform) {
 #if CE_PLATFORM_MACOS
 	EXPECT_TRUE(IsGraphicsApiSupported(GraphicsApi::Metal));
 	EXPECT_FALSE(IsGraphicsApiSupported(GraphicsApi::DirectX11));
@@ -69,7 +69,7 @@ TEST_F(RenderTypesTest, IsGraphicsApiSupported_PlatformExclusiveApis_FollowThePl
 /**
  * @brief Test that each API formats as its own name
  */
-TEST_F(RenderTypesTest, Formatter_FormatsApiName) {
+TEST_F(GraphicsApiTest, Formatter_FormatsApiName) {
 	EXPECT_EQ(std::format("{}", GraphicsApi::None), "None");
 	EXPECT_EQ(std::format("{}", GraphicsApi::OpenGL), "OpenGL");
 	EXPECT_EQ(std::format("{}", GraphicsApi::Metal), "Metal");

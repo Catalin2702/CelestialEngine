@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -14,8 +14,19 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Metal/MTLPixelFormat.hpp"
-#include "Types/Types.hpp"
+#include "Types/Render/AttachmentAction.hpp"
+#include "Types/Render/BlendFactor.hpp"
+#include "Types/Render/Compare.hpp"
+#include "Types/Render/CullMode.hpp"
+#include "Types/Render/PixelFormat.hpp"
+#include "Types/Render/PrimitiveTopology.hpp"
+#include "Types/Render/ShaderDataType.hpp"
+#include "Types/Render/TextureUsage.hpp"
+#include "Types/Var/Vars.hpp"
 
+namespace NS {
+	using UInteger = std::uintptr_t;
+}
 
 namespace MTL {
 	enum PixelFormat: std::uintptr_t;
@@ -27,6 +38,7 @@ namespace MTL {
 	enum StoreAction: std::uintptr_t;
 	enum PrimitiveType: std::uintptr_t;
 	enum PrimitiveTopologyClass: std::uintptr_t;
+	using TextureUsage = NS::UInteger;
 	enum VertexFormat: std::uintptr_t;
 }
 
@@ -99,6 +111,8 @@ inline constexpr u32 METAL_VERTEX_BUFFER_INDEX = 0;
  *			consecutive slots in every API, and expanding it belongs to the vertex-descriptor builder, not here.
  */
 [[nodiscard]] CE_TYPES_API MTL::VertexFormat ToMetal(ShaderDataType shaderDataType);
+
+[[nodiscard]] CE_TYPES_API MTL::TextureUsage ToMetal(TextureUsage textureUsage);
 
 }
 

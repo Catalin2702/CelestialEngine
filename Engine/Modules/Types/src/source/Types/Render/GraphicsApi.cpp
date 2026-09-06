@@ -1,13 +1,14 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/Window
-// File: Render.cpp
+// Module: CelestialEngine/Engine/Modules/Types/Render
+// File: GraphicsApi.cpp
 // Created by: Catalin Chirosca
-// Created: 2026-03-19
+// Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-06
 //
 
-#include "Types/Render/Render.hpp"
+#include "Types/Render/GraphicsApi.hpp"
+
 
 namespace CE::Types {
 

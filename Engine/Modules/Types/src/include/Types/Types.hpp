@@ -30,30 +30,14 @@
 
 #include "Types/Build/Build.hpp"
 
-#include "Compare/Compare.hpp"
+#include "Types/FileSystem/File.hpp"
 
-#include "FileSystem/File.hpp"
+#include "Types/KeyCode/KeyCode.hpp"
 
-#include "KeyCode/KeyboardKeyCode.hpp"
-#include "KeyCode/MouseButtonCode.hpp"
+#include "Types/Render/Render.hpp"
 
-#include "Render/AttachmentAction.hpp"
-#include "Render/BlendFactor.hpp"
-#include "Render/CullMode.hpp"
-#include "Render/PixelFormat.hpp"
-#include "Render/PrimitiveTopology.hpp"
-#include "Render/Render.hpp"
-#include "Render/Shader.hpp"
-#include "Render/Platforms/Common/OpenGl/OpenGl.hpp"
-#include "Render/TextureUsage.hpp"
+#include "Types/Var/Vars.hpp"
 
-#if CE_PLATFORM_MACOS
-#include "Render/Platforms/Mac/Metal/Metal.hpp"
-#endif
-
-#include "Var/Vars.hpp"
-
-#include "Window/WindowProps.hpp"
-#include "Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
+#include "Types/Window/Window.hpp"
 
 #endif //CE_TYPES_TYPES_HPP

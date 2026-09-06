@@ -4,14 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #include "Types/Render/Shader.hpp"
 
 #include <glad/glad.h>
 
-#include "Types/Render/Render.hpp"
+#include "Types/Render/GraphicsApi.hpp"
 
 
 namespace CE::Types {

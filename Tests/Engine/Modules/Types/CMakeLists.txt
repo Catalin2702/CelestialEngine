@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-13
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-05
+# Updated: 2026-09-06
 #
 
 enable_testing()
@@ -20,8 +20,8 @@ set(KEYCODE_SOURCES
 
 set(RENDER_SOURCES
 	src/Types/Render/BlendFactorTests.cpp
+	src/Types/Render/GraphicsApiTests.cpp
 	src/Types/Render/PixelFormatTests.cpp
-	src/Types/Render/RenderTests.cpp
 	src/Types/Render/ShaderTests.cpp
 	src/Types/Render/Platforms/Common/OpenGl/OpenGlTests.cpp
 )

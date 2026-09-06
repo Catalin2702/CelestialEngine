@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Define/Types.hpp"
-#include "Types/Render/Render.hpp"
+#include "Types/Render/GraphicsApi.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include <format>

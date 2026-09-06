@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-03
+# Updated: 2026-09-06
 #
 
 set(HEADERS
@@ -13,7 +13,7 @@ set(HEADERS
 
 
 	# Compare
-	src/include/Types/Compare/Compare.hpp
+	src/include/Types/Render/Compare.hpp
 
 
 	# FileSystem
@@ -22,6 +22,7 @@ set(HEADERS
 
 	# KeyCode
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
+	src/include/Types/KeyCode/KeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 
 
@@ -29,10 +30,12 @@ set(HEADERS
 	src/include/Types/Render/AttachmentAction.hpp
 	src/include/Types/Render/BlendFactor.hpp
 	src/include/Types/Render/CullMode.hpp
+	src/include/Types/Render/GraphicsApi.hpp
 	src/include/Types/Render/PixelFormat.hpp
 	src/include/Types/Render/PrimitiveTopology.hpp
 	src/include/Types/Render/Render.hpp
 	src/include/Types/Render/Shader.hpp
+	src/include/Types/Render/ShaderDataType.hpp
 	src/include/Types/Render/TextureUsage.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
 
@@ -46,6 +49,7 @@ set(HEADERS
 
 
 	# Window
+	src/include/Types/Window/Window.hpp
 	src/include/Types/Window/WindowProps.hpp
 	src/include/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
 
@@ -71,9 +75,9 @@ set(SOURCES
 	# Render
 	src/source/Types/Render/BlendFactor.cpp
 	src/source/Types/Render/CullMode.cpp
+	src/source/Types/Render/GraphicsApi.cpp
 	src/source/Types/Render/PixelFormat.cpp
 	src/source/Types/Render/PrimitiveTopology.cpp
-	src/source/Types/Render/Render.cpp
 	src/source/Types/Render/Shader.cpp
 	src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp
 
