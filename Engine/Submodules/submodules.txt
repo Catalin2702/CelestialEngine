@@ -1,0 +1,34 @@
+#
+# Module: CelestialEngine/Engine/Submodules
+# File: submodules.txt
+# Created by: Catalin Chirosca
+# Created: 2026-09-06
+# Updated by: Catalin Chirosca
+# Updated: 2026-09-06
+#
+
+# Pinned revision of every git submodule, one per line, requirements.txt style:
+#
+#     <name>==<ref>
+#
+# <name> is the submodule's folder name under Engine/Submodules. Its path and URL are NOT repeated
+# here - they already live in .gitmodules, and duplicating them is how the two files drift apart.
+#
+# <ref> is anything git can resolve to a commit:
+#     a tag     v1.91.9-docking          pinned, reproducible - prefer this
+#     a branch  docking                  floats: re-running the script moves to the remote tip
+#     a SHA     b08829d8704...           pinned to something with no tag on it
+#
+# A branch name resolves against origin/, so "docking" always means the remote tip and never a
+# stale local branch.
+#
+# Apply the whole file with:
+#
+#     ./Scripts/BuildSystem/Submodules/update_submodules.sh
+#
+# Editing a line here is a source change like any other: the script moves the submodule, and the
+# superproject's gitlink then has to be committed for anyone else to get the same revision.
+
+ImGui==v1.92.9-docking
+
+MetalCpp==v27.0.3
