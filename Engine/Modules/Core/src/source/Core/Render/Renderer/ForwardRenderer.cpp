@@ -22,6 +22,7 @@
 #include "Utility/Utility.hpp"
 
 #include <cassert>
+#include <stdexcept>
 
 
 namespace CE::Core {
@@ -40,6 +41,13 @@ ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice,
 	// The scene is rendered at the swapchain's own format, so the composite is a straight copy and every pipeline
 	// written against the back buffer keeps working unchanged. It is the format to change for HDR, and the only one.
 	_sceneColorFormat = _swapchain->GetColorFormat();
+
+	// Up front, not on the first composite: it is built once, from shaders shipped in the bundle and a format already
+	// known here, so it either works for the whole run or for none of it. Building it inside the frame would turn a
+	// permanent failure into a warning per frame - at 120 fps - retrying something that cannot start working. Both
+	// reasons it used to be deferred are already met at this point: the format is read just above, and
+	// Application::_InitRenderer makes the OpenGL context current before it builds the renderer.
+	_CreateCompositeResources();
 }
 
 ForwardRenderer::~ForwardRenderer() {
@@ -59,8 +67,12 @@ bool ForwardRenderer::BeginFrame() {
 	// After the acquire, because that is what refreshes the swapchain's idea of its own size after a resize.
 	const auto [width, height] = _swapchain->GetSize();
 	_EnsureSceneTarget(width, height);
-	if (not _sceneColor) [[unlikely]]
+	if (not _sceneColor) [[unlikely]] {
+		// The drawable is acquired by now and has to go back. Presenting it untouched is what releases it - the
+		// swapchain allows exactly that - and simply returning would starve the layer until an acquire blocks for good.
+		_swapchain->Present();
 		return false;
+	}
 
 	_frameStats.Reset();
 
@@ -214,7 +226,7 @@ void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
 	const TextureDescriptor depthDescriptor {
 		.width = width,
 		.height = height,
-		.format = _sceneDepthColor,
+		.format = _sceneDepthFormat,
 		// Render target only: nothing reads the depth buffer back, and saying so is what lets a tile-based GPU keep it in
 		// tile memory for the whole pass and never write a byte of it to RAM.
 		.usage = TextureUsage::RenderTarget,
@@ -238,15 +250,9 @@ void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
 void ForwardRenderer::_Composite() {
 	using namespace Types;
 
-	if (not _sceneColor) [[unlikely]]
-		return;
-
-	_EnsureCompositeResources();
-	if (not _compositePipeline or not _compositeVertexBuffer or not _compositeIndexBuffer) [[unlikely]] {
-		CE_CORE_WARN("ForwardRenderer::_Composite: The composite pipeline is missing; the frame is not presented.");
-		return;
-	}
-
+	// Nothing is checked here on purpose. The scene target is what BeginFrame refuses to open a frame without, the
+	// composite resources are what the constructor refuses to exist without, and EndFrame has already returned if no
+	// frame is open - so by this point all three are guaranteed.
 	const auto [width, height] = _swapchain->GetSize();
 
 	RenderPassDescriptor descriptor{};
@@ -285,10 +291,8 @@ void ForwardRenderer::_Composite() {
 	// folding it in would make every frame report one draw call more than the application issued.
 }
 
-void ForwardRenderer::_EnsureCompositeResources() {
+void ForwardRenderer::_CreateCompositeResources() {
 	using namespace Types;
-	if (_compositePipeline)
-		return;
 
 	// Clip-space quad, two triangles. The colour column is there only so the layout matches the scene's, which is
 	// what lets the composite shaders share VertexInput and the engine share one vertex descriptor.
@@ -344,6 +348,15 @@ void ForwardRenderer::_EnsureCompositeResources() {
 	};
 
 	_compositePipeline = _graphicDevice->CreatePipelineState(pipelineDescriptor);
+
+	// Fatal, and deliberately so: the composite is the only pass that writes the back buffer, so a renderer without it
+	// cannot put a single frame on screen. There is no degraded mode to fall back to, and failing here reports it once,
+	// at startup, where it can be acted on.
+	if (not _compositePipeline or not _compositeVertexBuffer or not _compositeIndexBuffer) [[unlikely]] {
+		constexpr auto error = "ForwardRenderer::_CreateCompositeResources: The composite pipeline could not be built!";
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
 }
 
 }

@@ -115,16 +115,18 @@ private:
 	 * @details The one pass that touches the drawable. It writes every pixel, loads nothing and tests no depth, so
 	 *			the back buffer goes from whatever it held to the finished frame in a single pass - which is the whole
 	 *			reason the scene is rendered offscreen in the first place.
+	 *
+	 *			Checks nothing: everything it needs is an invariant BeginFrame or the constructor already enforced.
 	 */
 	void _Composite();
 
 	/**
-	 * @brief Builds the composite pipeline and its quad, once
-	 * @details Deferred to the first composite rather than done in the constructor: it needs the swapchain's colour
-	 *			format, and on OpenGL it loads GLSL off disk, neither of which belongs in a constructor that runs
-	 *			before the window is on screen.
+	 * @brief Builds the composite pipeline and its quad
+	 * @details Called from the constructor, and throws std::runtime_error if it cannot finish. The composite is the
+	 *			only pass that writes the back buffer, so a renderer that has none cannot present anything: there is no
+	 *			degraded mode worth keeping, and a failure here is reported once at startup rather than once per frame.
 	 */
-	void _EnsureCompositeResources();
+	void _CreateCompositeResources();
 
 private:
 	std::unique_ptr<I_GraphicDevice> _graphicDevice;
@@ -145,7 +147,7 @@ private:
 
 	/// Fixed at construction so a pipeline can be built before the first frame sizes the target.
 	Types::PixelFormat _sceneColorFormat = Types::PixelFormat::None;
-	Types::PixelFormat _sceneDepthColor = Types::PixelFormat::Depth32Float;
+	Types::PixelFormat _sceneDepthFormat = Types::PixelFormat::Depth32Float;
 
 	std::shared_ptr<I_PipelineState> _compositePipeline;
 	std::shared_ptr<I_VertexBuffer> _compositeVertexBuffer;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -21,7 +21,6 @@
 #include <array>
 #include <functional>
 #include <optional>
-#include <semaphore>
 
 
 namespace CA {
@@ -169,8 +168,6 @@ private:
 	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for the display size
 	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
-
-	std::counting_semaphore<3> _renderSemaphore{3};		///< Semaphore to synchronize frame rendering with Metal
 
 	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };

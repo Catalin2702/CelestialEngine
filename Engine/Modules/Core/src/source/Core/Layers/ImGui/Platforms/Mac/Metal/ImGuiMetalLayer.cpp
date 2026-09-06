@@ -109,7 +109,6 @@ void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 }
 
 void ImGuiMetalLayer::Begin(const f32 deltaTime) {
-	_renderSemaphore.acquire();
 	_currentFrameStarted = false;
 	_deltaTime = deltaTime;
 
@@ -121,7 +120,6 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 	if (not sceneColor) [[unlikely]] {
 		// No target means the renderer skipped this frame; the overlay skips it too, and says nothing - the renderer
 		// has already reported it once.
-		_renderSemaphore.release();
 		return;
 	}
 
@@ -158,12 +156,6 @@ void ImGuiMetalLayer::End() {
 	Native::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	_frameContext.renderCommandEncoder->endEncoding();
-
-	// Still on this command buffer, and still needed: it paces ImGui's own ring of vertex buffers, which the backend
-	// reuses once the GPU is done with them. It has nothing to do with presentation.
-	_frameContext.commandBuffer->addCompletedHandler([this](...) {
-		_renderSemaphore.release();
-	});
 
 	// Neither presented nor committed: the buffer is the frame's, and the swapchain commits it with the present once
 	// every pass has closed.
