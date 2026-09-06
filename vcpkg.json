@@ -8,31 +8,6 @@
 		"glfw3",
 		"glm",
 		"gtest",
-		{
-			"name": "imgui",
-			"features": [
-				"glfw-binding",
-				"opengl3-binding",
-				"docking-experimental"
-			]
-		},
-		{
-			"name": "imgui",
-			"platform": "osx",
-			"features": [
-				"metal-binding",
-				"osx-binding"
-			]
-		},
-		{
-			"name": "imgui",
-			"platform": "windows",
-			"features": [
-				"dx11-binding",
-				"dx12-binding",
-				"win32-binding"
-			]
-		},
 		"spdlog"
 	],
 	"overrides": [
@@ -51,10 +26,6 @@
 		{
 			"name": "gtest",
 			"version": "1.17.0#2"
-		},
-		{
-			"name": "imgui",
-			"version": "1.91.9"
 		},
 		{
 			"name": "spdlog",

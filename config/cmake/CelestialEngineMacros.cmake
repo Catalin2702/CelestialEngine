@@ -194,8 +194,15 @@ set(CE_MODULE_DLL_NAMES
 # its own SHARED library. It is embedded into CE_App.app/Contents/Frameworks alongside the others
 # (see ce_bundle_apple_frameworks) but kept out of CE_MODULE_DLL_NAMES itself, since that list also
 # drives ce_enable_dll_bootstrap's /DELAYLOAD flags on Windows, where CE_Apple does not exist.
+#
+# CE_Vendor_ImGui is here for a different reason: ImGui keeps its context in a single global
+# (GImGui), and both CE_Core and CE_Apple call into it. As a static archive it was linked into both
+# dylibs, giving the process two contexts - the backend in CE_Apple would then look up its data in a
+# context CE_Core never draws into. Built SHARED there is exactly one, by construction rather than
+# by link order. It is likewise kept out of CE_MODULE_DLL_NAMES: it is not a delay-loadable CE
+# module.
 if (APPLE)
-	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES} CE_Apple)
+	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES} CE_Apple CE_Vendor_ImGui)
 else ()
 	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES})
 endif ()

@@ -2,3 +2,7 @@
 	path = Engine/Submodules/MetalCpp
 	url = https://github.com/Catalin2702/metal-cpp
 	branch = main
+[submodule "Engine/Submodules/ImGui"]
+	path = Engine/Submodules/ImGui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
