@@ -28,5 +28,38 @@
 	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+
+	<!--
+		Game Mode (macOS 14+). Launch Services decides eligibility from the application category,
+		so a game that does not declare itself one never qualifies, whatever else it sets.
+		LSSupportsGameMode is the explicit opt-in; GCSupportsGameMode is its Game Controller
+		counterpart, which is what lowers Bluetooth latency for controllers and audio.
+		Note that macOS only ACTIVATES Game Mode while the app is in full screen - windowed, an
+		otherwise perfectly eligible game never enters it.
+	-->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
+	<key>LSSupportsGameMode</key>
+	<true/>
+	<key>GCSupportsGameMode</key>
+	<true/>
+
+	<!--
+		Metal developer tooling, substituted per configuration - present in Debug and Release,
+		absent in Dist. See CE_APP_METAL_TOOLING_KEYS in App/CMakeLists.txt.
+
+		What MetalHudEnabled actually does, measured on this SDK rather than assumed: it makes Metal
+		map libMTLHud.dylib into the process at startup, idle. MTL_HUD_ENABLED=1 is what draws the
+		HUD, and it draws it with or without this key - the key is an opt-in, not a prerequisite.
+		Its value is keeping the HUD one environment variable away on launch paths where setting one
+		is awkward (Finder, an IDE run configuration). Dist does without it exactly so that a shipped
+		build never maps that dylib at all.
+
+		MetalCaptureEnabled is the same kind of opt-in for programmatic GPU frame capture through
+		MTLCaptureManager, whose environment counterpart is MTL_CAPTURE_ENABLED=1. Capture refuses to
+		start unless one of the two is set; with it, a capture can be written to an outputURL you
+		choose instead of living inside Xcode.
+	-->
+@CE_APP_METAL_TOOLING_KEYS@
 </dict>
 </plist>

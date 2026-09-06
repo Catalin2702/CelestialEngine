@@ -10,9 +10,9 @@
 /**
  * @file Window.hpp
  * @brief Umbrella header for the Window sub-module of Types
- * @details One include for the window description types and the GLFW handle deleter that goes with them.
- *			The deleter is not guarded by a platform macro because GLFW is the cross-platform backend: it is
- *			built everywhere, and only a forward-declared GLFWwindow reaches this header.
+ * @details One include for the window description types. The GLFW handle deleter used to live here too; it
+ *			moved to Core (Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp) because its one call to
+ *			glfwDestroyWindow was enough to link the whole of GLFW into libCE_Types, which is not a GLFW client.
  */
 
 #pragma once
@@ -21,7 +21,5 @@
 #define CE_TYPES_WINDOW_WINDOW_HPP
 
 #include "Types/Window/WindowProps.hpp"
-
-#include "Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
 
 #endif //CE_TYPES_WINDOW_WINDOW_HPP

@@ -112,6 +112,7 @@ set(RUNLOOP_HEADERS
 set(WINDOW_HEADERS
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
+	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Window/Platforms/Mac/MacMenuBar.hpp
@@ -298,6 +299,7 @@ set(WINDOW_SOURCES
 
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwPlatform.cpp
 	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
+	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Window/Platforms/Mac/MacMenuBar.cpp
@@ -371,6 +373,7 @@ target_link_libraries(CE_Core PUBLIC
 target_link_libraries(CE_Core PUBLIC
 	CE_Vendor_Glfw
 	CE_Vendor_ImGui
+	CE_Vendor_ImGui_Glfw
 	CE_Vendor_SpdLog
 )
 

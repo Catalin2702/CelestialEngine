@@ -51,7 +51,6 @@ set(HEADERS
 	# Window
 	src/include/Types/Window/Window.hpp
 	src/include/Types/Window/WindowProps.hpp
-	src/include/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
 
 
 	# Main
@@ -88,7 +87,6 @@ set(SOURCES
 
 	# Window
 	src/source/Types/Window/WindowProps.cpp
-	src/source/Types/Window/Platforms/Common/Glfw/GlfwWindowDestructor.cpp
 )
 
 add_library(CE_Types SHARED

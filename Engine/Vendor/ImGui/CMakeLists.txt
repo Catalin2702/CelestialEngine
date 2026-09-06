@@ -24,8 +24,7 @@ set(IMGUI_SOURCES
 	${IMGUI_DIR}/imgui_widgets.cpp
 	${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
 
-	# Backends
-	${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+	# Backends. imgui_impl_glfw.cpp is deliberately NOT here - see CE_Vendor_ImGui_Glfw below.
 	${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
@@ -82,11 +81,10 @@ target_link_libraries(CE_Vendor_ImGui PUBLIC
 	CE_Config
 )
 
-# Third-party
-target_link_libraries(CE_Vendor_ImGui PRIVATE
-	CE_Vendor_Glfw
-)
-
+# Third-party. No GLFW: it would be linked INTO this dylib (vcpkg ships it static), giving the
+# process a second copy of GLFW's code and global state next to CE_Core's - which the Objective-C
+# runtime reports as "Class GLFWWindow is implemented in both ...", and which would leave ImGui's
+# GLFW backend talking to a GLFW that was never initialised.
 if (APPLE)
 	target_link_libraries(CE_Vendor_ImGui PRIVATE
 		"-framework AppKit"
@@ -111,3 +109,26 @@ ce_set_module_library_output(CE_Vendor_ImGui)
 ce_configure_module_library_rpath(CE_Vendor_ImGui)
 
 ce_copy_to_last(CE_Vendor_ImGui)
+
+
+# The GLFW backend is a static sidecar rather than part of the dylib above, for the reason given at
+# that target's "Third-party" comment: GLFW is a static library, so anything that links it grows its
+# own copy. Kept static and undefined-symbol-tolerant, it is resolved when CE_Core - the only
+# consumer of the GLFW backend, and already a GLFW client - links it, so the process holds one GLFW.
+add_library(CE_Vendor_ImGui_Glfw STATIC
+	${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+)
+
+set_target_properties(CE_Vendor_ImGui_Glfw PROPERTIES
+	LINKER_LANGUAGE CXX
+	POSITION_INDEPENDENT_CODE ON
+)
+
+set_source_files_properties(${IMGUI_DIR}/backends/imgui_impl_glfw.cpp PROPERTIES
+	COMPILE_OPTIONS "-w"
+)
+
+target_link_libraries(CE_Vendor_ImGui_Glfw PUBLIC
+	CE_Vendor_Glfw
+	CE_Vendor_ImGui
+)

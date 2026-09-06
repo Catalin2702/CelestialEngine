@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Core/Window/I_Window.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
+#include "Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
 #include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
@@ -312,7 +313,7 @@ public:
 	GlfwWindowEventHandler windowEventHandler;
 
 private:
-	Types::GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
+	GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
 
 	u32 _width = 0;								///< Cached window width, in screen coordinates
 	u32 _height = 0;							///< Cached window height, in screen coordinates

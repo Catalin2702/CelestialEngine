@@ -1,16 +1,16 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/Window
-// File: WindowDestructor.hpp
+// Module: CelestialEngine/Engine/Modules/Core/Window/Platforms/Common/Glfw
+// File: GlfwWindowDestructor.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-06
 //
 
 #pragma once
 
-#ifndef CE_TYPES_WINDOW_GLFWWINDOWDESTRUCTOR_HPP
-#define CE_TYPES_WINDOW_GLFWWINDOWDESTRUCTOR_HPP
+#ifndef CE_CORE_WINDOW_GLFWWINDOWDESTRUCTOR_HPP
+#define CE_CORE_WINDOW_GLFWWINDOWDESTRUCTOR_HPP
 
 #include "Define/DynamicLinker.hpp"
 
@@ -19,7 +19,7 @@
 
 struct GLFWwindow;
 
-namespace CE::Types {
+namespace CE::Core {
 
 /**
  * @struct GlfwWindowDestructor
@@ -27,7 +27,7 @@ namespace CE::Types {
  * @details Provides proper cleanup for GLFW windows when used with std::unique_ptr.
  *			Ensures that glfwDestroyWindow is called when the window goes out of scope.
  */
-struct CE_TYPES_API GlfwWindowDestructor {
+struct CE_CORE_API GlfwWindowDestructor {
 	/**
 	 * @brief Destroys the GLFW window
 	 * @param window Pointer to the GLFW window to destroy
@@ -46,4 +46,4 @@ using GlfwWindowPtr = std::unique_ptr<GLFWwindow, GlfwWindowDestructor>;
 
 }
 
-#endif //CE_TYPES_WINDOW_GLFWWINDOWDESTRUCTOR_HPP
+#endif //CE_CORE_WINDOW_GLFWWINDOWDESTRUCTOR_HPP

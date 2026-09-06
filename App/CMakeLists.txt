@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-05
+# Updated: 2026-09-06
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -111,8 +111,27 @@ if(APPLE)
 
 	# Resolve @CE_APP_OUTPUT_NAME@ / @PROJECT_VERSION@ once, into the build tree, and use THAT as
 	# the bundle's Info.plist source everywhere below.
+	#
+	# Two of them, because the Metal tooling keys are gated per configuration and configure_file
+	# runs ONCE for all three under a multi-config generator - it cannot see $<CONFIG>. Writing the
+	# genex into the plist instead is not an option either: a generator expression ends at the
+	# first '>', which every single XML tag in the fragment contains. So the variant is chosen at
+	# build time, by the POST_BUILD copy below, out of two files configured here.
+	set(CE_APP_METAL_TOOLING_KEYS
+"	<key>MetalHudEnabled</key>
+	<true/>
+	<key>MetalCaptureEnabled</key>
+	<true/>")
+
 	set(CE_APP_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/Info.plist")
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in" "${CE_APP_INFO_PLIST}" @ONLY)
+
+	# Dist ships without them: MetalHudEnabled alone maps libMTLHud.dylib into every user's
+	# process, idle but present, and MetalCaptureEnabled opens the app to GPU capture.
+	set(CE_APP_METAL_TOOLING_KEYS "	<!-- Metal HUD and GPU capture are Debug/Release only. -->")
+
+	set(CE_APP_INFO_PLIST_DIST "${CMAKE_CURRENT_BINARY_DIR}/Info.Dist.plist")
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in" "${CE_APP_INFO_PLIST_DIST}" @ONLY)
 
 	# Set bundle properties
 	set_target_properties(CE_App PROPERTIES
@@ -124,12 +143,25 @@ if(APPLE)
 		MACOSX_BUNDLE_INFO_PLIST "${CE_APP_INFO_PLIST}"
 	)
 
+	# Same reasoning as the shaders above: the plists are only ever installed by a POST_BUILD step,
+	# and POST_BUILD steps run only when the target relinks. Without this, editing Info.plist.in
+	# reconfigured and rewrote the file in the build tree but left the .app holding the previous
+	# one until something unrelated forced a relink.
+	set_property(TARGET CE_App APPEND PROPERTY
+		LINK_DEPENDS "${CE_APP_INFO_PLIST}" "${CE_APP_INFO_PLIST_DIST}"
+	)
+
 	# Copy Info.plist to bundle (fallback if MACOSX_BUNDLE_INFO_PLIST doesn't work). It copies the
 	# CONFIGURED plist, not the raw template: copying Info.plist.in verbatim would overwrite the
 	# generated one with a file still full of @PLACEHOLDERS@.
+	#
+	# This is also where the per-configuration choice is made. MACOSX_BUNDLE_INFO_PLIST above takes
+	# no generator expression - it is consumed when the bundle skeleton is generated, before any
+	# configuration is picked - so the skeleton always gets the Debug/Release plist and this step,
+	# which runs before the signing step below, puts the right one in place.
 	add_custom_command(TARGET CE_App POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"${CE_APP_INFO_PLIST}"
+			"$<IF:$<CONFIG:Dist>,${CE_APP_INFO_PLIST_DIST},${CE_APP_INFO_PLIST}>"
 			"$<TARGET_BUNDLE_CONTENT_DIR:CE_App>/Info.plist"
 		COMMENT "Copying Info.plist to bundle"
 	)

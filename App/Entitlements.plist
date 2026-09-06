@@ -2,5 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!--
+		Deliberately empty, and it is not an oversight.
+
+		Game Mode needs no entitlement: eligibility is decided entirely by Info.plist
+		(LSApplicationCategoryType / LSSupportsGameMode / GCSupportsGameMode). There is no
+		com.apple.developer.game-mode - the string does not exist anywhere in the system frameworks.
+
+		The Metal HUD and programmatic GPU frame capture need no entitlement either: Metal gates
+		both on the app's own Info.plist keys (MetalHudEnabled / MetalCaptureEnabled).
+
+		What WOULD belong here, if any of it ever becomes true:
+
+		  com.apple.security.get-task-allow
+			Lets a debugger or profiler attach. Only necessary once the hardened runtime is turned
+			on - this bundle is ad-hoc signed without it, so sample/heap/vmmap/Instruments already
+			attach fine. It must never ship: it is precisely what lets anything read the process.
+
+		  com.apple.security.cs.disable-library-validation
+			Needed only to load code signed by someone else into the process (an injected tool
+			dylib, a third-party plugin host).
+
+		  com.apple.security.app-sandbox + com.apple.security.files.user-selected.read-write
+			Needed only if the app is ever sandboxed, e.g. to open a project from a file panel.
+
+		codesign parses this as XML, so these comments cost nothing at build time.
+	-->
 </dict>
 </plist>
