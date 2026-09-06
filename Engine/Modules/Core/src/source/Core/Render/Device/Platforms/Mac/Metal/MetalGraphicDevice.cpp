@@ -14,6 +14,7 @@
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
 #include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Tools/Tools.hpp"
+#include "Types/Types.hpp"
 
 #include <Metal/Metal.hpp>
 
@@ -77,32 +78,59 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 		return nullptr;
 	}
 
-	if (not _nativeFrameDrawable) [[unlikely]] {
-		// No drawable was acquired for this frame - the layer had none free, or BeginFrame was never called. Skipped,
-		// not fatal: the next frame gets one.
+	const auto& [target_0, loadAction_0, storeAction_0, clearColor_0] = descriptor.colors[0];
+
+	// Null target means the swapchain's back buffer, which is the only attachment that can be missing: a frame whose
+	// drawable was never acquired has nowhere to present to, and that is normal under memory pressure. A pass into a
+	// texture of ours needs no drawable at all, which is why the check moved inside this branch.
+	const MTL::Texture* nativeColorTexture = nullptr;
+	if (target_0) {
+		assert(target_0->GetGraphicApi() == Types::GraphicsApi::Metal and "MetalGraphicDevice::BeginRenderPass: The color target belongs to another backend!");
+		nativeColorTexture = static_cast<const MetalTexture*>(target_0)->GetTexture();
+	}
+	else if (_nativeFrameDrawable) {
+		nativeColorTexture = _nativeFrameDrawable->texture();
+	}
+
+	if (not nativeColorTexture) [[unlikely]] {
 		CE_CORE_WARN("MetalGraphicDevice::BeginRenderPass: No frame target was published; the pass is skipped.");
 		return nullptr;
 	}
 
-	assert(descriptor.colors[0].target == nullptr and descriptor.depth.target == nullptr and "MetalGraphicDevice::BeginRenderPass: Rendering to a texutre is not supported yet!");
-
 	const auto passDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 
-	// Attachment 0 is the drawable. The extra attachments a G-buffer would use need their own textures, which is the
-	// same missing texture type - so colorCount above 1 is not reachable yet.
-	const auto& color0 = descriptor.colors[0];
-	const auto& clearColor = color0.clearColor;
-	const auto colorAttachment = passDescriptor->colorAttachments()->object(0);
-	colorAttachment->setTexture(_nativeFrameDrawable->texture());
-	colorAttachment->setLoadAction(Types::ToMetal(color0.loadAction));
-	colorAttachment->setStoreAction(Types::ToMetal(color0.storeAction));
-	colorAttachment->setClearColor(MTL::ClearColor::Make(clearColor.r, clearColor.g, clearColor.b, clearColor.a));
+	const auto colorAttachment_0 = passDescriptor->colorAttachments()->object(0);
+	colorAttachment_0->setTexture(_nativeFrameDrawable->texture());
+	colorAttachment_0->setLoadAction(Types::ToMetal(loadAction_0));
+	colorAttachment_0->setStoreAction(Types::ToMetal(storeAction_0));
+	colorAttachment_0->setClearColor(MTL::ClearColor::Make(clearColor_0.r, clearColor_0.g, clearColor_0.b, clearColor_0.a));
+
+	// The extra attachments a G-buffer would use are reachable now, and the loop is the only part of this that had to
+	// wait for the texture type.
+	for (u32 i = 1; i < descriptor.colorCount; ++i) {
+		const auto& [target_i, loadAction_i, storeAction_i, clearColor_i] = descriptor.colors[i];
+		if (not target_i) [[unlikely]] {
+			CE_CORE_WARN("MetalGraphicDevice::BeginRenderPass: Colour attachment {} has no texture; the pass is skipped.", i);
+			return nullptr;
+		}
+
+		assert(target_i->GetGraphicApi() == Types::GraphicsApi::Metal and "MetalGraphicDevice::BeginRenderPass: A color target belongs to another backend!");
+
+		const auto& extraClear = clearColor_i;
+		const auto attachment = passDescriptor->colorAttachments()->object(i);
+		attachment->setTexture(static_cast<const MetalTexture*>(target_i)->GetTexture());
+		attachment->setLoadAction(Types::ToMetal(loadAction_i));
+		attachment->setStoreAction(Types::ToMetal(storeAction_i));
+		attachment->setClearColor(MTL::ClearColor::Make(extraClear.r, extraClear.g, extraClear.b, extraClear.a));
+	}
 
 	// This is where a tile-based GPU earns its keep: a DontCare store on the depth buffer means the tile is simply
 	// never written back to memory, so the depth buffer costs bandwidth only while the pass is running.
-	if (descriptor.depth.enabled and _nativeFrameDepthTexture) {
+	if (descriptor.depth.enabled and descriptor.depth.target) {
+		assert(descriptor.depth.target->GetGraphicApi() == Types::GraphicsApi::Metal and "MetalGraphicDevice::BeginRenderPass: The depth target belongs to another backend!");
+
 		const auto depthAttachment = passDescriptor->depthAttachment();
-		depthAttachment->setTexture(_nativeFrameDepthTexture);
+		depthAttachment->setTexture(static_cast<const MetalTexture*>(descriptor.depth.target)->GetTexture());
 		depthAttachment->setLoadAction(Types::ToMetal(descriptor.depth.loadAction));
 		depthAttachment->setStoreAction(Types::ToMetal(descriptor.depth.storeAction));
 		depthAttachment->setClearDepth(descriptor.depth.clearDepth);
