@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #include "Core/Application/Application.hpp"
@@ -12,10 +12,6 @@
 #include "Core/Input/Input.hpp"
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
-#if CE_PLATFORM_MACOS
-	#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
-	#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
-#endif
 #include "Core/Render/Buffer/I_Buffer.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
@@ -29,6 +25,12 @@
 #include "Core/Window/I_Window.hpp"
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
+
+#if CE_PLATFORM_MACOS
+	#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
+	#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+	#include "Apple/MetalCpp/Foundation/NsAutoreleasePool.hpp"
+#endif
 
 #include <glm/glm.hpp>
 
@@ -336,6 +338,10 @@ void Application::_InitRenderer() {
 }
 
 void Application::_OnFrame() {
+#if CE_PLATFORM_MACOS
+	Native::NsAutoreleasePool framePool;
+#endif
+
 	const auto now = std::chrono::steady_clock::now();
 	const auto deltaTime = std::chrono::duration<f32>(now - _lastFrameTime.load()).count();
 	_lastFrameTime.store(now);
@@ -437,7 +443,7 @@ void Application::_ApplyPresentPacing([[maybe_unused]] const bool vsync) const {
 #endif
 }
 
-u32 Application::_TargetFrameRate(const bool vsync) const {
+u32 Application::_TargetFrameRate(const bool vsync) {
 	// Zero - uncapped - is the right answer while VSync is on, and it is not a contradiction: the presentation call
 	// already blocks until the display is ready, on every backend. glfwSwapBuffers waits for the swap interval,
 	// CAMetalLayer::nextDrawable waits for the compositor to free a buffer. Sleeping on top of that would mean two

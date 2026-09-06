@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -198,7 +198,7 @@ private:
 	 * @brief Works out what the run loop should be told to aim for
 	 * @return u32 Frames per second, or 0 to let the loop run as fast as presentation allows
 	 */
-	[[nodiscard]] u32 _TargetFrameRate(bool vsync) const;
+	[[nodiscard]] static u32 _TargetFrameRate(bool vsync) ;
 
 	/**
 	 * @brief Tells the backend how far apart to hold successive frames, where it can

@@ -4,52 +4,51 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-09-06
 #
 
 cmake_minimum_required(VERSION 4.1)
 
-set(INCLUDE src/include/Apple)
-set(INTERFACE src/interface/Apple)
-set(SOURCE src/source/Apple)
-
 set(BRIDGE_HEADERS
 	# ImGui
-	${INCLUDE}/Bridge/ImGui/ImGuiBridge.h
+	src/include/Apple/Bridge/ImGui/ImGuiBridge.h
 )
 
 set(METALCPP_HEADERS
 	# AppKit
-	${INCLUDE}/MetalCpp/AppKit/NsApplicationDelegate.hpp
-	${INCLUDE}/MetalCpp/AppKit/NsViewEventDispatcher.hpp
-	${INCLUDE}/MetalCpp/AppKit/NsWindowEventDispatcher.hpp
+	src/include/Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp
+	src/include/Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp
+	src/include/Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp
+
+	# Foundation
+	src/include/Apple/MetalCpp/Foundation/NsAutoreleasePool.hpp
 
 	# MetalKit
-	${INCLUDE}/MetalCpp/MetalKit/MtkViewDelegate.hpp
+	src/include/Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp
 
 	# QuartzCore
-	${INCLUDE}/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp
+	src/include/Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp
 )
 
 set(BRIDGE_SOURCES
 	# ImGui
-	${SOURCE}/Bridge/ImGui/ImGuiBridge.mm
+	src/source/Apple/Bridge/ImGui/ImGuiBridge.mm
 )
 
 set(METALCPP_SOURCES
 	# AppKit
-	${SOURCE}/MetalCpp/AppKit/NsApplicationDelegate.cpp
-	${SOURCE}/MetalCpp/AppKit/NsViewEventDispatcher.cpp
-	${SOURCE}/MetalCpp/AppKit/NsWindowEventDispatcher.cpp
+	src/source/Apple/MetalCpp/AppKit/NsApplicationDelegate.cpp
+	src/source/Apple/MetalCpp/AppKit/NsViewEventDispatcher.cpp
+	src/source/Apple/MetalCpp/AppKit/NsWindowEventDispatcher.cpp
 
 	# Implementation
-	${SOURCE}/MetalCpp/Implementation/MetalCppImplementation.cpp
+	src/source/Apple/MetalCpp/Implementation/MetalCppImplementation.cpp
 
 	# MetalKit
-	${SOURCE}/MetalCpp/MetalKit/MtkViewDelegate.cpp
+	src/source/Apple/MetalCpp/MetalKit/MtkViewDelegate.cpp
 
 	# QuartzCore
-	${SOURCE}/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.cpp
+	src/source/Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.cpp
 )
 
 set(HEADERS
