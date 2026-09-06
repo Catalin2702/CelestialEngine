@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-09-06
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -17,6 +17,7 @@ set(HEADERS
 )
 
 set(SOURCES
+	"${CMAKE_CURRENT_SOURCE_DIR}/source/Composite.metal"
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Fragment.metal"
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Vertex.metal"
 )

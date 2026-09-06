@@ -4,12 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-09-06
 #
 
 cmake_minimum_required(VERSION 4.1)
 
 set(SOURCES
+	"${CMAKE_CURRENT_SOURCE_DIR}/source/CompositeFragment.glsl"
+	"${CMAKE_CURRENT_SOURCE_DIR}/source/CompositeVertex.glsl"
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Fragment.glsl"
 	"${CMAKE_CURRENT_SOURCE_DIR}/source/Vertex.glsl"
 )
