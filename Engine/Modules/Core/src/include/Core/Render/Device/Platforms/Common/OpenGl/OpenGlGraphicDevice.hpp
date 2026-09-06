@@ -22,6 +22,9 @@ namespace CE::Core {
 
 class CE_CORE_API OpenGlGraphicDevice final: public I_GraphicDeviceBase<Types::GraphicsApi::OpenGL> {
 public:
+	~OpenGlGraphicDevice() override;
+
+public:
 	[[nodiscard]] std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) override;
 	[[nodiscard]] std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) override;
 	[[nodiscard]] std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) override;

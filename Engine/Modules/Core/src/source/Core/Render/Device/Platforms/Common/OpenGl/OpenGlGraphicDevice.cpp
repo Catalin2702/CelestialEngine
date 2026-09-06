@@ -64,6 +64,11 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 
 }
 
+OpenGlGraphicDevice::~OpenGlGraphicDevice() {
+	if (_frameBuffer != 0)
+		glDeleteFramebuffers(1, &_frameBuffer);
+}
+
 std::shared_ptr<I_ShaderModule> OpenGlGraphicDevice::CreateShaderModule(const ShaderModuleDescriptor& descriptor) {
 	return std::make_shared<OpenGlShaderModule>(descriptor);
 }
