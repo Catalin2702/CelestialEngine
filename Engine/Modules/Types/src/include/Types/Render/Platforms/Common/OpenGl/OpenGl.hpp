@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+#include "Types/Render/PixelFormat.hpp"
 
 #include <format>
 #include <string>
@@ -48,6 +49,14 @@ constexpr BufferBit operator | (BufferBit x, BufferBit y) {
 constexpr BufferBit operator ^ (BufferBit x, BufferBit y) {
 	return static_cast<BufferBit>(static_cast<u32>(x) ^ static_cast<u32>(y));
 }
+
+struct GlFormat {
+	i32 internalFormat;
+	u32 format;
+	u32 type;
+};
+
+[[nodiscard]] CE_TYPES_API GlFormat ToOpenGl(PixelFormat pixelFormat);
 
 /**
  * @brief Names the bits set in a BufferBit mask, for fmt/spdlog and - through the formatter below - for std::format

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-06
 //
 
 #pragma once
@@ -14,7 +14,6 @@
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Define/DynamicLinker.hpp"
-#include "Types/Render/Render.hpp"
 
 #include <memory>
 
@@ -27,6 +26,8 @@ public:
 	[[nodiscard]] std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) override;
 	[[nodiscard]] std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) override;
 	[[nodiscard]] std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> data, const BufferLayout& layout) override;
+
+	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override;
 
 	[[nodiscard]] std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) override;
 };

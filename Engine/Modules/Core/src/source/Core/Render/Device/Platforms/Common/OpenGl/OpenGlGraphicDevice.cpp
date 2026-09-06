@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-06
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
@@ -13,6 +13,7 @@
 #include "Core/Render/Command/RenderPassDescriptor.hpp"
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
+#include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #include "Tools/Tools.hpp"
 
 #include <glad/glad.h>
@@ -77,6 +78,10 @@ std::shared_ptr<I_IndexBuffer> OpenGlGraphicDevice::CreateIndexBuffer(const std:
 
 std::shared_ptr<I_VertexBuffer> OpenGlGraphicDevice::CreateVertexBuffer(const std::span<const f32> data, const BufferLayout& layout) {
 	return std::make_shared<OpenGlVertexBuffer>(data.data(), data.size(), layout);
+}
+
+std::shared_ptr<I_Texture> OpenGlGraphicDevice::CreateTexture(const TextureDescriptor& descriptor) {
+	return std::make_shared<OpenGlTexture>(descriptor);
 }
 
 std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const RenderPassDescriptor& descriptor) {

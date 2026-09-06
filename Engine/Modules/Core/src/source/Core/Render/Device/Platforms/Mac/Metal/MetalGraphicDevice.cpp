@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-06
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -12,6 +12,7 @@
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
+#include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -62,6 +63,10 @@ std::shared_ptr<I_IndexBuffer> MetalGraphicDevice::CreateIndexBuffer(const std::
 
 std::shared_ptr<I_VertexBuffer> MetalGraphicDevice::CreateVertexBuffer(const std::span<const f32> vertices, const BufferLayout& layout) {
 	return std::make_shared<MetalVertexBuffer>(_nativeDevice.get(), vertices.data(), vertices.size(), layout);
+}
+
+std::shared_ptr<I_Texture> MetalGraphicDevice::CreateTexture(const TextureDescriptor& descriptor) {
+	return std::make_shared<MetalTexture>(_nativeDevice.get(), descriptor);
 }
 
 std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const RenderPassDescriptor& descriptor) {

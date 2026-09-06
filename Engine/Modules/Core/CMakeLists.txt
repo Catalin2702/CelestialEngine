@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-05
+# Updated: 2026-09-06
 #
 
 set(APPLICATION_HEADERS
@@ -95,6 +95,14 @@ set(RENDER_HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp
 	>
+
+
+	# Texture
+	src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/include/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp
+	>
 )
 
 set(RUNLOOP_HEADERS
@@ -164,6 +172,9 @@ set(RENDER_INTERFACES
 
 	# Swapchain
 	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
+
+	# Texture
+	src/interface/Core/Render/Texture/I_Texture.hpp
 )
 
 set(RUNLOOP_INTERFACES
@@ -265,6 +276,14 @@ set(RENDER_SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.cpp
+	>
+
+
+	# Texture
+	src/source/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
+
+	$<$<PLATFORM_ID:Darwin>:
+		src/source/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.cpp
 	>
 )
 

@@ -12,7 +12,7 @@
 #include <Metal/Metal.hpp>
 
 
-static_assert(std::is_same_v<std::underlying_type_t<MTL::PixelFormat>, std::uintptr_t>, "MetalCpp changed the underlying type of MTL enums; the forward declarations in Metal.hpp must follow.");
+static_assert(std::is_same_v<std::underlying_type_t<MTL::PixelFormat>, std::uintptr_t>, "MetalCpp changed the underlying type of MTL enums; the forward declarations in Metal.hpp must follow!");
 
 namespace CE::Types {
 

@@ -34,6 +34,9 @@ class I_ShaderModule;
 
 class BufferLayout;
 
+struct TextureDescriptor;
+class I_Texture;
+
 class I_GraphicDevice {
 public:
 	virtual ~I_GraphicDevice() = default;
@@ -48,6 +51,13 @@ public:
 	[[nodiscard]] virtual std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> data, const BufferLayout& layout) = 0;
+
+	/**
+	 * @brief Allocates a texture, today only ever a render target
+	 * @details Shared like the other resources: a texture outlives the pass that writes it and the one that reads it,
+	 *			and the renderer's scene target is held across frames.
+	 */
+	[[nodiscard]] virtual std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) = 0;
 
 	[[nodiscard]] virtual std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) = 0;
 
