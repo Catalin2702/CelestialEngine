@@ -39,6 +39,12 @@ enum class CameraController: u8 {
 	Scripted,
 };
 
+enum class ClipConvention: u8 {
+	None,
+	ZeroToOne,
+	NegativeOneToOne
+};
+
 }
 
 constexpr std::string_view format_as(const CE::Types::CameraProjection projection) {
@@ -47,7 +53,7 @@ constexpr std::string_view format_as(const CE::Types::CameraProjection projectio
 		case CE::Types::CameraProjection::Orthographic: return "Orthographic";
 		case CE::Types::CameraProjection::Perspective: return "Perspective";
 		default:
-			return "Unknown Camera type";
+			return "Unknown Camera Projection";
 	}
 }
 
@@ -64,7 +70,17 @@ constexpr std::string_view format_as(const CE::Types::CameraController controlle
 		case CE::Types::CameraController::Cinematic: return "Cinematic";
 		case CE::Types::CameraController::Scripted: return "Scripted";
 		default:
-			return "Unknown Camera type";
+			return "Unknown Camera Controller";
+	}
+}
+
+constexpr std::string_view format_as(const CE::Types::ClipConvention convention) {
+	switch (convention) {
+		case CE::Types::ClipConvention::None: return "None";
+		case CE::Types::ClipConvention::ZeroToOne: return "ZeroToOne";
+		case CE::Types::ClipConvention::NegativeOneToOne: return "NegativeOneToOne";
+		default:
+			return "Unknown Clip Convention";
 	}
 }
 
@@ -78,6 +94,13 @@ struct std::formatter<CE::Types::CameraProjection>: std::formatter<std::string_v
 template<>
 struct std::formatter<CE::Types::CameraController>: std::formatter<std::string_view> {
 	auto format(const CE::Types::CameraController value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
+
+template<>
+struct std::formatter<CE::Types::ClipConvention>: std::formatter<std::string_view> {
+	auto format(const CE::Types::ClipConvention value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
