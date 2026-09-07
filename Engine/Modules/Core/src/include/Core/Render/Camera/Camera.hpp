@@ -25,6 +25,13 @@ namespace CE::Core {
 struct CameraDescriptor;
 struct CameraProjectionDescriptor;
 
+struct CE_CORE_API CameraData {
+	glm::mat4 view{1.0_f32};
+	glm::mat4 projection{1.0_f32};
+	glm::mat4 viewProjection{1.0_f32};
+	glm::vec3 position{0.0_f32};   // serve alle luci speculari
+};
+
 class CE_CORE_API Camera {
 public:
 	Camera(const CameraDescriptor& cameraDescriptor, const CameraProjectionDescriptor& projectionDescriptor);
