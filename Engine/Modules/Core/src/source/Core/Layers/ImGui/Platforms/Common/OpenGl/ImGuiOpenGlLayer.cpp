@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -67,37 +67,37 @@ void ImGuiOpenGlLayer::SubscribeToEventHub() {
 	// longer has to know which application it belongs to.
 	_eventHub = Application::Get().GetEventHubDispatcher();
 
-	_eventHubHandles[MouseMoved] = _eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
-	_eventHubHandles[MouseDragged] = _eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
-	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
-	_eventHubHandles[MouseButtonPressed] = _eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
-	_eventHubHandles[MouseButtonReleased] = _eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandlers[MouseMoved] = _eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
+	_eventHubHandlers[MouseDragged] = _eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
+	_eventHubHandlers[MouseWheelScrolled] = _eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
+	_eventHubHandlers[MouseButtonPressed] = _eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandlers[MouseButtonReleased] = _eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
 
-	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
-	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
-	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
+	_eventHubHandlers[KeyboardKeyPressed] = _eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
+	_eventHubHandlers[KeyboardKeyReleased] = _eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
+	_eventHubHandlers[KeyboardCharTyped] = _eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
 
-	_eventHubHandles[ViewResize] = _eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
+	_eventHubHandlers[ViewResize] = _eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
 	if (not _eventHub) [[unlikely]]
 		return;
 
-	_eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
-	_eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseDragged]);
-	_eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
-	_eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
-	_eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonReleased]);
+	_eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseMoved]);
+	_eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseDragged]);
+	_eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseWheelScrolled]);
+	_eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonPressed]);
+	_eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonReleased]);
 
-	_eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
-	_eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
-	_eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
+	_eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyPressed]);
+	_eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyReleased]);
+	_eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyPressed]);
 
-	_eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
+	_eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandlers[ViewResize]);
 
 	_eventHub = std::nullopt;
-	_eventHubHandles = {};
+	_eventHubHandlers = {};
 }
 
 void ImGuiOpenGlLayer::Begin(const f32 deltaTime) {

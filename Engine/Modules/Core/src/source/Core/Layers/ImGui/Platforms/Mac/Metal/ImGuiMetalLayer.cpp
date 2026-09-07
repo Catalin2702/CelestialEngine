@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -75,37 +75,37 @@ void ImGuiMetalLayer::SubscribeToEventHub() {
 	}
 	_eventHub = *hub;
 
-	_eventHubHandles[MouseMoved] = _eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseMoved>(this));
-	_eventHubHandles[MouseDragged] = _eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseDragged>(this));
-	_eventHubHandles[MouseWheelScrolled] = _eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseScrolled>(this));
-	_eventHubHandles[MouseButtonPressed] = _eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonPressed>(this));
-	_eventHubHandles[MouseButtonRelease] = _eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonReleased>(this));
+	_eventHubHandlers[MouseMoved] = _eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseMoved>(this));
+	_eventHubHandlers[MouseDragged] = _eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseDragged>(this));
+	_eventHubHandlers[MouseWheelScrolled] = _eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseScrolled>(this));
+	_eventHubHandlers[MouseButtonPressed] = _eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonPressed>(this));
+	_eventHubHandlers[MouseButtonRelease] = _eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnMouseButtonReleased>(this));
 
-	_eventHubHandles[KeyboardKeyPressed] = _eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyPressed>(this));
-	_eventHubHandles[KeyboardKeyReleased] = _eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyReleased>(this));
-	_eventHubHandles[KeyboardCharTyped] = _eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyTyped>(this));
+	_eventHubHandlers[KeyboardKeyPressed] = _eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyPressed>(this));
+	_eventHubHandlers[KeyboardKeyReleased] = _eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyReleased>(this));
+	_eventHubHandlers[KeyboardCharTyped] = _eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnKeyTyped>(this));
 
-	_eventHubHandles[ViewResize] = _eventHub->get().renderEventHub.onResizeViewDispatcher.Subscribe(EventDelegate<Events::ViewResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnViewResized>(this));
+	_eventHubHandlers[ViewResize] = _eventHub->get().renderEventHub.onResizeViewDispatcher.Subscribe(EventDelegate<Events::ViewResizeEvent&>::FromConstMethod<ImGuiMetalLayer, &ImGuiMetalLayer::_OnViewResized>(this));
 }
 
 void ImGuiMetalLayer::UnsubscribeFromEventHub() {
 	if (not _eventHub) [[unlikely]]
 		return;
 
-	_eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseMoved]);
-	_eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseDragged]);
-	_eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseWheelScrolled]);
-	_eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonPressed]);
-	_eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[MouseButtonRelease]);
+	_eventHub->get().mouseEventHub.onMovedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseMoved]);
+	_eventHub->get().mouseEventHub.onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseDragged]);
+	_eventHub->get().mouseEventHub.onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseWheelScrolled]);
+	_eventHub->get().mouseEventHub.onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonPressed]);
+	_eventHub->get().mouseEventHub.onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonRelease]);
 
-	_eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyPressed]);
-	_eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardKeyReleased]);
-	_eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandles[KeyboardCharTyped]);
+	_eventHub->get().keyboardEventHub.onPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyPressed]);
+	_eventHub->get().keyboardEventHub.onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyReleased]);
+	_eventHub->get().keyboardEventHub.onTypedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardCharTyped]);
 
-	_eventHub->get().renderEventHub.onResizeViewDispatcher.Unsubscribe(_eventHubHandles[ViewResize]);
+	_eventHub->get().renderEventHub.onResizeViewDispatcher.Unsubscribe(_eventHubHandlers[ViewResize]);
 
 	_eventHub = std::nullopt;
-	_eventHubHandles = {};
+	_eventHubHandlers = {};
 }
 
 void ImGuiMetalLayer::Begin(const f32 deltaTime) {

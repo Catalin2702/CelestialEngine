@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -161,7 +161,7 @@ private:
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached window (non-owning); the GLFW backend needs the native handle
 	std::optional<std::reference_wrapper<I_EventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
-	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -169,7 +169,7 @@ private:
 	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
-	std::array<u32, _Count> _eventHubHandles{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }
