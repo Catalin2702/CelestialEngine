@@ -17,7 +17,7 @@
 
 namespace CE::Core {
 
-class OrthographicCameraProjection final: public I_CameraProjection {
+class CE_API_EXPORT OrthographicCameraProjection final: public I_CameraProjection {
 public:
 	OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor);
 
