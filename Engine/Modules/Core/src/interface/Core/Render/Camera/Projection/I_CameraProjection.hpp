@@ -21,12 +21,14 @@
 
 namespace CE::Core {
 
+struct CameraProjectionDescriptor;
+
 class I_CameraProjection {
 public:
 	virtual ~I_CameraProjection() = default;
 
 public:
-	[[nodiscard]] static std::unique_ptr<I_CameraProjection> MakeCameraProjection(Types::CameraProjection projection);
+	[[nodiscard]] static std::unique_ptr<I_CameraProjection>MakeCameraProjection(const CameraProjectionDescriptor& descriptor);
 
 public:
 	virtual void SetViewportSize(u32 width, u32 height) = 0;

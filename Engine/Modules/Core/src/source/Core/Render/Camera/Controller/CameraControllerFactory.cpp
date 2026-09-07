@@ -7,11 +7,12 @@
 // Updated: 2026-09-07
 //
 
+#include "Core/Render/Camera/Controller/CameraControllerDescriptor.hpp"
 #include "Core/Render/Camera/Controller/I_CameraController.hpp"
 
 namespace CE::Core {
 
-std::unique_ptr<I_CameraController> I_CameraController::MakeCameraController(Types::CameraController) {
+std::unique_ptr<I_CameraController> I_CameraController::MakeCameraController(const CameraControllerDescriptor&) {
 	return nullptr;
 }
 

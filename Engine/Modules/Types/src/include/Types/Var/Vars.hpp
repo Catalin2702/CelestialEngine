@@ -12,6 +12,8 @@
 #ifndef CE_TYPES_VAR_VARS_HPP
 #define CE_TYPES_VAR_VARS_HPP
 
+#include <glm/glm.hpp>
+
 #include <cstdint>
 
 using u8 = uint8_t;
@@ -47,5 +49,9 @@ constexpr auto operator ""_f32(const f128 x) { return static_cast<f32>(x); }
 constexpr auto operator ""_f64(const f128 x) { return static_cast<f64>(x); }
 
 constexpr auto operator ""_f128(const f128 x) { return static_cast<f128>(x); }
+
+constexpr glm::vec3 CE_WORLD_RIGHT{1.0_f32, 0.0_f32, 0.0_f32};
+constexpr glm::vec3 CE_WORLD_UP{0.0_f32, 1.0_f32, 0.0_f32};
+constexpr glm::vec3 CE_WORLD_FORWARD{0.0_f32, 0.0_f32, -1.0_f32};
 
 #endif //CE_TYPES_VAR_VARS_HPP

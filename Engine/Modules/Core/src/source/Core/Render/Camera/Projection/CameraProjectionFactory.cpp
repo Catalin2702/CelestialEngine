@@ -8,11 +8,19 @@
 //
 
 #include "Core/Render/Camera/Projection/I_CameraProjection.hpp"
+#include "Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp"
+#include "Core/Render/Camera/Projection/OrthographicCameraProjection.hpp"
 
 namespace CE::Core {
 
-std::unique_ptr<I_CameraProjection> I_CameraProjection::MakeCameraProjection(Types::CameraProjection) {
-	return nullptr;
+std::unique_ptr<I_CameraProjection> I_CameraProjection::MakeCameraProjection(const CameraProjectionDescriptor& descriptor) {
+	switch (descriptor.type) {
+		case Types::CameraProjection::Orthographic:
+			return std::make_unique<OrthographicCameraProjection>(descriptor);
+		case Types::CameraProjection::Perspective:
+		default:
+			return nullptr;
+	}
 }
 
 }

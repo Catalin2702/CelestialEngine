@@ -17,12 +17,13 @@
 #include <memory>
 
 
-namespace CE::Events {
+namespace CE::Core {
+
+namespace Events {
 	class Event;
 }
 
-namespace CE::Core {
-
+struct CameraControllerDescriptor;
 class Camera;
 
 class I_CameraController {
@@ -30,7 +31,7 @@ public:
 	virtual ~I_CameraController() = default;
 
 public:
-	[[nodiscard]] static std::unique_ptr<I_CameraController> MakeCameraController(Types::CameraController controller);
+	[[nodiscard]] static std::unique_ptr<I_CameraController> MakeCameraController(const CameraControllerDescriptor& descriptor);
 
 public:
 	virtual void OnAttach(Camera& camera) = 0;

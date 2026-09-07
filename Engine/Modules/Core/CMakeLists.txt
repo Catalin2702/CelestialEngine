@@ -46,6 +46,8 @@ set(RENDER_HEADERS
 
 	# Camera
 	src/include/Core/Render/Camera/Camera.hpp
+	src/include/Core/Render/Camera/Controller/CameraControllerDescriptor.hpp
+	src/include/Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp
 	src/include/Core/Render/Camera/Projection/OrthographicCameraProjection.hpp
 
 

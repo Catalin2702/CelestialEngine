@@ -108,6 +108,7 @@ target_link_libraries(CE_Types PUBLIC
 	CE_Define
 	CE_Vendor_Glad
 	CE_Vendor_Glfw
+	CE_Vendor_Glm
 	CE_Vendor_ImGui
 	CE_Vendor_MetalCpp
 )
