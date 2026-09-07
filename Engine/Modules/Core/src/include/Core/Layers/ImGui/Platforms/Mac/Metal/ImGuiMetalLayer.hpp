@@ -169,7 +169,7 @@ private:
 	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
-	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handlers, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }

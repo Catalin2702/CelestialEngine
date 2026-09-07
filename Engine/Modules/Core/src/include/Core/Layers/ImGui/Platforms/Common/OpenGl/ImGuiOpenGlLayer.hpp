@@ -161,7 +161,7 @@ private:
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached window (non-owning); the GLFW backend needs the native handle
 	std::optional<std::reference_wrapper<I_EventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
-	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handles, ordered to match Subscribe/UnsubscribeFromEventHub
+	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handlers, ordered to match Subscribe/UnsubscribeFromEventHub
 };
 
 }
