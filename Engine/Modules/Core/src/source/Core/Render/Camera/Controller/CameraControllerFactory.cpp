@@ -10,7 +10,6 @@
 #include "Core/Render/Camera/Controller/CameraControllerDescriptor.hpp"
 #include "Core/Render/Camera/Controller/I_CameraController.hpp"
 #include "Core/Render/Camera/Controller/StaticCameraController.hpp"
-
 #include "Tools/Tools.hpp"
 
 #include <format>
