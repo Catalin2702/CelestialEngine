@@ -12,7 +12,10 @@
 #ifndef CE_TYPES_RENDER_CAMERA_HPP
 #define CE_TYPES_RENDER_CAMERA_HPP
 
+#include <Define/DynamicLinker.hpp>
 #include "Types/Var/Vars.hpp"
+
+#include <glm/glm.hpp>
 
 #include <format>
 #include <string_view>
@@ -43,6 +46,13 @@ enum class ClipConvention: u8 {
 	None,
 	ZeroToOne,
 	NegativeOneToOne
+};
+
+struct CE_TYPES_API CameraData {
+	glm::mat4 view{1.0};
+	glm::mat4 projection{1.0};
+	glm::mat4 viewProjection{1.0};
+	glm::vec4 position{0.0, 0.0, 0.0, 1.0};   // serve alle luci speculari
 };
 
 }

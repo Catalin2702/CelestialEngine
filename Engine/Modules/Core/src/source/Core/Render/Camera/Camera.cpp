@@ -4,13 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-08
 //
 
 #include "Core/Render/Camera/Camera.hpp"
 #include "Core/Render/Camera/CameraDescriptor.hpp"
-
-#include <glm/gtc/epsilon.hpp>
 
 
 namespace CE::Core {
@@ -21,6 +19,10 @@ Camera::Camera(const CameraDescriptor& cameraDescriptor, const CameraProjectionD
 	_rotation(cameraDescriptor.rotation) {
 	if (cameraDescriptor.lookAtTarget.has_value())
 		LookAt(cameraDescriptor.lookAtTarget.value());
+}
+
+void Camera::SetProjection(const CameraProjectionDescriptor& descriptor) {
+	_projection = I_CameraProjection::MakeCameraProjection(descriptor);
 }
 
 void Camera::LookAt(const glm::vec3& target, const glm::vec3& up) {

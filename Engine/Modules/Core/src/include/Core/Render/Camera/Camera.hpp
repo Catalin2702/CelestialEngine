@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -25,13 +25,6 @@ namespace CE::Core {
 struct CameraDescriptor;
 struct CameraProjectionDescriptor;
 
-struct CE_CORE_API CameraData {
-	glm::mat4 view{1.0_f32};
-	glm::mat4 projection{1.0_f32};
-	glm::mat4 viewProjection{1.0_f32};
-	glm::vec3 position{0.0_f32};   // serve alle luci speculari
-};
-
 class CE_CORE_API Camera {
 public:
 	Camera(const CameraDescriptor& cameraDescriptor, const CameraProjectionDescriptor& projectionDescriptor);
@@ -44,7 +37,7 @@ public:
 	Camera& operator = (Camera&& other) noexcept = default;
 
 public:
-	void SetProjection(const std::shared_ptr<I_CameraProjection>& projection) { _projection = projection; }
+	void SetProjection(const CameraProjectionDescriptor& descriptor);
 
 	void SetPosition(const glm::vec3& position) { _position = position; }
 	void SetRotation(const glm::quat& rotation) { _rotation = glm::normalize(rotation); }
