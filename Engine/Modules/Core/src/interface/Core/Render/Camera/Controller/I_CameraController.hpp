@@ -16,12 +16,11 @@
 
 #include <memory>
 
+namespace CE::Events {
+	class I_Event;
+}
 
 namespace CE::Core {
-
-namespace Events {
-	class Event;
-}
 
 struct CameraControllerDescriptor;
 class Camera;
@@ -37,7 +36,7 @@ public:
 	virtual void OnAttach(Camera& camera) = 0;
 	virtual void OnDetach() = 0;
 	virtual void OnUpdate(Camera& camera, f32 deltaTime) = 0;
-	virtual bool OnEvent(Events::Event& event) = 0;
+	virtual bool OnEvent(Events::I_Event& event) = 0;
 
 public:
 	[[nodiscard]] virtual Types::CameraController GetController() const = 0;
