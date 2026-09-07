@@ -1,13 +1,13 @@
 //
-// Module: CelestialEngine/Engine/Modules/Types/Compare
+// Module: CelestialEngine/Engine/Modules/Types/Render
 // File: Compare.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-07
 //
 
-#include "../../../include/Types/Render/Compare.hpp"
+#include "Types/Render/Compare.hpp"
 
 #include <glad/glad.h>
 

@@ -4,17 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-09-07
 #
 
 set(HEADERS
 	# Build
 	src/include/Types/Build/Build.hpp
-
-
-	# Compare
-	src/include/Types/Render/Compare.hpp
-
 
 	# FileSystem
 	src/include/Types/FileSystem/File.hpp
@@ -29,6 +24,8 @@ set(HEADERS
 	# Render
 	src/include/Types/Render/AttachmentAction.hpp
 	src/include/Types/Render/BlendFactor.hpp
+	src/include/Types/Render/Camera.hpp
+	src/include/Types/Render/Compare.hpp
 	src/include/Types/Render/CullMode.hpp
 	src/include/Types/Render/GraphicsApi.hpp
 	src/include/Types/Render/PixelFormat.hpp
@@ -62,10 +59,6 @@ set(SOURCES
 	src/source/Types/Build/Build.cpp
 
 
-	# Compare
-	src/source/Types/Compare/Compare.cpp
-
-
 	# KeyCode
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
@@ -73,6 +66,7 @@ set(SOURCES
 
 	# Render
 	src/source/Types/Render/BlendFactor.cpp
+	src/source/Types/Render/Compare.cpp
 	src/source/Types/Render/CullMode.cpp
 	src/source/Types/Render/GraphicsApi.cpp
 	src/source/Types/Render/PixelFormat.cpp
