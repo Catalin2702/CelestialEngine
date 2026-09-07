@@ -146,6 +146,10 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Buffer/I_Buffer.hpp
 	src/interface/Core/Render/Buffer/I_VertexArray.hpp
 
+	# Camera
+	src/interface/Core/Render/Camera/Controller/I_CameraController.hpp
+	src/interface/Core/Render/Camera/Projection/I_CameraProjection.hpp
+
 	# Command
 	src/interface/Core/Render/Command/I_CommandEncoder.hpp
 
