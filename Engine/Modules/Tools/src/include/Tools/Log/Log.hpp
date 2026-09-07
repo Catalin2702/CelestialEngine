@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-07
 //
 
 #pragma once
@@ -77,6 +77,16 @@ public:
 	 *			regular (delay-loaded) module DLL machinery.
 	 */
 	static void LogCoreError(const std::string& message);
+
+	/**
+	 * @brief Writes out whatever the loggers still hold queued
+	 * @details For the paths that end the process without ever reaching Shutdown - a terminate handler above all,
+	 *			where the next call is abort() and anything still buffered is simply lost. Out-of-line for the same
+	 *			reason as LogCoreError: spdlog stays inside CE_Tools.
+	 *
+	 *			A no-op before Init and in Dist, neither of which has a logger to flush.
+	 */
+	static void Flush();
 
 private:
 	static std::shared_ptr<spdlog::logger> _s_coreLogger;	///< Logger for engine core messages

@@ -33,15 +33,6 @@
 #include <Core/Input/Input.hpp>
 // -----------------------------------------------
 
-// ---- Layer ------------------------------------
-#include <Core/Layers/I_Layer.hpp>
-#include <Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp>
-
-#if CE_PLATFORM_MACOS
-#include <Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp>
-#endif
-// -----------------------------------------------
-
 // ---- Tools ------------------------------------
 #include <Tools/Tools.hpp>
 // -----------------------------------------------

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-07
 //
 
 #pragma once
@@ -12,9 +12,45 @@
 #ifndef CE_ENTRYPOINT_HPP
 #define CE_ENTRYPOINT_HPP
 
-#include <format>
-#include <stdexcept>
+#include <exception>
 
+#include <cstdio>
+#include <cstdlib>
+
+
+static void Report(const char* message) noexcept {
+	if (Tools::Log::GetCoreLogger()) {
+		Tools::Log::LogCoreError(message);
+
+		// Nobody will shut the logger down in an orderly way after a terminate: what is queued is written now or lost.
+		Tools::Log::Flush();
+	}
+	else {
+		std::fputs(message, stderr);
+		std::fputc('\n', stderr);
+	}
+}
+
+[[noreturn]] static void _OnTerminate() {
+	if (const auto inFlight = std::current_exception()) {
+		try {
+			std::rethrow_exception(inFlight);
+		}
+		catch (const std::exception& exception) {
+			Report(exception.what());
+		}
+		catch (...) {
+			Report("Terminate on an object that does not derive from std::exception.");
+		}
+	}
+	else {
+		// std::terminate reached without an exception: an explicit call, or the destructor of a std::thread that
+		// was still joinable. Silent here would mean dying on SIGABRT with nothing written anywhere.
+		Report("Terminate with no exception in flight.");
+	}
+
+	std::abort();
+}
 
 /**
  * @brief Main entry point for Celestial Engine applications
@@ -34,30 +70,27 @@ int main(const int argc, const char* argv[]) {
 	int code = 0;
 
 	Tools::Log::Init();
-	{
-		try {
+	std::set_terminate(&_OnTerminate);
+
+	try {
 #if CE_DEBUG
-			Utility::Chronometer chronometer;
+		Utility::Chronometer chronometer;
 #endif
-			Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
-			Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
-			Core::Application app{};
-			app.InitImguiLayer();
-			app.Start();
-		} catch ([[maybe_unused]] const std::runtime_error& _err) {
-			// Formatted with std::format and logged via Log::LogCoreError (not the CE_CORE_ERROR
-			// macro) so this file - compiled directly into the client executable - never touches
-			// spdlog/fmt's own template machinery; see LogCoreError's doc comment for why.
-			Tools::Log::LogCoreError(std::format("Runtime error: {0}", _err.what()));
-			code = 1;
-		} catch ([[maybe_unused]] const std::exception& _err) {
-			Tools::Log::LogCoreError(std::format("Exception: {0}", _err.what()));
-			code = 1;
-		} catch (...) {
-			Tools::Log::LogCoreError("Unknown exception occurred");
-			code = 1;
-		}
+		Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
+		Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
+		Core::Application app{};
+		app.InitImguiLayer();
+		app.Start();
 	}
+	catch (const std::exception& _err) {
+		Report(_err.what());
+		code = 1;
+	}
+	catch (...) {
+		Report("Unknown exception: the thrown object does not derive from std::exception.");
+		code = 1;
+	}
+
 	Tools::Log::Shutdown();
 
 	return code;
