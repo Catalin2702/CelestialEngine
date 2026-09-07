@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-09-07
 #
 
 set(APPLICATION_HEADERS
@@ -42,6 +42,11 @@ set(RENDER_HEADERS
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp
 	>
+
+
+	# Camera
+	src/include/Core/Render/Camera/Camera.hpp
+	src/include/Core/Render/Camera/Projection/OrthographicCameraProjection.hpp
 
 
 	# Command
@@ -230,6 +235,13 @@ set(RENDER_SOURCES
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.cpp
 	>
+
+
+	# Camera
+	src/source/Core/Render/Camera/Camera.cpp
+	src/source/Core/Render/Camera/Controller/CameraControllerFactory.cpp
+	src/source/Core/Render/Camera/Projection/CameraProjectionFactory.cpp
+	src/source/Core/Render/Camera/Projection/OrthographicCameraProjection.cpp
 
 
 	# Command

@@ -14,6 +14,8 @@
 
 #include "Types/Types.hpp"
 
+#include <memory>
+
 
 namespace CE::Events {
 	class Event;
@@ -26,6 +28,9 @@ class Camera;
 class I_CameraController {
 public:
 	virtual ~I_CameraController() = default;
+
+public:
+	[[nodiscard]] static std::unique_ptr<I_CameraController> MakeCameraController(Types::CameraController controller);
 
 public:
 	virtual void OnAttach(Camera& camera) = 0;

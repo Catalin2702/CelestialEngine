@@ -16,12 +16,17 @@
 
 #include <glm/glm.hpp>
 
+#include <memory>
+
 
 namespace CE::Core {
 
 class I_CameraProjection {
 public:
 	virtual ~I_CameraProjection() = default;
+
+public:
+	[[nodiscard]] static std::unique_ptr<I_CameraProjection> MakeCameraProjection(Types::CameraProjection projection);
 
 public:
 	virtual void SetViewportSize(u32 width, u32 height) = 0;
