@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-07
 //
 
 /**
@@ -25,6 +25,7 @@
 
 #include "Types/Render/AttachmentAction.hpp"
 #include "Types/Render/BlendFactor.hpp"
+#include "Types/Render/Camera.hpp"
 #include "Types/Render/Compare.hpp"
 #include "Types/Render/CullMode.hpp"
 #include "Types/Render/GraphicsApi.hpp"
