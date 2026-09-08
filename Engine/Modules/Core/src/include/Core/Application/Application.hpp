@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -31,6 +31,7 @@ class I_Renderer;
 class I_RunLoop;
 class I_VertexBuffer;
 class I_Window;
+class SceneLayer;
 
 /**
  * @class Application
@@ -140,6 +141,11 @@ public:
 	[[nodiscard]] const I_Window& GetWindow() const { return *_window; }
 	[[nodiscard]] I_Window& GetWindow() { return *_window; }
 
+	/**
+	 * @brief Gets the scene layer, or null if the renderer was not up when it should have been built
+	 */
+	[[nodiscard]] std::shared_ptr<SceneLayer> GetSceneLayer() const { return _sceneLayer.lock(); }
+
 	[[nodiscard]] const I_Renderer& GetRenderer() const { return *_renderer; }
 	[[nodiscard]] I_Renderer& GetRenderer() { return *_renderer; }
 
@@ -180,6 +186,15 @@ private:
 	 *			for an overlay, this one is the engine having something to build it against.
 	 */
 	void _MakeImGuiLayer();
+
+	/**
+	 * @brief Builds the scene layer and pushes it onto the stack
+	 * @details Runs once the renderer exists, because the layer publishes its camera to it every frame. The camera it
+	 *			starts with is the only pairing the engine can build today - an orthographic projection and a static
+	 *			controller are the only implementations there are - so a client that wants another calls
+	 *			GetSceneLayer().GetCameraRig() and sets it.
+	 */
+	void _MakeSceneLayer();
 
 private:
 	void _OnFrame();
@@ -237,6 +252,7 @@ private:
 	std::shared_ptr<I_IndexBuffer> _indexBuffer;
 
 	std::weak_ptr<I_ImGuiLayer> _imguiLayer;
+	std::weak_ptr<SceneLayer> _sceneLayer;
 
 	std::array<u32, _EventHubSubscriptionCount> _eventHubHandlers{};	///< Hub subscription tokens, indexed by the enum above
 

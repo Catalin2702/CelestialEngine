@@ -92,13 +92,15 @@ public:
 public:
 	/**
 	 * @brief Subscribes this layer's input handlers to the Cocoa event hub
+	 * @param eventHubDispatcher The hub to subscribe to, which must be the Cocoa one - the view-resize channel this
+	 *			layer needs exists only on that backend
 	 * @details Input is delivered directly from the hub (no layer-stack traversal): each ImGui handler becomes a hub
 	 *			subscriber. Call UnsubscribeFromEventHub before the layer is destroyed to avoid dangling delegates.
 	 */
-	void SubscribeToEventHub() override;
+	void SubscribeToEventHub(I_EventHubDispatcher& eventHubDispatcher) override;
 
 	/**
-	 * @brief Removes this layer's input handlers from the event hub it was subscribed to
+	 * @brief Releases this layer's subscriptions, which is all it takes to leave the hub
 	 */
 	void UnsubscribeFromEventHub() override;
 
@@ -166,10 +168,12 @@ private:
 	MetalSwapchain* _swapchain = nullptr;
 
 	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for the display size
-	std::optional<std::reference_wrapper<CocoaEventHubDispatcher>> _eventHub;	///< Hub this layer is subscribed to (non-owning); null when not subscribed
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
-	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handlers, ordered to match Subscribe/UnsubscribeFromEventHub
+	/// Owning tokens, ordered to match the enum above. The hub itself is not kept: each token already knows the
+	/// dispatcher it came from, so releasing the array is the whole of unsubscribing - including when the array is
+	/// released by ~ImGuiMetalLayer rather than by anybody calling.
+	std::array<Subscription, _Count> _subscriptions;
 };
 
 }

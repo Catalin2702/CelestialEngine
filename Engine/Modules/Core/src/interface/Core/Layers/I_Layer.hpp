@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -20,6 +20,8 @@
 
 
 namespace CE::Core {
+
+class I_EventHubDispatcher;
 
 /**
  * @class I_Layer
@@ -72,22 +74,17 @@ public:
 	virtual void OnRender() const = 0;
 
 	/**
-	 * @brief Pure virtual method for handling begin frame logic
-	 * @param deltaTime Time elapsed since the last frame, used for time-based updates
-	 */
-	virtual void Begin(f32 deltaTime) = 0;
-
-	/**
-	 * @brief Pure virtual method for handling end frame logic
-	 */
-	virtual void End() = 0;
-
-	/**
 	 * @brief Subscribes the layer's handlers to the event hub (no-op by default)
+	 *			unsubscribes, so the hub must outlive the subscription
+	 * @details Handed the hub rather than reaching for Application::Get(): a layer that is given the hub it should
+	 *			subscribe to needs no application at all, which is what makes one testable on its own.
 	 */
-	virtual void SubscribeToEventHub() {}
+	virtual void SubscribeToEventHub(I_EventHubDispatcher&) {}
 	/**
 	 * @brief Removes the layer's handlers from the event hub (no-op by default)
+	 * @details Takes no hub, and needs none: an implementation holds Utility::Subscription tokens, each of which
+	 *			already knows the dispatcher it came from. Releasing them is the whole of the work, which is also why
+	 *			forgetting to call this at all is no longer fatal - the tokens die with the layer.
 	 */
 	virtual void UnsubscribeFromEventHub() {}
 
@@ -100,10 +97,6 @@ public:
 
 protected:
 	std::string _name;							///< Name for the layer
-
-protected:
-	mutable f32 _deltaTime = 0.f;					///< Time accumulator for frame timing
-	bool _currentFrameStarted = false;				///< Flag to track if the current frame has started
 };
 
 }

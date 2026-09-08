@@ -4,12 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #include "Core/Application/Application.hpp"
 
 #include "Core/Input/Input.hpp"
+#include "Core/Layers/Scene/SceneLayer.hpp"
+#include "Core/Render/Camera/CameraDescriptor.hpp"
+#include "Core/Render/Camera/Controller/CameraControllerDescriptor.hpp"
+#include "Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp"
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -207,6 +211,32 @@ void Application::InitImguiLayer() {
 	_MakeImGuiLayer();
 }
 
+void Application::_MakeSceneLayer() {
+	// Orthographic and Static: the only projection and the only controller implemented so far, and the factories throw
+	// on anything else rather than hand back something that does not work.
+	constexpr CameraDescriptor cameraDescriptor{};
+
+	const CameraProjectionDescriptor projectionDescriptor{
+		.type = Types::CameraProjection::Orthographic,
+		// The one place the graphics API reaches the camera: Metal clips depth to [0,1] and OpenGL to [-1,1], and the
+		// projection matrix is where that difference lives.
+		.convention = Props().graphicsApi == Types::GraphicsApi::Metal
+			? Types::ClipConvention::ZeroToOne
+			: Types::ClipConvention::NegativeOneToOne,
+		.viewportWidth = Props().width,
+		.viewportHeight = Props().height,
+	};
+
+	constexpr CameraControllerDescriptor controllerDescriptor{.descriptor = CameraStaticControllerDescriptor{}};
+
+	const auto sceneLayer = std::make_shared<SceneLayer>(cameraDescriptor, projectionDescriptor, controllerDescriptor);
+
+	PushLayer(sceneLayer);
+	sceneLayer->SubscribeToEventHub(*_dispatcher);
+
+	_sceneLayer = sceneLayer;
+}
+
 void Application::_MakeImGuiLayer() {
 	// One layer per backend, and the choice belongs here rather than to a factory of its own: each one wants the
 	// concrete window and the concrete device, so a layer that does not match the API cannot be built at all - the
@@ -250,7 +280,7 @@ void Application::SetImGuiLayer(const std::shared_ptr<I_ImGuiLayer>& imguiLayer)
 	else
 		PushOverlay(imguiLayer);
 
-	imguiLayer->SubscribeToEventHub();
+	imguiLayer->SubscribeToEventHub(*_dispatcher);
 	_imguiLayer = imguiLayer;
 }
 
@@ -318,6 +348,9 @@ void Application::_OnPlatformReady() {
 	// Before the ImGui layer, because it binds the run loop's delegates and pushes the configured VSync into the
 	// renderer that _InitRenderer has just built.
 	Init();
+
+	// Before the ImGui layer, so the overlay ends up on top of the scene in the stack.
+	_MakeSceneLayer();
 
 	if (std::exchange(_imguiLayerRequested, false))
 		_MakeImGuiLayer();

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-08
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -211,6 +211,10 @@ void ForwardRenderer::SetVSync(const bool enabled) {
 
 void ForwardRenderer::SetClearColor(const glm::vec4 color) {
 	_clearColor = color;
+}
+
+void ForwardRenderer::SetCameraData(const Types::CameraData& cameraData) {
+	_cameraData = cameraData;
 }
 
 void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -53,6 +53,17 @@ public:
 	 * @brief Shuts down the ImGui backend when the layer is detached
 	 */
 	void OnDetach() override { _Shutdown(); }
+
+	/**
+	 * @brief Pure virtual method for handling begin frame logic
+	 * @param deltaTime Time elapsed since the last frame, used for time-based updates
+	 */
+	virtual void Begin(f32 deltaTime) = 0;
+
+	/**
+	 * @brief Pure virtual method for handling end frame logic
+	 */
+	virtual void End() = 0;
 
 public:
 	/**
@@ -140,7 +151,15 @@ protected:
 	virtual void _OnViewResized(Events::WindowResizeEvent& event) const = 0;
 
 protected:
-	bool _initialized = false;						///< Flag to track if ImGui Metal backend was successfully initialized
+	bool _initialized = false;						///< Flag to track if ImGui backend was successfully initialized
+
+	/// The delta Begin was handed, kept so OnRender can feed it to ImGui's IO and show it. Not mutable: Begin writes
+	/// it and only the const OnRender reads it back.
+	f32 _deltaTime = 0.f;
+
+	/// Whether Begin got as far as ImGui::NewFrame. OnRender and End both bail when it is false, so a frame the
+	/// backend refused cannot leave widgets declared outside a frame - which is what makes ImGui assert.
+	bool _currentFrameStarted = false;
 };
 
 }

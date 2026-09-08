@@ -32,7 +32,8 @@ static int _st_imGuiOpenGlLayerCount = 0;
 ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 
 ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
-	// Drop hub subscriptions first so the dispatchers never call back into a half-destroyed layer.
+	// Explicit, though _subscriptions would release itself a moment later anyway: the dispatchers must stop being able
+	// to call back into this layer before _Shutdown starts tearing its ImGui context down.
 	UnsubscribeFromEventHub();
 
 	_Shutdown();
@@ -59,45 +60,26 @@ void ImGuiOpenGlLayer::OnRender() const {
 	ImGui::ShowDemoWindow(&show);
 }
 
-void ImGuiOpenGlLayer::SubscribeToEventHub() {
-	if (_eventHub) [[unlikely]]
-		UnsubscribeFromEventHub();
+void ImGuiOpenGlLayer::SubscribeToEventHub(I_EventHubDispatcher& eventHubDispatcher) {
+	UnsubscribeFromEventHub();
 
-	// Reached through the interface: the hub's subscribable channels are the same on every backend, so this layer no
-	// longer has to know which application it belongs to.
-	_eventHub = Application::Get().GetEventHubDispatcher();
-
-	_eventHubHandlers[MouseMoved] = _eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
-	_eventHubHandlers[MouseDragged] = _eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
-	_eventHubHandlers[MouseWheelScrolled] = _eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Subscribe(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
-	_eventHubHandlers[MouseButtonPressed] = _eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
-	_eventHubHandlers[MouseButtonReleased] = _eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
-
-	_eventHubHandlers[KeyboardKeyPressed] = _eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
-	_eventHubHandlers[KeyboardKeyReleased] = _eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
-	_eventHubHandlers[KeyboardCharTyped] = _eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Subscribe(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
-
-	_eventHubHandlers[ViewResize] = _eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Subscribe(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
+	// Reached through the interface: the hub's subscribable channels are the same on every backend, so this layer
+	// neither names one nor has to know which application it belongs to.
+	_subscriptions[MouseMoved] = eventHubDispatcher.GetMouseEventHub().onMovedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::MouseMovedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseMoved>(this));
+	_subscriptions[MouseDragged] = eventHubDispatcher.GetMouseEventHub().onDraggedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::MouseDraggedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseDragged>(this));
+	_subscriptions[MouseWheelScrolled] = eventHubDispatcher.GetMouseEventHub().onWheelScrolledMulticastDispatcher.SubscribeScoped(EventDelegate<Events::MouseWheelScrolledEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseScrolled>(this));
+	_subscriptions[MouseButtonPressed] = eventHubDispatcher.GetMouseEventHub().onButtonPressedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::MouseButtonPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonPressed>(this));
+	_subscriptions[MouseButtonReleased] = eventHubDispatcher.GetMouseEventHub().onButtonReleasedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::MouseButtonReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnMouseButtonReleased>(this));
+	_subscriptions[KeyboardKeyPressed] = eventHubDispatcher.GetKeyboardEventHub().onPressedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::KeyPressedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyPressed>(this));
+	_subscriptions[KeyboardKeyReleased] = eventHubDispatcher.GetKeyboardEventHub().onReleasedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::KeyReleasedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyReleased>(this));
+	_subscriptions[KeyboardCharTyped] = eventHubDispatcher.GetKeyboardEventHub().onTypedMulticastDispatcher.SubscribeScoped(EventDelegate<Events::KeyTypedEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnKeyTyped>(this));
+	_subscriptions[ViewResize] = eventHubDispatcher.GetWindowEventHub().onResizeMulticastDispatcher.SubscribeScoped(EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<ImGuiOpenGlLayer, &ImGuiOpenGlLayer::_OnViewResized>(this));
 }
 
 void ImGuiOpenGlLayer::UnsubscribeFromEventHub() {
-	if (not _eventHub) [[unlikely]]
-		return;
-
-	_eventHub->get().GetMouseEventHub().onMovedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseMoved]);
-	_eventHub->get().GetMouseEventHub().onDraggedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseDragged]);
-	_eventHub->get().GetMouseEventHub().onWheelScrolledMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseWheelScrolled]);
-	_eventHub->get().GetMouseEventHub().onButtonPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonPressed]);
-	_eventHub->get().GetMouseEventHub().onButtonReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[MouseButtonReleased]);
-
-	_eventHub->get().GetKeyboardEventHub().onPressedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyPressed]);
-	_eventHub->get().GetKeyboardEventHub().onReleasedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyReleased]);
-	_eventHub->get().GetKeyboardEventHub().onTypedMulticastDispatcher.Unsubscribe(_eventHubHandlers[KeyboardKeyPressed]);
-
-	_eventHub->get().GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandlers[ViewResize]);
-
-	_eventHub = std::nullopt;
-	_eventHubHandlers = {};
+	// Assigning an empty array over the live one runs every token's Reset: no hub to reach for, and nothing to keep
+	// in step with the enum by hand.
+	_subscriptions = {};
 }
 
 void ImGuiOpenGlLayer::Begin(const f32 deltaTime) {

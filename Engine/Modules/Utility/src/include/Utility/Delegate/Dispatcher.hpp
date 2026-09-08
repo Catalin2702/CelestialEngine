@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -161,6 +161,95 @@ private:
 	CallbackType _callback;						///< The single bound callback
 };
 
+template <typename... Args> class MulticastDispatcher;
+
+/**
+ * @class Subscription
+ * @brief Owning token for one MulticastDispatcher subscription, which it cancels when it dies
+ * @details Solves the problem a bare handle cannot: a u32 is meaningless without the dispatcher that issued it, so
+ *			anything holding one has to keep a reference to that dispatcher too, and remember to unsubscribe before it
+ *			is destroyed. A Subscription carries both halves, so the subscriber keeps neither - and a destructor,
+ *			an early return or a thrown exception all release it without anybody writing the call.
+ *
+ *			The dispatcher is erased behind a void* and a thunk rather than baked into a template parameter, so
+ *			subscriptions to channels with different signatures are all the same type and fit in one array. That is
+ *			what the layers need: nine subscriptions across four event families, held in a single std::array.
+ *
+ *			Move-only, and a move empties the source: two live copies would each cancel on destruction, and the second
+ *			would be cancelling a handle the dispatcher may already have reissued.
+ *
+ *			**The dispatcher must outlive the Subscription.** Nothing here can check that - the token holds a raw
+ *			pointer, deliberately, because weak tracking would cost an allocation per subscription. In this engine the
+ *			hub belongs to the Application and is destroyed after everything that subscribes to it, which is what
+ *			makes the raw pointer safe.
+ */
+class Subscription {
+public:
+	Subscription() = default;
+
+	/**
+	 * @brief Adopts a handle already issued by a dispatcher
+	 * @param dispatcher The dispatcher that issued the handle, which must outlive this token
+	 * @param handle The token Subscribe returned
+	 */
+	template <typename... Args>
+	Subscription(MulticastDispatcher<Args...>& dispatcher, const u32 handle):
+		_dispatcher(&dispatcher),
+		_handle(handle),
+		_unsubscribe(+[](void* const target, const u32 subscriptionHandle) {
+			static_cast<MulticastDispatcher<Args...>*>(target)->Unsubscribe(subscriptionHandle);
+		}) {}
+
+	Subscription(const Subscription&) = delete;
+	Subscription& operator = (const Subscription&) = delete;
+
+	Subscription(Subscription&& other) noexcept:
+		_dispatcher(std::exchange(other._dispatcher, nullptr)),
+		_handle(std::exchange(other._handle, 0)),
+		_unsubscribe(std::exchange(other._unsubscribe, nullptr)) {}
+
+	Subscription& operator = (Subscription&& other) noexcept {
+		if (this == &other) [[unlikely]]
+			return *this;
+
+		// Releases what this token held before taking the other's: assigning over a live subscription must not leak it.
+		Reset();
+
+		_dispatcher = std::exchange(other._dispatcher, nullptr);
+		_handle = std::exchange(other._handle, 0);
+		_unsubscribe = std::exchange(other._unsubscribe, nullptr);
+
+		return *this;
+	}
+
+	~Subscription() { Reset(); }
+
+public:
+	/**
+	 * @brief Cancels the subscription now, instead of waiting for the destructor
+	 * @details Safe to call on an empty token, and safe to call twice. Called from inside a handler it is deferred by
+	 *			the dispatcher to the end of the dispatch, like any other Unsubscribe.
+	 */
+	void Reset() {
+		if (_unsubscribe)
+			_unsubscribe(_dispatcher, _handle);
+
+		_dispatcher = nullptr;
+		_handle = 0;
+		_unsubscribe = nullptr;
+	}
+
+	/**
+	 * @brief Checks whether this token still holds a live subscription
+	 */
+	[[nodiscard]] bool IsConnected() const { return _unsubscribe != nullptr; }
+
+private:
+	void* _dispatcher = nullptr;					///< The dispatcher that issued the handle, type erased
+	u32 _handle = 0;								///< The token it issued; 0 is never handed out, so it means "empty"
+	void (*_unsubscribe)(void*, u32) = nullptr;		///< Casts the dispatcher back and unsubscribes; null when empty
+};
+
 /**
  * @class MulticastDispatcher
  * @brief Multi-listener event dispatcher with reentrancy-safe subscription
@@ -225,6 +314,17 @@ public:
 			_callbacks.push_back(entry);
 
 		return handle;
+	}
+
+	/**
+	 * @brief Adds a subscriber and hands back a token that cancels it on destruction
+	 * @param delegate The delegate to invoke on every Dispatch
+	 * @return Subscription Owning token; letting it die unsubscribes
+	 * @details Preferred over Subscribe wherever the subscription has an owner with a lifetime - which is every
+	 *			subscriber in the engine. The raw Subscribe stays for the cases that genuinely outlive their holder.
+	 */
+	[[nodiscard]] Subscription SubscribeScoped(DelegateType delegate) {
+		return Subscription{*this, Subscribe(delegate)};
 	}
 
 	/**
@@ -304,5 +404,7 @@ using CallbackDispatcher = CE::Utility::CallbackDispatcher<R, Args...>;
 
 template<typename... Args>
 using MulticastDispatcher = CE::Utility::MulticastDispatcher<Args...>;
+
+using Subscription = CE::Utility::Subscription;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP

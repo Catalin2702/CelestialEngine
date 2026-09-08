@@ -46,7 +46,7 @@ public:
 	[[nodiscard]] const Camera& GetCamera() const { return _camera; }
 	[[nodiscard]] Camera& GetCamera() { return _camera; }
 
-public:
+private:
 	Camera _camera;
 	std::unique_ptr<I_CameraController> _cameraController;
 };

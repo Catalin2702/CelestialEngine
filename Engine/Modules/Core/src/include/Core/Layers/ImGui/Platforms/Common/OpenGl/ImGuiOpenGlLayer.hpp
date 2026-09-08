@@ -93,14 +93,16 @@ public:
 
 public:
 	/**
-	 * @brief Subscribes this layer's input handlers to the GLFW event hub
+	 * @brief Subscribes this layer's input handlers to the event hub
+	 * @param eventHubDispatcher The hub to subscribe to; every channel this layer wants lives on the interface, so
+	 *			any backend's hub will do
 	 * @details Input is delivered directly from the hub (no layer-stack traversal): each ImGui handler becomes a hub
 	 *			subscriber. Call UnsubscribeFromEventHub before the layer is destroyed to avoid dangling delegates.
 	 */
-	void SubscribeToEventHub() override;
+	void SubscribeToEventHub(I_EventHubDispatcher& eventHubDispatcher) override;
 
 	/**
-	 * @brief Removes this layer's input handlers from the event hub it was subscribed to
+	 * @brief Releases this layer's subscriptions, which is all it takes to leave the hub
 	 */
 	void UnsubscribeFromEventHub() override;
 
@@ -159,9 +161,11 @@ protected:
 
 private:
 	std::optional<std::reference_wrapper<GlfwWindow>> _window; ///< Cached window (non-owning); the GLFW backend needs the native handle
-	std::optional<std::reference_wrapper<I_EventHubDispatcher>> _eventHub; ///< Hub this layer is subscribed to (non-owning); null when not subscribed
 
-	std::array<u32, _Count> _eventHubHandlers{};		///< Subscription handlers, ordered to match Subscribe/UnsubscribeFromEventHub
+	/// Owning tokens, ordered to match the enum above. The hub itself is not kept: each token already knows the
+	/// dispatcher it came from, so releasing the array is the whole of unsubscribing - including when the array is
+	/// released by ~ImGuiOpenGlLayer rather than by anybody calling.
+	std::array<Subscription, _Count> _subscriptions;
 };
 
 }

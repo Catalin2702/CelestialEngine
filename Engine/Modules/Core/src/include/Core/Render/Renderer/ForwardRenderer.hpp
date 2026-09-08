@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -75,6 +75,8 @@ public:
 
 	void SetClearColor(glm::vec4 color) override;
 
+	void SetCameraData(const Types::CameraData& cameraData) override;
+
 public:
 	[[nodiscard]] const I_GraphicDevice& GetGraphicDevice() const override { return *_graphicDevice; }
 	[[nodiscard]] I_GraphicDevice& GetGraphicDevice() override { return *_graphicDevice; }
@@ -100,6 +102,8 @@ public:
 	 *			today and stop agreeing the moment the scene target becomes RGBA16Float for HDR.
 	 */
 	[[nodiscard]] Types::PixelFormat GetSceneColorFormat() const override { return _sceneColorFormat; }
+
+	[[nodiscard]] const Types::CameraData& GetCameraData() const override { return _cameraData; }
 
 private:
 	/**
@@ -143,6 +147,11 @@ private:
 	std::unique_ptr<I_CommandEncoder> _commandEncoder;
 
 	glm::vec4 _clearColor = {0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32};
+
+	/// The point of view the pass draws from. Held but not yet bound: there is no uniform buffer in the engine to
+	/// carry it to a shader with, so nothing on the GPU reads it until that seam exists. Defaults to identity, which
+	/// is what leaves a vertex stage writing clip space directly - the composite quad relies on that.
+	Types::CameraData _cameraData;
 
 	RenderStats _stats; ///< Published: what the last completed frame cost
 	RenderStats _frameStats; ///< Accumulating: what the frame in flight has cost so far

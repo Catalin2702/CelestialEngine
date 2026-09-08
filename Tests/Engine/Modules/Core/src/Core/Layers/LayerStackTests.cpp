@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-08
 //
 
 #include <Core/Layers/I_Layer.hpp>
@@ -43,8 +43,6 @@ public:
 
 	void OnUpdate() override { ++updateCount; }
 	void OnRender() const override {}
-	void Begin(f32) override {}
-	void End() override {}
 
 public:
 	bool attached = false;

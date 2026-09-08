@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-07
+# Updated: 2026-09-08
 #
 
 set(APPLICATION_HEADERS
@@ -18,11 +18,18 @@ set(INPUT_HEADERS
 
 set(LAYERS_HEADERS
 	src/include/Core/Layers/LayerStack.hpp
+
+
+	# ImGui
 	src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
 	>
+
+
+	# Scene
+	src/include/Core/Layers/Scene/SceneLayer.hpp
 )
 
 set(HUB_HEADERS
@@ -211,11 +218,18 @@ set(INPUT_SOURCES
 
 set(LAYERS_SOURCES
 	src/source/Core/Layers/LayerStack.cpp
+
+
+	# ImGui
 	src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.cpp
 	>
+
+
+	# Scene
+	src/source/Core/Layers/Scene/SceneLayer.cpp
 )
 
 set(HUB_SOURCES

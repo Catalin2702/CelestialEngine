@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-08
 //
 
 #pragma once
@@ -106,6 +106,17 @@ public:
 	 */
 	virtual void SetClearColor(glm::vec4 color) = 0;
 
+	/**
+	 * @brief Sets the point of view every following submission is drawn from
+	 * @param cameraData The frame's view and projection, already combined, plus the eye position
+	 * @details Set once per pass, not per draw: every command in a pass shares the same matrices, so carrying them on
+	 *			DrawCommand would re-send the same bytes for every mesh in the scene.
+	 *
+	 *			Takes the matrices rather than a Camera so a pass can be drawn from something that is not one - a
+	 *			shadow map is rendered from a light, which has a view and a projection but no camera behind it.
+	 */
+	virtual void SetCameraData(const Types::CameraData& cameraData) = 0;
+
 public:
 	[[nodiscard]] virtual const I_GraphicDevice& GetGraphicDevice() const = 0;
 	[[nodiscard]] virtual I_GraphicDevice& GetGraphicDevice() = 0;
@@ -125,6 +136,14 @@ public:
 	[[nodiscard]] virtual const I_Texture* GetSceneColorTarget() const = 0;
 
 	[[nodiscard]] virtual Types::PixelFormat GetSceneColorFormat() const = 0;
+
+	/**
+	 * @brief Gets the point of view the following submissions are drawn from
+	 * @details Identity matrices until the first SetCameraData, which draws whatever the vertex stage produces
+	 *			straight in clip space - what the composite quad wants, and what the scene wanted before it had a
+	 *			camera at all.
+	 */
+	[[nodiscard]] virtual const Types::CameraData& GetCameraData() const = 0;
 };
 
 }
