@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-01
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -24,9 +24,9 @@ namespace CE::Core {
 /**
  * @class PacedRunLoop
  * @brief A loop that owns its thread and sleeps between frames to hold a frame rate
- * @details Deliberately not under Platforms/: there is nothing platform-specific in it. The GLFW application's loop
- *			looked like a GLFW concern, but glfwPollEvents is called by the window inside the frame callback, so what
- *			was left is std::chrono and std::this_thread. The same loop drives Windows and Linux unchanged.
+ * @details Deliberately not under Platforms/: there is nothing platform-specific in it. The loop it replaced looked
+ *			like a windowing concern, but draining the event queue happens inside the frame callback, so what was left
+ *			is std::chrono and std::this_thread. The same loop drives every platform that owns its own thread.
  *
  *			The pacing sleeps rather than spins, and resynchronises instead of catching up: after a long frame it
  *			starts counting again from now, so a hitch costs one late frame rather than a burst of rushed ones.

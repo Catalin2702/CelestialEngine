@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -28,7 +28,7 @@ namespace CE::Core {
  * @class Input
  * @brief Input handling system
  * @details Answers every input query from the event-driven InputState it owns. The state is fed by the event hub, which
- *			already delivers standardized engine events regardless of the windowing backend (Cocoa or GLFW), so a single
+ *			already delivers standardized engine events regardless of the windowing backend, so a single
  *			class serves every platform: queries are focus-correct (only events delivered to the engine window count) and
  *			consistent within a frame, with no OS polling.
  *			The state is fully private (Input is its friend and only interface): every query and lifecycle operation is
@@ -142,7 +142,7 @@ public:
 
 	/**
 	 * @brief Subscribes the input state to the event hub's keyboard/mouse/window multicast dispatchers
-	 * @details Both platform hubs (Cocoa and GLFW) expose the same dispatcher member names, so the hub structs are taken
+	 * @details Every platform hub exposes the same dispatcher member names, so the hub structs are taken
 	 *			as template parameters. The application must call this BEFORE any other subscriber so the state is
 	 *			updated first, and Init() must have run.
 	 */

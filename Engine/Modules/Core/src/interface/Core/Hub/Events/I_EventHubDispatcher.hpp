@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -76,8 +76,8 @@ struct WindowEventHub {
  * @struct RenderEventHub
  * @brief The multicast channels every rendering event is delivered on
  * @details The one hub a backend may legitimately extend, because render backends genuinely differ in what they can
- *			report - the Metal path adds a drawable resize its view raises and OpenGL has no equivalent of. A backend
- *			that extends it derives from this struct, so the shared channels stay reachable through the interface.
+ *			report: one may raise a back-buffer resize that another has no equivalent of. A backend that extends it
+ *			derives from this struct, so the shared channels stay reachable through the interface.
  */
 struct RenderEventHub {
 	MulticastDispatcher<Events::VSyncEvent&> onChangeVSyncDispatcher;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-09
 //
 
 #include "Core/Application/Application.hpp"
@@ -78,8 +78,8 @@ Application::Application():
 		_InitWindow();
 
 		// The window, the renderer and the rest of the setup wait for the platform to say it has a usable window -
-		// see _OnPlatformReady. On GLFW that is immediate; on Cocoa it is after NSApplication has finished launching,
-		// which cannot happen while this constructor is still running.
+		// see _OnPlatformReady. Immediate wherever the window is usable at once, and deferred wherever the platform has
+		// to finish launching first - which cannot happen while this constructor is still running.
 		_platform->onReadyDispatcher.Bind(EventDelegate<>::FromMethod<Application, &Application::_OnPlatformReady>(this));
 	}
 	catch (...) {
@@ -127,7 +127,7 @@ const Application& Application::GetConst() {
 
 void Application::Start() {
 	// Brings the windowing backend up and fires onReadyDispatcher, which is what actually creates the window and the
-	// renderer. Here rather than in the constructor because AppKit reaches that point only once it has finished
+	// renderer. Here rather than in the constructor because a backend may only reach that point once it has finished
 	// launching, and everything below needs a window that exists.
 	_platform->Prepare();
 
@@ -157,7 +157,7 @@ void Application::End() {
 	_UnsubscribeFromEventHubDispatcher();
 	Input::Shutdown();
 
-	// Detaches every remaining layer while the window - and on OpenGL its context - is still alive.
+	// Detaches every remaining layer while the window, and whatever device state hangs off it, is still alive.
 	_layerStack.Clear();
 }
 
@@ -218,8 +218,8 @@ void Application::_MakeSceneLayer() {
 
 	const CameraProjectionDescriptor projectionDescriptor{
 		.type = Types::CameraProjection::Orthographic,
-		// The one place the graphics API reaches the camera: Metal clips depth to [0,1] and OpenGL to [-1,1], and the
-		// projection matrix is where that difference lives.
+		// The one place the graphics API reaches the camera: backends disagree on the depth range clip space maps onto,
+		// and the projection matrix is where that difference lives.
 		.convention = Props().graphicsApi == Types::GraphicsApi::Metal
 			? Types::ClipConvention::ZeroToOne
 			: Types::ClipConvention::NegativeOneToOne,
@@ -238,9 +238,9 @@ void Application::_MakeSceneLayer() {
 }
 
 void Application::_MakeImGuiLayer() {
-	// One layer per backend, and the choice belongs here rather than to a factory of its own: each one wants the
-	// concrete window and the concrete device, so a layer that does not match the API cannot be built at all - the
-	// OpenGL one throws std::bad_cast the moment it asks the window for a GlfwWindow.
+	// One layer per backend, and the choice belongs here rather than to a factory of its own: the ImGui backends are
+	// third party and each wants the concrete window and the concrete device, so a layer that does not match the API
+	// cannot be built at all.
 	switch (Props().graphicsApi) {
 		case Types::GraphicsApi::OpenGL:
 			SetImGuiLayer(std::make_shared<ImGuiOpenGlLayer>());
@@ -340,7 +340,8 @@ void Application::_InitWindow() {
 }
 
 void Application::_OnPlatformReady() {
-	// A no-op wherever the window was already usable at construction, which is every backend but Cocoa.
+	// A no-op wherever the window was already usable at construction, which is every backend that does not have to
+	// wait for its platform to finish launching.
 	_window->Init();
 
 	_InitRenderer();
@@ -357,8 +358,9 @@ void Application::_OnPlatformReady() {
 }
 
 void Application::_InitRenderer() {
-	// On OpenGL every graphics call applies to whichever context is current on this thread, and nothing else makes it
-	// current. The other backends have no such notion, which is why this is asked of the surface and not of the window.
+	// Some backends bind their device state to the calling thread and nothing else makes it current; the rest have no
+	// such notion. That is why this is asked of the surface rather than of the window: the ones that need it are
+	// exactly the ones that offer it, so the question answers itself.
 	if (auto* const surface = dynamic_cast<I_OpenGlSurface*>(_window.get()))
 		surface->MakeContextCurrent();
 
@@ -383,8 +385,8 @@ void Application::_OnFrame() {
 }
 
 void Application::_OnLoopStarted() const {
-	// Revealed from inside the loop rather than from the constructor: AppKit will not give a usable window before its
-	// run loop is up, and showing one early is the difference between a window and a beach ball.
+	// Revealed from inside the loop rather than from the constructor: a backend need not have a usable window before
+	// its run loop is up, and showing one early is the difference between a window and a hang.
 	_window->Show();
 }
 
@@ -425,9 +427,9 @@ void Application::_OnWindowClose(const Events::WindowCloseEvent& event) const {
 }
 
 void Application::_OnWindowResize(const Events::WindowResizeEvent&) const {
-	// The window reports its first size while it is being built, which on Cocoa is before the renderer exists: the
-	// view is laid out the moment it becomes the content view, and that is a resize like any other. Nothing is lost by
-	// ignoring it - the swapchain reads the window's size on its first acquire anyway.
+	// The window reports its first size while it is being built, which on some backends is before the renderer exists:
+	// the view is laid out the moment it is installed, and that is a resize like any other. Nothing is lost by
+	// ignoring it - the swapchain reads the window's size on its first frame anyway.
 	if (not _renderer)
 		return;
 
@@ -478,11 +480,10 @@ void Application::_ApplyPresentPacing([[maybe_unused]] const bool vsync) const {
 
 u32 Application::_TargetFrameRate(const bool vsync) {
 	// Zero - uncapped - is the right answer while VSync is on, and it is not a contradiction: the presentation call
-	// already blocks until the display is ready, on every backend. glfwSwapBuffers waits for the swap interval,
-	// CAMetalLayer::nextDrawable waits for the compositor to free a buffer. Sleeping on top of that would mean two
-	// pacers, with the software one deciding - and the software one samples the refresh rate once, so it goes on
-	// asking for 120 after the window has been dragged onto a 60 Hz display. Letting the display pace is what
-	// CAMetalDisplayLink used to give for free, and it follows the window from screen to screen on its own.
+	// already blocks until the display is ready, on every backend - whether it waits out a swap interval or waits for
+	// a buffer to come free. Sleeping on top of that would mean two pacers, with the software one deciding - and the
+	// software one samples the refresh rate once, so it goes on asking for the old rate after the window has been
+	// dragged onto a slower display. Letting the display pace is what follows the window from screen to screen.
 	if (vsync)
 		return 0;
 
@@ -528,8 +529,8 @@ void Application::_CreateRenderResources() {
 	};
 
 	// Named, because it is needed twice: the buffer uses it to compute its stride, and the pipeline needs it to build
-	// the vertex descriptor Metal and DirectX 12 compile into the pipeline. OpenGL only reads it in the first place,
-	// which is why leaving it off the pipeline goes unnoticed there and draws nothing at all on Metal.
+	// its vertex descriptor. Backends that bake that descriptor into the compiled pipeline draw nothing without it,
+	// while those that read the layout at bind time never miss it - so leaving it off is a bug that hides on some.
 	const BufferLayout vertexLayout{
 		{Types::ShaderDataType::Float3, "inputPosition"},
 		{Types::ShaderDataType::Float4, "inputColor"}
@@ -538,9 +539,9 @@ void Application::_CreateRenderResources() {
 	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, vertexLayout);
 	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
 
-	// The two halves of ShaderModuleDescriptor, picked here because only the caller knows which backend it is talking
-	// to: OpenGL compiles GLSL loaded from the bundle and always enters at main, Metal looks a function up by name in
-	// the .metallib CMake already compiled and never reads the source.
+	// TODO: a backend leak to remove. The descriptor carries both a source and an entry point, so the caller has to
+	// know which half its backend reads and where the artifact lives. The device should resolve that itself from the
+	// entry point name, and this branch - with the shader directory above it - go away.
 	const auto isOpenGl = graphicDevice.GetGraphicApi() == Types::GraphicsApi::OpenGL;
 
 	// The descriptor borrows its strings for the duration of the call only, so these have to outlive it - which is why
@@ -567,8 +568,8 @@ void Application::_CreateRenderResources() {
 		.debugName = "Fragment"
 	});
 
-	// Asked rather than assumed: the descriptor defaults to BGRA8Unorm, GLFW only ever gives RGBA8Unorm, and every
-	// backend but OpenGL rejects a pipeline whose format disagrees with the swapchain it draws into.
+	// Asked rather than assumed: the descriptor's default need not be the format the target actually has, and most
+	// backends reject a pipeline whose format disagrees with what it draws into.
 	pipelineDescriptor.formats.colors[0] = _renderer->GetSceneColorFormat();
 	pipelineDescriptor.formats.colorCount = 1;
 

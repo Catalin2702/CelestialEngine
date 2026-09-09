@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -71,10 +71,21 @@ public:
 
 public:
 	/**
+	 * @brief Matches the layer to the window's current size, without taking a drawable
+	 * @details Everything AcquireNextTarget used to do before reaching nextDrawable. Kept separate because the frame
+	 *			needs the size at its start and the drawable only at its end.
+	 */
+	[[nodiscard]] bool PrepareFrame() override;
+
+	/**
 	 * @brief Takes the next drawable from the layer and publishes it, with the depth buffer, on the device
 	 * @details The two fallible cases the interface promised: a zero-sized layer (a minimised window) and a layer with
 	 *			no drawable free. The second is what the fourth call in a triple-buffered frame would see, and Metal
 	 *			answers it by blocking for up to a second and then returning null - a skipped frame, not an error.
+	 *
+	 *			Either failure clears the device's frame target, which is what commits and releases the command buffer
+	 *			the frame was encoded into: by the time this runs the frame is already recorded, and a buffer left
+	 *			pending would go on collecting the next frame's passes too.
 	 */
 	[[nodiscard]] bool AcquireNextTarget() override;
 

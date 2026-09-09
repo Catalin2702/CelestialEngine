@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -51,15 +51,15 @@ public:
 	/**
 	 * @brief Drains the event queue and delivers the callbacks
 	 * @details One queue for the whole process however many windows exist, which is why this is called once per frame
-	 *			by the run loop and never by a window. A backend whose events are delivered by the OS run loop itself,
-	 *			as on Cocoa, has nothing to do here.
+	 *			by the run loop and never by a window. A backend whose events are delivered by the OS run loop itself
+	 *			has nothing to do here.
 	 */
 	/**
 	 * @brief Brings the backend to the point where a window can be created, then fires onReadyDispatcher
-	 * @details The moment that exists only because AppKit has it, and that every other backend reaches instantly.
-	 *			GLFW is usable the moment glfwInit returns, so its implementation fires straight away; AppKit will not
-	 *			hand out a usable window until NSApplication has finished launching, which is a step of its own that
-	 *			has to happen after the constructor - by then whoever wants to be told is subscribed.
+	 * @details The moment that exists only because one kind of backend has it, and that every other reaches instantly.
+	 *			Where initialisation is a single call the implementation fires straight away; where the platform hands
+	 *			out no usable window until it has finished launching, that is a step of its own which has to happen
+	 *			after the constructor - by then whoever wants to be told is subscribed.
 	 *
 	 *			Called once, by the application, before the run loop takes the thread. Everything that needs a live
 	 *			window - the window itself, the renderer built against it - hangs off the dispatcher rather than off
@@ -71,9 +71,9 @@ public:
 
 	/**
 	 * @brief Routes this backend's raw callbacks into the event hub
-	 * @details The translation from a native callback to an engine event is backend-specific - GLFW hands out ints,
-	 *			AppKit hands out NS::Event* - so the wiring lives here, where the backend is already known, instead of
-	 *			in the application, which would otherwise have to downcast to do it.
+	 * @details The translation from a native callback to an engine event is backend-specific, and so is the shape the
+	 *			native side hands out, so the wiring lives here where the backend is already known, instead of in the
+	 *			application, which would otherwise have to downcast to do it.
 	 */
 	virtual void ConnectToEventHub(I_EventHubDispatcher& eventHub) = 0;
 

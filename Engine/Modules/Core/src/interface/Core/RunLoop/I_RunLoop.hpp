@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -26,9 +26,9 @@ class I_Platform;
  * @class I_RunLoop
  * @brief Owns the thread of control and calls back once per frame
  * @details The one thing that genuinely differs between the platforms once the window, the device and the swapchain
- *			are behind interfaces. A paced loop keeps the thread of control itself; NSApplication takes it away and
- *			hands frames back through a display link. Both are "Run() blocks until Stop()", which is the only shape
- *			the two have in common and therefore the whole of the interface.
+ *			are behind interfaces. A paced loop keeps the thread of control itself; a platform that insists on owning
+ *			the thread takes it away and hands frames back through a callback. Both are "Run() blocks until Stop()",
+ *			which is the only shape the two have in common and therefore the whole of the interface.
  *
  *			It knows nothing about time, rendering or windows: it decides *when* a frame happens, never what a frame
  *			is. Delta time stays with the application, which is what owns the clock.
@@ -43,9 +43,8 @@ public:
 	 * @param platform The live windowing library, which is what decides who owns the thread
 	 * @return std::unique_ptr<I_RunLoop> The loop, with no delegates bound yet
 	 * @details Chosen from the platform rather than from the graphics API because the question it answers is who owns
-	 *			the thread: GLFW, Win32, X11 and Wayland all hand it to us, and only AppKit keeps it. Asking the live
-	 *			platform instead of taking a WindowApi means the loop can never be built for a backend other than the
-	 *			one actually running.
+	 *			the thread: most windowing libraries hand it to us, and some keep it. Asking the live platform instead
+	 *			of taking a WindowApi means the loop can never be built for a backend other than the one running.
 	 *
 	 *			This is the one factory whose default branch is an answer rather than an error - the paced loop is
 	 *			correct everywhere the thread is ours, so a new backend needs a case here only if it takes it away.
@@ -97,8 +96,8 @@ public:
 
 	/**
 	 * @brief Binds what to call after the loop is live but before the first frame
-	 * @details The moment that exists only because Cocoa has it: the menu bar and the activation policy have to be set
-	 *			from inside applicationWillFinishLaunching, which is reachable only once NSApplication is running.
+	 * @details The moment that exists only because some platforms have it: process-wide setup that has to be done from
+	 *			inside a launch callback, reachable only once the platform's own run loop is up.
 	 */
 	virtual void SetDidStartDelegate(const EventDelegate<>& onDidStart) = 0;
 

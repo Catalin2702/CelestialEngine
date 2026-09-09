@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-09
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -44,15 +44,15 @@ ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice,
 
 	// Up front, not on the first composite: it is built once, from shaders shipped in the bundle and a format already
 	// known here, so it either works for the whole run or for none of it. Building it inside the frame would turn a
-	// permanent failure into a warning per frame - at 120 fps - retrying something that cannot start working. Both
-	// reasons it used to be deferred are already met at this point: the format is read just above, and
-	// Application::_InitRenderer makes the OpenGL context current before it builds the renderer.
+	// permanent failure into a warning on every frame, retrying something that cannot start working. Both reasons it
+	// used to be deferred are already met at this point: the format is read just above, and the application has the
+	// device ready to accept resources before it builds the renderer.
 	_CreateCompositeResources();
 }
 
 ForwardRenderer::~ForwardRenderer() {
-	// The encoder holds live backend state - a bound vertex array on OpenGL, an open encoder on Metal - so a renderer
-	// destroyed mid-frame has to close the pass while the device is still alive.
+	// An open pass holds live device state, whatever that state is for the backend underneath, so a renderer destroyed
+	// mid-frame has to close it while the device is still alive.
 	ForwardRenderer::EndPass();
 }
 
@@ -61,18 +61,20 @@ bool ForwardRenderer::BeginFrame() {
 	if (_inFrame) [[unlikely]]
 		return false;
 
-	if (not _swapchain->AcquireNextTarget())
+	// The geometry, and only the geometry. The back buffer is taken at the far end of the frame, in EndFrame, because
+	// nothing before the composite draws into it: the scene pass and the ImGui overlay both target _sceneColor. Taking
+	// it here instead made every frame hold a back buffer for its whole length - all the encoding, all the overlay -
+	// and a held buffer is one the display system cannot start recycling, which is time the next frame waits out. The
+	// heavier the frame, the more that costs.
+	if (not _swapchain->PrepareFrame())
 		return false;
 
-	// After the acquire, because that is what refreshes the swapchain's idea of its own size after a resize.
 	const auto [width, height] = _swapchain->GetSize();
 	_EnsureSceneTarget(width, height);
-	if (not _sceneColor) [[unlikely]] {
-		// The drawable is acquired by now and has to go back. Presenting it untouched is what releases it - the
-		// swapchain allows exactly that - and simply returning would starve the layer until an acquire blocks for good.
-		_swapchain->Present();
+
+	// Nothing has been acquired at this point, so there is nothing to hand back: the frame simply does not start.
+	if (not _sceneColor) [[unlikely]]
 		return false;
-	}
 
 	_frameStats.Reset();
 
@@ -87,13 +89,19 @@ void ForwardRenderer::EndFrame() {
 	if (not _inFrame)
 		return;
 
-	// The scene pass and the overlay's are both closed before the drawable is touched at all.
+	// The scene pass and the overlay's are both closed before the back buffer is touched at all.
 	EndPass();
 
-	_Composite();
-	EndPass();
+	// As late as the frame allows, and this is that point: the composite is the only pass that writes the back buffer,
+	// so everything between here and Present is the entire time the swapchain is held. A false is the acquire the
+	// backend could not satisfy - a minimised window, or no buffer free - and it has already released whatever the
+	// frame encoded, so there is nothing to compose into and nothing to present.
+	if (_swapchain->AcquireNextTarget()) [[likely]] {
+		_Composite();
+		EndPass();
 
-	_swapchain->Present();
+		_swapchain->Present();
+	}
 
 	_stats = _frameStats;
 	_inFrame = false;
@@ -147,8 +155,8 @@ void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
 	if (not _commandEncoder) [[unlikely]]
 		return;
 
-	// The whole render area, in this backend's own convention: the Viewport constructor is what flips the origin for
-	// OpenGL, and it needs the target height to do it.
+	// The whole render area, stated top-left as the Viewport constructor expects. It converts into whatever convention
+	// the backend uses, and the target height is what it needs to do so.
 	_commandEncoder->SetViewport(Viewport{
 		GetGraphicApi(),
 		0.0_f32, 0.0_f32,
@@ -164,8 +172,8 @@ void ForwardRenderer::EndPass() {
 	if (not _commandEncoder)
 		return;
 
-	// Ended before it is dropped, not instead of: on OpenGL this is what unbinds the encoder's vertex array and
-	// program, so the ImGui overlay that draws next does not inherit them.
+	// Ended before it is dropped, not instead of: closing the pass is what releases the state it bound, so whatever
+	// draws next - the ImGui overlay, the next pass - does not inherit it.
 	_commandEncoder->End();
 	_commandEncoder.reset();
 }
@@ -294,7 +302,8 @@ void ForwardRenderer::_Composite() {
 	_commandEncoder->SetVertexBuffer(*_compositeVertexBuffer);
 	_commandEncoder->SetIndexBuffer(*_compositeIndexBuffer);
 
-	// After the pipeline: on OpenGL the sampler uniform lives in the program, and there is no current program before.
+	// After the pipeline, not before: a texture binding belongs to the pipeline it is read through, and there is no
+	// pipeline to bind it against until one is set.
 	_commandEncoder->SetFragmentTexture(0, *_sceneColor);
 
 	_commandEncoder->DrawIndexed(6, 0, 0);
@@ -326,6 +335,10 @@ void ForwardRenderer::_CreateCompositeResources() {
 	_compositeVertexBuffer = _graphicDevice->CreateVertexBuffer(vertices, vertexLayout);
 	_compositeIndexBuffer = _graphicDevice->CreateIndexBuffer(indices);
 
+	// TODO: a backend leak to remove, the twin of the one in Application::_CreateRenderResources. The descriptor
+	// carries both a source and an entry point, so this has to know which half its backend reads and where the
+	// artifact lives. The device should resolve that itself, and this branch - with the shader directory above it -
+	// go away.
 	const auto isOpenGl = _graphicDevice->GetGraphicApi() == GraphicsApi::OpenGL;
 
 	const auto vertexSource = isOpenGl ? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "CompositeVertex.glsl").GetContentString() : std::string{};

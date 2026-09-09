@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-09
 //
 
 #include <Core/Render/Buffer/I_Buffer.hpp>
@@ -103,6 +103,7 @@ struct Recorder {
 	u32 vertexBuffers = 0;
 	u32 indexBuffers = 0;
 
+	u32 prepares = 0;
 	u32 acquires = 0;
 	u32 presents = 0;
 	u32 resizes = 0;
@@ -114,7 +115,10 @@ struct Recorder {
 	u32 width = DefaultWidth;
 	u32 height = DefaultHeight;
 
-	/// Answered by AcquireNextTarget, so a test can play a frame the swapchain refuses.
+	/// Answered by PrepareFrame, so a test can play a frame that has no drawable area at all.
+	bool prepareSucceeds = true;
+
+	/// Answered by AcquireNextTarget, so a test can play a frame the swapchain refuses at the very end.
 	bool acquireSucceeds = true;
 };
 
@@ -285,6 +289,11 @@ public:
 	explicit FakeSwapchain(Recorder& recorder): _recorder(recorder) {}
 
 public:
+	[[nodiscard]] bool PrepareFrame() override {
+		++_recorder.prepares;
+		return _recorder.prepareSucceeds;
+	}
+
 	[[nodiscard]] bool AcquireNextTarget() override {
 		++_recorder.acquires;
 		return _recorder.acquireSucceeds;
@@ -352,6 +361,7 @@ TEST_F(ForwardRendererTest, Construction_BuildsTheCompositeUpFront) {
 
 	// Nothing has been drawn: the resources exist before any frame does.
 	EXPECT_TRUE(recorder.passes.empty());
+	EXPECT_EQ(recorder.prepares, 0u);
 	EXPECT_EQ(recorder.acquires, 0u);
 }
 
@@ -427,34 +437,77 @@ TEST_F(ForwardRendererTest, BeginFrame_AsksForASceneColourTheCompositeCanRead) {
 }
 
 /**
- * @brief Test that a frame that cannot allocate its scene target still gives the drawable back
- * @details AcquireNextTarget has already taken a drawable by this point, and Present is what releases it. Returning
- *			without presenting held one buffer per failed frame until the layer had none left and the next acquire
- *			blocked for good.
+ * @brief Test that a frame that cannot allocate its scene target takes no back buffer at all
+ * @details BeginFrame asks the swapchain for its geometry and nothing else, so a frame that dies here has nothing to
+ *			hand back. This used to acquire first and then present an untouched drawable purely to release it, which
+ *			is the bookkeeping the split removed: there is no buffer held, so there is no buffer to leak.
  */
-TEST_F(ForwardRendererTest, BeginFrame_ReturnsTheDrawableWhenTheSceneTargetCannotBeAllocated) {
+TEST_F(ForwardRendererTest, BeginFrame_TakesNoBackBufferWhenTheSceneTargetCannotBeAllocated) {
 	const auto renderer = MakeRenderer();
 	recorder.failTextureCreation = true;
 
 	EXPECT_FALSE(renderer->BeginFrame());
 
-	EXPECT_EQ(recorder.acquires, 1u);
-	EXPECT_EQ(recorder.presents, 1u);
+	EXPECT_EQ(recorder.prepares, 1u);
+	EXPECT_EQ(recorder.acquires, 0u);
+	EXPECT_EQ(recorder.presents, 0u);
 	EXPECT_EQ(renderer->GetSceneColorTarget(), nullptr);
 }
 
 /**
- * @brief Test that a frame the swapchain refused presents nothing
- * @details The mirror of the case above: no drawable was taken, so there is none to give back.
+ * @brief Test that a frame the swapchain cannot even size is refused before anything is taken
+ * @details A minimised window: PrepareFrame answers false, and the frame never opens.
  */
-TEST_F(ForwardRendererTest, BeginFrame_PresentsNothingWhenTheAcquireFailed) {
+TEST_F(ForwardRendererTest, BeginFrame_RefusesTheFrameWhenThePrepareFailed) {
 	const auto renderer = MakeRenderer();
-	recorder.acquireSucceeds = false;
+	recorder.prepareSucceeds = false;
 
 	EXPECT_FALSE(renderer->BeginFrame());
 
+	EXPECT_EQ(recorder.prepares, 1u);
+	EXPECT_EQ(recorder.acquires, 0u);
+	EXPECT_EQ(recorder.presents, 0u);
+}
+
+/**
+ * @brief Test that the back buffer is taken at the end of the frame rather than at its start
+ * @details The whole point of the split: the interval between the acquire and the present is time the display system
+ *			cannot recycle that buffer in, so it has to cover the composite alone and not the scene and the overlay
+ *			too. A frame that has begun but not ended must be holding nothing.
+ */
+TEST_F(ForwardRendererTest, BeginFrame_DefersTheAcquireUntilEndFrame) {
+	const auto renderer = MakeRenderer();
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+
+	EXPECT_EQ(recorder.prepares, 1u);
+	EXPECT_EQ(recorder.acquires, 0u);
+
+	renderer->EndFrame();
+
+	EXPECT_EQ(recorder.acquires, 1u);
+	EXPECT_EQ(recorder.presents, 1u);
+}
+
+/**
+ * @brief Test that a frame the swapchain refuses at the end presents nothing
+ * @details The acquire can still fail once the frame is encoded - no buffer came free in time - and then there is
+ *			nothing to composite into. The frame is closed all the same, so the next BeginFrame is not refused.
+ */
+TEST_F(ForwardRendererTest, EndFrame_PresentsNothingWhenTheAcquireFailed) {
+	const auto renderer = MakeRenderer();
+	recorder.acquireSucceeds = false;
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->EndFrame();
+
 	EXPECT_EQ(recorder.acquires, 1u);
 	EXPECT_EQ(recorder.presents, 0u);
+
+	// Closed, not stuck: the failure must not leave the renderer thinking a frame is still open.
+	recorder.acquireSucceeds = true;
+	EXPECT_TRUE(renderer->BeginFrame());
 }
 
 /**

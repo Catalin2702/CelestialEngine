@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -30,9 +30,8 @@ class I_Window;
  *			frame and puts the finished one on screen; it does not own the window, and it is not where rendering
  *			commands go.
  *
- *			The shape follows the APIs that make the chain explicit - IDXGISwapChain and VkSwapchainKHR - because the
- *			ones that hide it (OpenGL, where the chain is the window's default framebuffer) fit inside that shape,
- *			while the reverse is not true.
+ *			The shape follows the APIs that make the chain explicit, because the ones that hide it - where the chain is
+ *			the window's default framebuffer - fit inside that shape, while the reverse is not true.
  */
 class I_Swapchain {
 public:
@@ -43,11 +42,30 @@ public:
 
 public:
 	/**
-	 * @brief Takes hold of the next back buffer, and reports whether the frame can go ahead
-	 * @return bool False when this frame must be skipped rather than drawn
-	 * @details Fallible on purpose. Vulkan answers VK_ERROR_OUT_OF_DATE_KHR when the surface no longer matches the
-	 *			swapchain, Metal hands back no drawable under memory pressure, and a minimised window has nothing to
-	 *			draw into on any backend. A false here is normal operation, not an error to report.
+	 * @brief Brings the back buffers in line with the window, and reports whether this frame can be drawn at all
+	 * @return bool False when the window offers no drawable area - a minimised one - and the frame must be skipped
+	 * @details Split out of AcquireNextTarget so that a frame can learn its size without holding a back buffer while
+	 *			it draws. The size is what the render targets and the viewports are built from, and it is needed at
+	 *			the top of the frame; the back buffer is only needed by the pass that writes it, which is the last one.
+	 *			Asking for both at once is what made every frame hold a buffer for its whole length.
+	 *
+	 *			Takes nothing and holds nothing, so a frame that stops after this one has nothing to give back.
+	 */
+	[[nodiscard]] virtual bool PrepareFrame() = 0;
+
+	/**
+	 * @brief Takes hold of the next back buffer, and reports whether the frame can still go ahead
+	 * @return bool False when this frame must be skipped rather than presented
+	 * @details Call it as late as the frame allows - immediately before the pass that draws into the back buffer.
+	 *			Every backend hands out a small, fixed number of them and cannot hand out the next until the display
+	 *			system has finished with one, so the interval between this call and Present is time no other frame can
+	 *			start in, and it is subtracted from the frame rate wherever the chain is a real one.
+	 *
+	 *			Fallible on purpose. A backend can find the surface no longer matches the chain, or have no buffer to
+	 *			give under memory pressure, and a minimised window has nothing to draw into anywhere. A false here is
+	 *			normal operation, not an error to report - but by this point the frame has already been encoded, so a
+	 *			backend that answers false has to release whatever work was recorded against it rather than leave it
+	 *			pending.
 	 */
 	[[nodiscard]] virtual bool AcquireNextTarget() = 0;
 
@@ -58,15 +76,15 @@ public:
 
 	/**
 	 * @brief Resizes the back buffers to match the window
-	 * @details May rebuild the whole chain - Vulkan has to - so every render target obtained before this call must be
-	 *			treated as invalid afterwards.
+	 * @details May rebuild the whole chain - some backends have to - so every render target obtained before this call
+	 *			must be treated as invalid afterwards.
 	 */
 	virtual void Resize(u32 width, u32 height) = 0;
 
 	/**
 	 * @brief Switches presentation between waiting for the display's refresh and running free
-	 * @details Not a cheap setter, despite looking like one: Vulkan bakes the present mode into the swapchain at
-	 *			creation, so changing it there means rebuilding the chain, with the same consequences as Resize.
+	 * @details Not a cheap setter, despite looking like one: a backend can bake the present mode into the chain at
+	 *			creation, so changing it there means rebuilding it, with the same consequences as Resize.
 	 */
 	virtual void SetVSync(bool enabled) = 0;
 
@@ -76,7 +94,7 @@ public:
 	/**
 	 * @brief Gets the format of the colour buffers
 	 * @details A pipeline drawing into this swapchain has to declare the same format in its RenderTargetFormats, and
-	 *			every backend but OpenGL rejects the draw when they disagree.
+	 *			most backends reject the draw when the two disagree.
 	 */
 	[[nodiscard]] virtual Types::PixelFormat GetColorFormat() const = 0;
 
@@ -89,8 +107,8 @@ public:
 
 	/**
 	 * @brief Gets the size of the back buffers, in pixels
-	 * @details Backing pixels, not screen coordinates: the two differ by the content scale on a Retina display, and it
-	 *			is the pixels a viewport and a render pass are measured in.
+	 * @details Backing pixels, not screen coordinates: the two differ by the content scale on a high-DPI display, and
+	 *			it is the pixels a viewport and a render pass are measured in.
 	 */
 	[[nodiscard]] virtual std::pair<u32, u32> GetSize() const = 0;
 

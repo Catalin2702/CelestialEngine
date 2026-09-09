@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -45,8 +45,8 @@ public:
 	[[nodiscard]] static std::unique_ptr<I_GraphicDevice> MakeDevice(Types::GraphicsApi api);
 
 public:
-	/// Compiles (OpenGL) or resolves (Metal) one shader stage. Shared, so the same module can back several pipelines
-	/// without paying for the compile again.
+	/// Compiles or resolves one shader stage, whichever the backend needs. Shared, so the same module can back several
+	/// pipelines without paying for the compile again.
 	[[nodiscard]] virtual std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) = 0;

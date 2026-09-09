@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -48,7 +48,7 @@ enum class MouseButtonCode : u8 {
  * @param buttonCode The MouseButton enum value to convert
  * @return int The integer representation of the MouseButton
  * @details This function uses static_cast to convert the MouseButton enum to an int. It allows
- *			for easy interoperability with APIs that expect mouse button codes as integers (e.g., GLFW).
+ *			for easy interoperability with APIs that expect mouse button codes as plain integers.
  */
 inline int ToInt(const MouseButtonCode buttonCode) { return static_cast<int>(buttonCode); }
 /**

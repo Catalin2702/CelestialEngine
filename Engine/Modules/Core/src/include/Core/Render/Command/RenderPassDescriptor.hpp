@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -71,9 +71,9 @@ struct CE_CORE_API RenderPassDepthAttachment {
  * @brief The complete set of attachments a batch of draw calls writes to
  * @details This is the object BeginRenderPass consumes, and the reason render passes exist as a concept at all: a
  *			tile-based GPU has to know every attachment up front, because it allocates tile memory for all of them,
- *			runs every draw of the pass tile by tile, and only then writes the results out. OpenGL, which predates
- *			that hardware, lets buffers be bound ad hoc instead - which is why the OpenGL backend can implement this
- *			as a framebuffer bind plus a glClear, and ignores half of what the descriptor says.
+ *			runs every draw of the pass tile by tile, and only then writes the results out. Older APIs let buffers be
+ *			bound ad hoc instead, so a backend built on one can satisfy this with a bind and a clear and ignore half of
+ *			what the descriptor says. It is shaped for the strictest consumer rather than the loosest.
  */
 struct CE_CORE_API RenderPassDescriptor {
 	std::array<RenderPassColorAttachment, Types::MAX_COLOR_ATTACHMENTS> colors;
@@ -81,8 +81,7 @@ struct CE_CORE_API RenderPassDescriptor {
 
 	RenderPassDepthAttachment depth;
 
-	/// Size of the region being rendered into: Vulkan's renderArea, and the target height a Viewport needs to flip
-	/// its origin for OpenGL.
+	/// Size of the region being rendered into, and the target height a Viewport needs in order to flip its origin.
 	u32 width = 0;
 	u32 height = 0;
 };

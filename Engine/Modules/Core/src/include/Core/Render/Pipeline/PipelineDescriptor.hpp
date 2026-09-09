@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -59,9 +59,9 @@ struct CE_CORE_API PipelineDescriptor {
 	std::shared_ptr<I_ShaderModule> vertexShader;
 	std::shared_ptr<I_ShaderModule> fragmentShader;
 
-	/// Describes how the vertex buffers feed the vertex stage. OpenGL cannot store this in the pipeline - a VAO binds
-	/// format and buffers together before GL 4.3, and macOS stops at 4.1 - so there it is only used to validate the
-	/// vertex arrays the encoder is handed; Metal turns it into an MTLVertexDescriptor.
+	/// Describes how the vertex buffers feed the vertex stage. Backends that compile the layout into the pipeline turn
+	/// this into their own vertex descriptor; those that cannot separate format from buffers use it only to validate
+	/// what the encoder is handed.
 	BufferLayout vertexLayout;
 
 	Types::PrimitiveTopology topology = Types::PrimitiveTopology::TriangleList;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -39,9 +39,9 @@ class I_Platform;
  *			surface comes up through a sequence of asynchronous round-trips with the compositor, not a single call).
  *			A constructed window is a usable window.
  *
- *			Draining the event queue is likewise absent, because on no windowing API is it per-window: glfwPollEvents
- *			is process-wide, nextEventMatchingMask: belongs to the NSApplication, PeekMessage is per-thread and
- *			wl_display_dispatch_pending is per-connection. That call belongs to the platform and the run loop.
+ *			Draining the event queue is likewise absent, because on no windowing API is it per-window: it is
+ *			process-wide, per-thread or per-connection depending on the system, but never per-window. That call
+ *			belongs to the platform and the run loop.
  */
 class CE_CORE_API I_Window {
 public:
@@ -64,16 +64,15 @@ public:
 public:
 	/**
 	 * @brief Makes the window visible and gives it input focus
-	 * @details Separate from creation because the moment to reveal a window is the application's decision: the Cocoa
-	 *			backend defers it until the run loop is up (applicationDidFinishLaunching), which is the canonical
-	 *			lifecycle on that platform.
+	 * @details Separate from creation because the moment to reveal a window is the application's decision, and some
+	 *			backends cannot show one until their run loop is up.
 	 */
 	/**
 	 * @brief Brings the native window up
-	 * @details Empty by default because most backends have nothing to do here: GLFW builds a usable window in its
-	 *			constructor, and so would Win32 and X11. AppKit is the exception - it hands out no usable window until
-	 *			NSApplication has finished launching - so the step is named, and called from the platform's ready
-	 *			handler, rather than being hidden inside a constructor that runs too early on one backend.
+	 * @details Empty by default because most backends have nothing to do here: they build a usable window in their
+	 *			constructor. The exception is a backend that hands out no usable window until its platform has finished
+	 *			launching, so the step is named, and called from the platform's ready handler, rather than hidden inside
+	 *			a constructor that would run too early there.
 	 */
 	virtual void Init() {}
 
@@ -136,7 +135,7 @@ public:
 
 	/**
 	 * @brief Gets the ratio between backing pixels and screen coordinates
-	 * @return f32 1.0 on a standard display, 2.0 on a Retina one
+	 * @return f32 1.0 on a standard display, 2.0 on a high-DPI one
 	 * @details Needed wherever a size in points has to become a size in pixels - UI scaling, font sizes - and to tell
 	 *			a genuine resize apart from the same window moving to a display with a different scale.
 	 */
@@ -151,18 +150,18 @@ public:
 
 	/**
 	 * @brief Gets the underlying native window handle
-	 * @return void* Pointer to the native window (GLFWwindow*, NS::Window*, ...)
+	 * @return void* Pointer to the backend's own native window object
 	 * @details The escape hatch for platform-specific operations this interface does not cover. Note that it is one
-	 *			handle: X11 and Wayland need two (Display* plus Window, wl_display* plus wl_surface*), so a backend
-	 *			there will have to expose them through a surface interface instead.
+	 *			handle, and some windowing systems need two - a display connection plus a surface - so a backend there
+	 *			will have to expose them through a surface interface instead.
 	 */
 	[[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
 	/**
 	 * @brief Gets the window API type
 	 * @return Types::WindowApi Enum value representing the window API
-	 * @details Returns the specific window API type used by this window implementation (e.g., GLFW, Cocoa). This can be
-	 *			used for platform-specific handling or optimizations.
+	 * @details Returns the specific window API this implementation is built on, for the rare caller that has to handle
+	 *			one of them specially.
 	 */
 	[[nodiscard]] virtual Types::WindowApi GetWindowApi() const = 0;
 };

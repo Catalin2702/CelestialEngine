@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -46,7 +46,7 @@ namespace CE::Core {
  *			supplies the scene.
  *
  *			Every hub channel it wants exists on I_EventHubDispatcher, so unlike the ImGui layers it names no backend
- *			and works unchanged on Metal and OpenGL.
+ *			and works unchanged on every one of them.
  */
 class CE_CORE_API SceneLayer final: public I_Layer {
 	enum EventHubSubscription: std::size_t {

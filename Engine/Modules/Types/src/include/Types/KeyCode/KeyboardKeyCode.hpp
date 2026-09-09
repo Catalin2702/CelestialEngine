@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -26,7 +26,9 @@ namespace CE::Types {
 /**
  * @brief Enumeration of keyboard key codes
  * @details This enum defines the various keyboard keys that can be used within the engine.
- *			Each key is assigned a unique integer value corresponding to its GLFW code, allowing for easy integration with GLFW's input handling.
+ *			A key that has an ASCII code is given that code - the letters, the digits, Space - so the value of a
+ *			printable key is readable on sight and needs no table to check. The keys ASCII has no code for continue
+ *			above 255, where the numbering is conventional rather than meaningful.
  *			The enum includes standard keys (A-Z, 0-9), function keys (F1-F12), arrow keys, and special keys (Space, Enter, Escape, etc.).
  *			An Unknown value is also provided to represent unrecognized or unsupported key codes.
  */
@@ -74,7 +76,7 @@ enum class KeyboardKeyCode : u16 {
  * @param key The KeyboardKeyCode to convert to an integer
  * @return int The integer representation of the KeyCode
  * @details Converts the KeyCode enum value to its underlying integer representation.
- *			This is useful for interfacing with APIs that expect key codes as integers (e.g., GLFW).
+ *			This is useful for interfacing with APIs that expect key codes as plain integers.
  *			The function uses static_cast to ensure a safe conversion from the enum class to its underlying type (uint16_t) and then to int for compatibility with typical key code representations.
  */
 inline int ToInt(KeyboardKeyCode key) { return static_cast<int>(key); }

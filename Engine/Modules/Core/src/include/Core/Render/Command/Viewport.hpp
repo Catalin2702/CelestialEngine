@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -25,11 +25,11 @@ namespace CE::Core {
  * @details Not a clipping rectangle - that is the scissor, which is set separately. The viewport is the affine
  *			transform applied after the perspective divide: it turns normalised device coordinates into target pixels.
  *
- *			Callers describe the rectangle in the convention every API but OpenGL uses - origin at the **top-left**
- *			corner, y growing downwards, which is also the convention the window events report positions in - and the
- *			constructor converts it into the backend's own. The converted values are what the members hold, so a
- *			Viewport is bound to the API it was built for: handing one built for OpenGL to a Metal encoder would draw
- *			in the wrong half of the target. GetGraphicsApi() exists so an encoder can assert against that.
+ *			Callers describe the rectangle the way the window reports positions - origin at the **top-left** corner, y
+ *			growing downwards - and the constructor converts it into the convention of the backend it is built for.
+ *			The converted values are what the members hold, so a Viewport belongs to that backend: handing one to an
+ *			encoder of another draws in the wrong half of the target. GetGraphicsApi() exists so an encoder can assert
+ *			against that.
  */
 struct CE_CORE_API Viewport {
 public:
@@ -42,7 +42,7 @@ public:
 	 * @param y Top edge, in target pixels, measured downwards from the top of the target
 	 * @param width Width in target pixels
 	 * @param height Height in target pixels
-	 * @param targetHeight Full height of the render target; only OpenGL needs it, to flip the origin
+	 * @param targetHeight Full height of the render target; needed only where the origin has to be flipped
 	 * @param minDepth Depth value the near plane maps to, normally 0
 	 * @param maxDepth Depth value the far plane maps to, normally 1 (or 0 under a reversed-Z projection)
 	 */

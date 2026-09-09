@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-09-09
 //
 
 #include "Core/Input/InputState.hpp"
@@ -133,7 +133,7 @@ void InputState::_OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& 
 }
 
 void InputState::_OnMouseDragged(const Events::MouseDraggedEvent& event) {
-	// Cocoa does not deliver mouseMoved while a button is held, so drags are the only position source during a drag.
+	// Some backends deliver no move events while a button is held, so drags are the only position source during one.
 	_mouseX = event.GetX();
 	_mouseY = event.GetY();
 }

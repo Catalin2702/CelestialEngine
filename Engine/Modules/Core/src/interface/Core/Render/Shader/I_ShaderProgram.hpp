@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -39,7 +39,7 @@ public:
 public:
 	/**
 	 * @brief Gets the unique identifier for the shader program
-	 * @return u32 Unique identifier for the shader program (e.g., OpenGL program ID)
+	 * @return u32 The backend's own identifier for the shader program
 	 * @details Pure virtual method that returns a unique identifier for the shader program, which can be used for various operations such as binding and resource management.
 	 *			Must be implemented by derived classes to provide access to the underlying shader program resource.
 	 */

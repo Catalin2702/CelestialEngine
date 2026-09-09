@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -147,7 +147,7 @@ private:
 private:
 	/**
 	 * @brief Subscribes the state to the event hub's keyboard/mouse/window multicast dispatchers
-	 * @details Both platform hubs (Cocoa and GLFW) expose the same dispatcher member names, so the hub structs are taken
+	 * @details Every platform hub exposes the same dispatcher member names, so the hub structs are taken
 	 *			as template parameters. Call this BEFORE any other subscriber so the state is updated first.
 	 */
 	template <typename KeyboardHub, typename MouseHub, typename WindowHub>
@@ -221,7 +221,7 @@ private:
 	 */
 	void _OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& event);
 	/**
-	 * @brief Updates the cached cursor position during a drag (Cocoa sends no mouseMoved while a button is held)
+	 * @brief Updates the cached cursor position during a drag (some backends send no move events while a button is held)
 	 */
 	void _OnMouseDragged(const Events::MouseDraggedEvent& event);
 	/**

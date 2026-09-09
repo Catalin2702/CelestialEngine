@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -50,9 +50,16 @@ public:
 public:
 	/**
 	 * @brief Refreshes the cached framebuffer size and reports whether there is anything to draw into
-	 * @details There is nothing to acquire in OpenGL - the driver picks the back buffer itself - so this only reads
-	 *			the current framebuffer size and answers false for the one case that does occur, a window minimised to
-	 *			a zero-sized framebuffer.
+	 * @details Reads the current framebuffer size and answers false for the one case that does occur, a window
+	 *			minimised to a zero-sized framebuffer.
+	 */
+	[[nodiscard]] bool PrepareFrame() override;
+
+	/**
+	 * @brief Answers whether the frame can go ahead, without taking anything
+	 * @details There is nothing to acquire in OpenGL - the driver picks the back buffer itself, and the chain is the
+	 *			window's default framebuffer - so this is the one backend where the split between the two calls costs
+	 *			nothing and buys nothing. It repeats PrepareFrame's answer and holds no buffer either way.
 	 */
 	[[nodiscard]] bool AcquireNextTarget() override;
 

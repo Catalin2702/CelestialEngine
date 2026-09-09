@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -89,7 +89,7 @@ public:
 	/**
 	 * @brief Clears all layers from the stack
 	 * @details Detaches and deletes all layers. This is useful for explicit cleanup
-	 *			before other resources (like GLFW) are destroyed.
+	 *			before the window and the device a layer may still be holding are destroyed.
 	 */
 	void Clear();
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-09
 //
 
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
@@ -17,6 +17,7 @@
 #include <QuartzCore/CAMetalDrawable.hpp>
 
 #include <stdexcept>
+#include <tuple>
 
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 
@@ -47,7 +48,7 @@ MetalSwapchain::MetalSwapchain(I_MetalSurface& surface, MetalGraphicDevice& grap
 	// its view out, and on a window created and rendered into in the same turn that is one frame too late - every frame
 	// would be skipped for a target that is not actually zero-sized. Resize is also what allocates the depth buffer,
 	// and it does nothing at all for a window that really is minimised.
-	MetalSwapchain::Resize(0, 0);
+	std::ignore = MetalSwapchain::PrepareFrame();
 }
 
 MetalSwapchain::~MetalSwapchain() {
@@ -60,17 +61,32 @@ MetalSwapchain::~MetalSwapchain() {
 	_nativeDrawable.reset();
 }
 
-bool MetalSwapchain::AcquireNextTarget() {
+bool MetalSwapchain::PrepareFrame() {
 	// Asked every frame rather than trusted from the last Resize: AppKit resizes the window on its own, and a frame
 	// that ran before the resize event reached us would otherwise draw at the previous size and come out stretched.
 	// A no-op when nothing changed, which is every frame but the ones that follow a resize.
 	Resize(0, 0);
 
-	if (_width == 0 or _height == 0)
+	return _width != 0 and _height != 0;
+}
+
+bool MetalSwapchain::AcquireNextTarget() {
+	// Re-read rather than assumed from PrepareFrame: a resize that arrived while the frame was being encoded has
+	// already been applied to the layer by then, and a minimised window must not be handed a drawable at all.
+	if (_width == 0 or _height == 0) [[unlikely]] {
+		_graphicDevice->SetFrameTarget(nullptr);
 		return false;
+	}
 
 	// Where VSync actually happens: with display sync on, this blocks until the compositor has released a buffer, and
 	// that block is what paces the whole loop to the refresh rate. It gives up after about a second and answers null.
+	//
+	// It blocks with display sync *off* too, which is the reason this call sits at the end of the frame rather than at
+	// its start. The layer rotates through a small, fixed number of drawables and cannot hand one back until Core
+	// Animation has finished compositing it, so with sync off the wait is for the compositor rather than for the
+	// display - and on a frame the GPU finishes quickly it is most of the frame. That part of the wait is not ours to
+	// recover, but the part caused by *our* holding a drawable is: all the time between here and Present is time the
+	// layer cannot start recycling that buffer in.
 	//
 	// Autoreleased, and needed until Present - which is several calls and possibly an autorelease-pool drain away - so
 	// it is retained rather than transferred: RetainPtr adds a reference of ours, TransferPtr would adopt one we were
@@ -78,6 +94,11 @@ bool MetalSwapchain::AcquireNextTarget() {
 	_nativeDrawable = NS::RetainPtr(_nativeLayer->nextDrawable());
 	if (not _nativeDrawable) [[unlikely]] {
 		CE_CORE_WARN("MetalSwapchain::AcquireNextTarget: The layer had no drawable free; the frame is skipped.");
+
+		// The frame is already encoded by the time this fails, so the command buffer carrying it is sitting on the
+		// device with no one left to commit it - and the next frame would go on recording into that same buffer.
+		// Clearing the frame target is what commits and drops it; the work reaches the GPU and is simply never shown.
+		_graphicDevice->SetFrameTarget(nullptr);
 		return false;
 	}
 

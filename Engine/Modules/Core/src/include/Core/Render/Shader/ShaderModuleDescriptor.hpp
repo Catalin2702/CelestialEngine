@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-30
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -23,8 +23,11 @@ namespace CE::Core {
 /**
  * @struct ShaderModuleDescriptor
  * @brief The recipe a graphic device needs to produce one shader module
- * @details The two backends read different halves of it: OpenGL compiles `source` and ignores `entryPoint` (GLSL
- *			always enters at main), Metal looks `entryPoint` up in the already compiled .metallib and ignores `source`.
+ * @details A backend reads one half of it and ignores the other: one that compiles at runtime takes `source`, one
+ *			that loads an artifact built ahead of time looks `entryPoint` up in it.
+ *
+ *			TODO: carrying both halves is what forces the caller to know which one its backend reads, and where the
+ *			artifact lives. The device should resolve that from the entry point alone, and `source` go away.
  *			Every string is borrowed for the duration of the CreateShaderModule call only - a module copies whatever
  *			it needs to keep.
  */

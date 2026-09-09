@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-09
 //
 
 #pragma once
@@ -36,9 +36,9 @@ class SceneLayer;
 /**
  * @class Application
  * @brief The one application class, whatever the platform
- * @details What used to be GlfwApplication and CocoaApplication. Their public surfaces were already the same twelve
- *			overrides; what kept them apart was owning concrete window and context types, and owning the frame loop
- *			itself. Both are now held behind interfaces, so a single concrete class serves every backend and the
+ * @details What used to be one application class per windowing backend. Their public surfaces were already the same
+ *			twelve overrides; what kept them apart was owning concrete window and context types, and owning the frame
+ *			loop itself. Both are now held behind interfaces, so a single concrete class serves every backend and the
  *			polymorphism lives in the pieces rather than in the application.
  *
  *			The members are unique_ptr because the implementations are chosen at runtime, but nothing outside the
@@ -175,8 +175,8 @@ private:
 	/**
 	 * @brief Builds everything that needs a live window, once the platform says there is one
 	 * @details Bound to I_Platform::onReadyDispatcher and fired from Start(). This used to be the tail of the
-	 *			constructor, which worked only because GLFW has a usable window the moment it is constructed; AppKit
-	 *			does not, so the work moved to the moment both backends can name.
+	 *			constructor, which worked only where a window is usable the moment it is constructed; a platform that
+	 *			has to finish launching first is not, so the work moved to the moment every backend can name.
 	 */
 	void _OnPlatformReady();
 
@@ -217,9 +217,9 @@ private:
 
 	/**
 	 * @brief Tells the backend how far apart to hold successive frames, where it can
-	 * @details Only Metal can do this, so only Metal is asked. It is the answer to wanting a high frame rate without
-	 *			tearing: VSync blocks the loop on the display, presenting as soon as possible tears, and this holds
-	 *			each frame back without blocking anything.
+	 * @details Asked only of the backends that can do it, and silently skipped by the rest. It is the answer to
+	 *			wanting a high frame rate without tearing: VSync blocks the loop on the display, presenting as soon as
+	 *			possible tears, and this holds each frame back without blocking anything.
 	 */
 	void _ApplyPresentPacing(bool vsync) const;
 
