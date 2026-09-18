@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-18
 //
 
 #include "Tools/Log/Log.hpp"
@@ -59,7 +59,7 @@ void Log::LogCoreError(const std::string& message) {
 	// Asserted because calling this before Init is a caller's bug, but still checked: the assert is compiled out
 	// under NDEBUG, and in Dist there is legitimately no logger at all - so without the guard every Release and Dist
 	// build would dereference a null shared_ptr here instead of doing nothing.
-	assert(GetCoreLogger() && "CoreLogger is not initialized");
+	assert(GetCoreLogger() and "CoreLogger is not initialized");
 	if (not GetCoreLogger())
 		return;
 

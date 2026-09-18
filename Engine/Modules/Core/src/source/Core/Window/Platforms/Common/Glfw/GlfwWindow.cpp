@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -144,7 +144,7 @@ GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 }
 
 void GlfwWindow::Show() {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwShowWindow(window);
 }
 
@@ -178,24 +178,24 @@ void GlfwWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
 }
 
 void GlfwWindow::Miniaturize() {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwIconifyWindow(window);
 }
 
 void GlfwWindow::Deminiaturize() {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwRestoreWindow(window);
 }
 
 void GlfwWindow::ToggleFullScreen() {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 
 #if CE_PLATFORM_MACOS
 	// GLFW hosts a real NSWindow on macOS: use the native (Spaces) fullscreen so the transition animates and keeps the
 	// title-bar controls, instead of the exclusive glfwSetWindowMonitor fullscreen that covers them and hides the traffic lights.
-	const auto nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(window));
+	auto* const nsWindow = reinterpret_cast<NS::Window*>(glfwGetCocoaWindow(window));
 	if (not nsWindow) [[unlikely]] {
 		CE_CORE_WARN("GlfwWindow::ToggleFullScreen: Cannot toggle fullscreen because the native Cocoa window is unavailable");
 		return;
@@ -232,22 +232,22 @@ void GlfwWindow::ToggleFullScreen() {
 }
 
 void GlfwWindow::MakeContextCurrent() {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwMakeContextCurrent(window);
 }
 
 void GlfwWindow::SwapBuffers() {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwSwapBuffers(window);
 }
 
 void GlfwWindow::SetWindowSize(const u32 width, const u32 height) {
-	if (const auto window = _Native()) [[likely]]
+	if (auto* const window = _Native()) [[likely]]
 		glfwSetWindowSize(window, static_cast<int>(width), static_cast<int>(height));
 }
 
 void GlfwWindow::SetTitle(const std::string_view title) {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 
@@ -257,7 +257,7 @@ void GlfwWindow::SetTitle(const std::string_view title) {
 }
 
 void GlfwWindow::SetSwapInterval(const i32 interval) {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 
@@ -266,7 +266,7 @@ void GlfwWindow::SetSwapInterval(const i32 interval) {
 }
 
 f32 GlfwWindow::GetContentScale() const {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return 1.0f;
 
@@ -279,18 +279,18 @@ f32 GlfwWindow::GetContentScale() const {
 }
 
 u32 GlfwWindow::GetRefreshRate() const {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return 0;
 
 	// When fullscreen the window owns a monitor; otherwise fall back to the primary monitor.
-	auto monitor = glfwGetWindowMonitor(window);
+	auto* monitor = glfwGetWindowMonitor(window);
 	if (not monitor) [[unlikely]]
 		monitor = glfwGetPrimaryMonitor();
 	if (not monitor) [[unlikely]]
 		return 0;
 
-	const auto mode = glfwGetVideoMode(monitor);
+	const auto* const mode = glfwGetVideoMode(monitor);
 	return mode ? static_cast<u32>(mode->refreshRate) : 0;
 }
 
@@ -352,7 +352,7 @@ GLFWwindow* GlfwWindow::_Native(const std::source_location& location) const {
 }
 
 int GlfwWindow::_CurrentModifiers() const {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return 0;
 
@@ -375,22 +375,22 @@ int GlfwWindow::_CurrentModifiers() const {
 }
 
 void GlfwWindow::_SetIOEventCallbacks() const {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 
 	glfwSetKeyCallback(window, [](GLFWwindow* nativeWindow, const int key, const int scancode, const int action, const int mods) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]]
 			self->windowEventHandler.DispatchKeyEvent(key, action, scancode, mods);
 	});
 
 	glfwSetCharCallback(window, [](GLFWwindow* nativeWindow, const unsigned int codepoint) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]]
 			self->windowEventHandler.DispatchCharEvent(codepoint);
 	});
 
 	glfwSetMouseButtonCallback(window, [](GLFWwindow* nativeWindow, const int button, const int action, const int mods) {
-		const auto self = WindowFrom(nativeWindow);
+		auto* const self = WindowFrom(nativeWindow);
 		if (not self) [[unlikely]]
 			return;
 
@@ -406,7 +406,7 @@ void GlfwWindow::_SetIOEventCallbacks() const {
 	});
 
 	glfwSetCursorPosCallback(window, [](GLFWwindow* nativeWindow, const f64 xPos, const f64 yPos) {
-		const auto self = WindowFrom(nativeWindow);
+		auto* const self = WindowFrom(nativeWindow);
 		if (not self) [[unlikely]]
 			return;
 
@@ -424,18 +424,18 @@ void GlfwWindow::_SetIOEventCallbacks() const {
 	});
 
 	glfwSetScrollCallback(window, [](GLFWwindow* nativeWindow, const f64 xOffset, const f64 yOffset) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]]
 			self->windowEventHandler.DispatchMouseWheelScrollEvent(xOffset, yOffset);
 	});
 }
 
 void GlfwWindow::_SetWindowEventCallbacks() const {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 
 	glfwSetWindowSizeCallback(window, [](GLFWwindow* nativeWindow, const int width, const int height) {
-		const auto self = WindowFrom(nativeWindow);
+		auto* const self = WindowFrom(nativeWindow);
 		if (not self) [[unlikely]]
 			return;
 
@@ -450,7 +450,7 @@ void GlfwWindow::_SetWindowEventCallbacks() const {
 	// The framebuffer has a callback of its own because it can change without the window size changing - dragging the
 	// window onto a display with a different scale factor resizes the drawable and nothing else.
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* nativeWindow, const int width, const int height) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]] {
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]] {
 			self->_frameWidth = static_cast<u32>(width);
 			self->_frameHeight = static_cast<u32>(height);
 
@@ -459,18 +459,18 @@ void GlfwWindow::_SetWindowEventCallbacks() const {
 	});
 
 	glfwSetWindowCloseCallback(window, [](GLFWwindow* nativeWindow) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]]
 			self->windowEventHandler.DispatchCloseEvent();
 	});
 
 	glfwSetWindowFocusCallback(window, [](GLFWwindow* nativeWindow, const int focused) {
-		if (const auto self = WindowFrom(nativeWindow)) [[likely]]
+		if (auto* const self = WindowFrom(nativeWindow)) [[likely]]
 			self->windowEventHandler.DispatchFocusEvent(focused);
 	});
 }
 
 void GlfwWindow::_CacheSizes() {
-	const auto window = _Native();
+	auto* const window = _Native();
 	if (not window) [[unlikely]]
 		return;
 

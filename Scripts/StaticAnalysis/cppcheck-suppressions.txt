@@ -1,0 +1,23 @@
+#
+# Module: CelestialEngine/Scripts/StaticAnalysis
+# File: cppcheck-suppressions.txt
+# Created by: Catalin Chirosca
+# Created: 2026-09-18
+# Updated by: Catalin Chirosca
+# Updated: 2026-09-18
+#
+# Suppressions read by cppcheck.sh. One per line: <id>[:<file>[:<line>]], wildcards allowed in <file>.
+# Prefer an inline '// cppcheck-suppress <id>' on the line above for a single occurrence; this file is for
+# whole-project decisions, each with the reason.
+
+# cppcheck does not see the system and vcpkg headers as its own, so it reports every one it cannot open.
+missingIncludeSystem
+
+# Printed when a suppression above never matched, which is expected on a partial (FILE_REGEX) run.
+unmatchedSuppression
+
+# Informational: cppcheck gave up on some branch combinations of a big function; --exhaustive analyses them.
+normalCheckLevelMaxBranches
+
+# GoogleTest's TEST / TEST_F macros expand to classes cppcheck sees as unused.
+unusedStructMember:*/Tests/*

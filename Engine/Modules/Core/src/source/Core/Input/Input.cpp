@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include "Core/Input/Input.hpp"
@@ -32,7 +32,7 @@ void Input::Shutdown() {
 }
 
 Input& Input::Get() {
-	assert(_instance && "Input::Get: Input system not initialized! Call Input::Init() before using.");
+	assert(_instance and "Input::Get: Input system not initialized! Call Input::Init() before using.");
 	return *_instance;
 }
 

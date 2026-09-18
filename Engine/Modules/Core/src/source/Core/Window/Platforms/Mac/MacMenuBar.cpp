@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
@@ -82,7 +82,7 @@ void OnToggleVSync(void*, SEL, const NS::Object*) {
 }
 
 void InstallMacMenuBar() {
-	const auto application = NS::Application::sharedApplication();
+	auto* const application = NS::Application::sharedApplication();
 	if (not application) [[unlikely]] {
 		CE_CORE_WARN("InstallMacMenuBar: there is no NSApplication to install a menu bar on; the menu bar is skipped.");
 		return;
@@ -93,7 +93,7 @@ void InstallMacMenuBar() {
 	// function is safe - and without the pool the autoreleased halves would simply leak.
 	const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-	const auto applicationName = NS::RunningApplication::currentApplication()->localizedName();
+	auto* const applicationName = NS::RunningApplication::currentApplication()->localizedName();
 
 	const auto mainMenu = NS::TransferPtr(NS::Menu::alloc()->init());
 
@@ -104,8 +104,8 @@ void InstallMacMenuBar() {
 		const auto applicationMenuItem = NS::TransferPtr(NS::MenuItem::alloc()->init());
 		const auto applicationMenu = NS::TransferPtr(NS::Menu::alloc()->init());
 
-		const auto quitTitle = Text("Quit ")->stringByAppendingString(applicationName);
-		const auto quitItem = applicationMenu->addItem(quitTitle, Action("Quit", OnQuit), Text("q"));
+		auto* const quitTitle = Text("Quit ")->stringByAppendingString(applicationName);
+		auto* const quitItem = applicationMenu->addItem(quitTitle, Action("Quit", OnQuit), Text("q"));
 		quitItem->setKeyEquivalentModifierMask(NS::EventModifierFlagCommand);
 
 		applicationMenuItem->setSubmenu(applicationMenu.get());
@@ -120,12 +120,12 @@ void InstallMacMenuBar() {
 		// The two system-standard shortcuts, spelled the way macOS spells them elsewhere: Command-M minimises and
 		// Control-Command-F toggles full screen. Deminiaturize has no standard key because the Dock is how a window
 		// normally comes back, and VSync has none because it is ours rather than the system's.
-		const auto miniaturizeItem = windowMenu->addItem(Text("Miniaturize"), Action("Miniaturize", OnMiniaturize), Text("m"));
+		auto* const miniaturizeItem = windowMenu->addItem(Text("Miniaturize"), Action("Miniaturize", OnMiniaturize), Text("m"));
 		miniaturizeItem->setKeyEquivalentModifierMask(NS::EventModifierFlagCommand);
 
 		windowMenu->addItem(Text("Deminiaturize"), Action("Deminiaturize", OnDeminiaturize), Text(""));
 
-		const auto fullScreenItem = windowMenu->addItem(Text("Toggle Full Screen"), Action("ToggleFullScreen", OnToggleFullScreen), Text("f"));
+		auto* const fullScreenItem = windowMenu->addItem(Text("Toggle Full Screen"), Action("ToggleFullScreen", OnToggleFullScreen), Text("f"));
 		fullScreenItem->setKeyEquivalentModifierMask(
 			static_cast<NS::KeyEquivalentModifierMask>(NS::EventModifierFlagControl | NS::EventModifierFlagCommand));
 

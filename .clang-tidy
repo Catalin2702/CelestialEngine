@@ -1,0 +1,127 @@
+#
+# Module: CelestialEngine
+# File: .clang-tidy
+# Created by: Catalin Chirosca
+# Created: 2026-09-18
+# Updated by: Catalin Chirosca
+# Updated: 2026-09-18
+#
+# Checks run by Scripts/StaticAnalysis/clang_tidy.sh, and picked up by CLion / VS Code as well.
+#
+# Whole families are enabled, and only the checks that fight a deliberate convention of the codebase are turned off
+# below, each with the reason, so a new check introduced by a newer clang-tidy is on by default.
+#
+# The file-scoped disables:
+#   bugprone-easily-swappable-parameters          (u32 width, u32 height) is everywhere in a renderer
+#   bugprone-reserved-identifier                  '_Method' / '_member' is the house naming for private members.
+#                                                 Strictly, _Uppercase is reserved to the implementation: kept as a
+#                                                 deliberate convention, see the check's own docs before relying on it
+#   bugprone-signed-bitwise                       ImGui and OpenGL flags are plain int by their API
+#   clang-analyzer-optin.core.EnumCastOutOfRange  flag enums (BufferBit, EventCategory, TextureUsage...) are OR-ed into
+#                                                 values that are not enumerators by design, and the tests cast an
+#                                                 out-of-range value on purpose to check the fallbacks
+#   cppcoreguidelines-avoid-c-arrays              alias of modernize-avoid-c-arrays, see below
+#   cppcoreguidelines-pro-bounds-avoid-unchecked-container-access  operator[] on hot paths is intended
+#   cppcoreguidelines-pro-type-static-cast-downcast  the factories downcast to the backend they just picked
+#   cppcoreguidelines-use-enum-class              unscoped enums serve as array indices up to their _Count
+#   cppcoreguidelines-avoid-magic-numbers         alias of readability-magic-numbers, see below
+#   cppcoreguidelines-non-private-member-variables-in-classes
+#   misc-non-private-member-variables-in-classes  the interfaces keep protected state for their implementations
+#   cppcoreguidelines-pro-type-reinterpret-cast   needed at every native handle boundary (Metal, Cocoa, GLFW)
+#   cppcoreguidelines-pro-type-union-access       ImGui and the event payloads
+#   cppcoreguidelines-pro-bounds-pointer-arithmetic
+#   cppcoreguidelines-pro-bounds-constant-array-index
+#   cppcoreguidelines-pro-bounds-array-to-pointer-decay   C APIs (OpenGL, Metal) take raw arrays
+#   cppcoreguidelines-pro-type-vararg             spdlog / fmt and the C APIs
+#   cppcoreguidelines-avoid-do-while              used in macros
+#   cppcoreguidelines-macro-usage                 CE_API and the platform macros are the export mechanism
+#   cppcoreguidelines-owning-memory               gsl::owner is not used in the codebase
+#   cppcoreguidelines-avoid-non-const-global-variables    GoogleTest fixtures and the registration statics
+#   cppcoreguidelines-special-member-functions    too noisy on interfaces with only a virtual destructor
+#   misc-include-cleaner                          does not understand the umbrella headers (CelestialEngine.hpp)
+#   misc-no-recursion                             recursion is intentional where used
+#   misc-use-anonymous-namespace                  the test files use static helpers on purpose
+#   modernize-use-trailing-return-type            not the codebase's style
+#   portability-avoid-pragma-once                 #pragma once is the include guard of the whole codebase
+#   modernize-avoid-c-arrays                      C APIs again
+#   modernize-use-designated-initializers         a style choice, not a defect
+#   readability-identifier-length                 x, y, w, h are fine in graphics code
+#   readability-magic-numbers                     colors, angles and default sizes are self-describing
+#   readability-braces-around-statements          '[[unlikely]] return;' without braces is the house style
+#   readability-implicit-bool-conversion          pointer checks as bools are idiomatic here
+#   readability-uppercase-literal-suffix          the _f32 / _u32 user-defined literals are lowercase
+#   readability-redundant-access-specifiers       sections are split by repeated 'public:' on purpose
+#   readability-convert-member-functions-to-static  interface-shaped methods stay non-static
+#   readability-named-parameter                   unused parameters of overrides stay unnamed
+#   readability-trailing-comma                    not the codebase's style
+#   readability-function-cognitive-complexity     the threshold is set instead, see CheckOptions
+#
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-reserved-identifier,
+  -bugprone-signed-bitwise,
+  clang-analyzer-*,
+  -clang-analyzer-optin.core.EnumCastOutOfRange,
+  concurrency-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-avoid-do-while,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+  -cppcoreguidelines-pro-type-static-cast-downcast,
+  -cppcoreguidelines-use-enum-class,
+  misc-*,
+  -misc-non-private-member-variables-in-classes,
+  -misc-include-cleaner,
+  -misc-no-recursion,
+  -misc-use-anonymous-namespace,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  -modernize-use-designated-initializers,
+  performance-*,
+  portability-*,
+  -portability-avoid-pragma-once,
+  readability-*,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-braces-around-statements,
+  -readability-implicit-bool-conversion,
+  -readability-uppercase-literal-suffix,
+  -readability-redundant-access-specifiers,
+  -readability-convert-member-functions-to-static,
+  -readability-named-parameter,
+  -readability-trailing-comma
+
+WarningsAsErrors: ''
+
+# Headers are filtered by the script (only Engine/Modules, App and Tests); this default covers IDE runs.
+HeaderFilterRegex: '.*/(Engine/Modules|App|Tests)/.*'
+
+FormatStyle: none
+
+CheckOptions:
+  readability-function-cognitive-complexity.Threshold: 40
+  readability-function-cognitive-complexity.IgnoreMacros: true
+  # The codebase spells the logical operators as 'not', 'and', 'or': the listed spelling is the one enforced.
+  readability-operators-representation.BinaryOperators: 'and;or;not'
+  misc-const-correctness.AnalyzeValues: true
+  misc-const-correctness.WarnPointersAsValues: false
+  # 'NS::View* const' -> 'const NS::View* const' is noise: the metal-cpp / Objective-C wrappers only have non-const
+  # methods, so a pointer-to-const native object could not be used at all.
+  misc-const-correctness.WarnPointersAsPointers: false
+  performance-unnecessary-value-param.AllowedTypes: 'std::shared_ptr;NS::SharedPtr'
+  cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
@@ -44,7 +44,8 @@ static constexpr GLenum ShaderDataTypeToOpenGlBaseType(const Types::ShaderDataTy
 }
 
 const void* OpenGlBufferOffset(const u32 offset) {
-	return reinterpret_cast<const void*>(static_cast<uintptr_t>(offset));
+	// glVertexAttribPointer takes the byte offset into the bound buffer disguised as a pointer: the cast is the API.
+	return reinterpret_cast<const void*>(static_cast<uintptr_t>(offset)); // NOLINT(performance-no-int-to-ptr)
 }
 
 
@@ -97,11 +98,11 @@ void OpenGlVertexBuffer::UnbindBuffer() const {
 }
 
 u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
-	assert(!_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using  OpenGlVertexBuffer::SetLayout.");
+	assert(not _vertexBufferLayout.GetElements().empty() and "OpenGlVertexBuffer::BindLayout: The layout is empty. Set it using OpenGlVertexBuffer::SetLayout.");
 
 	const auto stride = static_cast<GLsizei>(_vertexBufferLayout.GetStride());
 
-	for (auto const [index, element]: Utility::Enumerate(_vertexBufferLayout)) {
+	for (const auto [index, element]: Utility::Enumerate(_vertexBufferLayout)) {
 		// Offset by the slots already taken, otherwise a second buffer would overwrite the first one's attributes.
 		const auto attributeIndex = firstAttributeIndex + static_cast<u32>(index);
 
@@ -120,13 +121,13 @@ u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 }
 
 void OpenGlVertexBuffer::SetLayout(const BufferLayout& layout) {
-	assert(_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
+	assert(_vertexBufferLayout.GetElements().empty() and "OpenGlVertexBuffer::SetLayout: The layout is already set!");
 
 	_vertexBufferLayout = layout;
 }
 
 void OpenGlVertexBuffer::SetLayout(BufferLayout&& layout) {
-	assert(_vertexBufferLayout.GetElements().empty() && "OpenGlVertexBuffer::SetLayout: The layout is already set!");
+	assert(_vertexBufferLayout.GetElements().empty() and "OpenGlVertexBuffer::SetLayout: The layout is already set!");
 
 	_vertexBufferLayout = std::move(layout);
 }

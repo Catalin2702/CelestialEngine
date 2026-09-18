@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -126,7 +126,8 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
 private:
-	f32 _xOffset, _yOffset;						///< Scroll wheel offsets
+	f32 _xOffset = 0.f;							///< Horizontal scroll wheel offset
+	f32 _yOffset = 0.f;							///< Vertical scroll wheel offset
 };
 
 /**
@@ -144,7 +145,7 @@ protected:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Only derived classes can construct a mouse button event
 	 */
-	I_MouseButtonEvent(Types::MouseButtonCode button, bool isMutable = true);
+	explicit I_MouseButtonEvent(Types::MouseButtonCode button, bool isMutable = true);
 
 public:
 	/**
@@ -174,7 +175,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse button pressed event with the specified button
 	 */
-	MouseButtonPressedEvent(Types::MouseButtonCode button, bool isMutable = true);
+	explicit MouseButtonPressedEvent(Types::MouseButtonCode button, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -199,7 +200,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a mouse button released event with the specified button
 	 */
-	MouseButtonReleasedEvent(Types::MouseButtonCode button, bool isMutable = true);
+	explicit MouseButtonReleasedEvent(Types::MouseButtonCode button, bool isMutable = true);
 
 	/**
 	 * @brief Converts the event to a string representation
@@ -245,7 +246,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput)
 
 private:
-	Types::MouseButtonCode _button;									///< Platform-specific mouse button code for the button being dragged
+	Types::MouseButtonCode _button{};								///< Platform-specific mouse button code for the button being dragged
 };
 
 }

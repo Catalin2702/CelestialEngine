@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_TYPES_BUILD_BUILD_HPP
 
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <format>
 #include <string>
@@ -25,7 +26,7 @@ namespace CE::Types {
  * @brief Enumeration of the engine build configurations
  * @details Mirrors the CMake configurations: Debug (CE_DEBUG), Release (CE_RELEASE) and Dist (CE_DIST).
  */
-enum class BuildType {
+enum class BuildType: u8 {
 	None,
 	Debug,
 	Release,

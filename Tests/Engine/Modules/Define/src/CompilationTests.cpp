@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 // Include the macros we want to test
@@ -178,7 +178,7 @@ TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesVirtualMethod) {
 	EXPECT_EQ(event.GetEventType(), EventType::WindowClose);
 
 	// Verify polymorphic behavior
-	const auto basePtr = &event;
+	const auto* const basePtr = &event;
 	EXPECT_EQ(basePtr->GetEventType(), EventType::WindowClose);
 }
 
@@ -249,7 +249,7 @@ TEST(DefineCompilationTests, BIND_FN_NO_PARAMS_Macro_WorksWithStdFunction) {
 
 TEST(DefineCompilationTests, BIND_FN_ONE_PARAM_Macro_CreatesLambda) {
 	TestCallbackClass obj;
-	auto callback = obj.GetOneParamBoundCallback();
+	const auto callback = obj.GetOneParamBoundCallback();
 
 	// Verify it's callable with one parameter
 	static_assert(std::is_invocable_v<decltype(callback), int>, "Lambda should be invocable with one param");
@@ -266,7 +266,7 @@ TEST(DefineCompilationTests, BIND_FN_ONE_PARAM_Macro_PerfectForwarding) {
 	const auto callback = obj.GetOneParamVoidBoundCallback();
 
 	// Test with lvalue
-	auto str = "Hello";
+	const auto* str = "Hello";
 	callback(str);
 	EXPECT_EQ(obj.value, 5);
 
@@ -314,7 +314,7 @@ TEST(DefineCompilationTests, TypeTraits_EventClassHasRequiredMethods) {
 
 TEST(DefineCompilationTests, TypeTraits_VerifyConstexprContext) {
 	// Verify that BIT macro can be used in constexpr contexts
-	constexpr auto compute_flags = []() constexpr {
+	constexpr auto compute_flags = [] constexpr {
 		return BIT(0) | BIT(3) | BIT(5);
 	};
 

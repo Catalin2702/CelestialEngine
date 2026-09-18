@@ -29,9 +29,9 @@ namespace CE::Core {
 ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain):
 	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain))
 {
-	assert(_graphicDevice != nullptr && "ForwardRenderer::ForwardRenderer: The renderer was given no graphic device.");
-	assert(_swapchain != nullptr && "ForwardRenderer::ForwardRenderer: The renderer was given no swapchain.");
-	assert(_graphicDevice->GetGraphicApi() == _swapchain->GetGraphicApi() && "ForwardRenderer::ForwardRenderer: The device and the swapchain were created for different graphics APIs.");
+	assert(_graphicDevice != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no graphic device.");
+	assert(_swapchain != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no swapchain.");
+	assert(_graphicDevice->GetGraphicApi() == _swapchain->GetGraphicApi() and "ForwardRenderer::ForwardRenderer: The device and the swapchain were created for different graphics APIs.");
 
 	// The scene is rendered at the swapchain's own format, so the composite is a straight copy and every pipeline
 	// written against the back buffer keeps working unchanged. It is the format to change for HDR, and the only one.
@@ -52,7 +52,7 @@ ForwardRenderer::~ForwardRenderer() {
 }
 
 bool ForwardRenderer::BeginFrame() {
-	assert(not _inFrame && "ForwardRenderer::BeginFrame: A frame is already open; every BeginFrame needs its EndFrame.");
+	assert(not _inFrame and "ForwardRenderer::BeginFrame: A frame is already open; every BeginFrame needs its EndFrame.");
 	if (_inFrame) [[unlikely]]
 		return false;
 
@@ -136,7 +136,7 @@ void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
 }
 
 void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
-	assert(_inFrame && "ForwardRenderer::_OpenPass: A pass outside a frame draws into a target nobody will present.");
+	assert(_inFrame and "ForwardRenderer::_OpenPass: A pass outside a frame draws into a target nobody will present.");
 	if (not _inFrame) [[unlikely]]
 		return;
 
@@ -202,7 +202,7 @@ void ForwardRenderer::Submit(const DrawCommand& command) {
 }
 
 void ForwardRenderer::OnResize(const u32 width, const u32 height) {
-	assert(not _inFrame && "ForwardRenderer::OnResize: The swapchain cannot be resized inside a frame - the target the frame acquired would be invalidated.");
+	assert(not _inFrame and "ForwardRenderer::OnResize: The swapchain cannot be resized inside a frame - the target the frame acquired would be invalidated.");
 
 	_swapchain->Resize(width, height);
 }

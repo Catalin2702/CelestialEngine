@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -36,7 +36,7 @@ public:
 	 * @param state New VSync state (true = enabled, false = disabled)
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	VSyncEvent(const bool state, const bool isMutable = true): I_Event(isMutable), _state(state) {}
+	explicit VSyncEvent(const bool state, const bool isMutable = true): I_Event(isMutable), _state(state) {}
 
 public:
 	/**

@@ -21,7 +21,13 @@
 
 namespace CE::Utility {
 
-fs::path FileSystem::_rootDirectory = fs::current_path();
+// Runs while the library loads, where a throw cannot be caught by anyone: the error_code overload leaves the root
+// empty instead, and SetRootDirectory can still fix it later. The lambda is noexcept, so nothing escapes it either.
+// NOLINTNEXTLINE(bugprone-throwing-static-initialization)
+fs::path FileSystem::_rootDirectory = [] noexcept {
+	std::error_code error;
+	return fs::current_path(error);
+}();
 
 fs::path FileSystem::GetRootDirectory() { return _rootDirectory; }
 
@@ -47,7 +53,8 @@ constexpr auto configFolderName = "CelestialEngine";
 // Reads an environment variable, returning an empty path when it is unset or empty, so the caller
 // can fall through to the next candidate instead of building a path rooted at nothing
 fs::path EnvironmentPath(const char* name) {
-	const char* value = std::getenv(name);
+	// Only read during startup, before anything could call setenv concurrently.
+	const char* value = std::getenv(name); // NOLINT(concurrency-mt-unsafe)
 	if (value == nullptr or *value == '\0')
 		return {};
 	return {value};

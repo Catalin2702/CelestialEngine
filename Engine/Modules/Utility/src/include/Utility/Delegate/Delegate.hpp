@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-12
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -70,7 +70,9 @@ public:
 		requires std::is_invocable_r_v<R, decltype(Method), const T&, Args...>
 	static Delegate FromConstMethod(const T* instance) {
 		Delegate delegate;
-		delegate._context = const_cast<T*>(instance);
+		// The type-erased context is shared with the non-const binders; ConstMethodStub only ever reads it back as a
+		// const T*, so the constness dropped here is restored before any use.
+		delegate._context = const_cast<T*>(instance); // NOLINT(cppcoreguidelines-pro-type-const-cast)
 		delegate._stub = &ConstMethodStub<T, Method>;
 		return delegate;
 	}

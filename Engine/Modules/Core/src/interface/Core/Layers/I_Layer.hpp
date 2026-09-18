@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -37,7 +37,7 @@ protected:
 	 * @param name Name for the layer
 	 * @details Creates a layer with an optional name for identification
 	 */
-	I_Layer(std::string name = "Layer"): _name(std::move(name)) {}
+	explicit I_Layer(std::string name = "Layer"): _name(std::move(name)) {}
 
 public:
 	/**

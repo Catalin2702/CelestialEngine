@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -33,7 +33,7 @@ u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::Sha
 	}
 
 	// The descriptor is API-agnostic, so nothing but this check stops a Metal module from reaching an OpenGL pipeline.
-	const auto openGlModule = dynamic_cast<const OpenGlShaderModule*>(module.get());
+	const auto* const openGlModule = dynamic_cast<const OpenGlShaderModule*>(module.get());
 	if (not openGlModule) [[unlikely]] {
 		const auto message = std::format("OpenGlPipelineState: the {} shader module is not an OpenGl module.", expectedStage);
 		CE_CORE_ERROR(message);

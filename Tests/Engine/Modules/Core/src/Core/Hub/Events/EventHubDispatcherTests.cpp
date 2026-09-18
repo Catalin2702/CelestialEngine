@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
@@ -117,6 +117,7 @@ TEST_F(EventHubDispatcherTest, DispatchRenderChangeVSyncEvent_ReachesTheRenderCh
 	Hub().DispatchRenderChangeVSyncEvent(event);
 
 	ASSERT_EQ(subscriber.calls, 1);
+	ASSERT_TRUE(subscriber.lastEvent.has_value());
 	EXPECT_TRUE(subscriber.lastEvent->GetState());
 }
 

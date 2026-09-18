@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-25
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -28,7 +28,9 @@ constexpr auto Enumerate(T&& iterable) {
 	};
 
 	struct IterableWrapper {
-		T iterable;
+		// T is a reference for an lvalue argument (the range is borrowed) and a value for an rvalue one (the
+		// temporary is kept alive): that choice is the point of the forwarding reference.
+		T iterable; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 
 		auto begin() { return Iterator{.index = 0, .iter = std::begin(iterable)}; }
 		auto end() { return Iterator{.index = 0, .iter = std::end(iterable)}; }

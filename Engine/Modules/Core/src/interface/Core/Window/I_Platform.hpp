@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -99,7 +99,9 @@ public:
 template<Types::WindowApi Api>
 class I_PlatformBase: public I_Platform {
 public:
-	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return Api; }
+	// Every specialisation is the base of an exported platform class, whose vtable instantiates this override on any
+	// compiler.
+	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return Api; } // NOLINT(portability-template-virtual-member-function)
 };
 
 }

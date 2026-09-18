@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -78,7 +78,7 @@ constexpr std::string_view format_as(const ShaderType shaderType) {
 		case ShaderType::Mesh: return "Mesh";
 		case ShaderType::Amplification: return "Amplification";
 		case ShaderType::RayGeneration: return "RayGeneration";
-		case ShaderType::Unknown: return "Unknown";
+		case ShaderType::Unknown:
 		default: return "Unknown";
 	}
 }

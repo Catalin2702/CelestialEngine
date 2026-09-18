@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -37,7 +37,7 @@ struct CE_CORE_API TextureDescriptor {
 	Types::TextureUsage usage = Types::TextureUsage::RenderTarget | Types::TextureUsage::ShaderRead;
 
 	/// Borrowed for the duration of the call only - it becomes the object's label in a GPU capture.
-	std::string_view debugName = {};
+	std::string_view debugName;
 };
 
 /**

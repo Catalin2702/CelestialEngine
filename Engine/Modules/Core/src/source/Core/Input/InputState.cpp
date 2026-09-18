@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #include "Core/Input/InputState.hpp"
@@ -39,32 +39,32 @@ static bool ButtonIndex(const Types::MouseButtonCode buttonCode, std::size_t& ou
 }
 
 bool InputState::IsKeyDown(const Types::KeyboardKeyCode keyCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return KeyIndex(keyCode, index) and _keysDown[index];
 }
 
 bool InputState::IsKeyJustPressed(const Types::KeyboardKeyCode keyCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return KeyIndex(keyCode, index) and _keysJustPressed[index];
 }
 
 bool InputState::IsKeyJustReleased(const Types::KeyboardKeyCode keyCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return KeyIndex(keyCode, index) and _keysJustReleased[index];
 }
 
 bool InputState::IsMouseButtonDown(const Types::MouseButtonCode buttonCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return ButtonIndex(buttonCode, index) and _buttonsDown[index];
 }
 
 bool InputState::IsMouseButtonJustPressed(const Types::MouseButtonCode buttonCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return ButtonIndex(buttonCode, index) and _buttonsJustPressed[index];
 }
 
 bool InputState::IsMouseButtonJustReleased(const Types::MouseButtonCode buttonCode) const {
-	std::size_t index;
+	std::size_t index = 0;
 	return ButtonIndex(buttonCode, index) and _buttonsJustReleased[index];
 }
 
@@ -87,7 +87,7 @@ void InputState::Reset() {
 }
 
 void InputState::_OnKeyPressed(const Events::KeyPressedEvent& event) {
-	std::size_t index;
+	std::size_t index = 0;
 	if (not KeyIndex(event.GetKeyCode(), index))
 		return;
 
@@ -99,7 +99,7 @@ void InputState::_OnKeyPressed(const Events::KeyPressedEvent& event) {
 }
 
 void InputState::_OnKeyReleased(const Events::KeyReleasedEvent& event) {
-	std::size_t index;
+	std::size_t index = 0;
 	if (not KeyIndex(event.GetKeyCode(), index))
 		return;
 
@@ -113,7 +113,7 @@ void InputState::_OnMouseMoved(const Events::MouseMovedEvent& event) {
 }
 
 void InputState::_OnMouseButtonPressed(const Events::MouseButtonPressedEvent& event) {
-	std::size_t index;
+	std::size_t index = 0;
 	if (not ButtonIndex(event.GetMouseButton(), index))
 		return;
 
@@ -124,7 +124,7 @@ void InputState::_OnMouseButtonPressed(const Events::MouseButtonPressedEvent& ev
 }
 
 void InputState::_OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& event) {
-	std::size_t index;
+	std::size_t index = 0;
 	if (not ButtonIndex(event.GetMouseButton(), index))
 		return;
 

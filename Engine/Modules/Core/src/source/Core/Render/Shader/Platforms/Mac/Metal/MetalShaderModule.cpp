@@ -61,7 +61,7 @@ MetalShaderModule::MetalShaderModule(const MetalShaderLibrary& library, const Sh
 
 	_entryPoint = ResolveEntryPoint(name);
 
-	const auto function = library.GetShaderFunction(_entryPoint);
+	auto* const function = library.GetShaderFunction(_entryPoint);
 	if (not function) [[unlikely]] {
 		const auto message = std::format("MetalShaderModule: module '{}' resolves to '{}', and the shader library holds no function under that name.", name, _entryPoint);
 		CE_CORE_ERROR(message);

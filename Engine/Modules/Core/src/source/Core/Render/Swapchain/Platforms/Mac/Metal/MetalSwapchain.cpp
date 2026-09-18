@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
@@ -25,9 +25,8 @@
 namespace CE::Core {
 
 MetalSwapchain::MetalSwapchain(I_MetalSurface& surface, MetalGraphicDevice& graphicDevice):
-	_surface(&surface), _graphicDevice(&graphicDevice)
+	_surface(&surface), _graphicDevice(&graphicDevice), _nativeLayer(_surface->GetMetalLayer())
 {
-	_nativeLayer = _surface->GetMetalLayer();
 	if (not _nativeLayer) [[unlikely]] {
 		constexpr auto error = "MetalSwapchain::MetalSwapchain: The window offers no CA::MetalLayer to present into!";
 		CE_CORE_ERROR(error);

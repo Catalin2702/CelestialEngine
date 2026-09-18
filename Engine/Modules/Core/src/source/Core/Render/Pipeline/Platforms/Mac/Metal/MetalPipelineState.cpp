@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
@@ -43,7 +43,7 @@ MTL::Function* ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const
 		throw std::runtime_error(error);
 	}
 
-	const auto function = static_cast<const MetalShaderModule&>(*module).GetFunction();
+	auto* const function = static_cast<const MetalShaderModule&>(*module).GetFunction();
 	if (not function) [[unlikely]] {
 		const auto error = std::format("ResolveStage: The {} module holds no function. It was moved from.", expected);
 		CE_CORE_ERROR(error);
@@ -72,7 +72,7 @@ NS::SharedPtr<MTL::VertexDescriptor> MakeVertexDescriptor(const BufferLayout& la
 			throw std::runtime_error(error);
 		}
 
-		const auto attribute = vertexDescriptor->attributes()->object(index);
+		auto* const attribute = vertexDescriptor->attributes()->object(index);
 		attribute->setFormat(format);
 		attribute->setOffset(element.offset);
 		attribute->setBufferIndex(Types::METAL_VERTEX_BUFFER_INDEX);
@@ -80,7 +80,7 @@ NS::SharedPtr<MTL::VertexDescriptor> MakeVertexDescriptor(const BufferLayout& la
 
 	// One interleaved buffer, advanced once per vertex. Per-instance data would be a second layout with
 	// VertexStepFunctionPerInstance, which is what instancing will add here.
-	const auto bufferLayout = vertexDescriptor->layouts()->object(Types::METAL_VERTEX_BUFFER_INDEX);
+	auto* const bufferLayout = vertexDescriptor->layouts()->object(Types::METAL_VERTEX_BUFFER_INDEX);
 	bufferLayout->setStride(layout.GetStride());
 	bufferLayout->setStepFunction(MTL::VertexStepFunctionPerVertex);
 	bufferLayout->setStepRate(1);
@@ -124,8 +124,8 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 		throw std::runtime_error(error);
 	}
 
-	const auto vertexFunction = ResolveStage(_descriptor.vertexShader, Types::ShaderType::Vertex);
-	const auto fragmentFunction = ResolveStage(_descriptor.fragmentShader, Types::ShaderType::Fragment);
+	auto* const vertexFunction = ResolveStage(_descriptor.vertexShader, Types::ShaderType::Vertex);
+	auto* const fragmentFunction = ResolveStage(_descriptor.fragmentShader, Types::ShaderType::Fragment);
 
 	const auto pipelineDescriptor = NS::TransferPtr(MTL::RenderPipelineDescriptor::alloc()->init());
 	pipelineDescriptor->setVertexFunction(vertexFunction);

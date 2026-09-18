@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -22,7 +22,7 @@ struct CameraControllerDescriptor;
 
 class CE_API_EXPORT StaticCameraController final: public I_CameraController {
 public:
-	StaticCameraController(const CameraControllerDescriptor&);
+	explicit StaticCameraController(const CameraControllerDescriptor&);
 
 	StaticCameraController(const StaticCameraController&) = delete;
 	StaticCameraController(StaticCameraController&&) noexcept = default;

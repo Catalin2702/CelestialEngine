@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -50,7 +50,7 @@ public:
 	[[nodiscard]] u32 GetTexture() const { return _nativeTexture; }
 
 private:
-	u32 _nativeTexture;
+	u32 _nativeTexture = 0;
 
 	u32 _width;
 	u32 _height;

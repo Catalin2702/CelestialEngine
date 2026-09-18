@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -44,7 +44,7 @@ class MetalGraphicDevice;
  *			It owns the depth texture and, for the length of one frame, a reference to the drawable. It does not own
  *			the layer (the window's view does), nor the device (the renderer does); both must outlive it.
  */
-class CE_CORE_API MetalSwapchain: public I_SwapchainBase<Types::GraphicsApi::Metal> {
+class CE_CORE_API MetalSwapchain final: public I_SwapchainBase<Types::GraphicsApi::Metal> {
 public:
 	/**
 	 * @brief Binds the swapchain to a window's layer and to the device its buffers are allocated from

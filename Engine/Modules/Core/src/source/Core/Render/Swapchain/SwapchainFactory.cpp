@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
@@ -32,6 +32,8 @@ std::unique_ptr<I_Swapchain> I_Swapchain::MakeSwapchain(I_Window& window, I_Grap
 	// swapchain would present buffers the device never rendered into - and it costs one comparison, once per window.
 	if (graphicDevice.GetGraphicApi() != api) [[unlikely]] {
 		const auto error = std::format("I_Swapchain::MakeSwapchain: The graphic device speaks {} but a {} swapchain was asked for!", graphicDevice.GetGraphicApi(), api);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
 	}
 	switch (api) {
 		case Types::GraphicsApi::OpenGL: {

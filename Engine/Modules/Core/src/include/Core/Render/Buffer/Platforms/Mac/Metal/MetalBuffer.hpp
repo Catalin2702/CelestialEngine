@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -52,7 +52,7 @@ public:
 	 * @details Throws std::runtime_error when the device refuses the allocation, or when count is 0: a zero-sized
 	 *			MTL::Buffer is not allowed and would be a null return with no error attached.
 	 */
-	MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, size_t count, const BufferLayout& layout);
+	MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, size_t count, BufferLayout layout);
 	MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, size_t count, BufferLayout&& layout);
 
 	MetalVertexBuffer(const MetalVertexBuffer&) = delete;

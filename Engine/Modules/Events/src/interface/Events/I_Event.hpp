@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -166,7 +166,7 @@ protected:
 	 * @brief Protected constructor
 	 * @param isMutable Whether handlers may consume the event (an immutable event can never be marked handled)
 	 */
-	I_Event(const bool isMutable): _isMutable(isMutable) {}
+	explicit I_Event(const bool isMutable): _isMutable(isMutable) {}
 
 public:
 	/**
@@ -237,7 +237,7 @@ public:
 
 protected:
 	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
-	const bool _isMutable;									///< Flag indicating whether the event is mutable. If not it can't be consumed
+	bool _isMutable;											///< Flag indicating whether the event is mutable. If not it can't be consumed
 };
 
 /**

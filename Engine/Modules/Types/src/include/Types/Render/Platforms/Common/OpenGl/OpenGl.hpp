@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -27,7 +27,8 @@ namespace CE::Types {
  * @brief Bit flags for the OpenGL framebuffer attachments that can be cleared
  * @details Values mirror the corresponding GL_*_BUFFER_BIT constants so they can be passed to glClear directly.
  */
-enum class BufferBit: u32 {
+enum class BufferBit: u16 {
+	None = 0,				///< No buffer, the empty mask
 	Color = 0x00004000,		///< GL_COLOR_BUFFER_BIT
 	Depth = 0x00000100,		///< GL_DEPTH_BUFFER_BIT
 	Stencil = 0x00000400,	///< GL_STENCIL_BUFFER_BIT

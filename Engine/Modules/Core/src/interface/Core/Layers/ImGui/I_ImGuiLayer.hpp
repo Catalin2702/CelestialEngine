@@ -43,7 +43,7 @@ public:
 	 * @brief Constructor
 	 * @param name Debug name of the layer
 	 */
-	I_ImGuiLayer([[maybe_unused]] const std::string& name = "ImGuiLayer"): I_Layer(name) {}
+	explicit I_ImGuiLayer([[maybe_unused]] const std::string& name = "ImGuiLayer"): I_Layer(name) {}
 
 	/**
 	 * @brief Initializes the ImGui backend when the layer is attached

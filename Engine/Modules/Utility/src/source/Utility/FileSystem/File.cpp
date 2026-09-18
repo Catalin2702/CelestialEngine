@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #include "Utility/FileSystem/File.hpp"
@@ -17,7 +17,7 @@
 
 namespace CE::Utility {
 
-File::File(fs::path  path, const Types::FileLoadState loadState, const bool autoSave):
+File::File(fs::path path, const Types::FileLoadState loadState, const bool autoSave):
 _path(std::move(path)),
 _loadState(loadState),
 _autoSave(autoSave) {
@@ -27,15 +27,9 @@ _autoSave(autoSave) {
 
 File::File(const File& other): _path(other._path), _autoSave(other._autoSave) {}
 
-File::File(File&& other) noexcept {
-	_path = std::move(other._path);
-	_content = std::move(other._content);
-	_loadState = other._loadState;
-	_autoSave = other._autoSave;
-	_isLoaded = other._isLoaded;
-	_isChanged = other._isChanged;
-	_isSaved = other._isSaved;
-
+File::File(File&& other) noexcept:
+	_path(std::move(other._path)), _content(std::move(other._content)), _loadState(other._loadState),
+	_autoSave(other._autoSave), _isLoaded(other._isLoaded), _isChanged(other._isChanged), _isSaved(other._isSaved) {
 	// Without this, a moved-from File (e.g. the local NRVO/move-elided source when a factory
 	// function like FileSystem::StCreate returns by value without the compiler eliding the move -
 	// MSVC's /Od reliably skips NRVO where Clang/GCC often still perform it even unoptimized, which
@@ -49,7 +43,7 @@ File::File(File&& other) noexcept {
 }
 
 File::~File() {
-	if (_autoSave && _isChanged) {
+	if (_autoSave and _isChanged) {
 		FileSystem::StSave(*this);
 	}
 }

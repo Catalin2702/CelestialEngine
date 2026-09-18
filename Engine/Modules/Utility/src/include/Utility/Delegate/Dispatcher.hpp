@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -55,12 +55,11 @@ public:
 	 * @details Refuses (with a warning) if a delegate is already bound: Unbind first to rebind.
 	 */
 	void Bind(DelegateType delegate) {
-		if (not IsBound()) [[likely]]
-			_delegate = delegate;
-		else {
+		if (IsBound()) [[unlikely]] {
 			CE_CORE_WARN("A delegate is already assigned");
 			return;
 		}
+		_delegate = delegate;
 	}
 
 	/**
@@ -121,12 +120,11 @@ public:
 	 * @details Refuses (with a warning) if a callback is already bound: Unbind first to rebind.
 	 */
 	void Bind(CallbackType callback) {
-		if (not IsBound()) [[likely]]
-			_callback = callback;
-		else {
+		if (IsBound()) [[unlikely]] {
 			CE_CORE_WARN("A delegate is already assigned");
 			return;
 		}
+		_callback = callback;
 	}
 
 	/**
@@ -280,14 +278,14 @@ public:
 		_pendingAdds(std::move(other._pendingAdds)),
 		_pendingRemoves(std::move(other._pendingRemoves)),
 		_handle(other._handle) {
-		assert(not other._isDispatching && "MulticastDispatcher: moved while dispatching");
+		assert(not other._isDispatching and "MulticastDispatcher: moved while dispatching");
 	}
 
 	MulticastDispatcher& operator = (MulticastDispatcher&& other) noexcept {
 		if (this == &other) [[unlikely]]
 			return *this;
 
-		assert(not _isDispatching && not other._isDispatching && "MulticastDispatcher: moved while dispatching");
+		assert(not _isDispatching and not other._isDispatching and "MulticastDispatcher: moved while dispatching");
 
 		_callbacks = std::move(other._callbacks);
 		_pendingAdds = std::move(other._pendingAdds);
@@ -306,7 +304,7 @@ public:
 	 */
 	Handle Subscribe(DelegateType delegate) {
 		const auto handle = _handle++;
-		Entry entry{.handle = handle, .delegate = delegate};
+		const Entry entry{.handle = handle, .delegate = delegate};
 
 		if (_isDispatching) [[unlikely]]
 			_pendingAdds.push_back(entry);
@@ -364,7 +362,7 @@ private:
 	 * @brief Removes the entry with the given handle via swap-and-pop (order of remaining entries is preserved up to the swap)
 	 */
 	void RemoveEntry(const Handle handle) {
-		auto it = std::find_if(_callbacks.begin(), _callbacks.end(), [handle](const Entry& entry) {
+		const auto it = std::find_if(_callbacks.begin(), _callbacks.end(), [handle](const Entry& entry) {
 			return entry.handle == handle;
 		});
 		if (it != _callbacks.end()) [[likely]] {
@@ -381,8 +379,7 @@ private:
 			RemoveEntry(handle);
 		_pendingRemoves.clear();
 
-		for (const auto entry: _pendingAdds)
-			_callbacks.push_back(entry);
+		_callbacks.insert(_callbacks.end(), _pendingAdds.begin(), _pendingAdds.end());
 		_pendingAdds.clear();
 	}
 
@@ -405,6 +402,6 @@ using CallbackDispatcher = CE::Utility::CallbackDispatcher<R, Args...>;
 template<typename... Args>
 using MulticastDispatcher = CE::Utility::MulticastDispatcher<Args...>;
 
-using Subscription = CE::Utility::Subscription;
+using CE::Utility::Subscription;
 
 #endif //CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP

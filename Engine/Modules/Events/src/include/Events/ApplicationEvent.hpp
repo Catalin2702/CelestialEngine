@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -33,7 +33,7 @@ public:
 	 * @param deltaTime Time elapsed since the last tick
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppTickEvent(const f32 deltaTime, const bool isMutable = true): I_Event(isMutable), _deltaTime(deltaTime){}
+	explicit AppTickEvent(const f32 deltaTime, const bool isMutable = true): I_Event(isMutable), _deltaTime(deltaTime) {}
 
 public:
 	[[nodiscard]] std::string ToString() const override;
@@ -61,7 +61,7 @@ public:
 	 * @brief Default constructor
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppUpdateEvent(const bool isMutable = true): I_Event(isMutable) {}
+	explicit AppUpdateEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(AppUpdate)
@@ -81,7 +81,7 @@ public:
 	 * @brief Default constructor
 	* @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	AppRenderEvent(const bool isMutable = true): I_Event(isMutable) {}
+	explicit AppRenderEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(AppRender)

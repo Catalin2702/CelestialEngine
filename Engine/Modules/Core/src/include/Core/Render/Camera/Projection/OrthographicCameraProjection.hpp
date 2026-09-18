@@ -19,7 +19,7 @@ namespace CE::Core {
 
 class CE_API_EXPORT OrthographicCameraProjection final: public I_CameraProjection {
 public:
-	OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor);
+	explicit OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor);
 
 	OrthographicCameraProjection(const OrthographicCameraProjection&) = delete;
 	OrthographicCameraProjection(OrthographicCameraProjection&&) noexcept = default;

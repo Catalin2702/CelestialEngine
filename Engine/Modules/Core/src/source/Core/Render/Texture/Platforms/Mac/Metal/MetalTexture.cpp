@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
@@ -43,7 +43,9 @@ MetalTexture::MetalTexture(MTL::Device* nativeDevice, const TextureDescriptor& d
 	}
 
 	if (not descriptor.debugName.empty()) {
-		_nativeTexture->setLabel(NS::String::string(descriptor.debugName.data(), NS::UTF8StringEncoding));
+		// NS::String::string reads up to a NUL, which a string_view does not promise: copy it into one that does.
+		const std::string label{descriptor.debugName};
+		_nativeTexture->setLabel(NS::String::string(label.c_str(), NS::UTF8StringEncoding));
 	}
 }
 

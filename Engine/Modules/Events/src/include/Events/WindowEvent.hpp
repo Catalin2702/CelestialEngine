@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -82,7 +82,7 @@ public:
 	 * @brief Default constructor
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	WindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
+	explicit WindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
 
 public:
 	EVENT_CLASS_TYPE(WindowClose)
@@ -104,7 +104,7 @@ public:
 	 * @param focused True when the window gained focus, false when it lost it
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 */
-	WindowFocusEvent(bool focused, bool isMutable = true);
+	explicit WindowFocusEvent(bool focused, bool isMutable = true);
 
 public:
 	/**

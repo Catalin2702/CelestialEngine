@@ -100,7 +100,7 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 
 	const auto passDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 
-	const auto colorAttachment_0 = passDescriptor->colorAttachments()->object(0);
+	auto* const colorAttachment_0 = passDescriptor->colorAttachments()->object(0);
 	colorAttachment_0->setTexture(nativeColorTexture);
 	colorAttachment_0->setLoadAction(Types::ToMetal(loadAction_0));
 	colorAttachment_0->setStoreAction(Types::ToMetal(storeAction_0));
@@ -118,7 +118,7 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 		assert(target_i->GetGraphicApi() == Types::GraphicsApi::Metal and "MetalGraphicDevice::BeginRenderPass: A color target belongs to another backend!");
 
 		const auto& extraClear = clearColor_i;
-		const auto attachment = passDescriptor->colorAttachments()->object(i);
+		auto* const attachment = passDescriptor->colorAttachments()->object(i);
 		attachment->setTexture(static_cast<const MetalTexture*>(target_i)->GetTexture());
 		attachment->setLoadAction(Types::ToMetal(loadAction_i));
 		attachment->setStoreAction(Types::ToMetal(storeAction_i));
@@ -130,7 +130,7 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 	if (descriptor.depth.enabled and descriptor.depth.target) {
 		assert(descriptor.depth.target->GetGraphicApi() == Types::GraphicsApi::Metal and "MetalGraphicDevice::BeginRenderPass: The depth target belongs to another backend!");
 
-		const auto depthAttachment = passDescriptor->depthAttachment();
+		auto* const depthAttachment = passDescriptor->depthAttachment();
 		depthAttachment->setTexture(static_cast<const MetalTexture*>(descriptor.depth.target)->GetTexture());
 		depthAttachment->setLoadAction(Types::ToMetal(descriptor.depth.loadAction));
 		depthAttachment->setStoreAction(Types::ToMetal(descriptor.depth.storeAction));

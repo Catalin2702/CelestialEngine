@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -38,7 +38,7 @@ namespace CE::Core {
  *			and handles all input events through GLFW.
  */
 class CE_CORE_API ImGuiOpenGlLayer final: public I_ImGuiLayer {
-	enum EventHubSubscription: std::size_t {
+	enum EventHubSubscription: u8 {
 		MouseMoved = 0,
 		MouseDragged,
 		MouseWheelScrolled,

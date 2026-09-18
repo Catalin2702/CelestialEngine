@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -49,7 +49,7 @@ namespace CE::Core {
  *			and works unchanged on every one of them.
  */
 class CE_CORE_API SceneLayer final: public I_Layer {
-	enum EventHubSubscription: std::size_t {
+	enum EventHubSubscription: u8 {
 		Tick = 0,
 		MouseMoved,
 		MouseDragged,

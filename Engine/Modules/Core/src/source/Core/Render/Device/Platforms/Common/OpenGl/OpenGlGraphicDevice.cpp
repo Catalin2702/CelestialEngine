@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
@@ -26,7 +26,7 @@ namespace {
 
 /// Applies the pass' load actions, which in OpenGL amounts to one glClear with the bits the Clear actions ask for.
 void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
-	auto clearMask = Types::BufferBit{};
+	auto clearMask = Types::BufferBit::None;
 	bool clears = false;
 
 	// Only attachment 0 is reachable while every target is the default framebuffer; several attachments would need
@@ -90,7 +90,7 @@ std::shared_ptr<I_Texture> OpenGlGraphicDevice::CreateTexture(const TextureDescr
 }
 
 std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const RenderPassDescriptor& descriptor) {
-	assert(descriptor.colorCount <= Types::MAX_COLOR_ATTACHMENTS && "OpenGlGraphicDevice::BeginRenderPass: More colour attachments than the APIs allow.");
+	assert(descriptor.colorCount <= Types::MAX_COLOR_ATTACHMENTS and "OpenGlGraphicDevice::BeginRenderPass: More colour attachments than the APIs allow.");
 
 	if (descriptor.width == 0 or descriptor.height == 0) [[unlikely]] {
 		// A zero-sized pass is what a minimised window produces; drawing into it is wasted work, not an error.
@@ -98,7 +98,7 @@ std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const Ren
 		return nullptr;
 	}
 
-	if (not (descriptor.colors[0].target != nullptr or descriptor.depth.target != nullptr)) {
+	if (descriptor.colors[0].target == nullptr and descriptor.depth.target == nullptr) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	else {

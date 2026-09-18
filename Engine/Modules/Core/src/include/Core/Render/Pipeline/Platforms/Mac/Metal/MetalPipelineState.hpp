@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -70,7 +70,7 @@ public:
 
 public:
 	MetalPipelineState& operator = (const MetalPipelineState&) = delete;
-	MetalPipelineState& operator = (MetalPipelineState&&) = default;
+	MetalPipelineState& operator = (MetalPipelineState&&) noexcept = default;
 
 public:
 	[[nodiscard]] const PipelineDescriptor& GetDescriptor() const override { return _descriptor; }

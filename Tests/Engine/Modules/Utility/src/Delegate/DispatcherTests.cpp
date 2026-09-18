@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include <Utility/Delegate/Dispatcher.hpp>
@@ -213,7 +213,7 @@ TEST_F(DispatcherTest, Callback_Execute_WhileUnbound_Throws) {
  * @brief Test that Unbind clears the callback
  */
 TEST_F(DispatcherTest, Callback_Unbind_ClearsCallback) {
-	Listener listener;
+	const Listener listener;
 	CallbackDispatcher<int, int> dispatcher;
 
 	dispatcher.Bind(CallbackDelegate<int, int>::FromConstMethod<Listener, &Listener::Compute>(&listener));

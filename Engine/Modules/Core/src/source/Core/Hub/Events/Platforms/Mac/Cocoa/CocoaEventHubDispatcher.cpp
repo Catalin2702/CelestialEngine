@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -27,7 +27,7 @@ static std::pair<f32, f32> MouseLocationTopLeft(const CocoaWindow* window, const
 	// The content view, not the window's own MTK::View member. They are the same object today, and asking AppKit is
 	// still the right question: what input is delivered to is whatever is actually installed as the content view, not
 	// whatever this class happens to hold.
-	const auto view = window->GetWindow()->contentView();
+	auto* const view = window->GetWindow()->contentView();
 	if (not view) [[unlikely]]
 		return {0.0f, 0.0f};
 

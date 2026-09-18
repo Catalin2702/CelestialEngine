@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -55,13 +55,14 @@ public:
 	 */
 	explicit MetalShaderLibrary(MTL::Device* device, const std::string& path = "");
 
-	MetalShaderLibrary(const MetalShaderLibrary&) = default;
+	/// Not copyable: the cached functions are owned (released in the destructor), so a copy would release them twice.
+	MetalShaderLibrary(const MetalShaderLibrary&) = delete;
 	MetalShaderLibrary(MetalShaderLibrary&& other) noexcept;
 
 	~MetalShaderLibrary();
 
 public:
-	MetalShaderLibrary& operator = (const MetalShaderLibrary& other);
+	MetalShaderLibrary& operator = (const MetalShaderLibrary&) = delete;
 	MetalShaderLibrary& operator = (MetalShaderLibrary&& other) noexcept;
 
 public:
@@ -101,9 +102,15 @@ private:
 	 */
 	void _LoadLibrary();
 
+	/**
+	 * @brief Releases the cached functions and drops the library and the device
+	 */
+	void _Release();
+
 private:
 	NS::SharedPtr<MTL::Device> _device;				///< Device the library was created on
 	NS::SharedPtr<MTL::Library> _library;			///< Loaded Metal library
+	std::string _path;								///< Where the library was loaded from
 
 	std::unordered_map<std::string, MTL::Function*> _functions;	///< Functions cached by entry-point name
 };

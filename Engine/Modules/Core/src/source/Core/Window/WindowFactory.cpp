@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/I_Window.hpp"
@@ -29,7 +29,7 @@ std::unique_ptr<I_Window> I_Window::MakeWindow(I_Platform& platform) {
 			// so applying them stays on GlfwPlatform rather than being forced onto I_Platform, and reaching it costs
 			// one downcast here. The check is what turns "-wa cocoa with a GLFW window" into a message instead of
 			// undefined behaviour.
-			auto* const glfwPlatform = dynamic_cast<GlfwPlatform*>(&platform);
+			const auto* const glfwPlatform = dynamic_cast<GlfwPlatform*>(&platform);
 			if (not glfwPlatform) [[unlikely]] {
 				constexpr auto error = "I_Window::MakeWindow: a GLFW window needs a GLFW platform!";
 				CE_CORE_ERROR(error);

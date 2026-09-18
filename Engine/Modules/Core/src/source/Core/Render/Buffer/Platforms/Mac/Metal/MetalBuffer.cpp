@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -14,6 +14,7 @@
 
 #include <format>
 #include <stdexcept>
+#include <utility>
 
 
 namespace CE::Core {
@@ -50,8 +51,8 @@ NS::SharedPtr<MTL::Buffer> MakeSharedBuffer(MTL::Device* nativeDevice, const voi
 
 #pragma region MetalVertexBuffer
 
-MetalVertexBuffer::MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, const size_t count, const BufferLayout& layout):
-	_vertexBufferLayout(layout), _sizeInBytes(count * F32_SIZE) {
+MetalVertexBuffer::MetalVertexBuffer(MTL::Device* nativeDevice, const f32* vertices, const size_t count, BufferLayout layout):
+	_vertexBufferLayout(std::move(layout)), _sizeInBytes(count * F32_SIZE) {
 	_nativeBuffer = MakeSharedBuffer(nativeDevice, vertices, _sizeInBytes, "MetalVertexBuffer");
 }
 

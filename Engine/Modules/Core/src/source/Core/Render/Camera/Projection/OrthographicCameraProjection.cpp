@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Camera/Projection/OrthographicCameraProjection.hpp"
@@ -17,6 +17,7 @@ namespace CE::Core {
 
 OrthographicCameraProjection::OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor):
 	_convention(descriptor.convention),
+	_dirty(false),
 	_nearClip(descriptor.nearClip),
 	_farClip(descriptor.farClip),
 	_width(descriptor.viewportWidth),
@@ -24,7 +25,6 @@ OrthographicCameraProjection::OrthographicCameraProjection(const CameraProjectio
 	_orthographicSize(descriptor.orthographicSize)
 {
 	_Rebuild();
-	_dirty = false;
 }
 
 const glm::mat4& OrthographicCameraProjection::GetProjectionMatrix() const {

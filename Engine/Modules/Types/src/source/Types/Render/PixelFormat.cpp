@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-18
 //
 
 #include "Types/Render/PixelFormat.hpp"
@@ -53,11 +53,9 @@ u32 GetBytesPerPixel(const PixelFormat pixelFormat) {
 		case PixelFormat::Depth24UnormStencil8:
 			return 4;
 
-		// The driver pads this one to 8 bytes: depth and stencil live in separate planes, so the footprint is
-		// the 4 bytes of depth plus a byte of stencil, rounded up.
+		// Depth32FloatStencil8 is padded to 8 bytes by the driver: depth and stencil live in separate planes, so the
+		// footprint is the 4 bytes of depth plus a byte of stencil, rounded up.
 		case PixelFormat::Depth32FloatStencil8:
-			return 8;
-
 		case PixelFormat::RGBA16Float:
 		case PixelFormat::RG32Float:
 			return 8;

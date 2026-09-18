@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #include <Core/Layers/I_Layer.hpp>
@@ -13,6 +13,8 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,6 +23,13 @@ using CE::Core::I_Layer;
 using CE::Core::LayerStack;
 
 namespace {
+
+/// The names of the stack's layers in iteration order: what every ordering test compares against.
+std::vector<std::string> NamesInOrder(LayerStack& stack) {
+	std::vector<std::string> names;
+	std::ranges::transform(stack, std::back_inserter(names), [](const auto& layer) { return layer->GetName(); });
+	return names;
+}
 
 /**
  * @brief Mock layer for LayerStack tests
@@ -130,9 +139,7 @@ TEST_F(LayerStackTest, PushLayer_InsertsBeforeOverlays) {
 	stack.PushLayer(MakeLayer("First"));
 	stack.PushLayer(MakeLayer("Second"));
 
-	std::vector<std::string> order;
-	for (const auto& layer: stack)
-		order.push_back(layer->GetName());
+	const auto order = NamesInOrder(stack);
 
 	EXPECT_EQ(order, (std::vector<std::string>{"First", "Second", "Overlay"}));
 }
@@ -227,9 +234,7 @@ TEST_F(LayerStackTest, PopLayer_KeepsInsertionPointConsistent) {
 
 	stack.PushLayer(MakeLayer("Second"));
 
-	std::vector<std::string> order;
-	for (const auto& layer: stack)
-		order.push_back(layer->GetName());
+	const auto order = NamesInOrder(stack);
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Second", "Overlay"}));
 }
@@ -290,9 +295,7 @@ TEST_F(LayerStackTest, ReplaceLayer_KeepsThePositionOfTheReplacedEntry) {
 	stack.PushLayer(MakeLayer("Layer"));
 	stack.ReplaceLayer(oldOverlay, newOverlay);
 
-	std::vector<std::string> order;
-	for (const auto& layer: stack)
-		order.push_back(layer->GetName());
+	const auto order = NamesInOrder(stack);
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Layer", "NewOverlay"}));
 }
@@ -310,9 +313,7 @@ TEST_F(LayerStackTest, ReplaceLayer_KeepsInsertionPointConsistent) {
 
 	stack.PushLayer(MakeLayer("Second"));
 
-	std::vector<std::string> order;
-	for (const auto& layer: stack)
-		order.push_back(layer->GetName());
+	const auto order = NamesInOrder(stack);
 
 	EXPECT_EQ(order, (std::vector<std::string>{"New", "Second", "Overlay"}));
 }
@@ -416,9 +417,7 @@ TEST_F(LayerStackTest, Clear_ResetsInsertionPoint) {
 	stack.PushOverlay(MakeLayer("Overlay2"));
 	stack.PushLayer(MakeLayer("Layer2"));
 
-	std::vector<std::string> order;
-	for (const auto& layer: stack)
-		order.push_back(layer->GetName());
+	const auto order = NamesInOrder(stack);
 
 	EXPECT_EQ(order, (std::vector<std::string>{"Layer2", "Overlay2"}));
 }

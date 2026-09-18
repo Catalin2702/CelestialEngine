@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-28
+// Updated: 2026-09-18
 //
 
 #include "Core/Layers/LayerStack.hpp"
@@ -21,7 +21,7 @@ static LayerStack::StackContainer::iterator FindLayer(const LayerStack::StackCon
 	});
 }
 
-LayerStack::LayerStack(): _lastLayerIndex(0) {}
+LayerStack::LayerStack() = default;
 
 LayerStack::~LayerStack() {
 	Clear();

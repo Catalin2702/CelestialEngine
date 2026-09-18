@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -53,7 +53,8 @@ public:
 	 */
 	OpenGlShader(const Utility::File& file, Types::ShaderType type);
 
-	OpenGlShader(const OpenGlShader&) = default;
+	/// Not copyable: the destructor deletes the GL shader, so two copies would delete it twice.
+	OpenGlShader(const OpenGlShader&) = delete;
 
 	/**
 	 * @brief Move constructor for OpenGlShader
@@ -69,7 +70,7 @@ public:
 	~OpenGlShader() override;
 
 public:
-	OpenGlShader& operator = (const OpenGlShader& other);
+	OpenGlShader& operator = (const OpenGlShader&) = delete;
 
 	/**
 	 * @brief Move assignment operator for OpenGlShader

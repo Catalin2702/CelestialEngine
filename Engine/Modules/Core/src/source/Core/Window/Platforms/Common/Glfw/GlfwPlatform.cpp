@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
@@ -35,7 +35,7 @@ GlfwPlatform* g_st_Platform = nullptr;
 }
 
 GlfwPlatform::GlfwPlatform() {
-	assert(g_st_Platform == nullptr && "GlfwPlatform::GlfwPlatform: GLFW is already initialized!");
+	assert(g_st_Platform == nullptr and "GlfwPlatform::GlfwPlatform: GLFW is already initialized!");
 	g_st_Platform = this;
 
 	glfwSetErrorCallback([](const int errorCode, const char* description) {

@@ -63,7 +63,7 @@ Application::Application():
 	// _swapchain(I_Swapchain::MakeSwapchain(*_window, Props().graphicsApi)),
 	_runLoop(I_RunLoop::MakeRunLoop(*_platform))
 {
-	assert(_instance == nullptr && "Application::Application: An application already exists!");
+	assert(_instance == nullptr and "Application::Application: An application already exists!");
 
 	// Published before the init steps because they reach back through Get(); a throw from any of them has to clear it
 	// by hand, since the destructor - which is what normally resets it - never runs for an object whose constructor
@@ -84,10 +84,20 @@ Application::Application():
 	}
 }
 
-Application::~Application() {
+// Only the logging in the handlers below could still throw, and nothing is left to catch it there.
+Application::~Application() { // NOLINT(bugprone-exception-escape)
 	// A safety net, not the normal path: Start() ends the application when its loop returns. This covers an
-	// application that was built and never started, or one whose Start() unwound.
-	End();
+	// application that was built and never started, or one whose Start() unwound. Nothing may escape a destructor, so a
+	// teardown that throws is reported instead of turning into std::terminate.
+	try {
+		End();
+	}
+	catch (const std::exception& exception) {
+		CE_CORE_ERROR("Application::~Application: The teardown threw: {}", exception.what());
+	}
+	catch (...) {
+		CE_CORE_ERROR("Application::~Application: The teardown threw an unknown exception!");
+	}
 
 	_instance = nullptr;
 }
@@ -113,7 +123,7 @@ void Application::ReplaceLayer(const std::shared_ptr<I_Layer>& oldLayer, const s
 }
 
 Application& Application::Get() {
-	assert(_instance != nullptr && "Application::Get: no application exists - did you forget to create one?");
+	assert(_instance != nullptr and "Application::Get: no application exists - did you forget to create one?");
 	return *_instance;
 }
 
@@ -369,7 +379,7 @@ void Application::_InitRenderer() {
 
 void Application::_OnFrame() {
 #if CE_PLATFORM_MACOS
-	Native::NsAutoreleasePool framePool;
+	const Native::NsAutoreleasePool framePool;
 #endif
 
 	const auto now = std::chrono::steady_clock::now();

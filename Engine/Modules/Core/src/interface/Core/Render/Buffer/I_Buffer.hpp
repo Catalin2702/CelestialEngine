@@ -30,7 +30,7 @@ struct CE_CORE_API BufferElement {
 	u32 size = 0;
 	u32 offset = 0;
 	u32 componentCount = 0;
-	std::string_view name = {};
+	std::string_view name;
 };
 
 class BufferLayout {

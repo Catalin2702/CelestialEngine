@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -98,7 +98,8 @@ struct RenderEventHub {
  *			handed out through GetMouseEventHub and friends, which is what lets a single Application subscribe on any
  *			backend.
  */
-class CE_CORE_API I_EventHubDispatcher:
+// The bases are not pure interfaces on purpose: each one owns the dispatchers of its channel, see above.
+class CE_CORE_API I_EventHubDispatcher: // NOLINT(misc-multiple-inheritance)
 	public I_ApplicationEventHubDispatcher,
 	public I_KeyboardEventHubDispatcher,
 	public I_MouseEventHubDispatcher,

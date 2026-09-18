@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 using CE::Core::GlfwEventHubDispatcher;
@@ -44,7 +45,12 @@ public:
 	 * @details The hub builds its events on the stack and they die with the dispatch, so the subscriber keeps a
 	 *			copy of the payload and only the address of the original for identity checks.
 	 */
-	[[nodiscard]] const EventType& Last() const { return *lastEvent; }
+	[[nodiscard]] const EventType& Last() const {
+		// Thrown rather than dereferenced blindly: GoogleTest turns it into a failure of the test that asked.
+		if (not lastEvent) [[unlikely]]
+			throw std::logic_error("Last: No event was received");
+		return *lastEvent;
+	}
 
 public:
 	int calls = 0;

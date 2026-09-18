@@ -4,8 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-09-18
 //
+
+#include "Apple/Bridge/ImGui/ImGuiBridge.h"
 
 #import <AppKit/AppKit.h>
 #import <Metal/Metal.h>

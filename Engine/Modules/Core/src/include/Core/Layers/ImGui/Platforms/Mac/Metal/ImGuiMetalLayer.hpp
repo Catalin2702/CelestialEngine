@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -44,7 +44,7 @@ class MetalGraphicDevice;
 class MetalSwapchain;
 
 class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
-	enum EventHubSubscription: std::size_t {
+	enum EventHubSubscription: u8 {
 		MouseMoved = 0,
 		MouseDragged,
 		MouseWheelScrolled,

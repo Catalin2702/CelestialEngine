@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -41,7 +41,7 @@ bool IsWindowFullScreen(const NS::Window* window) {
 }
 
 void SaveFullScreenFlag(NS::String* key, const bool value) {
-	const auto defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
+	auto* const defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
 	reinterpret_cast<void (*)(id, SEL, BOOL, id)>(objc_msgSend)(defaults, sel_registerName("setBool:forKey:"), value, reinterpret_cast<id>(key));
 	// The engine stops the run loop and returns from main instead of going through NSApplication's normal termination, so force
 	// the write to disk now rather than relying on the periodic flush.
@@ -49,7 +49,7 @@ void SaveFullScreenFlag(NS::String* key, const bool value) {
 }
 
 bool LoadFullScreenFlag(NS::String* key) {
-	const auto defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
+	auto* const defaults = reinterpret_cast<id (*)(Class, SEL)>(objc_msgSend)(objc_getClass("NSUserDefaults"), sel_registerName("standardUserDefaults"));
 	return reinterpret_cast<BOOL (*)(id, SEL, id)>(objc_msgSend)(defaults, sel_registerName("boolForKey:"), reinterpret_cast<id>(key));
 }
 
@@ -95,7 +95,7 @@ u32 CocoaWindow::GetRefreshRate() const {
 	if (not _window) [[unlikely]]
 		return 0;
 
-	const auto screen = _window->screen();
+	auto* const screen = _window->screen();
 	if (not screen) [[unlikely]]
 		return 0;
 
@@ -119,7 +119,7 @@ CA::MetalLayer* CocoaWindow::GetMetalLayer() const {
 		return nullptr;
 	}
 
-	const auto contentView = _window->contentView();
+	auto* const contentView = _window->contentView();
 	if (not contentView) [[unlikely]] {
 		CE_CORE_WARN("CocoaWindow::GetMetalLayer: Cannot get the layer because the window has no content view yet.");
 		return nullptr;
@@ -351,7 +351,7 @@ void CocoaWindow::_InitWindow() {
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
 	};
 
-	NS::Window* rawWindow;
+	NS::Window* rawWindow = nullptr;
 	try {
 		rawWindow = NS::Window::alloc()->init(
 			frame,

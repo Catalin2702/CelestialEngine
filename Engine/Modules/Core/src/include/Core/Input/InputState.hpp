@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -43,7 +43,7 @@ namespace CE::Core {
 class CE_CORE_API InputState {
 	friend class Input;										///< Sole interface to the state: exposes its members as static methods
 
-	enum HubSubscription: std::size_t {
+	enum HubSubscription: u8 {
 		KeyPressed = 0,
 		KeyReleased,
 		MouseMoved,

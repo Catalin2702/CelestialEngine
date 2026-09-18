@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
@@ -18,18 +18,13 @@
 
 namespace CE::Core {
 
-OpenGlShader::OpenGlShader(const char* shader, const Types::ShaderType type): _type(type) {
-	_shaderId = OpenGlShaderCompiler::Compile(shader, type);
-}
+OpenGlShader::OpenGlShader(const char* shader, const Types::ShaderType type): _shaderId(OpenGlShaderCompiler::Compile(shader, type)), _type(type) {}
 
-OpenGlShader::OpenGlShader(const Utility::File& file, const Types::ShaderType type) {
-	_type = type;
+OpenGlShader::OpenGlShader(const Utility::File& file, const Types::ShaderType type): _type(type) {
 	_shaderId = OpenGlShaderCompiler::Compile(file.GetContentString().c_str(), type);
 }
 
-OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept {
-	_shaderId = other._shaderId;
-	_type = other._type;
+OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept: _shaderId(other._shaderId), _type(other._type) {
 	other._shaderId = 0;
 	other._type = Types::ShaderType::None;
 }
@@ -37,15 +32,6 @@ OpenGlShader::OpenGlShader(OpenGlShader&& other) noexcept {
 OpenGlShader::~OpenGlShader() {
 	if (_shaderId != 0) [[likely]]
 		glDeleteShader(_shaderId);
-}
-
-OpenGlShader& OpenGlShader::operator = (const OpenGlShader& other) {
-	if (this == &other) [[unlikely]]
-		return *this;
-
-	_shaderId = other._shaderId;
-	_type = other._type;
-	return *this;
 }
 
 OpenGlShader& OpenGlShader::operator = (OpenGlShader&& other) noexcept {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
@@ -115,7 +115,7 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 
 	const auto renderPassDescriptor = NS::RetainPtr(MTL::RenderPassDescriptor::renderPassDescriptor());
 
-	const auto colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
+	auto* const colorAttachment = renderPassDescriptor->colorAttachments()->object(0);
 	colorAttachment->setTexture(_frameContext.sceneTexture);
 
 	// Load, never clear: this is a second pass over a target the scene has already been drawn into.
@@ -150,7 +150,7 @@ void ImGuiMetalLayer::_Init() {
 	IMGUI_CHECKVERSION();
 
 	try {
-		const auto context = ImGui::CreateContext();
+		auto* const context = ImGui::CreateContext();
 		ImGui::SetCurrentContext(context);
 		ImGui::StyleColorsDark();
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-09-18
 //
 
 #include "Core/RunLoop/I_RunLoop.hpp"
@@ -15,7 +15,8 @@
 namespace CE::Core {
 
 std::unique_ptr<I_RunLoop> I_RunLoop::MakeRunLoop(const I_Platform& platform) {
-	switch (platform.GetWindowApi()) {
+	// A switch with only the default for now: it is where the Cocoa run loop described below will get its case.
+	switch (platform.GetWindowApi()) { // NOLINT(readability-trivial-switch)
 		// Cocoa is the one backend that takes the thread of control away: NSApplication::run() does not return, and
 		// frames come back through a CAMetalDisplayLink instead of a loop we write. It gets its own implementation
 		// alongside the Metal backend, once there is a CAMetalLayer for that link to attach to.

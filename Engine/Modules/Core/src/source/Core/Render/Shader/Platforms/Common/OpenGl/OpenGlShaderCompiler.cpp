@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
@@ -42,7 +42,7 @@ u32 OpenGlShaderCompiler::Compile(const char* shader, const Types::ShaderType ty
 
 		std::vector<char> infoLog(maxLength);
 
-		glGetShaderInfoLog(shaderId, maxLength, &maxLength, &infoLog[0]);
+		glGetShaderInfoLog(shaderId, maxLength, &maxLength, infoLog.data());
 
 		glDeleteShader(shaderId);
 

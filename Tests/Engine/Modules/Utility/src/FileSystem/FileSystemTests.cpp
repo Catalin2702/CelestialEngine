@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include <Utility/FileSystem/File.hpp>
@@ -22,7 +22,6 @@
 
 using CE::Utility::File;
 using CE::Utility::FileSystem;
-using CE::Types::FileLoadState;
 
 namespace fs = std::filesystem;
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -49,7 +49,7 @@ class CE_CORE_API Application {
 	using TimePoint = std::chrono::time_point<Clock>;
 
 	/// @brief Names the slots of _eventHubHandlers, so a subscription and its unsubscription cannot drift apart.
-	enum EventHubSubscription: std::size_t {
+	enum EventHubSubscription: u8 {
 		_WindowClose = 0,
 		_WindowResize,
 		_VSyncChange,

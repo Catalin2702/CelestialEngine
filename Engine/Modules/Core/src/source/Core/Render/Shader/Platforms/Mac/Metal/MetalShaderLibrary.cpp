@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -26,18 +26,16 @@ constexpr auto relativeLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
 // Resources directory, so loading is independent of the current working
 // directory (fixes launches from IDEs/debuggers such as CLion and Xcode).
 static std::string ResolveDefaultLibraryPath() {
-	if (const auto bundle = NS::Bundle::mainBundle()) [[likely]] {
-		if (const auto resourcePath = bundle->resourcePath()) [[likely]] {
+	if (auto* const bundle = NS::Bundle::mainBundle()) [[likely]] {
+		if (auto* const resourcePath = bundle->resourcePath()) [[likely]] {
 			return std::string(resourcePath->utf8String()) + "/Shaders/Metal/Main.metallib";
 		}
 	}
 	return relativeLibraryPath;
 }
 
-static std::string defaultLibraryPath = relativeLibraryPath;
-
-MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path): _device(NS::RetainPtr(device)) {
-	defaultLibraryPath = path.empty() ? ResolveDefaultLibraryPath() : path;
+MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path):
+	_device(NS::RetainPtr(device)), _path(path.empty() ? ResolveDefaultLibraryPath() : path) {
 
 	_LoadLibrary();
 
@@ -48,9 +46,17 @@ MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& p
 }
 
 MetalShaderLibrary::MetalShaderLibrary(MetalShaderLibrary&& other) noexcept:
-	_device(std::move(other._device)), _library(std::move(other._library)), _functions(std::move(other._functions)) {}
+	_device(std::move(other._device)), _library(std::move(other._library)), _path(std::move(other._path)),
+	_functions(std::move(other._functions)) {
+	// A moved-from map is only valid-but-unspecified: emptied explicitly so its destructor releases nothing.
+	other._functions.clear();
+}
 
 MetalShaderLibrary::~MetalShaderLibrary() {
+	_Release();
+}
+
+void MetalShaderLibrary::_Release() {
 	for (const auto& function: _functions | std::views::values) {
 		if (function) [[likely]] {
 			function->release();
@@ -61,23 +67,18 @@ MetalShaderLibrary::~MetalShaderLibrary() {
 	_device.reset();
 }
 
-MetalShaderLibrary& MetalShaderLibrary::operator = (const MetalShaderLibrary& other) {
-	if (this == &other) [[unlikely]]
-		return *this;
-
-	_device = other._device;
-	_library = other._library;
-	_functions = other._functions;
-	return *this;
-}
-
 MetalShaderLibrary& MetalShaderLibrary::operator = (MetalShaderLibrary&& other) noexcept {
 	if (this == &other) [[unlikely]]
 		return *this;
 
+	// The functions held so far are owned: released before the other library's ones take their place.
+	_Release();
+
 	_device = std::move(other._device);
 	_library = std::move(other._library);
+	_path = std::move(other._path);
 	_functions = std::move(other._functions);
+	other._functions.clear();
 	return *this;
 }
 
@@ -108,22 +109,22 @@ bool MetalShaderLibrary::IsValid() const {
 }
 
 void MetalShaderLibrary::_LoadLibrary() {
-	const auto url = NS::URL::fileURLWithPath(NS::String::string(defaultLibraryPath.c_str(), NS::UTF8StringEncoding));
+	auto* const url = NS::URL::fileURLWithPath(NS::String::string(_path.c_str(), NS::UTF8StringEncoding));
 	NS::Error* error = nullptr;
-	const auto library = _device->newLibrary(url, &error);
+	auto* const library = _device->newLibrary(url, &error);
 	if (not library) [[unlikely]] {
-		const auto errorMessage = std::format("MetalShaderLibrary::_LoadLibrary: Failed to load Metal shader library from path: {}. Error: {}", defaultLibraryPath, error ? error->localizedDescription()->utf8String() : "Unknown error");
+		const auto errorMessage = std::format("MetalShaderLibrary::_LoadLibrary: Failed to load Metal shader library from path: {}. Error: {}", _path, error ? error->localizedDescription()->utf8String() : "Unknown error");
 		CE_CORE_ERROR(errorMessage);
 		throw std::runtime_error(errorMessage);
 	}
 	_library = NS::RetainPtr(library);
 
-	const auto functionNames = _library->functionNames();
-	const auto enumerator = functionNames->objectEnumerator();
+	auto* const functionNames = _library->functionNames();
+	auto* const enumerator = functionNames->objectEnumerator();
 	const NS::String* functionName = nullptr;
 	while ((functionName = reinterpret_cast<NS::String*>(enumerator->nextObject())) != nullptr) {
-		const auto functionNameStr = functionName->utf8String();
-		if (const auto function = _library->newFunction(functionName)) [[likely]] {
+		const auto* const functionNameStr = functionName->utf8String();
+		if (auto* const function = _library->newFunction(functionName)) [[likely]] {
 			_functions[functionNameStr] = function;
 		}
 		else {

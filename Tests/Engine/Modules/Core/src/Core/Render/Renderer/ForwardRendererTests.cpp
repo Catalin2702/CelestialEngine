@@ -214,64 +214,64 @@ private:
 /// Writes into the pass its device opened. The index rather than a reference, because the recorder's vector grows.
 class FakeCommandEncoder final: public I_CommandEncoder {
 public:
-	FakeCommandEncoder(Recorder& recorder, const size_t passIndex): _recorder(recorder), _passIndex(passIndex) {}
+	FakeCommandEncoder(Recorder& recorder, const size_t passIndex): _recorder(&recorder), _passIndex(passIndex) {}
 
 public:
 	void DrawIndexed(const u32 indexCount, u32, u32) override {
-		auto& pass = _recorder.passes[_passIndex];
+		auto& pass = _recorder->passes[_passIndex];
 		++pass.drawIndexedCalls;
 		pass.indices += indexCount;
 	}
 
-	void End() override { _recorder.passes[_passIndex].ended = true; }
+	void End() override { _recorder->passes[_passIndex].ended = true; }
 
 	void SetPipelineState(const I_PipelineState&) override {}
 	void SetIndexBuffer(const I_IndexBuffer&) override {}
 	void SetVertexBuffer(const I_VertexBuffer&) override {}
 
-	void SetViewport(const Viewport& viewport) override { _recorder.passes[_passIndex].viewports.push_back(viewport); }
+	void SetViewport(const Viewport& viewport) override { _recorder->passes[_passIndex].viewports.push_back(viewport); }
 
 	void SetFragmentTexture(const u32 slot, const I_Texture& texture) override {
-		_recorder.passes[_passIndex].fragmentTextures.emplace_back(slot, &texture);
+		_recorder->passes[_passIndex].fragmentTextures.emplace_back(slot, &texture);
 	}
 
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return FakeApi; }
 
 private:
-	Recorder& _recorder;
+	Recorder* _recorder;
 	size_t _passIndex;
 };
 
 class FakeGraphicDevice final: public I_GraphicDevice {
 public:
-	explicit FakeGraphicDevice(Recorder& recorder): _recorder(recorder) {}
+	explicit FakeGraphicDevice(Recorder& recorder): _recorder(&recorder) {}
 
 public:
 	[[nodiscard]] std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) override {
-		_recorder.shaderModules.push_back({.stage = descriptor.stage, .name = std::string(descriptor.name)});
+		_recorder->shaderModules.push_back({.stage = descriptor.stage, .name = std::string(descriptor.name)});
 		return std::make_shared<FakeShaderModule>(descriptor);
 	}
 
 	[[nodiscard]] std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) override {
-		_recorder.pipelines.push_back(descriptor);
-		if (_recorder.failPipelineCreation)
+		_recorder->pipelines.push_back(descriptor);
+		if (_recorder->failPipelineCreation)
 			return nullptr;
 
 		return std::make_shared<FakePipelineState>(descriptor);
 	}
 
 	[[nodiscard]] std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(const std::span<const u32> indices) override {
-		++_recorder.indexBuffers;
+		++_recorder->indexBuffers;
 		return std::make_shared<FakeIndexBuffer>(indices.size());
 	}
 
 	[[nodiscard]] std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32>, const BufferLayout& layout) override {
-		++_recorder.vertexBuffers;
+		++_recorder->vertexBuffers;
 		return std::make_shared<FakeVertexBuffer>(layout);
 	}
 
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override {
-		_recorder.textures.push_back({
+		_recorder->textures.push_back({
 			.width = descriptor.width,
 			.height = descriptor.height,
 			.format = descriptor.format,
@@ -281,7 +281,7 @@ public:
 
 		// Thrown, not returned null: it is what MetalTexture does when the allocation fails, and _EnsureSceneTarget
 		// is written around catching it.
-		if (_recorder.failTextureCreation)
+		if (_recorder->failTextureCreation)
 			throw std::runtime_error("FakeGraphicDevice::CreateTexture: refused by the test.");
 
 		return std::make_shared<FakeTexture>(descriptor);
@@ -290,8 +290,8 @@ public:
 	[[nodiscard]] std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) override {
 		PassRecord record{};
 		record.descriptor = descriptor;
-		_recorder.passes.push_back(std::move(record));
-		return std::make_unique<FakeCommandEncoder>(_recorder, _recorder.passes.size() - 1);
+		_recorder->passes.push_back(std::move(record));
+		return std::make_unique<FakeCommandEncoder>(*_recorder, _recorder->passes.size() - 1);
 	}
 
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() override { return FakeApi; }
@@ -299,30 +299,30 @@ public:
 	[[nodiscard]] Types::ClipConvention GetClipConvention() const override { return Types::ClipConvention::ZeroToOne; }
 
 private:
-	Recorder& _recorder;
+	Recorder* _recorder;
 };
 
 class FakeSwapchain final: public I_Swapchain {
 public:
-	explicit FakeSwapchain(Recorder& recorder): _recorder(recorder) {}
+	explicit FakeSwapchain(Recorder& recorder): _recorder(&recorder) {}
 
 public:
 	[[nodiscard]] bool PrepareFrame() override {
-		++_recorder.prepares;
-		return _recorder.prepareSucceeds;
+		++_recorder->prepares;
+		return _recorder->prepareSucceeds;
 	}
 
 	[[nodiscard]] bool AcquireNextTarget() override {
-		++_recorder.acquires;
-		return _recorder.acquireSucceeds;
+		++_recorder->acquires;
+		return _recorder->acquireSucceeds;
 	}
 
-	void Present() override { ++_recorder.presents; }
+	void Present() override { ++_recorder->presents; }
 
 	void Resize(const u32 width, const u32 height) override {
-		++_recorder.resizes;
-		_recorder.width = width;
-		_recorder.height = height;
+		++_recorder->resizes;
+		_recorder->width = width;
+		_recorder->height = height;
 	}
 
 	void SetVSync(const bool enabled) override { _vsync = enabled; }
@@ -330,11 +330,11 @@ public:
 
 	[[nodiscard]] Types::PixelFormat GetColorFormat() const override { return DefaultColorFormat; }
 	[[nodiscard]] u32 GetBufferCount() const override { return 3; }
-	[[nodiscard]] std::pair<u32, u32> GetSize() const override { return {_recorder.width, _recorder.height}; }
+	[[nodiscard]] std::pair<u32, u32> GetSize() const override { return {_recorder->width, _recorder->height}; }
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return FakeApi; }
 
 private:
-	Recorder& _recorder;
+	Recorder* _recorder;
 	bool _vsync = false;
 };
 

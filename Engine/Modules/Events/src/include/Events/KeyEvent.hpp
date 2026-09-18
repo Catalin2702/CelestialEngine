@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -39,7 +39,8 @@ public:
 	 */
 	[[nodiscard]] T GetKeyCode() const { return _keyCode; }
 
-	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput)
+	// Every specialisation is the base of an exported key event, whose vtable instantiates this override on any compiler.
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput) // NOLINT(portability-template-virtual-member-function)
 
 protected:
 	/**
@@ -48,7 +49,7 @@ protected:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Only derived classes can construct a key event
 	 */
-	I_KeyEvent(T keycode, const bool isMutable = true):
+	explicit I_KeyEvent(T keycode, const bool isMutable = true):
 		I_Event(isMutable), _keyCode(keycode) {}
 
 protected:
@@ -113,7 +114,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a key released event with the specified key code
 	 */
-	KeyReleasedEvent(KeyType keycode, bool isMutable = true);
+	explicit KeyReleasedEvent(KeyType keycode, bool isMutable = true);
 
 public:
 	/**
@@ -140,7 +141,7 @@ public:
 	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
 	 * @details Creates a key typed event with the specified character code
 	 */
-	KeyTypedEvent(KeyCharType keycode, bool isMutable = true);
+	explicit KeyTypedEvent(KeyCharType keycode, bool isMutable = true);
 
 public:
 	/**

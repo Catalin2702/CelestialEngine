@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -97,7 +97,8 @@ void ImGuiOpenGlLayer::Begin(const f32 deltaTime) {
 }
 
 void ImGuiOpenGlLayer::End() {
-	if (not _currentFrameStarted) [[unlikely]]
+	// A started frame implies an attached layer, hence a window; the second test only makes that explicit.
+	if (not _currentFrameStarted or not _window) [[unlikely]]
 		return;
 
 	ImGui::Render();
@@ -113,7 +114,7 @@ void ImGuiOpenGlLayer::_Init() {
 	IMGUI_CHECKVERSION();
 
 	try {
-		const auto context = ImGui::CreateContext();
+		auto* const context = ImGui::CreateContext();
 		ImGui::SetCurrentContext(context);
 		ImGui::StyleColorsDark();
 
@@ -232,7 +233,7 @@ void ImGuiOpenGlLayer::_OnViewResized(Events::WindowResizeEvent& event) const {
 
 	// The scale can change without a resize (dragging onto a display with a different one), and it can change with a
 	// resize too, so it is re-read here rather than cached at init.
-	const auto contentScale = _window->get().GetContentScale();
+	const auto contentScale = _window ? _window->get().GetContentScale() : 1.0f;
 	io.DisplayFramebufferScale = ImVec2(contentScale, contentScale);
 }
 

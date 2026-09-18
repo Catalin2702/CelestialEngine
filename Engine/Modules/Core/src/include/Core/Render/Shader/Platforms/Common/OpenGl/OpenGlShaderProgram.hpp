@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -17,7 +17,6 @@
 #include "Core/Render/Shader/I_ShaderProgram.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp"
 
-#include <initializer_list>
 #include <vector>
 
 
@@ -39,12 +38,14 @@ public:
 
 	/**
 	 * @brief Constructs an OpenGlShaderProgram with a list of shaders
-	 * @param shaders An initializer list of pointers to I_Shader objects to attach to the shader program
+	 * @param shaders The shaders to attach, moved in: the program owns them from here on. A vector rather than an
+	 *				 initializer_list, whose elements are const and could only be copied - and a shader cannot be.
 	 * @details Creates a new OpenGL shader program and attaches the provided shaders to it. The constructor initializes the program ID and iterates through the list of shaders, attaching each one to the program using glAttachShader. This allows for convenient creation of a shader program with multiple shaders in a single step.
 	 */
-	OpenGlShaderProgram(std::initializer_list<OpenGlShader> shaders);
+	explicit OpenGlShaderProgram(std::vector<OpenGlShader> shaders);
 
-	OpenGlShaderProgram(const OpenGlShaderProgram&) = default;
+	/// Not copyable: the destructor deletes the GL program, so two copies would delete it twice.
+	OpenGlShaderProgram(const OpenGlShaderProgram&) = delete;
 
 	OpenGlShaderProgram(OpenGlShaderProgram&& other) noexcept;
 
@@ -55,7 +56,7 @@ public:
 	~OpenGlShaderProgram() override;
 
 public:
-	OpenGlShaderProgram& operator = (const OpenGlShaderProgram& other);
+	OpenGlShaderProgram& operator = (const OpenGlShaderProgram&) = delete;
 
 	OpenGlShaderProgram& operator = (OpenGlShaderProgram&& other) noexcept;
 
@@ -70,7 +71,7 @@ public:
 	 * @brief Unbinds the shader program
 	 * @details Detaches all shaders from the shader program and unbinds it, deactivating it from subsequent rendering operations. This method ensures that the shader program is properly cleaned up and no longer active in the rendering pipeline.
 	 */
-	void Unbind() const;
+	static void Unbind();
 
 	/**
 	 * @brief Links the shader program

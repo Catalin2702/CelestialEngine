@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include "Utility/Time/Chronometer.hpp"
@@ -20,7 +20,13 @@ Chronometer::Chronometer() {
 
 Chronometer::~Chronometer() {
 	Stop();
-	PrintResult();
+
+	// Formatting and logging can throw, and a throw escaping a destructor is std::terminate: losing one timing line
+	// is the lesser evil.
+	try {
+		PrintResult();
+	}
+	catch (...) {} // NOLINT(bugprone-empty-catch)
 }
 
 void Chronometer::Start() {

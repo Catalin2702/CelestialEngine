@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"
@@ -24,8 +24,7 @@
 
 namespace CE::Core {
 
-CocoaPlatform::CocoaPlatform() {
-	_application = NS::Application::sharedApplication();
+CocoaPlatform::CocoaPlatform(): _application(NS::Application::sharedApplication()) {
 	if (not _application) [[unlikely]] {
 		constexpr auto error = "CocoaPlatform::CocoaPlatform: Could not reach the NSApplication singleton!";
 		CE_CORE_ERROR(error);
@@ -94,7 +93,7 @@ void CocoaPlatform::PollEvents() const {
 	// the sources it services there are the ones Core Animation drives off the display. That is a wait of up to one
 	// refresh, handed back to AppKit, which is exactly what this backend is not doing. NSDate::distantPast is the
 	// canonical value; the fork does not expose it, so any comfortably past instant does the same job.
-	const auto expiration = NS::Date::dateWithTimeIntervalSinceNow(-1.0);
+	auto* const expiration = NS::Date::dateWithTimeIntervalSinceNow(-1.0);
 
 	while (NS::Event* const event = _application->nextEventMatchingMask(
 		NS::EventMaskAny, expiration, NS::RunLoop::defaultMode(), true))

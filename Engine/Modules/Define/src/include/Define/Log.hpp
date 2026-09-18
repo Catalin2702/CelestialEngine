@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -57,7 +57,7 @@
 	 *			to ensure logger is initialized.
 	 */
 	#define CE_CORE_TRACE(...) do {										\
-		assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");	\
+		assert(CE::Tools::Log::GetCoreLogger() and "CoreLogger is not initialized");	\
 		CE::Tools::Log::GetCoreLogger()->trace(__VA_ARGS__);							\
 	} while (0)
 
@@ -146,7 +146,7 @@
 	 *			to ensure logger is initialized.
 	 */
 	#define CE_CORE_WARN(...) do {										\
-		assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");	\
+		assert(CE::Tools::Log::GetCoreLogger() and "CoreLogger is not initialized");	\
 		CE::Tools::Log::GetCoreLogger()->warn(__VA_ARGS__);							\
 	} while (0)
 
@@ -157,7 +157,7 @@
 	 *			to ensure logger is initialized.
 	 */
 	#define CE_CORE_ERROR(...) do {										\
-		assert(CE::Tools::Log::GetCoreLogger() && "CoreLogger is not initialized");	\
+		assert(CE::Tools::Log::GetCoreLogger() and "CoreLogger is not initialized");	\
 		CE::Tools::Log::GetCoreLogger()->error(__VA_ARGS__);							\
 	} while (0)
 
@@ -190,7 +190,7 @@
 	 *			to ensure logger is initialized.
 	 */
 	#define CE_ERROR(...) do {										\
-		assert(CE::Tools::Log::GetClientLogger() && "ClientLogger is not initialized");	\
+		assert(CE::Tools::Log::GetClientLogger() and "ClientLogger is not initialized");	\
 		CE::Tools::Log::GetClientLogger()->error(__VA_ARGS__);							\
 	} while (0)
 
