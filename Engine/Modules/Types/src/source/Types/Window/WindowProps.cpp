@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include "Types/Window/WindowProps.hpp"
@@ -13,7 +13,7 @@
 namespace CE::Types {
 
 WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const unsigned int refreshRate, const GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
-	title(title), width(width), height(height), VSync(VSync), refreshRate(refreshRate), graphicsApi(graphicsApi), windowApi(windowApi) {}
+	title(title), width(width), height(height), refreshRate(refreshRate), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
 
 bool IsWindowApiSupported(const WindowApi& api) {
 	if (api == WindowApi::None) [[unlikely]]

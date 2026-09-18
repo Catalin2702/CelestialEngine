@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -115,6 +115,11 @@ public:
 	 *			which that cannot happen.
 	 */
 	[[nodiscard]] NS::SharedPtr<MTL::CommandBuffer> TakeFrameCommandBuffer();
+
+public:
+	/// Clip space runs from 0 at the near plane to 1 at the far one here; the projection matrix has to be built for
+	/// that range, and this is the only object that can say so without naming the API somewhere else.
+	[[nodiscard]] Types::ClipConvention GetClipConvention() const override { return Types::ClipConvention::ZeroToOne; }
 
 public:
 	[[nodiscard]] MTL::Device* GetDevice() const { return _nativeDevice.get(); }

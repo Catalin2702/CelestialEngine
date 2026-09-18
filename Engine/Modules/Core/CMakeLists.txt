@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-08
+# Updated: 2026-09-18
 #
 
 set(APPLICATION_HEADERS
@@ -265,7 +265,6 @@ set(RENDER_SOURCES
 
 
 	# Command
-	src/source/Core/Render/Command/Viewport.cpp
 	src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
 
 	$<$<PLATFORM_ID:Darwin>:

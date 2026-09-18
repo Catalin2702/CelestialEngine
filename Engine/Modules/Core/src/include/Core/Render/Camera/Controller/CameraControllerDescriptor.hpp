@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -231,12 +231,13 @@ struct CE_CORE_API CameraTopDownControllerDescriptor {
 	f32 pitch = -60.0_f32;
 	f32 yaw = 0.0_f32;
 
+	/// The two flags sit together so they share one padding slot instead of each paying for its own.
 	bool rotationEnabled = false;
-	/// Degrees per second while the rotation input is held.
-	f32 rotationSpeed = 90.0_f32;
-
 	/// Pans when the pointer rests within edgeScrollMargin pixels of a window border.
 	bool edgeScrollEnabled = true;
+
+	/// Degrees per second while the rotation input is held.
+	f32 rotationSpeed = 90.0_f32;
 	f32 edgeScrollMargin = 16.0_f32;
 };
 

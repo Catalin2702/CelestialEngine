@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -42,6 +42,7 @@ private:
 
 private:
 	Types::ClipConvention _convention;
+	mutable bool _dirty = true;
 
 	f32 _nearClip;
 	f32 _farClip;
@@ -52,7 +53,6 @@ private:
 	f32 _orthographicSize;
 
 	mutable glm::mat4 _projection{1.0_f32};
-	mutable bool _dirty = true;
 };
 
 }

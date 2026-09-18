@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -32,17 +32,21 @@ struct ShaderModuleDescriptor;
  * @class MetalShaderModule
  * @brief One entry point of the compiled .metallib, resolved into an MTL::Function
  * @details Metal has no compilation step at this level - the .metallib is built by CMake - so a module is a lookup:
- *			the descriptor's entryPoint names a function the library already holds. The function is retained, so a
- *			module stays valid even if the library it came from is destroyed first. Move-only, like its OpenGL twin.
+ *			the descriptor's name is turned into the entry point that implements it, and the library already holds the
+ *			function under that name. The function is retained, so a module stays valid even if the library it came
+ *			from is destroyed first. Move-only, like its OpenGL twin.
  */
 class CE_CORE_API MetalShaderModule final: public I_ShaderModuleBase<Types::GraphicsApi::Metal> {
 public:
 	/**
-	 * @brief Resolves the descriptor's entry point in the given library
+	 * @brief Resolves the descriptor's name into an entry point and looks it up in the given library
 	 * @param library The loaded .metallib to look the entry point up in
-	 * @param descriptor Stage and entryPoint to resolve; source is ignored, Metal shaders are compiled ahead of time
-	 * @details Throws std::runtime_error when the stage is one Metal does not have, when entryPoint is empty, or when
-	 *			the library holds no function under that name.
+	 * @param descriptor Stage and name of the shader to resolve
+	 * @details Resolving the name is done here rather than by the caller: it becomes `<name>Main` in the language's
+	 *			own casing, and nothing is compiled - the .metallib was built ahead of time.
+	 *
+	 *			Throws std::runtime_error when the stage is one Metal does not have, when the name is empty, or when
+	 *			the library holds no function under the resolved name.
 	 */
 	MetalShaderModule(const MetalShaderLibrary& library, const ShaderModuleDescriptor& descriptor);
 

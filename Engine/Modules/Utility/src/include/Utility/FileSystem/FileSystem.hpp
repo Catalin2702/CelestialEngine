@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -127,6 +127,18 @@ public:
 	 *			falls back to the root directory so callers always get a usable path.
 	 */
 	[[nodiscard]] static fs::path GetConfigDirectory();
+
+	/**
+	 * @brief Gets the directory the read-only files shipped with the application live in
+	 * @return std::filesystem::path Absolute path to the resources directory
+	 * @details Where the packaging puts them, which is not the same place everywhere: an application bundle keeps its
+	 *			resources one level up from the executable, every other layout keeps them beside it. That difference is
+	 *			the packaging's, so it is answered here rather than by each caller that wants to read a shipped file.
+	 *
+	 *			Resolved against the root directory, so it follows a root the application has set for itself. It is
+	 *			read-only by construction: everything the running engine writes back belongs in GetConfigDirectory().
+	 */
+	[[nodiscard]] static fs::path GetResourcesDirectory();
 
 	/**
 	 * @brief Sets the root directory path for the file system

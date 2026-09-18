@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -33,10 +33,14 @@ struct ShaderModuleDescriptor;
 class CE_CORE_API OpenGlShaderModule final: public I_ShaderModuleBase<Types::GraphicsApi::OpenGL> {
 public:
 	/**
-	 * @brief Compiles the descriptor's GLSL source into an OpenGL shader object
-	 * @param descriptor Stage and source to compile; entryPoint must be "main", GLSL has no other option
-	 * @details Throws std::runtime_error when the stage is one OpenGL does not have, when the source is empty, or
-	 *			when compilation fails - the compiler logs the GLSL info log before rethrowing.
+	 * @brief Finds the GLSL file the descriptor's name stands for and compiles it into an OpenGL shader object
+	 * @param descriptor Stage and name of the shader to build
+	 * @details Resolving the name is done here rather than by the caller: `<name>.glsl` among the shaders the
+	 *			packaging shipped. The entry point is not asked for at all - GLSL always enters at main.
+	 *
+	 *			Throws std::runtime_error when the stage is one OpenGL does not have, when the name is empty, when
+	 *			there is no such file or it is empty, or when compilation fails - the compiler logs the GLSL info log
+	 *			before rethrowing.
 	 */
 	explicit OpenGlShaderModule(const ShaderModuleDescriptor& descriptor);
 

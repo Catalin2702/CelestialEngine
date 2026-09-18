@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -45,8 +45,12 @@ public:
 	[[nodiscard]] static std::unique_ptr<I_GraphicDevice> MakeDevice(Types::GraphicsApi api);
 
 public:
-	/// Compiles or resolves one shader stage, whichever the backend needs. Shared, so the same module can back several
-	/// pipelines without paying for the compile again.
+	/**
+	 * @brief Produces one shader stage from the engine's name for it
+	 * @details Compiles it or looks it up, whichever the backend needs, and finds the artifact itself - which is why
+	 *			the descriptor carries a name and not a source or a path. Shared, so the same module can back several
+	 *			pipelines without paying for the compile again.
+	 */
 	[[nodiscard]] virtual std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_PipelineState> CreatePipelineState(const PipelineDescriptor& descriptor) = 0;
 	[[nodiscard]] virtual std::shared_ptr<I_IndexBuffer> CreateIndexBuffer(std::span<const u32> indices) = 0;
@@ -63,6 +67,14 @@ public:
 
 public:
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() = 0;
+
+	/**
+	 * @brief Gets the depth range this backend's clip space maps onto
+	 * @details Backends disagree on it, and a projection matrix built for the wrong one puts half the scene behind
+	 *			the near plane. It is asked of the device rather than derived from the API by whoever needs it: the
+	 *			device is the one object that always knows, and a camera has no business naming a backend.
+	 */
+	[[nodiscard]] virtual Types::ClipConvention GetClipConvention() const = 0;
 };
 
 template<Types::GraphicsApi Api>

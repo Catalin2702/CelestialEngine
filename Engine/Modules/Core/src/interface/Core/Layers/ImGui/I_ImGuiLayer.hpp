@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -153,13 +153,13 @@ protected:
 protected:
 	bool _initialized = false;						///< Flag to track if ImGui backend was successfully initialized
 
-	/// The delta Begin was handed, kept so OnRender can feed it to ImGui's IO and show it. Not mutable: Begin writes
-	/// it and only the const OnRender reads it back.
-	f32 _deltaTime = 0.f;
-
 	/// Whether Begin got as far as ImGui::NewFrame. OnRender and End both bail when it is false, so a frame the
 	/// backend refused cannot leave widgets declared outside a frame - which is what makes ImGui assert.
 	bool _currentFrameStarted = false;
+
+	/// The delta Begin was handed, kept so OnRender can feed it to ImGui's IO and show it. Not mutable: Begin writes
+	/// it and only the const OnRender reads it back.
+	f32 _deltaTime = 0.f;
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -49,8 +49,9 @@ MetalGraphicDevice::MetalGraphicDevice() {
 MetalGraphicDevice::~MetalGraphicDevice() = default;
 
 std::shared_ptr<I_ShaderModule> MetalGraphicDevice::CreateShaderModule(const ShaderModuleDescriptor& descriptor) {
-	// A lookup, not a compile: the .metallib was built by CMake, so descriptor.source is ignored here and
-	// descriptor.entryPoint is what matters. The OpenGL device does the opposite with the same descriptor.
+	// A lookup, not a compile: the .metallib was built by CMake, so the module turns the descriptor's name into the
+	// entry point that implements it. The OpenGL device does the opposite with the same descriptor - which is the
+	// point of the descriptor carrying neither.
 	return std::make_shared<MetalShaderModule>(_shaderLibrary, descriptor);
 }
 

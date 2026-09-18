@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -23,13 +23,13 @@ namespace CE::Core {
 
 struct CE_CORE_API BufferElement {
 	BufferElement(const Types::ShaderDataType type, const char* name, const bool normalized = false):
-		type(type), size(Types::ShaderDataTypeSize(type)), componentCount(Types::ShaderDataTypeComponentCount(type)), normalized(normalized), name(name) {}
+		type(type), normalized(normalized), size(Types::ShaderDataTypeSize(type)), componentCount(Types::ShaderDataTypeComponentCount(type)), name(name) {}
 
 	Types::ShaderDataType type = Types::ShaderDataType::None;
+	bool normalized = false;
 	u32 size = 0;
 	u32 offset = 0;
 	u32 componentCount = 0;
-	bool normalized = false;
 	std::string_view name = {};
 };
 

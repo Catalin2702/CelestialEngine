@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -156,14 +156,14 @@ private:
 	RenderStats _stats; ///< Published: what the last completed frame cost
 	RenderStats _frameStats; ///< Accumulating: what the frame in flight has cost so far
 
-	bool _inFrame = false;
-
 	std::shared_ptr<I_Texture> _sceneColor;
 	std::shared_ptr<I_Texture> _sceneDepth;
 
 	/// Fixed at construction so a pipeline can be built before the first frame sizes the target.
 	Types::PixelFormat _sceneColorFormat = Types::PixelFormat::None;
 	Types::PixelFormat _sceneDepthFormat = Types::PixelFormat::Depth32Float;
+
+	bool _inFrame = false;
 
 	std::shared_ptr<I_PipelineState> _compositePipeline;
 	std::shared_ptr<I_VertexBuffer> _compositeVertexBuffer;

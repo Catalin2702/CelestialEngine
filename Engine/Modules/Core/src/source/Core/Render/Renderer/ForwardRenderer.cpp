@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -19,17 +19,12 @@
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
 #include "Core/Render/Texture/I_Texture.hpp"
 #include "Tools/Tools.hpp"
-#include "Utility/Utility.hpp"
 
 #include <cassert>
 #include <stdexcept>
 
 
 namespace CE::Core {
-
-namespace {
-constexpr auto OpenGlShadersDirectory = CE_PLATFORM_MACOS ? "../Resources/Shaders/OpenGL/" : "Resources/Shaders/OpenGL/";
-}
 
 ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain):
 	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain))
@@ -155,14 +150,13 @@ void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
 	if (not _commandEncoder) [[unlikely]]
 		return;
 
-	// The whole render area, stated top-left as the Viewport constructor expects. It converts into whatever convention
-	// the backend uses, and the target height is what it needs to do so.
+	// The whole render area, stated top-left, which is the one convention a viewport is ever written in. Turning it
+	// into whatever the backend measures from is the encoder's own business, and it needs nothing from here to do it.
 	_commandEncoder->SetViewport(Viewport{
-		GetGraphicApi(),
-		0.0_f32, 0.0_f32,
-		static_cast<f32>(descriptor.width),
-		static_cast<f32>(descriptor.height),
-		static_cast<f32>(descriptor.height)
+		.x = 0.0_f32,
+		.y = 0.0_f32,
+		.width = static_cast<f32>(descriptor.width),
+		.height = static_cast<f32>(descriptor.height)
 	});
 }
 
@@ -335,27 +329,16 @@ void ForwardRenderer::_CreateCompositeResources() {
 	_compositeVertexBuffer = _graphicDevice->CreateVertexBuffer(vertices, vertexLayout);
 	_compositeIndexBuffer = _graphicDevice->CreateIndexBuffer(indices);
 
-	// TODO: a backend leak to remove, the twin of the one in Application::_CreateRenderResources. The descriptor
-	// carries both a source and an entry point, so this has to know which half its backend reads and where the
-	// artifact lives. The device should resolve that itself, and this branch - with the shader directory above it -
-	// go away.
-	const auto isOpenGl = _graphicDevice->GetGraphicApi() == GraphicsApi::OpenGL;
-
-	const auto vertexSource = isOpenGl ? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "CompositeVertex.glsl").GetContentString() : std::string{};
-	const auto fragmentSource = isOpenGl ? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "CompositeFragment.glsl").GetContentString() : std::string{};
-
+	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
+	// The renderer states what it wants drawn and never learns what the backend underneath compiles or loads.
 	const PipelineDescriptor pipelineDescriptor{
 		.vertexShader = _graphicDevice->CreateShaderModule({
 			.stage = ShaderType::Vertex,
-			.source = vertexSource,
-			.entryPoint = isOpenGl ? "main": "compositeVertexMain",
-			.debugName = "CompositeVertex"
+			.name = "CompositeVertex"
 		}),
 		.fragmentShader = _graphicDevice->CreateShaderModule({
 			.stage = ShaderType::Fragment,
-			.source = fragmentSource,
-			.entryPoint = isOpenGl ? "main": "compositeFragmentMain",
-			.debugName = "CompositeFragment"
+			.name = "CompositeFragment"
 		}),
 		.vertexLayout = vertexLayout,
 		.cullMode = CullMode::None,

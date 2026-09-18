@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -65,8 +65,8 @@ struct CE_TYPES_API WindowProps {
 	std::string title;								///< Window title displayed in the title bar
 	unsigned int width = 0;							///< Window width in pixels
 	unsigned int height = 0;						///< Window height in pixels
-	bool VSync = false;								///< Vertical synchronization enabled/disabled
 	unsigned int refreshRate = 0;					///< Target frame rate used when VSync is off (0 = uncapped). When VSync is on, the display's actual refresh rate is used instead.
+	bool VSync = false;								///< Vertical synchronization enabled/disabled
 	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering
 	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management
 

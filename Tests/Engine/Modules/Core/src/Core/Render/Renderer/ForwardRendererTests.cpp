@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #include <Core/Render/Buffer/I_Buffer.hpp>
@@ -31,28 +31,28 @@
 #include <vector>
 
 using namespace CE;
-using CE::Core::BufferLayout;
-using CE::Core::DrawCommand;
-using CE::Core::ForwardRenderer;
-using CE::Core::I_CommandEncoder;
-using CE::Core::I_GraphicDevice;
-using CE::Core::I_IndexBuffer;
-using CE::Core::I_PipelineState;
-using CE::Core::I_ShaderModule;
-using CE::Core::I_Swapchain;
-using CE::Core::I_Texture;
-using CE::Core::I_VertexBuffer;
-using CE::Core::PipelineDescriptor;
-using CE::Core::RenderPassDescriptor;
-using CE::Core::ShaderModuleDescriptor;
-using CE::Core::TextureDescriptor;
-using CE::Core::Viewport;
+using Core::BufferLayout;
+using Core::DrawCommand;
+using Core::ForwardRenderer;
+using Core::I_CommandEncoder;
+using Core::I_GraphicDevice;
+using Core::I_IndexBuffer;
+using Core::I_PipelineState;
+using Core::I_ShaderModule;
+using Core::I_Swapchain;
+using Core::I_Texture;
+using Core::I_VertexBuffer;
+using Core::PipelineDescriptor;
+using Core::RenderPassDescriptor;
+using Core::ShaderModuleDescriptor;
+using Core::TextureDescriptor;
+using Core::Viewport;
 
 namespace {
 
 /// Vulkan on purpose, and it is not a hint about a future backend: the engine has no Vulkan implementation, so no
-/// assertion anywhere can mistake one of these fakes for a real object, and ForwardRenderer's OpenGL branch - the one
-/// that loads GLSL off disk - stays out of a test that has no bundle to load it from.
+/// assertion anywhere can mistake one of these fakes for a real object. Which API it claims changes nothing else -
+/// the renderer never asks, which is what these tests are here to keep true.
 constexpr auto FakeApi = Types::GraphicsApi::Vulkan;
 
 constexpr u32 DefaultWidth = 1280;
@@ -67,9 +67,19 @@ constexpr auto DefaultColorFormat = Types::PixelFormat::BGRA8Unorm;
 struct TextureRequest {
 	u32 width = 0;
 	u32 height = 0;
-	Types::PixelFormat format = Types::PixelFormat::None;
+	[[maybe_unused]] Types::PixelFormat format = Types::PixelFormat::None;
 	Types::TextureUsage usage = Types::TextureUsage::None;
 	std::string debugName;
+};
+
+/**
+ * @struct ShaderRequest
+ * @brief A copy of what the renderer asked CreateShaderModule for
+ * @details The descriptor's name is a string_view borrowed for the call, so it is copied rather than kept.
+ */
+struct ShaderRequest {
+	Types::ShaderType stage = Types::ShaderType::None;
+	std::string name;
 };
 
 /**
@@ -99,7 +109,7 @@ struct Recorder {
 	std::vector<PassRecord> passes;
 
 	std::vector<PipelineDescriptor> pipelines;
-	u32 shaderModules = 0;
+	std::vector<ShaderRequest> shaderModules;
 	u32 vertexBuffers = 0;
 	u32 indexBuffers = 0;
 
@@ -142,10 +152,12 @@ private:
 	Types::TextureUsage _usage;
 };
 
+/// Resolves the descriptor's name into its entry point by keeping it as it is - a real backend maps it onto whatever
+/// its own artifact calls the function, and the renderer is never told which.
 class FakeShaderModule final: public I_ShaderModule {
 public:
 	explicit FakeShaderModule(const ShaderModuleDescriptor& descriptor):
-		_stage(descriptor.stage), _entryPoint(descriptor.entryPoint) {}
+		_stage(descriptor.stage), _entryPoint(descriptor.name) {}
 
 public:
 	[[nodiscard]] Types::ShaderType GetStage() const override { return _stage; }
@@ -236,7 +248,7 @@ public:
 
 public:
 	[[nodiscard]] std::shared_ptr<I_ShaderModule> CreateShaderModule(const ShaderModuleDescriptor& descriptor) override {
-		++_recorder.shaderModules;
+		_recorder.shaderModules.push_back({.stage = descriptor.stage, .name = std::string(descriptor.name)});
 		return std::make_shared<FakeShaderModule>(descriptor);
 	}
 
@@ -260,7 +272,11 @@ public:
 
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override {
 		_recorder.textures.push_back({
-			descriptor.width, descriptor.height, descriptor.format, descriptor.usage, std::string(descriptor.debugName)
+			.width = descriptor.width,
+			.height = descriptor.height,
+			.format = descriptor.format,
+			.usage = descriptor.usage,
+			.debugName = std::string(descriptor.debugName)
 		});
 
 		// Thrown, not returned null: it is what MetalTexture does when the allocation fails, and _EnsureSceneTarget
@@ -279,6 +295,8 @@ public:
 	}
 
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() override { return FakeApi; }
+
+	[[nodiscard]] Types::ClipConvention GetClipConvention() const override { return Types::ClipConvention::ZeroToOne; }
 
 private:
 	Recorder& _recorder;
@@ -363,6 +381,25 @@ TEST_F(ForwardRendererTest, Construction_BuildsTheCompositeUpFront) {
 	EXPECT_TRUE(recorder.passes.empty());
 	EXPECT_EQ(recorder.prepares, 0u);
 	EXPECT_EQ(recorder.acquires, 0u);
+}
+
+/**
+ * @brief Test that the composite shaders are asked for by name, with nothing the device could not work out itself
+ * @details The renderer states which two shaders it wants and which stage each is for. Where they live, whether they
+ *			are compiled here or were built ahead of time, and what the artifact calls them are all the device's, so
+ *			this asks for the same two things whatever runs underneath - which is why a fake device that resolves
+ *			nothing at all can still build the composite.
+ */
+TEST_F(ForwardRendererTest, Construction_AsksForTheCompositeShadersByName) {
+	const auto renderer = MakeRenderer();
+
+	ASSERT_EQ(recorder.shaderModules.size(), 2u);
+
+	EXPECT_EQ(recorder.shaderModules[0].stage, Types::ShaderType::Vertex);
+	EXPECT_EQ(recorder.shaderModules[0].name, "CompositeVertex");
+
+	EXPECT_EQ(recorder.shaderModules[1].stage, Types::ShaderType::Fragment);
+	EXPECT_EQ(recorder.shaderModules[1].name, "CompositeFragment");
 }
 
 /**
@@ -581,6 +618,28 @@ TEST_F(ForwardRendererTest, DefaultPass_RendersIntoTheSceneTargetNotTheBackBuffe
 }
 
 /**
+ * @brief Test that a pass opens on a viewport covering the whole render area, stated from the top-left corner
+ * @details One convention, whatever the backend: a viewport carries no API and no target height, so turning it round
+ *			for a backend that measures from the other corner is that backend's own business. A renderer that flipped
+ *			it here would draw the scene upside down on every backend that does not.
+ */
+TEST_F(ForwardRendererTest, DefaultPass_OpensOnTheWholeRenderAreaStatedTopLeft) {
+	const auto renderer = MakeRenderer();
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+
+	ASSERT_FALSE(recorder.passes.empty());
+	const auto& viewports = recorder.passes.front().viewports;
+
+	ASSERT_EQ(viewports.size(), 1u);
+	EXPECT_FLOAT_EQ(viewports.front().x, 0.f);
+	EXPECT_FLOAT_EQ(viewports.front().y, 0.f);
+	EXPECT_FLOAT_EQ(viewports.front().width, static_cast<f32>(DefaultWidth));
+	EXPECT_FLOAT_EQ(viewports.front().height, static_cast<f32>(DefaultHeight));
+}
+
+/**
  * @brief Test that the composite is the last pass of the frame and the only one aimed at the back buffer
  * @details A null target means the swapchain's drawable. Exactly one pass may carry it, and it has to be the one
  *			that runs after everything else has been drawn.
@@ -684,11 +743,11 @@ TEST_F(ForwardRendererTest, EndFrame_DoesNotCountTheCompositeInTheFrameStats) {
 	});
 	renderer->EndFrame();
 
-	const auto& stats = renderer->GetRenderStats();
+	const auto& [drawCalls, passes, indices] = renderer->GetRenderStats();
 
-	EXPECT_EQ(stats.drawCalls, 1u);
-	EXPECT_EQ(stats.indices, 36u);
-	EXPECT_EQ(stats.passes, 1u);
+	EXPECT_EQ(drawCalls, 1u);
+	EXPECT_EQ(indices, 36u);
+	EXPECT_EQ(passes, 1u);
 
 	// The composite did run: it is simply not in the totals above.
 	EXPECT_EQ(recorder.passes.size(), 2u);

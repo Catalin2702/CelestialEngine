@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
@@ -21,7 +21,22 @@
 
 namespace CE::Core {
 
-OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height) {
+Viewport ToOpenGlViewport(const Viewport& viewport, const u32 targetHeight) {
+	// Without the target's height there is nothing to measure against, and the only choices are a wrong answer and
+	// the caller's own numbers. It keeps the caller's, and says so - a pass is never opened on a zero-sized area, so
+	// this is a programming error rather than a state the engine reaches on its own.
+	if (targetHeight == 0) [[unlikely]] {
+		CE_CORE_WARN("ToOpenGlViewport: an OpenGL viewport needs the render target's height to flip the origin, but none was given; the y coordinate is left unflipped.");
+		return viewport;
+	}
+
+	auto flipped = viewport;
+	flipped.y = static_cast<f32>(targetHeight) - viewport.y - viewport.height;
+
+	return flipped;
+}
+
+OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height): _targetHeight(height) {
 	glGenVertexArrays(1, &_vaoID);
 
 	// Bound for the encoder's whole life: every buffer binding below is recorded into it, and glDrawElements reads it.
@@ -32,7 +47,8 @@ OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height) {
 }
 
 OpenGlCommandEncoder::OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept:
-	_topology(other._topology), _vaoID(other._vaoID), _indexCount(other._indexCount), _ended(other._ended) {
+	_topology(other._topology), _ended(other._ended), _vaoID(other._vaoID), _targetHeight(other._targetHeight),
+	_indexCount(other._indexCount) {
 	// The moved-from encoder must forget the name, otherwise its destructor deletes the vertex array we just took.
 	other._vaoID = 0;
 	other._ended = true;
@@ -47,6 +63,7 @@ OpenGlCommandEncoder& OpenGlCommandEncoder::operator = (OpenGlCommandEncoder&& o
 
 	_topology = other._topology;
 	_vaoID = other._vaoID;
+	_targetHeight = other._targetHeight;
 	_indexCount = other._indexCount;
 	_ended = other._ended;
 
@@ -106,16 +123,19 @@ void OpenGlCommandEncoder::SetVertexBuffer(const I_VertexBuffer& vertexBuffer) {
 
 void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
 	assert(not _ended and "OpenGlCommandEncoder::SetViewport: The pass has already been ended!");
-	assert(viewport.GetGraphicsApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetViewport: The viewport is not OpenGl based!");
+
+	// The caller states the rectangle from the top of the target, which is the one convention every backend is given.
+	// Turning it round is this backend's own business, and the height it needs came in with the pass.
+	const auto [x, y, width, height, minDepth, maxDepth] = ToOpenGlViewport(viewport, _targetHeight);
 
 	glViewport(
-		static_cast<GLint>(viewport.x),
-		static_cast<GLint>(viewport.y),
-		static_cast<GLsizei>(viewport.width),
-		static_cast<GLsizei>(viewport.height)
+		static_cast<GLint>(x),
+		static_cast<GLint>(y),
+		static_cast<GLsizei>(width),
+		static_cast<GLsizei>(height)
 	);
 
-	glDepthRangef(viewport.minDepth, viewport.maxDepth);
+	glDepthRangef(minDepth, maxDepth);
 }
 
 void OpenGlCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& texture) {

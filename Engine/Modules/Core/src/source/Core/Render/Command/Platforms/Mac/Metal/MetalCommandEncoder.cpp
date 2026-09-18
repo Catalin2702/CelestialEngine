@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
@@ -124,8 +124,9 @@ void MetalCommandEncoder::SetVertexBuffer(const I_VertexBuffer& vertexBuffer) {
 
 void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
 	assert(not _ended and "MetalCommandEncoder::SetViewport: The pass has already been ended!");
-	assert(viewport.GetGraphicsApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetViewport: The viewport is not Metal based!");
 
+	// Passed through: the origin is already the top-left corner with y growing downwards here, which is the
+	// convention every viewport is stated in, so there is nothing to turn round.
 	_nativeCommandEncoder->setViewport(MTL::Viewport{
 		.originX = viewport.x,
 		.originY = viewport.y,

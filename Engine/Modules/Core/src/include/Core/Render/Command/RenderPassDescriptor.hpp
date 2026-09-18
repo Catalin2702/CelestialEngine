@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -81,7 +81,7 @@ struct CE_CORE_API RenderPassDescriptor {
 
 	RenderPassDepthAttachment depth;
 
-	/// Size of the region being rendered into, and the target height a Viewport needs in order to flip its origin.
+	/// Size of the region being rendered into, in target pixels, and the default viewport a pass opens with.
 	u32 width = 0;
 	u32 height = 0;
 };

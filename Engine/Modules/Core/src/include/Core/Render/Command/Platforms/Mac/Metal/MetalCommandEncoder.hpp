@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -112,11 +112,10 @@ private:
 
 	/// Taken from the pipeline: Metal wants the primitive type as an argument of the draw call, as OpenGL does.
 	Types::PrimitiveTopology _topology = Types::PrimitiveTopology::None;
+	bool _ended = false;
 
 	MTL::Buffer* _nativeIndexBuffer = nullptr; ///< Borrowed; owned by the MetalIndexBuffer the caller keeps alive
 	size_t _indexCount = 0; ///< Indices in that buffer, to bounds-check the draws in Debug
-
-	bool _ended = false;
 };
 
 }

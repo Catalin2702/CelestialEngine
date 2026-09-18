@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-09-18
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
@@ -12,6 +12,8 @@
 #include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Render/Render.hpp"
+#include "Utility/FileSystem/File.hpp"
+#include "Utility/FileSystem/FileSystem.hpp"
 
 #include <glad/glad.h>
 
@@ -22,10 +24,30 @@
 
 namespace CE::Core {
 
+namespace {
+
+/// Where the GLSL shipped with the application is unpacked to, under whichever directory the packaging put it in.
+constexpr auto ShadersSubdirectory = "Shaders/OpenGL";
+
+/// GLSL has one entry point and it is spelled this way, so the name never varies from module to module.
+constexpr auto GlslEntryPoint = "main";
+
+/**
+ * @brief Resolves the engine's name for a shader into the GLSL file that holds it
+ * @details The whole convention: one file per name, next to its siblings, with the extension the language uses. It
+ *			lives here because it is the OpenGL answer to "where is this shader" - the caller states a name and knows
+ *			nothing of files.
+ */
+std::string ResolveSourcePath(const std::string_view name) {
+	return (Utility::FileSystem::GetResourcesDirectory() / ShadersSubdirectory / std::format("{}.glsl", name)).string();
+}
+
+}
+
 OpenGlShaderModule::OpenGlShaderModule(const ShaderModuleDescriptor& descriptor):
-	_entryPoint(descriptor.entryPoint), _stage(descriptor.stage) {
+	_entryPoint(GlslEntryPoint), _stage(descriptor.stage) {
 	// Owned, not a view: it feeds std::format calls that outlive the ternary's temporaries.
-	const std::string name = descriptor.debugName.empty() ? std::format("{}", descriptor.stage) : std::string(descriptor.debugName);
+	const std::string name = descriptor.name.empty() ? std::format("{}", descriptor.stage) : std::string(descriptor.name);
 
 	if (not Types::IsShaderTypeSupported(Types::GraphicsApi::OpenGL, descriptor.stage)) [[unlikely]] {
 		const auto message = std::format("OpenGlShaderModule: stage '{}' of module '{}' does not exist in OpenGL.", descriptor.stage, name);
@@ -33,18 +55,22 @@ OpenGlShaderModule::OpenGlShaderModule(const ShaderModuleDescriptor& descriptor)
 		throw std::runtime_error(message);
 	}
 
-	if (descriptor.source.empty()) [[unlikely]] {
-		const auto message = std::format("OpenGlShaderModule: module '{}' has no GLSL source.", name);
+	if (descriptor.name.empty()) [[unlikely]] {
+		const auto message = std::format("OpenGlShaderModule: a '{}' module was asked for under no name, so there is no source to find.", descriptor.stage);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
 
-	// GLSL fixes the entry point at main, so anything else silently would not be honoured: say so instead.
-	if (_entryPoint != "main") [[unlikely]]
-		CE_CORE_WARN("OpenGlShaderModule: module '{}' asks for entry point '{}', but GLSL always enters at main.", name, _entryPoint);
+	// Throws on its own, having logged the path, when the file is not where the packaging should have put it - which
+	// is the same class of failure as a missing artifact on a backend that compiles ahead of time.
+	const auto source = Utility::FileSystem::StLoad(ResolveSourcePath(name)).GetContentString();
 
-	// string_view is not guaranteed to be null-terminated; glShaderSource wants a C string.
-	const std::string source(descriptor.source);
+	if (source.empty()) [[unlikely]] {
+		const auto message = std::format("OpenGlShaderModule: the GLSL file of module '{}' is empty.", name);
+		CE_CORE_ERROR(message);
+		throw std::runtime_error(message);
+	}
+
 	_shaderId = OpenGlShaderCompiler::Compile(source.c_str(), descriptor.stage);
 }
 

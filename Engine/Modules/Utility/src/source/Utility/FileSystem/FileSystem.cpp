@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-09-18
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -57,7 +57,7 @@ fs::path ResolveConfigDirectory() {
 #if CE_PLATFORM_MACOS
 	fs::path base;
 	if (const auto home = EnvironmentPath("HOME"); not home.empty())
-	base = home / "Library" / "Application Support";
+		base = home / "Library" / "Application Support";
 #elif CE_PLATFORM_WINDOWS
 	auto base = EnvironmentPath("APPDATA");
 	if (base.empty())
@@ -103,6 +103,17 @@ fs::path FileSystem::GetConfigDirectory() {
 	}();
 
 	return configDirectory;
+}
+
+fs::path FileSystem::GetResourcesDirectory() {
+	// An application bundle keeps its executable in Contents/MacOS and its read-only files in Contents/Resources, so
+	// the two are siblings rather than nested; everywhere else the resources sit beside the executable. Normalised so
+	// the ".." is resolved here and never reaches a log line or a file handle.
+#if CE_PLATFORM_MACOS
+	return (_rootDirectory / ".." / "Resources").lexically_normal();
+#else
+	return (_rootDirectory / "Resources").lexically_normal();
+#endif
 }
 
 File FileSystem::StCreate(const fs::path& path, const std::string& content, const bool autoSave) {

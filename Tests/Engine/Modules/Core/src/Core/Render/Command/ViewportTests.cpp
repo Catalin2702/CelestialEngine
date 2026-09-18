@@ -4,25 +4,26 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-09-18
 //
 
 #include <Core/Render/Command/Viewport.hpp>
+#include <Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp>
 
 #include <Tools/Tools.hpp>
 
 #include <gtest/gtest.h>
 
+using CE::Core::ToOpenGlViewport;
 using CE::Core::Viewport;
-using CE::Types::GraphicsApi;
 
 namespace {
 
 /**
- * @brief Test fixture for the viewport conversion
- * @details A Viewport is pure arithmetic over the numbers it is handed - no device, no encoder - so the one rule it
- *			carries, "who flips the origin", is fully testable headlessly. The log is brought up because the
- *			constructor warns on the two cases that cannot be converted.
+ * @brief Test fixture for the viewport and the one conversion a backend applies to it
+ * @details A Viewport is a plain rectangle now, and turning it round for a bottom-left backend is pure arithmetic
+ *			over the numbers it is handed - no device, no context - so both are fully testable headlessly. The log is
+ *			brought up because the conversion warns on the one input it cannot convert.
  */
 class ViewportTest: public ::testing::Test {
 protected:
@@ -33,14 +34,16 @@ protected:
 }
 
 // ============================================================================
-// Origin Conversion Tests
+// Identity Tests
 // ============================================================================
 
 /**
- * @brief Test that a Metal viewport keeps the caller's top-left rectangle untouched
+ * @brief Test that a viewport holds exactly the rectangle it was given, in the caller's own convention
+ * @details The whole point of the struct being plain: it names no backend and converts nothing, so what a caller
+ *			writes into it is what any encoder reads back out.
  */
-TEST_F(ViewportTest, Metal_KeepsTheTopLeftRectangle) {
-	const Viewport viewport{GraphicsApi::Metal, 10.f, 20.f, 300.f, 200.f, 720.f};
+TEST_F(ViewportTest, HoldsTheRectangleItWasGiven) {
+	constexpr Viewport viewport{.x = 10.f, .y = 20.f, .width = 300.f, .height = 200.f};
 
 	EXPECT_FLOAT_EQ(viewport.x, 10.f);
 	EXPECT_FLOAT_EQ(viewport.y, 20.f);
@@ -49,40 +52,77 @@ TEST_F(ViewportTest, Metal_KeepsTheTopLeftRectangle) {
 }
 
 /**
- * @brief Test that an OpenGL viewport measures y from the bottom of the target instead
- * @details 720 - 20 - 200 = 500: the same rectangle, expressed from the other end. Only y moves - a flipped width or
- *			height would be a different rectangle, not a different origin.
+ * @brief Test that a default-constructed viewport is empty and covers the whole depth range
  */
-TEST_F(ViewportTest, OpenGl_FlipsTheOriginAgainstTheTargetHeight) {
-	const Viewport viewport{GraphicsApi::OpenGL, 10.f, 20.f, 300.f, 200.f, 720.f};
-
-	EXPECT_FLOAT_EQ(viewport.x, 10.f);
-	EXPECT_FLOAT_EQ(viewport.y, 500.f);
-	EXPECT_FLOAT_EQ(viewport.width, 300.f);
-	EXPECT_FLOAT_EQ(viewport.height, 200.f);
-}
-
-/**
- * @brief Test that a full-target OpenGL viewport comes out at the origin
- * @details The case the renderer actually builds every frame, and the one where a wrong flip is invisible: a
- *			full-target rectangle is its own mirror image, so it has to be checked alongside an off-centre one.
- */
-TEST_F(ViewportTest, OpenGl_FullTargetLandsAtTheOrigin) {
-	const Viewport viewport{GraphicsApi::OpenGL, 0.f, 0.f, 1280.f, 720.f, 720.f};
+TEST_F(ViewportTest, DefaultConstructed_IsEmptyOverTheWholeDepthRange) {
+	constexpr Viewport viewport{};
 
 	EXPECT_FLOAT_EQ(viewport.x, 0.f);
 	EXPECT_FLOAT_EQ(viewport.y, 0.f);
+	EXPECT_FLOAT_EQ(viewport.width, 0.f);
+	EXPECT_FLOAT_EQ(viewport.height, 0.f);
+	EXPECT_FLOAT_EQ(viewport.minDepth, 0.f);
+	EXPECT_FLOAT_EQ(viewport.maxDepth, 1.f);
+}
+
+// ============================================================================
+// Origin Conversion Tests
+// ============================================================================
+
+/**
+ * @brief Test that the conversion measures y from the bottom of the target instead of the top
+ * @details 720 - 20 - 200 = 500: the same rectangle, expressed from the other end. Only y moves - a flipped width or
+ *			height would be a different rectangle, not a different origin.
+ */
+TEST_F(ViewportTest, ToOpenGl_FlipsTheOriginAgainstTheTargetHeight) {
+	constexpr Viewport viewport{.x = 10.f, .y = 20.f, .width = 300.f, .height = 200.f};
+
+	const auto converted = ToOpenGlViewport(viewport, 720);
+
+	EXPECT_FLOAT_EQ(converted.x, 10.f);
+	EXPECT_FLOAT_EQ(converted.y, 500.f);
+	EXPECT_FLOAT_EQ(converted.width, 300.f);
+	EXPECT_FLOAT_EQ(converted.height, 200.f);
 }
 
 /**
- * @brief Test that flipping twice returns the original rectangle
+ * @brief Test that a full-target rectangle comes out at the origin
+ * @details The case the renderer actually builds every frame, and the one where a wrong flip is invisible: a
+ *			full-target rectangle is its own mirror image, so it has to be checked alongside an off-centre one.
  */
-TEST_F(ViewportTest, OpenGl_FlipIsItsOwnInverse) {
-	constexpr auto targetHeight = 720.f;
-	const Viewport once{GraphicsApi::OpenGL, 0.f, 20.f, 300.f, 200.f, targetHeight};
-	const Viewport twice{GraphicsApi::OpenGL, 0.f, once.y, 300.f, 200.f, targetHeight};
+TEST_F(ViewportTest, ToOpenGl_FullTargetLandsAtTheOrigin) {
+	constexpr Viewport viewport{.x = 0.f, .y = 0.f, .width = 1280.f, .height = 720.f};
+
+	const auto converted = ToOpenGlViewport(viewport, 720);
+
+	EXPECT_FLOAT_EQ(converted.x, 0.f);
+	EXPECT_FLOAT_EQ(converted.y, 0.f);
+}
+
+/**
+ * @brief Test that converting twice returns the original rectangle
+ */
+TEST_F(ViewportTest, ToOpenGl_FlipIsItsOwnInverse) {
+	constexpr Viewport viewport{.x = 0.f, .y = 20.f, .width = 300.f, .height = 200.f};
+
+	const auto once = ToOpenGlViewport(viewport, 720);
+	const auto twice = ToOpenGlViewport(once, 720);
 
 	EXPECT_FLOAT_EQ(twice.y, 20.f);
+}
+
+/**
+ * @brief Test that the depth range is carried through the conversion untouched
+ * @details Never flipped: the origin conversion is about the target's pixels, and depth is not one of them. A
+ *			reversed-Z pass asks for 1..0 and must get exactly that.
+ */
+TEST_F(ViewportTest, ToOpenGl_CarriesTheDepthRangeThroughUnchanged) {
+	constexpr Viewport reversed{.x = 0.f, .y = 0.f, .width = 1.f, .height = 1.f, .minDepth = 1.f, .maxDepth = 0.f};
+
+	const auto converted = ToOpenGlViewport(reversed, 720);
+
+	EXPECT_FLOAT_EQ(converted.minDepth, 1.f);
+	EXPECT_FLOAT_EQ(converted.maxDepth, 0.f);
 }
 
 // ============================================================================
@@ -90,67 +130,17 @@ TEST_F(ViewportTest, OpenGl_FlipIsItsOwnInverse) {
 // ============================================================================
 
 /**
- * @brief Test that an OpenGL viewport with no target height is left unflipped rather than made negative
+ * @brief Test that a conversion with no target height leaves the rectangle unflipped rather than making it negative
  * @details The flip needs the target's height; without it the only choices are a wrong answer and the caller's own
  *			numbers. It keeps the caller's, and warns.
  */
-TEST_F(ViewportTest, OpenGl_WithoutATargetHeight_LeavesTheRectangleUnflipped) {
-	const Viewport viewport{GraphicsApi::OpenGL, 10.f, 20.f, 300.f, 200.f, 0.f};
+TEST_F(ViewportTest, ToOpenGl_WithoutATargetHeight_LeavesTheRectangleUnflipped) {
+	constexpr Viewport viewport{.x = 10.f, .y = 20.f, .width = 300.f, .height = 200.f};
 
-	EXPECT_FLOAT_EQ(viewport.y, 20.f);
-}
+	const auto converted = ToOpenGlViewport(viewport, 0);
 
-/**
- * @brief Test that GraphicsApi::None passes the rectangle through untouched
- */
-TEST_F(ViewportTest, None_PassesTheRectangleThrough) {
-	const Viewport viewport{GraphicsApi::None, 10.f, 20.f, 300.f, 200.f, 720.f};
-
-	EXPECT_FLOAT_EQ(viewport.y, 20.f);
-}
-
-// ============================================================================
-// Identity Tests
-// ============================================================================
-
-/**
- * @brief Test that a viewport remembers which backend it was converted for
- * @details The whole reason GetGraphicsApi exists: the members alone cannot say whether y has been flipped, so an
- *			encoder handed a viewport built for another API has to be able to assert.
- */
-TEST_F(ViewportTest, RemembersTheApiItWasBuiltFor) {
-	EXPECT_EQ(Viewport(GraphicsApi::Metal, 0.f, 0.f, 1.f, 1.f, 1.f).GetGraphicsApi(), GraphicsApi::Metal);
-	EXPECT_EQ(Viewport(GraphicsApi::OpenGL, 0.f, 0.f, 1.f, 1.f, 1.f).GetGraphicsApi(), GraphicsApi::OpenGL);
-}
-
-/**
- * @brief Test that a default-constructed viewport is empty and bound to no backend
- */
-TEST_F(ViewportTest, DefaultConstructed_IsEmptyAndApiLess) {
-	constexpr Viewport viewport{};
-
-	EXPECT_FLOAT_EQ(viewport.width, 0.f);
-	EXPECT_FLOAT_EQ(viewport.height, 0.f);
-	EXPECT_FLOAT_EQ(viewport.minDepth, 0.f);
-	EXPECT_FLOAT_EQ(viewport.maxDepth, 1.f);
-	EXPECT_EQ(viewport.GetGraphicsApi(), GraphicsApi::None);
-}
-
-// ============================================================================
-// Depth Range Tests
-// ============================================================================
-
-/**
- * @brief Test that the depth range defaults to 0..1 and is carried through unchanged
- * @details Never flipped, whatever the backend: the origin conversion is about the target's pixels, and depth is not
- *			one of them. A reversed-Z pass asks for 1..0 and must get exactly that.
- */
-TEST_F(ViewportTest, DepthRange_IsCarriedThroughOnEveryBackend) {
-	const Viewport standard{GraphicsApi::OpenGL, 0.f, 0.f, 1.f, 1.f, 1.f};
-	EXPECT_FLOAT_EQ(standard.minDepth, 0.f);
-	EXPECT_FLOAT_EQ(standard.maxDepth, 1.f);
-
-	const Viewport reversed{GraphicsApi::OpenGL, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 0.f};
-	EXPECT_FLOAT_EQ(reversed.minDepth, 1.f);
-	EXPECT_FLOAT_EQ(reversed.maxDepth, 0.f);
+	EXPECT_FLOAT_EQ(converted.x, 10.f);
+	EXPECT_FLOAT_EQ(converted.y, 20.f);
+	EXPECT_FLOAT_EQ(converted.width, 300.f);
+	EXPECT_FLOAT_EQ(converted.height, 200.f);
 }

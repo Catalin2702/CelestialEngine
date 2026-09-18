@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -16,9 +16,24 @@
 #include "Core/Render/Command/I_CommandEncoder.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
+#include "Define/DynamicLinker.hpp"
 
 
 namespace CE::Core {
+
+/**
+ * @brief Converts a viewport stated top-left into the bottom-left convention OpenGL measures from
+ * @param viewport The rectangle as the caller stated it, y growing downwards from the top of the target
+ * @param targetHeight Full height of the render target, in pixels; what the top edge is measured against
+ * @return Viewport The same rectangle with y measured from the bottom instead; everything else untouched
+ * @details OpenGL is the one backend whose window origin is the bottom-left corner, so the conversion lives with it
+ *			rather than in the Viewport every backend shares. Only y moves - a flipped width or height would be a
+ *			different rectangle, not a different origin - and the depth range is never touched, being no part of the
+ *			target's pixels.
+ *
+ *			A free function, and pure: it is the one rule this encoder carries that can be checked without a context.
+ */
+[[nodiscard]] CE_CORE_API Viewport ToOpenGlViewport(const Viewport& viewport, u32 targetHeight);
 
 /**
  * @class OpenGlCommandEncoder
@@ -77,7 +92,9 @@ public:
 	void SetVertexBuffer(const I_VertexBuffer& vertexBuffer) override;
 
 	/**
-	 * @brief Sets the viewport rectangle and the depth range
+	 * @brief Sets the viewport rectangle and the depth range, flipping the origin on the way in
+	 * @details The caller states the rectangle top-left, so it has to be turned round against the height of the
+	 *			target - which the encoder was given when the pass opened, and the caller need never repeat.
 	 */
 	void SetViewport(const Viewport& viewport) override;
 
@@ -101,11 +118,14 @@ private:
 	/// Taken from the pipeline, not from the draw call: OpenGL wants the primitive mode as an argument of glDraw*,
 	/// while the other backends bake it into the pipeline object.
 	Types::PrimitiveTopology _topology = Types::PrimitiveTopology::None;
+	bool _ended = false;	///< Guards against recording after End()
 
 	u32 _vaoID = 0;			///< The vertex array the attribute layout is recorded into
 
+	/// Height of the render area the pass was opened on, kept to flip the origin of every viewport set on it.
+	u32 _targetHeight = 0;
+
 	size_t _indexCount = 0;	///< Indices held by the bound element buffer, to bounds-check the draws in Debug
-	bool _ended = false;	///< Guards against recording after End()
 };
 
 }

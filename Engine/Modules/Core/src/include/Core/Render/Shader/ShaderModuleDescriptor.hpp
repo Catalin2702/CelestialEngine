@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #pragma once
@@ -22,22 +22,26 @@ namespace CE::Core {
 
 /**
  * @struct ShaderModuleDescriptor
- * @brief The recipe a graphic device needs to produce one shader module
- * @details A backend reads one half of it and ignores the other: one that compiles at runtime takes `source`, one
- *			that loads an artifact built ahead of time looks `entryPoint` up in it.
+ * @brief What a graphic device is asked for when it is to produce one shader module
+ * @details A stage and a name, and deliberately nothing else. What a shader *is* differs per backend - source text
+ *			compiled on the spot for one, a function of an artifact built ahead of time for another - and so does
+ *			where it lives, so a descriptor carrying either would force whoever fills it in to know which backend it
+ *			is talking to. The name is the engine's own identifier for the shader, and resolving it into an artifact
+ *			is the device's job.
  *
- *			TODO: carrying both halves is what forces the caller to know which one its backend reads, and where the
- *			artifact lives. The device should resolve that from the entry point alone, and `source` go away.
- *			Every string is borrowed for the duration of the CreateShaderModule call only - a module copies whatever
+ *			The convention every backend resolves the name through is the same shape: `<Name>` in PascalCase, one
+ *			name per stage. Adding a shader means adding it under that name to every backend that must run it, and
+ *			nothing else changes.
+ *
+ *			The strings are borrowed for the duration of the CreateShaderModule call only - a module copies whatever
  *			it needs to keep.
  */
 struct CE_CORE_API ShaderModuleDescriptor {
-	Types::ShaderType stage = Types::ShaderType::None;	///< The pipeline stage to compile for
+	Types::ShaderType stage = Types::ShaderType::None;	///< The pipeline stage the module is built for
 
-	std::string_view source;							///< GLSL source code; unused by Metal
-	std::string_view entryPoint = "main";				///< metallib function name; must stay "main" under OpenGL
-
-	std::string_view debugName;							///< Optional name, used in log messages only
+	/// The engine's name for the shader, e.g. "Vertex" or "CompositeFragment". Also what the module is called in log
+	/// messages, so it needs no separate debug name.
+	std::string_view name;
 };
 
 }

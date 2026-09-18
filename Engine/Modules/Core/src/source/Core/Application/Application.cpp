@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-09-18
 //
 
 #include "Core/Application/Application.hpp"
@@ -43,7 +43,6 @@
 #include <cassert>
 #include <chrono>
 #include <utility>
-#include <string>
 
 
 namespace CE::Core {
@@ -51,9 +50,6 @@ namespace CE::Core {
 namespace {
 
 const Types::WindowProps& Props() { return Utility::Config::GetWindowProps(); }
-
-// The bundle puts the resources one level up from the executable on macOS, beside it everywhere else.
-constexpr auto OpenGlShadersDirectory = CE_PLATFORM_MACOS ? "../Resources/Shaders/OpenGL/" : "Resources/Shaders/OpenGL/";
 
 }
 
@@ -218,11 +214,10 @@ void Application::_MakeSceneLayer() {
 
 	const CameraProjectionDescriptor projectionDescriptor{
 		.type = Types::CameraProjection::Orthographic,
-		// The one place the graphics API reaches the camera: backends disagree on the depth range clip space maps onto,
-		// and the projection matrix is where that difference lives.
-		.convention = Props().graphicsApi == Types::GraphicsApi::Metal
-			? Types::ClipConvention::ZeroToOne
-			: Types::ClipConvention::NegativeOneToOne,
+		// Backends disagree on the depth range clip space maps onto, and the projection matrix is where that
+		// difference lives - so it is asked of the device, which is the object that knows, rather than worked out
+		// here from the API's name. Safe to ask at this point: the renderer is built before the scene layer is.
+		.convention = _renderer->GetGraphicDevice().GetClipConvention(),
 		.viewportWidth = Props().width,
 		.viewportHeight = Props().height,
 	};
@@ -539,33 +534,17 @@ void Application::_CreateRenderResources() {
 	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, vertexLayout);
 	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
 
-	// TODO: a backend leak to remove. The descriptor carries both a source and an entry point, so the caller has to
-	// know which half its backend reads and where the artifact lives. The device should resolve that itself from the
-	// entry point name, and this branch - with the shader directory above it - go away.
-	const auto isOpenGl = graphicDevice.GetGraphicApi() == Types::GraphicsApi::OpenGL;
-
-	// The descriptor borrows its strings for the duration of the call only, so these have to outlive it - which is why
-	// the contents are pulled out into named locals rather than passed inline.
-	const auto vertexSource = isOpenGl
-		? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Vertex.glsl").GetContentString()
-		: std::string{};
-	const auto fragmentSource = isOpenGl
-		? Utility::FileSystem::StLoad(std::string(OpenGlShadersDirectory) + "Fragment.glsl").GetContentString()
-		: std::string{};
-
+	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
+	// Whatever the backend underneath compiles or loads, this asks for the same two shaders in the same way.
 	PipelineDescriptor pipelineDescriptor{};
 	pipelineDescriptor.vertexLayout = vertexLayout;
 	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({
 		.stage = Types::ShaderType::Vertex,
-		.source = vertexSource,
-		.entryPoint = isOpenGl ? "main" : "vertexMain",
-		.debugName = "Vertex"
+		.name = "Vertex"
 	});
 	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({
 		.stage = Types::ShaderType::Fragment,
-		.source = fragmentSource,
-		.entryPoint = isOpenGl ? "main" : "fragmentMain",
-		.debugName = "Fragment"
+		.name = "Fragment"
 	});
 
 	// Asked rather than assumed: the descriptor's default need not be the format the target actually has, and most
