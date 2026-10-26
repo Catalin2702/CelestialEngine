@@ -4,10 +4,25 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-10-26
 #
 
 cmake_minimum_required(VERSION 4.1)
+
+execute_process(
+	COMMAND xcrun -sdk macosx metal -v
+	RESULT_VARIABLE CE_METAL_TOOLCHAIN_RESULT
+	OUTPUT_QUIET
+	ERROR_VARIABLE CE_METAL_TOOLCHAIN_ERROR
+)
+
+if (NOT CE_METAL_TOOLCHAIN_RESULT EQUAL 0)
+	message(FATAL_ERROR
+		"Metal Toolchain not found - the .metal shaders cannot be compiled.\n"
+		"Install it with:  xcodebuild -downloadComponent MetalToolchain\n"
+		"xcrun said: ${CE_METAL_TOOLCHAIN_ERROR}"
+	)
+endif ()
 
 set(BUILD_DIR  ${CMAKE_CURRENT_BINARY_DIR})
 set(SHADERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")

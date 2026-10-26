@@ -48,3 +48,5 @@ App/Resources/Assets.xcassets/AppIcon.appiconset/*.png
 # --- IA Tools ---
 CLAUDE.md
 graphify-out
+# --- Docs (local only) ---
+docs/roadmap/Renderer.md
