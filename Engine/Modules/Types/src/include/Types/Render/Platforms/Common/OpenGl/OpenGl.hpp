@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
 #include "Types/Render/PixelFormat.hpp"
+#include "Types/Render/ShaderConstants.hpp"
 
 #include <format>
 #include <string>
@@ -22,6 +23,10 @@
 
 
 namespace CE::Types {
+
+inline constexpr u32 OPENGL_FRAGMENT_CONSTANTS_FIRST_BINDING = MAX_CONSTANT_SLOTS;
+
+inline constexpr u32 OPENGL_UNIFORM_BUFFER_BINDINGS = 2 * MAX_CONSTANT_SLOTS;
 
 /**
  * @brief Bit flags for the OpenGL framebuffer attachments that can be cleared

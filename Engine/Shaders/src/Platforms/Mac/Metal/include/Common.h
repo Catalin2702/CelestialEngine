@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -28,5 +28,19 @@ struct VertexPayload {
 	float4 color;
 };
 
+enum ConstantsSlot: uint {
+	CameraConstantsSlot = 1,
+	ObjectConstantsSlot = 2,
+};
+
+// Mirrors Types/Render/ShaderConstants.hpp: keep the two in step
+struct CameraConstants {
+	float4x4 viewProjection;
+};
+
+// Mirrors Types/Render/ShaderConstants.hpp: keep the two in step.
+struct ObjectConstants {
+	float4x4 transform;
+};
 
 #endif //CE_SHADERS_PLATFORMS_MAC_COMMON_H

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Define/DynamicLinker.hpp"
 
+#include <array>
 #include <memory>
 
 
@@ -40,6 +41,8 @@ public:
 	[[nodiscard]] Types::ClipConvention GetClipConvention() const override { return Types::ClipConvention::NegativeOneToOne; }
 
 private:
+	std::array<u32, Types::OPENGL_UNIFORM_BUFFER_BINDINGS> _uniformBuffers{};
+
 	u32 _frameBuffer = 0;
 };
 

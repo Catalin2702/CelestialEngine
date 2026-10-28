@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-18
+# Updated: 2026-10-29
 #
 
 set(APPLICATION_HEADERS
@@ -94,10 +94,8 @@ set(RENDER_HEADERS
 
 	# Shader
 	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
-	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
-	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
@@ -180,9 +178,7 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Renderer/I_Renderer.hpp
 
 	# Shader
-	src/interface/Core/Render/Shader/I_Shader.hpp
 	src/interface/Core/Render/Shader/I_ShaderModule.hpp
-	src/interface/Core/Render/Shader/I_ShaderProgram.hpp
 
 	# Surface
 	src/interface/Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp
@@ -295,10 +291,8 @@ set(RENDER_SOURCES
 
 
 	# Shader
-	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShader.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
 	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.cpp
-	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderProgram.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp

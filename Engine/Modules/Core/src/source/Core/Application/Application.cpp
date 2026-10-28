@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Application/Application.hpp"
@@ -92,7 +92,7 @@ Application::~Application() { // NOLINT(bugprone-exception-escape)
 	try {
 		End();
 	}
-	catch (const std::exception& exception) {
+	catch ([[maybe_unused]] const std::exception& exception) {
 		CE_CORE_ERROR("Application::~Application: The teardown threw: {}", exception.what());
 	}
 	catch (...) {
@@ -220,7 +220,7 @@ void Application::InitImguiLayer() {
 void Application::_MakeSceneLayer() {
 	// Orthographic and Static: the only projection and the only controller implemented so far, and the factories throw
 	// on anything else rather than hand back something that does not work.
-	constexpr CameraDescriptor cameraDescriptor{};
+	constexpr CameraDescriptor cameraDescriptor{.position = {0.0_f32, 0.0_f32, 1.0_f32}};
 
 	const CameraProjectionDescriptor projectionDescriptor{
 		.type = Types::CameraProjection::Orthographic,
@@ -230,6 +230,9 @@ void Application::_MakeSceneLayer() {
 		.convention = _renderer->GetGraphicDevice().GetClipConvention(),
 		.viewportWidth = Props().width,
 		.viewportHeight = Props().height,
+		// The test geometry spans about ±0.9, so a box one unit tall above and below the centre frames it. The
+		// default of 10 would show it at a tenth of the window.
+		.orthographicSize = 1.0_f32
 	};
 
 	constexpr CameraControllerDescriptor controllerDescriptor{.descriptor = CameraStaticControllerDescriptor{}};

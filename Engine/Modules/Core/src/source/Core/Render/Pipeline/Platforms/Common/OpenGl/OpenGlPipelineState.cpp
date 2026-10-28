@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -13,6 +13,7 @@
 
 #include <glad/glad.h>
 
+#include <array>
 #include <format>
 #include <stdexcept>
 #include <utility>
@@ -74,6 +75,21 @@ u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::Sha
 	throw std::runtime_error(message);
 }
 
+void BindConstantsBlocks(const u32 programID) {
+	// GLSL 4.10 has no layout(binding = N) for blocks - that arrives with 4.20, past what macOS offers - so the
+	// program is told from here instead. The names are the ones Common.h gives the same structs: the one convention
+	// the backends share, as with the shader names.
+	constexpr std::array<std::pair<const char*, u32>, 2> blocks {{
+		{"CameraConstants", Types::CAMERA_CONSTANTS_SLOT},
+		{"ObjectConstants", Types::OBJECT_CONSTANTS_SLOT},
+	}};
+
+	for (const auto& [name, biding]: blocks) {
+		if (const auto index = glGetUniformBlockIndex(programID, name); index != GL_INVALID_INDEX)
+			glUniformBlockBinding(programID, index, biding);
+	}
+}
+
 }
 
 OpenGlPipelineState::OpenGlPipelineState(PipelineDescriptor descriptor): _descriptor(std::move(descriptor)) {
@@ -112,6 +128,8 @@ OpenGlPipelineState::OpenGlPipelineState(PipelineDescriptor descriptor): _descri
 		_programID = 0;
 		ThrowLinkFailure(failedProgram);
 	}
+
+	BindConstantsBlocks(_programID);
 }
 
 OpenGlPipelineState::OpenGlPipelineState(OpenGlPipelineState&& other) noexcept:

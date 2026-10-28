@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -25,7 +25,7 @@ namespace CE::Core {
 struct CE_CORE_API CameraDescriptor {
 	glm::vec3 position {0.0, 0.0, 0.0};
 	glm::quat rotation {1.0, 0.0, 0.0,0.0 }; ///<  Identity: glm::quat takes w first, so {1,0,0,0} is no rotation at all.
-	std::optional<glm::vec3> lookAtTarget; ///< If present, wins against rotation
+	std::optional<glm::vec3> lookAtTarget = std::nullopt; ///< If present, wins against rotation
 };
 
 }

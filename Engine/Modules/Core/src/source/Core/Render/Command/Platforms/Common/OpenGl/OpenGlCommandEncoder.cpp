@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
@@ -36,7 +36,9 @@ Viewport ToOpenGlViewport(const Viewport& viewport, const u32 targetHeight) {
 	return flipped;
 }
 
-OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height): _targetHeight(height) {
+OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height, const std::span<const u32> uniformBuffers):
+	_targetHeight(height),
+	_uniformBuffers(uniformBuffers) {
 	glGenVertexArrays(1, &_vaoID);
 
 	// Bound for the encoder's whole life: every buffer binding below is recorded into it, and glDrawElements reads it.
@@ -48,7 +50,7 @@ OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height): _
 
 OpenGlCommandEncoder::OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept:
 	_topology(other._topology), _ended(other._ended), _vaoID(other._vaoID), _targetHeight(other._targetHeight),
-	_indexCount(other._indexCount) {
+	_indexCount(other._indexCount), _uniformBuffers(other._uniformBuffers) {
 	// The moved-from encoder must forget the name, otherwise its destructor deletes the vertex array we just took.
 	other._vaoID = 0;
 	other._ended = true;
@@ -66,6 +68,7 @@ OpenGlCommandEncoder& OpenGlCommandEncoder::operator = (OpenGlCommandEncoder&& o
 	_targetHeight = other._targetHeight;
 	_indexCount = other._indexCount;
 	_ended = other._ended;
+	_uniformBuffers = other._uniformBuffers;
 
 	other._vaoID = 0;
 	other._ended = true;
@@ -155,6 +158,20 @@ void OpenGlCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& t
 	}
 }
 
+void OpenGlCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
+	assert(not _ended and "OpenGlCommandEncoder::SetVertexConstants: The pass has already been ended!");
+	assert(slot < Types::MAX_CONSTANT_SLOTS and "OpenGlCommandEncoder::SetVertexConstants: The slot is past the last constant slot!");
+
+	_UploadConstants(slot, data);
+}
+
+void OpenGlCommandEncoder::SetFragmentConstants(const u32 slot, const std::span<const std::byte> data) {
+	assert(not _ended and "OpenGlCommandEncoder::SetFragmentConstants: The pass has already been ended!");
+	assert(slot < Types::MAX_CONSTANT_SLOTS and "OpenGlCommandEncoder::SetFragmentConstants: The slot is past the last constant slot!");
+
+	_UploadConstants(Types::OPENGL_FRAGMENT_CONSTANTS_FIRST_BINDING + slot, data);
+}
+
 void OpenGlCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstIndex, const u32 baseVertex) {
 	assert(not _ended and "OpenGlCommandEncoder::DrawIndexed: The pass has already been ended!");
 	assert(_topology != Types::PrimitiveTopology::None and "OpenGlCommandEncoder::DrawIndexed: No pipeline was set, so there is no primitive topology to draw with!");
@@ -186,6 +203,23 @@ void OpenGlCommandEncoder::End() {
 	glUseProgram(0);
 
 	_ended = true;
+}
+
+void OpenGlCommandEncoder::_UploadConstants(const u32 binding, const std::span<const std::byte> data) const {
+	assert(binding < _uniformBuffers.size() and "OpenGlCommandEncoder::_UploadConstants: The device gave this pass no buffer for that binding!");
+	assert(not data.empty() and "OpenGlCommandEncoder::_UploadConstants: There are no constants to upload!");
+
+	const auto buffer = _uniformBuffers[binding];
+
+	glBindBuffer(GL_UNIFORM_BUFFER, buffer);
+
+	// Re-specified rather than updated in place: the driver gives the buffer fresh storage and keeps the old one
+	// alive for any draw still waiting to read it. That is the copy-at-call-time behaviour Metal's setVertexBytes
+	// has, and what lets two draws in a row each see their own transform.
+	glBufferData(GL_UNIFORM_BUFFER, static_cast<GLsizeiptr>(data.size()), data.data(), GL_STREAM_DRAW);
+
+	// Bound by index, which is what the program's block was pointed at when it was linked.
+	glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
 }
 
 }

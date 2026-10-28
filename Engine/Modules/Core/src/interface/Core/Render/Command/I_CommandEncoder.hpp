@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "Types/Types.hpp"
 
+#include <span>
 
 namespace CE::Core {
 
@@ -48,6 +49,8 @@ public:
 	 *			there is none to describe until something samples at a different scale.
 	 */
 	virtual void SetFragmentTexture(u32 slot, const I_Texture& texture) = 0;
+	virtual void SetVertexConstants(u32 slot, std::span<const std::byte> data) = 0;
+	virtual void SetFragmentConstants(u32 slot, std::span<const std::byte> data) = 0;
 
 public:
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;

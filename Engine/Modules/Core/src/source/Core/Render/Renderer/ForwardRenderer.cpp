@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -21,6 +21,7 @@
 #include "Tools/Tools.hpp"
 
 #include <cassert>
+#include <span>
 #include <stdexcept>
 
 
@@ -129,10 +130,18 @@ void ForwardRenderer::BeginPass() {
 void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
 	_OpenPass(descriptor);
 
+	if (not _commandEncoder) [[unlikely]]
+		return;
+
 	// Counted here rather than in _OpenPass, which is what makes the composite free: the stats describe what the
 	// application asked for, and the composite is a pass the application never opened.
-	if (_commandEncoder)
-		++_frameStats.passes;
+	++_frameStats.passes;
+
+	// Once per pass, not per draw: every draw of the pass sees the same camera, and the binding outlives a pipeline
+	// change on every backend. Here and not in _OpenPass for the same reason as the count - the composite draws a
+	// screen-space quad and has no camera to read.
+	const Types::CameraConstants camera{.viewProjection = _cameraData.viewProjection};
+	_commandEncoder->SetVertexConstants(Types::CAMERA_CONSTANTS_SLOT, std::as_bytes(std::span{&camera, 1}));
 }
 
 void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
@@ -194,6 +203,9 @@ void ForwardRenderer::Submit(const DrawCommand& command) {
 	_commandEncoder->SetPipelineState(*command.pipelineState);
 	_commandEncoder->SetVertexBuffer(*command.vertexBuffer);
 	_commandEncoder->SetIndexBuffer(*command.indexBuffer);
+
+	const Types::ObjectConstants object{.transform = command.transform};
+	_commandEncoder->SetVertexConstants(Types::OBJECT_CONSTANTS_SLOT, std::as_bytes(std::span{&object, 1}));
 
 	_commandEncoder->DrawIndexed(indexCount, command.firstIndex, command.baseVertex);
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
@@ -141,6 +141,21 @@ void MetalCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& te
 	assert(texture.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetFragmentTexture: The texture is not Metal based!");
 
 	_nativeCommandEncoder->setFragmentTexture(static_cast<const MetalTexture&>(texture).GetTexture(), slot);
+}
+
+void MetalCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
+	assert(not _ended and "MetalCommandEncoder::SetVertexConstants: The pass has already been ended!");
+	assert(slot != Types::METAL_VERTEX_BUFFER_INDEX and "MetalCommandEncoder::SetVertexConstants: The slot is the one the geometry is bound to!");
+	assert(data.size() <= 4096 and "MetalCommandEncoder::SetVertexConstants: setVertexBytes takes at most 4 KB; larger blocks need a buffer!");
+
+	_nativeCommandEncoder->setVertexBytes(data.data(), data.size(), slot);
+}
+
+void MetalCommandEncoder::SetFragmentConstants(const u32 slot, const std::span<const std::byte> data) {
+	assert(not _ended and "MetalCommandEncoder::SetFragmentConstants: The pass has already been ended!");
+	assert(data.size() <= 4096 and "MetalCommandEncoder::SetFragmentConstants: setFragmentBytes takes at most 4 KB; larger blocks need a buffer!");
+
+	_nativeCommandEncoder->setFragmentBytes(data.data(), data.size(), slot);
 }
 
 }

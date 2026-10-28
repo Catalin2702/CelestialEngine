@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-10-29
 //
 
 /**
@@ -32,6 +32,7 @@
 #include "Types/Render/PixelFormat.hpp"
 #include "Types/Render/PrimitiveTopology.hpp"
 #include "Types/Render/Shader.hpp"
+#include "Types/Render/ShaderConstants.hpp"
 #include "Types/Render/ShaderDataType.hpp"
 #include "Types/Render/TextureUsage.hpp"
 

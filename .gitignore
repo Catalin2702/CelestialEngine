@@ -40,6 +40,7 @@ obj/
 *.log
 *.tmp
 .cache/
+/.test_results/
 
 # --- Resources ---
 App/Resources/CelestialEngine.icns
@@ -48,5 +49,6 @@ App/Resources/Assets.xcassets/AppIcon.appiconset/*.png
 # --- IA Tools ---
 CLAUDE.md
 graphify-out
+.claude/skills/pair
 # --- Docs (local only) ---
 docs/roadmap/Renderer.md

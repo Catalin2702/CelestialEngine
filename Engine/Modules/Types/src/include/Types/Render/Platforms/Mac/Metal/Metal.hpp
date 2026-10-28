@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -20,6 +20,7 @@
 #include "Types/Render/CullMode.hpp"
 #include "Types/Render/PixelFormat.hpp"
 #include "Types/Render/PrimitiveTopology.hpp"
+#include "Types/Render/ShaderConstants.hpp"
 #include "Types/Render/ShaderDataType.hpp"
 #include "Types/Render/TextureUsage.hpp"
 #include "Types/Var/Vars.hpp"
@@ -113,6 +114,9 @@ inline constexpr u32 METAL_VERTEX_BUFFER_INDEX = 0;
 [[nodiscard]] CE_TYPES_API MTL::VertexFormat ToMetal(ShaderDataType shaderDataType);
 
 [[nodiscard]] CE_TYPES_API MTL::TextureUsage ToMetal(TextureUsage textureUsage);
+
+static_assert(CAMERA_CONSTANTS_SLOT != METAL_VERTEX_BUFFER_INDEX and OBJECT_CONSTANTS_SLOT != METAL_VERTEX_BUFFER_INDEX,
+	"A constant slot collides with the vertex buffer!");
 
 }
 

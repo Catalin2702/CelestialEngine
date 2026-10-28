@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-07
+# Updated: 2026-10-29
 #
 
 set(HEADERS
@@ -32,6 +32,7 @@ set(HEADERS
 	src/include/Types/Render/PrimitiveTopology.hpp
 	src/include/Types/Render/Render.hpp
 	src/include/Types/Render/Shader.hpp
+	src/include/Types/Render/ShaderConstants.hpp
 	src/include/Types/Render/ShaderDataType.hpp
 	src/include/Types/Render/TextureUsage.hpp
 	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp

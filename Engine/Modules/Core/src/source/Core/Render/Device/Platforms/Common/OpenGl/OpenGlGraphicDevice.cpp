@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
@@ -67,6 +67,10 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 OpenGlGraphicDevice::~OpenGlGraphicDevice() {
 	if (_frameBuffer != 0)
 		glDeleteFramebuffers(1, &_frameBuffer);
+
+	// Generated all at once, so the first name says whether there is anything to delete.
+	if (_uniformBuffers[0] != 0)
+		glDeleteBuffers(static_cast<GLsizei>(_uniformBuffers.size()), _uniformBuffers.data());
 }
 
 std::shared_ptr<I_ShaderModule> OpenGlGraphicDevice::CreateShaderModule(const ShaderModuleDescriptor& descriptor) {
@@ -134,9 +138,12 @@ std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const Ren
 
 	ApplyLoadActions(descriptor);
 
+	if (_uniformBuffers[0] == 0)
+		glGenBuffers(static_cast<GLsizei>(_uniformBuffers.size()), _uniformBuffers.data());
+
 	// Store actions have no OpenGL equivalent before 4.3's glInvalidateFramebuffer, and macOS stops at 4.1: the
 	// results are always kept, whatever the descriptor asks for.
-	return std::make_unique<OpenGlCommandEncoder>(descriptor.width, descriptor.height);
+	return std::make_unique<OpenGlCommandEncoder>(descriptor.width, descriptor.height, _uniformBuffers);
 }
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include <Core/Render/Buffer/I_Buffer.hpp>
@@ -21,10 +21,13 @@
 #include <Core/Render/Swapchain/I_Swapchain.hpp>
 #include <Core/Render/Texture/I_Texture.hpp>
 #include <Tools/Tools.hpp>
+#include <Types/Render/ShaderConstants.hpp>
 
 #include <gtest/gtest.h>
 
+#include <cstring>
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -83,6 +86,20 @@ struct ShaderRequest {
 };
 
 /**
+ * @struct ConstantsRecord
+ * @brief One constants upload, as the encoder was handed it
+ * @details The bytes are copied because the span is only borrowed for the call - the renderer passes the address of
+ *			a local, which is gone by the time a test looks.
+ */
+struct ConstantsRecord {
+	u32 slot = 0;
+	std::vector<std::byte> bytes;
+
+	/// How many draws the pass had encoded when this arrived, to tell an upload that precedes a draw from one after it.
+	u32 drawsBefore = 0;
+};
+
+/**
  * @struct PassRecord
  * @brief One render pass the renderer opened, and what it encoded into it
  */
@@ -91,6 +108,8 @@ struct PassRecord {
 
 	std::vector<std::pair<u32, const I_Texture*>> fragmentTextures;
 	std::vector<Viewport> viewports;
+	std::vector<ConstantsRecord> vertexConstants;
+	std::vector<ConstantsRecord> fragmentConstants;
 
 	u32 drawIndexedCalls = 0;
 	u32 indices = 0;
@@ -235,6 +254,24 @@ public:
 		_recorder->passes[_passIndex].fragmentTextures.emplace_back(slot, &texture);
 	}
 
+	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override {
+		auto& pass = _recorder->passes[_passIndex];
+		pass.vertexConstants.push_back({
+			.slot = slot,
+			.bytes = {data.begin(), data.end()},
+			.drawsBefore = pass.drawIndexedCalls
+		});
+	}
+
+	void SetFragmentConstants(u32 slot, std::span<const std::byte> data) override {
+		auto& pass = _recorder->passes[_passIndex];
+		pass.fragmentConstants.push_back({
+			.slot = slot,
+			.bytes = {data.begin(), data.end()},
+			.drawsBefore = pass.drawIndexedCalls
+		});
+	}
+
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return FakeApi; }
 
 private:
@@ -362,6 +399,28 @@ protected:
 
 	Recorder recorder{};
 };
+
+/// Reads an upload back as the struct the renderer sent. Checks the size first: reading a 64-byte struct out of
+/// fewer bytes would be reading past the vector.
+template<typename T>
+[[nodiscard]] T ReadConstants(const ConstantsRecord& record) {
+	T value{};
+	EXPECT_EQ(record.bytes.size(), sizeof(T));
+	if (record.bytes.size() == sizeof(T))
+		std::memcpy(&value, record.bytes.data(), sizeof(T));
+
+	return value;
+}
+
+/// Every upload the pass received at one slot, in the order it received them.
+[[nodiscard]] std::vector<ConstantsRecord> AtSlot(const std::vector<ConstantsRecord>& records, const u32 slot) {
+	std::vector<ConstantsRecord> found;
+	for (const auto& record: records)
+		if (record.slot == slot)
+			found.push_back(record);
+
+	return found;
+}
 
 }
 
@@ -797,4 +856,108 @@ TEST_F(ForwardRendererTest, GetSceneColorTarget_IsWhatTheDefaultPassDrawsInto) {
 
 	ASSERT_FALSE(recorder.passes.empty());
 	EXPECT_EQ(renderer->GetSceneColorTarget(), recorder.passes.front().descriptor.colors[0].target);
+}
+
+/**
+ * @brief Test that the default pass hands the vertex stage the camera it was given, before any draw
+ * @details SetCameraData only stores; this is the point where the camera actually leaves for the GPU. The value is
+ *			not the identity on purpose, so a renderer that uploaded a default-constructed block would fail.
+ */
+TEST_F(ForwardRendererTest, DefaultPass_UploadsTheCameraBeforeAnyDraw) {
+	const auto renderer = MakeRenderer();
+
+	Types::CameraData cameraData{};
+	cameraData.viewProjection = glm::mat4{2.0f};
+	renderer->SetCameraData(cameraData);
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+
+	ASSERT_FALSE(recorder.passes.empty());
+	const auto camera = AtSlot(recorder.passes.front().vertexConstants, Types::CAMERA_CONSTANTS_SLOT);
+
+	ASSERT_EQ(camera.size(), 1u);
+	EXPECT_EQ(camera.front().drawsBefore, 0u);
+	EXPECT_EQ(ReadConstants<Types::CameraConstants>(camera.front()).viewProjection, cameraData.viewProjection);
+}
+
+/**
+ * @brief Test that every draw is preceded by its own transform
+ * @details One upload per Submit, each before its DrawIndexed. A renderer that uploaded once per pass would draw
+ *			every object with the first one's transform - which is what the second record pins.
+ */
+TEST_F(ForwardRendererTest, Submit_UploadsEachDrawsOwnTransform) {
+	const auto renderer = MakeRenderer();
+
+	const FakePipelineState pipeline{PipelineDescriptor{}};
+	const FakeVertexBuffer vertexBuffer{BufferLayout{}};
+	const FakeIndexBuffer indexBuffer{6};
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+	renderer->Submit(DrawCommand{
+		.pipelineState = &pipeline,
+		.vertexBuffer = &vertexBuffer,
+		.indexBuffer = &indexBuffer,
+		.transform = glm::mat4{3.0f}
+	});
+	renderer->Submit(DrawCommand{
+		.pipelineState = &pipeline,
+		.vertexBuffer = &vertexBuffer,
+		.indexBuffer = &indexBuffer,
+		.transform = glm::mat4{4.0f}
+	});
+
+	ASSERT_FALSE(recorder.passes.empty());
+	const auto objects = AtSlot(recorder.passes.front().vertexConstants, Types::OBJECT_CONSTANTS_SLOT);
+
+	ASSERT_EQ(objects.size(), 2u);
+	EXPECT_EQ(objects[0].drawsBefore, 0u);
+	EXPECT_EQ(objects[1].drawsBefore, 1u);
+	EXPECT_EQ(ReadConstants<Types::ObjectConstants>(objects[0]).transform, glm::mat4{3.0f});
+	EXPECT_EQ(ReadConstants<Types::ObjectConstants>(objects[1]).transform, glm::mat4{4.0f});
+}
+
+/**
+ * @brief Test that a command that never sets a transform is drawn with the identity
+ * @details The default has to place the mesh where its vertices already are. A zero matrix would collapse every
+ *			vertex onto the origin and draw nothing, with no error anywhere.
+ */
+TEST_F(ForwardRendererTest, Submit_WithoutATransformUploadsTheIdentity) {
+	const auto renderer = MakeRenderer();
+
+	const FakePipelineState pipeline{PipelineDescriptor{}};
+	const FakeVertexBuffer vertexBuffer{BufferLayout{}};
+	const FakeIndexBuffer indexBuffer{6};
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+	renderer->Submit(DrawCommand{
+		.pipelineState = &pipeline,
+		.vertexBuffer = &vertexBuffer,
+		.indexBuffer = &indexBuffer
+	});
+
+	ASSERT_FALSE(recorder.passes.empty());
+	const auto objects = AtSlot(recorder.passes.front().vertexConstants, Types::OBJECT_CONSTANTS_SLOT);
+
+	ASSERT_EQ(objects.size(), 1u);
+	EXPECT_EQ(ReadConstants<Types::ObjectConstants>(objects.front()).transform, glm::mat4{1.0f});
+}
+
+/**
+ * @brief Test that the composite uploads no constants at all
+ * @details It draws a screen-space quad and reads no camera. Uploading one there would cost a copy per frame for a
+ *			block no shader of that pass declares.
+ */
+TEST_F(ForwardRendererTest, EndFrame_CompositeUploadsNoConstants) {
+	const auto renderer = MakeRenderer();
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+	renderer->EndFrame();
+
+	ASSERT_EQ(recorder.passes.size(), 2u);
+	EXPECT_TRUE(CompositePass().vertexConstants.empty());
+	EXPECT_TRUE(CompositePass().fragmentConstants.empty());
 }

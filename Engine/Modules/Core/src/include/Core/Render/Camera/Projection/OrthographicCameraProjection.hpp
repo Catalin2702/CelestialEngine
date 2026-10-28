@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -25,10 +25,10 @@ public:
 	OrthographicCameraProjection(OrthographicCameraProjection&&) noexcept = default;
 
 public:
-	void SetViewportSize(const u32 width, const u32 height) override { _width = width; _height = height; }
-	void SetNearClip(const f32 nearClip) override { _nearClip = nearClip; }
-	void SetFarClip(const f32 farClip) override { _farClip = farClip; }
-	void SetClipConvention(const Types::ClipConvention convention) override { _convention = convention; }
+	void SetViewportSize(const u32 width, const u32 height) override { _width = width; _height = height; _dirty = true; }
+	void SetNearClip(const f32 nearClip) override { _nearClip = nearClip; _dirty = true; }
+	void SetFarClip(const f32 farClip) override { _farClip = farClip; _dirty = true; }
+	void SetClipConvention(const Types::ClipConvention convention) override { _convention = convention; _dirty = true; }
 
 public:
 	[[nodiscard]] Types::CameraProjection GetProjection() const override { return Types::CameraProjection::Orthographic; }
@@ -38,7 +38,7 @@ public:
 	[[nodiscard]] f32 GetFarClip() const override { return _farClip; }
 
 private:
-	void _Rebuild() const;
+	void _Recalculate() const;
 
 private:
 	Types::ClipConvention _convention;

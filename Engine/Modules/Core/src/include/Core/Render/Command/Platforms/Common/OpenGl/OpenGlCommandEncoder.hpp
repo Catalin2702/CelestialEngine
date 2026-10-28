@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -18,6 +18,7 @@
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
 #include "Define/DynamicLinker.hpp"
 
+#include <span>
 
 namespace CE::Core {
 
@@ -57,11 +58,12 @@ public:
 	 * @brief Creates and binds the encoder's vertex array, and sets the pass' default viewport
 	 * @param width Width of the render area, in target pixels
 	 * @param height Height of the render area, in target pixels
+	 * @param uniformBuffers Send the constants to the shader
 	 * @details The viewport starts covering the whole render area, the way a Metal render command encoder does.
 	 *			Without that, glViewport - which is global and survives the pass that set it - would silently hand the
 	 *			next pass whatever rectangle the previous one left behind.
 	 */
-	OpenGlCommandEncoder(u32 width, u32 height);
+	OpenGlCommandEncoder(u32 width, u32 height, std::span<const u32> uniformBuffers);
 
 	OpenGlCommandEncoder(const OpenGlCommandEncoder&) = delete;
 	OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept;
@@ -100,6 +102,10 @@ public:
 
 	void SetFragmentTexture(u32 slot, const I_Texture& texture) override;
 
+	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override;
+
+	void SetFragmentConstants(u32 slot, std::span<const std::byte> data) override;
+
 public:
 	/**
 	 * @brief Draws indexed geometry with the currently bound pipeline, vertex array and element buffer
@@ -115,6 +121,9 @@ public:
 	void End() override;
 
 private:
+	void _UploadConstants(u32 binding, std::span<const std::byte> data) const;
+
+private:
 	/// Taken from the pipeline, not from the draw call: OpenGL wants the primitive mode as an argument of glDraw*,
 	/// while the other backends bake it into the pipeline object.
 	Types::PrimitiveTopology _topology = Types::PrimitiveTopology::None;
@@ -126,6 +135,8 @@ private:
 	u32 _targetHeight = 0;
 
 	size_t _indexCount = 0;	///< Indices held by the bound element buffer, to bounds-check the draws in Debug
+
+	std::span<const u32> _uniformBuffers;
 };
 
 }

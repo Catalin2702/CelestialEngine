@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-10-29
 //
 
 #pragma once
@@ -14,6 +14,8 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+
+#include <glm/glm.hpp>
 
 
 namespace CE::Core {
@@ -25,9 +27,9 @@ class I_VertexBuffer;
 /**
  * @struct DrawCommand
  * @brief One indexed draw, and the state it is drawn with
- * @details Everything a renderer needs to turn a submission into encoder calls, and nothing more: no transform, no
- *			material, no sort key. Those belong to the scene layer that will eventually build these, not to the draw
- *			itself.
+ * @details Everything a renderer needs to turn a submission into encoder calls, and nothing more: no material, no
+ *			sort key. Those belong to the scene layer that will eventually build these, not to the draw itself. The
+ *			transform is the exception, because the vertex stage cannot place the mesh without it.
  *
  *			The pointers are borrowed for the duration of the Submit call, the same contract the encoder's setters
  *			carry: the caller owns the resources and must keep them alive until the pass ends. Shared ownership would
@@ -52,6 +54,8 @@ struct CE_CORE_API DrawCommand {
 
 	/// Added to every index before it fetches a vertex, so several meshes can share one vertex buffer.
 	u32 baseVertex = 0;
+
+	glm::mat4 transform{1.0_f32};
 };
 
 }

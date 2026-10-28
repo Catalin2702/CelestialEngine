@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-29
 //
 
 #include "Core/Render/Camera/Projection/OrthographicCameraProjection.hpp"
@@ -24,12 +24,12 @@ OrthographicCameraProjection::OrthographicCameraProjection(const CameraProjectio
 	_height(descriptor.viewportHeight),
 	_orthographicSize(descriptor.orthographicSize)
 {
-	_Rebuild();
+	_Recalculate();
 }
 
 const glm::mat4& OrthographicCameraProjection::GetProjectionMatrix() const {
 	if (_dirty) {
-		_Rebuild();
+		_Recalculate();
 		_dirty = false;
 	}
 	return _projection;
@@ -39,7 +39,7 @@ f32 OrthographicCameraProjection::GetAspectRatio() const {
 	return static_cast<f32>(_width) / static_cast<f32>(_height);
 }
 
-void OrthographicCameraProjection::_Rebuild() const {
+void OrthographicCameraProjection::_Recalculate() const {
 	const f32 halfHeight = _orthographicSize;
 	const f32 halfWidth = _orthographicSize * GetAspectRatio();
 
