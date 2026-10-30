@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-25
+# Updated: 2026-10-30
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -12,6 +12,13 @@ if(NOT CMAKE_C_COMPILER)
 endif()
 
 set(CMAKE_CXX_STANDARD 23)
+
+# The project uses no C++20 modules, but with C++ >= 20 CMake scans every source for them by default
+# (a clang-scan-deps step per file plus a ninja dyndep file per target). When those dyndep files are
+# regenerated, ninja only discovers mid-build that the objects are dirty: a full build linked the
+# libraries BEFORE recompiling their objects, so the very next build (the one an IDE runs before
+# launching) relinked every module again. Turning the scan off removes the dyndep step altogether.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # Binaries/ subfolder keeping one toolchain's artifacts from overwriting another's. Set by
 # every configure preset; falling back to the compiler ID means a bare "cmake -B ..." still
@@ -370,6 +377,13 @@ endfunction()
 # it, which failed the build with "object file format unrecognized, invalid, or unsuitable" or
 # "No such file or directory". A single target does the work once, serialised. Returns the target's
 # name in OUT_TARGET.
+#
+# Each library is copied by its own add_custom_command with a stamp file as OUTPUT and the library
+# as DEPENDS, rather than as a POST_BUILD step of the custom target: a custom target with no
+# outputs is always out of date, so every build - including the one an IDE runs before launching a
+# test or the app - re-copied and re-signed all seven libraries even when nothing had changed. The
+# stamp lives in the build tree, not in DEST_DIR, so deleting a copied library by hand is NOT
+# noticed (same limitation as ce_stage_to_binaries for versioned libraries); a clean build fixes it.
 # Usage: ce_apple_modules_copy_target("<dest dir>" OUT_VAR)
 function(ce_apple_modules_copy_target DEST_DIR OUT_TARGET)
 	# One copy target per destination folder, shared by every executable built into it. The name is
@@ -378,23 +392,28 @@ function(ce_apple_modules_copy_target DEST_DIR OUT_TARGET)
 	set(COPY_TARGET "CE_AppleModules_${DEST_ID}")
 
 	if (NOT TARGET ${COPY_TARGET})
-		add_custom_target(${COPY_TARGET}
-			COMMENT "Embedding and signing the CE module libraries in ${DEST_DIR}"
-		)
-
-		add_dependencies(${COPY_TARGET} ${CE_APPLE_FRAMEWORK_MODULE_NAMES})
+		set(STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/CE_AppleModules/$<CONFIG>/${DEST_ID}")
+		set(STAMPS "")
 
 		foreach (MODULE_LIB ${CE_APPLE_FRAMEWORK_MODULE_NAMES})
-			add_custom_command(TARGET ${COPY_TARGET} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "${DEST_DIR}"
+			set(STAMP "${STAMP_DIR}/${MODULE_LIB}.stamp")
+			add_custom_command(
+				OUTPUT "${STAMP}"
+				COMMAND ${CMAKE_COMMAND} -E make_directory "${DEST_DIR}" "${STAMP_DIR}"
 				COMMAND ${CMAKE_COMMAND} -E copy_if_different
 					"$<TARGET_FILE:${MODULE_LIB}>"
 					"${DEST_DIR}/"
 				COMMAND codesign --force --sign -
 					"${DEST_DIR}/$<TARGET_FILE_NAME:${MODULE_LIB}>"
+				COMMAND ${CMAKE_COMMAND} -E touch "${STAMP}"
+				DEPENDS ${MODULE_LIB}
+				COMMENT "Embedding and signing $<TARGET_FILE_NAME:${MODULE_LIB}> in ${DEST_DIR}"
 				VERBATIM
 			)
+			list(APPEND STAMPS "${STAMP}")
 		endforeach ()
+
+		add_custom_target(${COPY_TARGET} DEPENDS ${STAMPS})
 	endif ()
 
 	set(${OUT_TARGET} "${COPY_TARGET}" PARENT_SCOPE)

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-30
 //
 
 #include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
@@ -12,7 +12,6 @@
 #include "Core/Application/Application.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Tools/Tools.hpp"
-#include "Types/Types.hpp"
 #include "Utility/Utility.hpp"
 
 #include <AppKit/AppKit.hpp>
@@ -82,7 +81,7 @@ void OnToggleVSync(void*, SEL, const NS::Object*) {
 }
 
 void InstallMacMenuBar() {
-	auto* const application = NS::Application::sharedApplication();
+	const auto* const application = NS::Application::sharedApplication();
 	if (not application) [[unlikely]] {
 		CE_CORE_WARN("InstallMacMenuBar: there is no NSApplication to install a menu bar on; the menu bar is skipped.");
 		return;
@@ -93,7 +92,7 @@ void InstallMacMenuBar() {
 	// function is safe - and without the pool the autoreleased halves would simply leak.
 	const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-	auto* const applicationName = NS::RunningApplication::currentApplication()->localizedName();
+	const auto* const applicationName = NS::RunningApplication::currentApplication()->localizedName();
 
 	const auto mainMenu = NS::TransferPtr(NS::Menu::alloc()->init());
 
@@ -104,7 +103,7 @@ void InstallMacMenuBar() {
 		const auto applicationMenuItem = NS::TransferPtr(NS::MenuItem::alloc()->init());
 		const auto applicationMenu = NS::TransferPtr(NS::Menu::alloc()->init());
 
-		auto* const quitTitle = Text("Quit ")->stringByAppendingString(applicationName);
+		const auto* const quitTitle = Text("Quit ")->stringByAppendingString(applicationName);
 		auto* const quitItem = applicationMenu->addItem(quitTitle, Action("Quit", OnQuit), Text("q"));
 		quitItem->setKeyEquivalentModifierMask(NS::EventModifierFlagCommand);
 

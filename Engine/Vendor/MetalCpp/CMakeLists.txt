@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-07-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-10-30
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -23,6 +23,14 @@ target_link_libraries(CE_Vendor_MetalCpp INTERFACE
 	METAL_CPP
 )
 
-target_include_directories(CE_Vendor_MetalCpp INTERFACE
+# SYSTEM, like ImGui: the engine must not inherit diagnostics from headers it does not own. The
+# upstream METAL_CPP target adds the same directory as a plain -I, so it is marked SYSTEM too -
+# otherwise clang-tidy keeps reporting the analyzer's false positive in NS::SharedPtr (release()
+# on a null object, which is a legal no-op message to nil) every time the engine uses TransferPtr.
+set_target_properties(METAL_CPP PROPERTIES
+	SYSTEM TRUE
+)
+
+target_include_directories(CE_Vendor_MetalCpp SYSTEM INTERFACE
 	${CMAKE_SOURCE_DIR}/Engine/Submodules/MetalCpp
 )
