@@ -4,10 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-31
 //
 
 #include "Core/Input/InputState.hpp"
+
+#include <utility>
 
 
 namespace CE::Core {
@@ -75,6 +77,10 @@ void InputState::EndFrame() {
 	_buttonsJustReleased.reset();
 	_scrollDeltaX = 0.0f;
 	_scrollDeltaY = 0.0f;
+
+	// The position the next frame's delta is measured from.
+	_previousMouseX = _mouseX;
+	_previousMouseY = _mouseY;
 }
 
 void InputState::Reset() {
@@ -84,6 +90,9 @@ void InputState::Reset() {
 
 	_buttonsJustReleased |= _buttonsDown;
 	_buttonsDown.reset();
+
+	// The cursor moves elsewhere while the window is unfocused: its first position back must not count as motion.
+	_hasMousePosition = false;
 }
 
 void InputState::_OnKeyPressed(const Events::KeyPressedEvent& event) {
@@ -108,8 +117,7 @@ void InputState::_OnKeyReleased(const Events::KeyReleasedEvent& event) {
 }
 
 void InputState::_OnMouseMoved(const Events::MouseMovedEvent& event) {
-	_mouseX = event.GetX();
-	_mouseY = event.GetY();
+	_SetMousePosition(event.GetX(), event.GetY());
 }
 
 void InputState::_OnMouseButtonPressed(const Events::MouseButtonPressedEvent& event) {
@@ -134,8 +142,7 @@ void InputState::_OnMouseButtonReleased(const Events::MouseButtonReleasedEvent& 
 
 void InputState::_OnMouseDragged(const Events::MouseDraggedEvent& event) {
 	// Some backends deliver no move events while a button is held, so drags are the only position source during one.
-	_mouseX = event.GetX();
-	_mouseY = event.GetY();
+	_SetMousePosition(event.GetX(), event.GetY());
 }
 
 void InputState::_OnMouseWheelScrolled(const Events::MouseWheelScrolledEvent& event) {
@@ -146,6 +153,16 @@ void InputState::_OnMouseWheelScrolled(const Events::MouseWheelScrolledEvent& ev
 void InputState::_OnWindowFocus(const Events::WindowFocusEvent& event) {
 	if (not event.IsFocused())
 		Reset();
+}
+
+void InputState::_SetMousePosition(const f32 x, const f32 y) {
+	_mouseX = x;
+	_mouseY = y;
+
+	if (not std::exchange(_hasMousePosition, true)) {
+		_previousMouseX = x;
+		_previousMouseY = y;
+	}
 }
 
 }

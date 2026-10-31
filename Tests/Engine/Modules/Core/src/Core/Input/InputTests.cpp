@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-10-31
 //
 
 #include <Core/Input/Input.hpp>
@@ -334,6 +334,68 @@ TEST_F(InputTest, EndFrame_KeepsCursorPosition) {
 
 	EXPECT_FLOAT_EQ(Input::GetMouseX(), 10.0f);
 	EXPECT_FLOAT_EQ(Input::GetMouseY(), 20.0f);
+}
+
+// ============================================================================
+// Mouse Delta Tests
+// ============================================================================
+
+/**
+ * @brief Test that the first cursor position produces no motion
+ * @details The cursor was never seen before, so measuring from the origin would report a jump nobody made.
+ */
+TEST_F(InputTest, FirstMouseMove_ProducesNoDelta) {
+	MoveMouse(300.0f, 200.0f);
+
+	const auto [dx, dy] = Input::GetMouseDeltaXY();
+
+	EXPECT_FLOAT_EQ(dx, 0.0f);
+	EXPECT_FLOAT_EQ(dy, 0.0f);
+}
+
+/**
+ * @brief Test that the delta is measured from the position at the end of the previous frame
+ * @details Several moves within one frame add up to the net motion of that frame.
+ */
+TEST_F(InputTest, MouseDelta_IsMotionSinceThePreviousFrame) {
+	MoveMouse(100.0f, 100.0f);
+	Input::EndFrame();
+
+	MoveMouse(105.0f, 98.0f);
+	MoveMouse(110.0f, 95.0f);
+
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaX(), 10.0f);
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaY(), -5.0f);
+}
+
+/**
+ * @brief Test that a frame without motion reports a zero delta
+ */
+TEST_F(InputTest, EndFrame_ResetsMouseDelta) {
+	MoveMouse(100.0f, 100.0f);
+	Input::EndFrame();
+	MoveMouse(120.0f, 130.0f);
+	Input::EndFrame();
+
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaX(), 0.0f);
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaY(), 0.0f);
+}
+
+/**
+ * @brief Test that the first position after a focus loss produces no motion
+ * @details The cursor moved elsewhere while the window was unfocused; that travel is not motion of this window.
+ */
+TEST_F(InputTest, FocusLost_FirstMouseMoveAfterwardsProducesNoDelta) {
+	MoveMouse(100.0f, 100.0f);
+	Input::EndFrame();
+
+	ChangeFocus(false);
+	Input::EndFrame();
+	ChangeFocus(true);
+	MoveMouse(800.0f, 600.0f);
+
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaX(), 0.0f);
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaY(), 0.0f);
 }
 
 // ============================================================================

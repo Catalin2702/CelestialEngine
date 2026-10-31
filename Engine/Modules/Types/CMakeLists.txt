@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-10-29
+# Updated: 2026-10-31
 #
 
 set(HEADERS
@@ -43,6 +43,7 @@ set(HEADERS
 
 
 	# Var
+	src/include/Types/Var/Glm.hpp
 	src/include/Types/Var/Vars.hpp
 
 

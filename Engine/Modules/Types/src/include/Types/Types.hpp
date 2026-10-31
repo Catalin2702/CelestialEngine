@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-09-31
 //
 
 /**
@@ -36,6 +36,7 @@
 
 #include "Types/Render/Render.hpp"
 
+#include "Types/Var/Glm.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include "Types/Window/Window.hpp"

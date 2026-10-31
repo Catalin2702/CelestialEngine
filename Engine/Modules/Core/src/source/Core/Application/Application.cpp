@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-10-31
 //
 
 #include "Core/Application/Application.hpp"
@@ -220,7 +220,9 @@ void Application::InitImguiLayer() {
 void Application::_MakeSceneLayer() {
 	// Orthographic and Static: the only projection and the only controller implemented so far, and the factories throw
 	// on anything else rather than hand back something that does not work.
-	constexpr CameraDescriptor cameraDescriptor{.position = {0.0_f32, 0.0_f32, 1.0_f32}};
+	constexpr CameraDescriptor cameraDescriptor{
+		.position = {0.0_f32, 0.0_f32, 1.0_f32},
+	};
 
 	const CameraProjectionDescriptor projectionDescriptor{
 		.type = Types::CameraProjection::Orthographic,
@@ -235,7 +237,7 @@ void Application::_MakeSceneLayer() {
 		.orthographicSize = 1.0_f32
 	};
 
-	constexpr CameraControllerDescriptor controllerDescriptor{.descriptor = CameraStaticControllerDescriptor{}};
+	constexpr CameraControllerDescriptor controllerDescriptor{.descriptor = CameraFreeControllerDescriptor{}};
 
 	const auto sceneLayer = std::make_shared<SceneLayer>(cameraDescriptor, projectionDescriptor, controllerDescriptor);
 
@@ -318,12 +320,18 @@ void Application::_SubscribeToEventHubDispatcher() {
 	_eventHubHandlers[_VSyncChange] = onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromConstMethod<Application, &Application::_OnVSyncChange>(this)
 	);
+
+	Input::SubscribeToHub(_dispatcher->GetKeyboardEventHub(), _dispatcher->GetMouseEventHub(), windowEventHub);
 }
 
 void Application::_UnsubscribeFromEventHubDispatcher() {
 	_dispatcher->GetWindowEventHub().onCloseMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowClose]);
 	_dispatcher->GetWindowEventHub().onResizeMulticastDispatcher.Unsubscribe(_eventHubHandlers[_WindowResize]);
 	_dispatcher->GetRenderEventHub().onChangeVSyncDispatcher.Unsubscribe(_eventHubHandlers[_VSyncChange]);
+
+	// Before End() runs Input::Shutdown: closing the window afterwards still fires focus-lost into the hub, and a
+	// delegate left behind would write into the deleted input state.
+	Input::UnsubscribeFromHub(_dispatcher->GetKeyboardEventHub(), _dispatcher->GetMouseEventHub(), _dispatcher->GetWindowEventHub());
 
 	_eventHubHandlers = {};
 }

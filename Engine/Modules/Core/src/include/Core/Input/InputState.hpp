@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-10-31
 //
 
 #pragma once
@@ -118,6 +118,21 @@ private:
 	[[nodiscard]] std::pair<f32, f32> GetMouseXY() const { return {_mouseX, _mouseY}; }
 
 	/**
+	 * @brief Gets how far the cursor moved on X since the end of the previous frame, in window space
+	 */
+	[[nodiscard]] f32 GetMouseDeltaX() const { return _mouseX - _previousMouseX; }
+
+	/**
+	 * @brief Gets how far the cursor moved on Y since the end of the previous frame, in window space (positive is down)
+	 */
+	[[nodiscard]] f32 GetMouseDeltaY() const { return _mouseY - _previousMouseY; }
+
+	/**
+	 * @brief Gets how far the cursor moved since the end of the previous frame, in window space (positive Y is down)
+	 */
+	[[nodiscard]] std::pair<f32, f32> GetMouseDeltaXY() const { return {GetMouseDeltaX(), GetMouseDeltaY()}; }
+
+	/**
 	 * @brief Gets the horizontal scroll accumulated during the current frame
 	 */
 	[[nodiscard]] f32 GetScrollDeltaX() const { return _scrollDeltaX; }
@@ -129,7 +144,7 @@ private:
 
 private:
 	/**
-	 * @brief Clears the per-frame transitions (just pressed/released, scroll deltas)
+	 * @brief Clears the per-frame transitions (just pressed/released, scroll deltas) and starts the next mouse delta
 	 * @details Must be called once at the end of each application tick, after every layer had the chance to query the
 	 *			state and before the next batch of native events is pumped. Held keys/buttons persist across frames and
 	 *			are only cleared by their release events (or by Reset on focus loss).
@@ -233,6 +248,13 @@ private:
 	 */
 	void _OnWindowFocus(const Events::WindowFocusEvent& event);
 
+	/**
+	 * @brief Stores a new cursor position, from a move or a drag
+	 * @details The first position after startup or a focus loss also becomes the previous one, so the delta of that
+	 *			frame is zero instead of the jump from wherever the cursor was last seen (or from the origin).
+	 */
+	void _SetMousePosition(f32 x, f32 y);
+
 private:
 	std::bitset<stMaxKeys> _keysDown;						///< Keys currently held (persists across frames)
 	std::bitset<stMaxKeys> _keysJustPressed;				///< Keys that went down during the current frame
@@ -243,6 +265,8 @@ private:
 	std::bitset<stMaxMouseButtons> _buttonsJustReleased;	///< Mouse buttons that went up during the current frame
 
 	f32 _mouseX = 0.0f, _mouseY = 0.0f;					///< Last known cursor position in window space (top-left origin)
+	f32 _previousMouseX = 0.0f, _previousMouseY = 0.0f;	///< Cursor position at the end of the previous frame, the delta's origin
+	bool _hasMousePosition = false;						///< False until the first position, and again after a focus loss
 	f32 _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;		///< Scroll accumulated during the current frame
 
 	std::array<u32, _Count> _hubHandles{};				///< Handles of the hub subscriptions, used for unsubscription

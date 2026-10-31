@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-10-31
 //
 
 #pragma once
@@ -121,6 +121,26 @@ public:
 	static std::pair<f32, f32> GetMouseXY();
 
 	/**
+	 * @brief Gets how far the cursor moved on X since the end of the previous frame
+	 * @return f32 The X motion in window space; zero on the first position after startup or a focus loss
+	 */
+	static f32 GetMouseDeltaX();
+
+	/**
+	 * @brief Gets how far the cursor moved on Y since the end of the previous frame
+	 * @return f32 The Y motion in window space (positive is down); zero on the first position after startup or a focus loss
+	 */
+	static f32 GetMouseDeltaY();
+
+	/**
+	 * @brief Gets how far the cursor moved since the end of the previous frame
+	 * @return std::pair<f32, f32> The X and Y motion in window space (positive Y is down)
+	 * @details Measured on the absolute cursor position, so it stops at the edges of the screen: a mouse-look that
+	 *			must keep turning would need relative motion from a captured cursor, which the backends do not report yet.
+	 */
+	static std::pair<f32, f32> GetMouseDeltaXY();
+
+	/**
 	 * @brief Gets the horizontal scroll accumulated during the current frame
 	 * @return f32 The X scroll delta
 	 */
@@ -134,7 +154,7 @@ public:
 
 public:
 	/**
-	 * @brief Clears the state's per-frame transitions (just pressed/released, scroll deltas)
+	 * @brief Clears the state's per-frame transitions (just pressed/released, scroll and mouse deltas)
 	 * @details Called by the application once at the end of each tick, after every layer had the chance to query the
 	 *			state and before the next batch of native events is pumped. Held keys/buttons persist across frames.
 	 */

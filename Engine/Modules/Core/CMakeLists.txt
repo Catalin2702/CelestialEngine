@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-10-29
+# Updated: 2026-10-31
 #
 
 set(APPLICATION_HEADERS
@@ -55,6 +55,7 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Camera/Camera.hpp
 	src/include/Core/Render/Camera/CameraRig.hpp
 	src/include/Core/Render/Camera/Controller/CameraControllerDescriptor.hpp
+	src/include/Core/Render/Camera/Controller/FreeCameraController.hpp
 	src/include/Core/Render/Camera/Controller/StaticCameraController.hpp
 	src/include/Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp
 	src/include/Core/Render/Camera/Projection/OrthographicCameraProjection.hpp
@@ -255,6 +256,7 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Camera/Camera.cpp
 	src/source/Core/Render/Camera/CameraRig.cpp
 	src/source/Core/Render/Camera/Controller/CameraControllerFactory.cpp
+	src/source/Core/Render/Camera/Controller/FreeCameraController.cpp
 	src/source/Core/Render/Camera/Controller/StaticCameraController.cpp
 	src/source/Core/Render/Camera/Projection/CameraProjectionFactory.cpp
 	src/source/Core/Render/Camera/Projection/OrthographicCameraProjection.cpp
