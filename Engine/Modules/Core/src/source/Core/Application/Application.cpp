@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-01
 //
 
 #include "Core/Application/Application.hpp"
@@ -237,7 +237,13 @@ void Application::_MakeSceneLayer() {
 		.orthographicSize = 1.0_f32
 	};
 
-	constexpr CameraControllerDescriptor controllerDescriptor{.descriptor = CameraFreeControllerDescriptor{}};
+	constexpr CameraControllerDescriptor controllerDescriptor{
+		.descriptor = CameraFreeControllerDescriptor{
+			.move = {},
+			.look = {},
+			.requireLookButton = false,
+		}
+	};
 
 	const auto sceneLayer = std::make_shared<SceneLayer>(cameraDescriptor, projectionDescriptor, controllerDescriptor);
 

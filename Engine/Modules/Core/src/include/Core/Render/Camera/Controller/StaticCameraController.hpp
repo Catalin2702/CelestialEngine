@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-01
 //
 
 #pragma once
@@ -20,7 +20,7 @@ namespace CE::Core {
 
 struct CameraControllerDescriptor;
 
-class CE_API_EXPORT StaticCameraController final: public I_CameraController {
+class CE_CORE_API StaticCameraController final: public I_CameraController {
 public:
 	explicit StaticCameraController(const CameraControllerDescriptor&);
 

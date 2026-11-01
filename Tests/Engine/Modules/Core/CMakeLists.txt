@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-07
+# Updated: 2026-11-01
 #
 
 set(INPUT_SOURCES
@@ -27,10 +27,20 @@ set(MAINHUB_SOURCES
 )
 
 set(RENDER_SOURCES
+	# Buffer
 	src/Core/Render/Buffer/BufferLayoutTests.cpp
+
+	# Camera
+	src/Core/Render/Camera/MouseLookTests.cpp
+
+	# Command
 	src/Core/Render/Command/RenderPassDescriptorTests.cpp
 	src/Core/Render/Command/ViewportTests.cpp
+
+	# Pipeline
 	src/Core/Render/Pipeline/PipelineDescriptorTests.cpp
+
+	# Renderer
 	src/Core/Render/Renderer/ForwardRendererTests.cpp
 	src/Core/Render/Renderer/RenderStatsTests.cpp
 )

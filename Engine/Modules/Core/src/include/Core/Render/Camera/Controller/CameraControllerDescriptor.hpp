@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-01
 //
 
 #pragma once
@@ -26,16 +26,17 @@ namespace CE::Core {
 /**
  * @struct CameraLookSettings
  * @brief Shared mouse-look tuning, for every controller that turns the camera with the pointer
- * @details Sensitivity is expressed in degrees per pixel of mouse travel rather than as an opaque multiplier, so the
- *			same value gives the same rotation on any window size and any DPI - the controller must divide the raw
- *			delta by the framebuffer scale before applying it.
+ @details Sensitivity is expressed in degrees per point of mouse travel rather than as an opaque multiplier, so the
+ *			same value gives the same rotation on any window size and any DPI. Points, not pixels: both backends
+ *			already report the cursor in window points, before the content scale, so the delta from Input is applied
+ *			as it is - dividing it by the content scale would halve the rotation on a Retina display.
  *
  *			The pitch limits stop just short of the poles on purpose: at exactly +/-90 degrees the forward vector
  *			becomes parallel to the world up, LookAt loses the basis it builds the right vector from, and the view
  *			matrix degenerates.
  */
 struct CE_CORE_API CameraLookSettings {
-	/// Degrees of rotation per pixel of mouse travel.
+	/// Degrees of rotation per point of mouse travel.
 	f32 sensitivity = 0.1_f32;
 
 	/// Flips the vertical axis, for users who fly rather than aim.
@@ -112,7 +113,7 @@ struct CE_CORE_API CameraFreeControllerDescriptor {
 	Types::MouseButtonCode lookButton = Types::MouseButtonCode::Right;
 	bool requireLookButton = true;
 
-	/// Multiplier applied to move.speed per wheel notch, so the wheel retunes the fly speed instead of dollying.
+	/// Multiplier applied to move.speed per wheel notch, so the wheel retunes the fly speed instead of dolling.
 	f32 speedScrollStep = 1.1_f32;
 	f32 minSpeed = 0.1_f32;
 	f32 maxSpeed = 500.0_f32;

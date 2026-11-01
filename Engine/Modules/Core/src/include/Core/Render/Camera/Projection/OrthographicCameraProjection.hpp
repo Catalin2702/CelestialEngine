@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-01
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 
 namespace CE::Core {
 
-class CE_API_EXPORT OrthographicCameraProjection final: public I_CameraProjection {
+class CE_CORE_API OrthographicCameraProjection final: public I_CameraProjection {
 public:
 	explicit OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor);
 
