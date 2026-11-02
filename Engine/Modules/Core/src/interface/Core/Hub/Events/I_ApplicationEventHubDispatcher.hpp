@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -14,8 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
-#include "Events/ApplicationEvent.hpp"
-#include "Events/GenericEvent.hpp"
+#include "Events/Events.hpp"
 
 
 namespace CE::Core {

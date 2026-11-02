@@ -4,14 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
 
 #include "Tools/Tools.hpp"
-#include "Types/FileSystem/File.hpp"
-#include "Types/Var/Vars.hpp"
+#include "Types/Types.hpp"
 #include "Utility/FileSystem/File.hpp"
 
 #include <filesystem>

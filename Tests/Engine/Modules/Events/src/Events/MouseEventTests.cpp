@@ -4,13 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-11-02
 //
 
-#include <Events/I_Event.hpp>
-#include <Events/MouseEvent.hpp>
-#include <Types/KeyCode/MouseButtonCode.hpp>
-#include <Types/Var/Vars.hpp>
+#include <Events/Events.hpp>
+#include <Types/Types.hpp>
 
 #include <gtest/gtest.h>
 

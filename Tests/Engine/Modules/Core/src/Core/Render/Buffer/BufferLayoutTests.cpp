@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #include <Core/Render/Buffer/I_Buffer.hpp>
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <iterator>
 #include <string_view>
 #include <vector>
 
@@ -138,8 +140,7 @@ TEST_F(BufferLayoutTest, IteratesInDeclarationOrder) {
 	};
 
 	std::vector<std::string_view> names;
-	for (const auto& element: layout)
-		names.push_back(element.name);
+	std::ranges::transform(layout, std::back_inserter(names), [](const auto& element) { return std::string_view{element.name}; });
 
 	ASSERT_EQ(names.size(), 2u);
 	EXPECT_EQ(names[0], "inputPosition");

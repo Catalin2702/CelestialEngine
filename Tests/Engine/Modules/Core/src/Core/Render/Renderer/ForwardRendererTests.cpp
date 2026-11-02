@@ -4,28 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-02
 //
 
-#include <Core/Render/Buffer/I_Buffer.hpp>
-#include <Core/Render/Command/I_CommandEncoder.hpp>
-#include <Core/Render/Command/RenderPassDescriptor.hpp>
-#include <Core/Render/Command/Viewport.hpp>
-#include <Core/Render/Device/I_GraphicDevice.hpp>
-#include <Core/Render/Pipeline/I_PipelineState.hpp>
-#include <Core/Render/Pipeline/PipelineDescriptor.hpp>
-#include <Core/Render/Renderer/DrawCommand.hpp>
-#include <Core/Render/Renderer/ForwardRenderer.hpp>
-#include <Core/Render/Shader/I_ShaderModule.hpp>
-#include <Core/Render/Shader/ShaderModuleDescriptor.hpp>
-#include <Core/Render/Swapchain/I_Swapchain.hpp>
-#include <Core/Render/Texture/I_Texture.hpp>
+#include <Core/Render/Render.hpp>
 #include <Tools/Tools.hpp>
 #include <Types/Render/ShaderConstants.hpp>
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <stdexcept>
@@ -415,9 +405,7 @@ template<typename T>
 /// Every upload the pass received at one slot, in the order it received them.
 [[nodiscard]] std::vector<ConstantsRecord> AtSlot(const std::vector<ConstantsRecord>& records, const u32 slot) {
 	std::vector<ConstantsRecord> found;
-	for (const auto& record: records)
-		if (record.slot == slot)
-			found.push_back(record);
+	std::ranges::copy_if(records, std::back_inserter(found), [slot](const ConstantsRecord& record) { return record.slot == slot; });
 
 	return found;
 }
@@ -712,10 +700,9 @@ TEST_F(ForwardRendererTest, EndFrame_CompositesIntoTheBackBufferExactlyOnce) {
 
 	ASSERT_EQ(recorder.passes.size(), 2u);
 
-	auto backBufferPasses = 0;
-	for (const auto& pass: recorder.passes)
-		if (pass.descriptor.colors[0].target == nullptr)
-			++backBufferPasses;
+	const auto backBufferPasses = std::ranges::count_if(recorder.passes, [](const auto& pass) {
+		return pass.descriptor.colors[0].target == nullptr;
+	});
 
 	EXPECT_EQ(backBufferPasses, 1);
 	EXPECT_EQ(CompositePass().descriptor.colors[0].target, nullptr);

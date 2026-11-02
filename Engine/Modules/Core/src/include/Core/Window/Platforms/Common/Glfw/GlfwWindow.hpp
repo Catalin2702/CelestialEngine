@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -36,6 +36,7 @@ public:
 		UnicastDispatcher<int, int> onFramebufferResizeDispatcher;	///< Drawable size, in backing pixels - what the renderer needs
 		UnicastDispatcher<> onCloseDispatcher;
 		UnicastDispatcher<int> onFocusDispatcher;	///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
+		UnicastDispatcher<Types::CursorMode> onCursorModeDispatcher;	///< Fired by SetCursorMode once the mode is applied
 	};
 
 	struct GlfwKeyboardEvents {
@@ -70,6 +71,12 @@ public:
 	 * @param focused GLFW_TRUE when the window gained input focus, GLFW_FALSE when it lost it
 	 */
 	void DispatchFocusEvent(int focused) const;
+	/**
+	 * @brief Forwards a cursor mode the window has just applied to the bound listener (the event hub)
+	 * @details Not a GLFW callback: GLFW reports nothing when glfwSetInputMode changes the cursor, so the window raises
+	 *			it itself.
+	 */
+	void DispatchCursorModeEvent(Types::CursorMode cursorMode) const;
 
 	/**
 	 * @brief Forwards the key callback to the bound listener
@@ -196,6 +203,8 @@ public:
 	 */
 	void SetTitle(std::string_view title) override;
 
+	void SetCursorMode(Types::CursorMode cursorMode) override;
+
 	/**
 	 * @brief Sets the swap interval on this window's context
 	 * @details Makes the context current first: glfwSwapInterval takes no window and applies to whichever context is
@@ -210,6 +219,10 @@ public:
 	 *			window system (a synchronous request to the X server, on X11) and this is read every frame.
 	 */
 	[[nodiscard]] std::pair<u32, u32> GetWindowSize() const override { return {_width, _height}; }
+
+	[[nodiscard]] std::string GetTitle() const override;
+
+	[[nodiscard]] Types::CursorMode GetCursorMode() const override { return _cursorMode; }
 
 	/**
 	 * @brief Gets the size of the drawable, in backing pixels
@@ -325,6 +338,8 @@ private:
 	/// @details GLFW has no native drag event, so a drag is synthesized when the cursor moves while a button is held.
 	///			 A mask rather than an array of bool so the common case - nothing held - costs one comparison.
 	u8 _pressedMouseButtons = 0;
+
+	Types::CursorMode _cursorMode = Types::CursorMode::Normal; ///< Last mode applied through SetCursorMode
 
 #if not CE_PLATFORM_MACOS
 	/// @brief Windowed-mode placement saved when entering fullscreen, so ToggleFullScreen can restore it on exit.

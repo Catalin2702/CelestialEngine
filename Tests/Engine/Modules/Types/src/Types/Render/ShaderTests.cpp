@@ -4,12 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-11-02
 //
 
-#include <Types/Render/Shader.hpp>
-
-#include <Types/Render/Render.hpp>
+#include <Types/Types.hpp>
 
 #include <glad/glad.h>
 #include <gtest/gtest.h>

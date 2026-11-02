@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_TYPES_RENDER_GRAPHICSAPI_HPP
 #define CE_TYPES_RENDER_GRAPHICSAPI_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Types.hpp"
+#include "Define/Define.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include <format>

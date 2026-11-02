@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-02
 //
 
 #include <Core/Render/Command/RenderPassDescriptor.hpp>
@@ -100,6 +100,8 @@ TEST_F(RenderPassDescriptorTest, CompositeShape_IsABackBufferPassWithNoDepth) {
 
 	descriptor.depth.enabled = false;
 
+	EXPECT_EQ(descriptor.width, 1280u);
+	EXPECT_EQ(descriptor.height, 720u);
 	EXPECT_EQ(descriptor.colors[0].target, nullptr);
 	EXPECT_EQ(descriptor.colors[0].loadAction, CE::Types::LoadAction::DontCare);
 	EXPECT_FALSE(descriptor.depth.enabled);

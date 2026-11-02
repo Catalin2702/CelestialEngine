@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-04
+// Updated: 2026-11-02
 //
 
-#include "Core/Render/Device/I_GraphicDevice.hpp"
-#include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
+#include "Core/Render/Device/Device.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 

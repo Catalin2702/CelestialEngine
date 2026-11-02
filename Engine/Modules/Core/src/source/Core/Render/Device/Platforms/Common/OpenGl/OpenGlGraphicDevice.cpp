@@ -4,13 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
-#include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
-#include "Core/Render/Command/RenderPassDescriptor.hpp"
+#include "Core/Render/Command/Command.hpp"
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
 #include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
@@ -35,7 +34,7 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 		const auto& color = descriptor.colors[0].clearColor;
 		glClearColor(color.r, color.g, color.b, color.a);
 
-		clearMask = clearMask | Types::BufferBit::Color;
+		clearMask = Types::BufferBit::Color;
 		clears = true;
 	}
 

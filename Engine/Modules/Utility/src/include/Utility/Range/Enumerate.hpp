@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-25
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -19,7 +19,7 @@ namespace CE::Utility {
 template<typename T, typename Iter = decltype(std::begin(std::declval<T>())), typename = decltype(std::end(std::declval<T>()))>
 constexpr auto Enumerate(T&& iterable) {
 	struct Iterator {
-		size_t index;
+		size_t index = 0;
 		Iter iter;
 
 		bool operator != (const Iterator& other) const { return iter != other.iter; }

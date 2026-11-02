@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
@@ -74,6 +74,10 @@ void I_EventHubDispatcher::DispatchWindowErrorEvent(Events::ErrorEvent& windowEr
 
 void I_EventHubDispatcher::DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) {
 	GetWindowEventHub().onFocusMulticastDispatcher.Dispatch(windowFocusEvent);
+}
+
+void I_EventHubDispatcher::DispatchWindowCursorModeEvent(Events::WindowCursorModeEvent& windowCursorModeEvent) {
+	GetWindowEventHub().onCursorModeMulticastDispatcher.Dispatch(windowCursorModeEvent);
 }
 
 void I_EventHubDispatcher::DispatchRenderChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) {

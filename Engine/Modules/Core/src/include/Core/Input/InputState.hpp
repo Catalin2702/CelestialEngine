@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -13,18 +13,19 @@
 #define CE_CORE_INPUT_INPUTSTATE_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
-#include "Events/WindowEvent.hpp"
-#include "Types/Var/Vars.hpp"
+#include "Events/Events.hpp"
+#include "Types/Types.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
 
 #include <array>
 #include <bitset>
+#include <span>
 #include <utility>
 
 
 namespace CE::Core {
+
+class I_Window;
 
 /**
  * @class InputState
@@ -80,6 +81,18 @@ private:
 	 * @return bool True only in the frame the key went up
 	 */
 	[[nodiscard]] bool IsKeyJustReleased(Types::KeyboardKeyCode keyCode) const;
+
+	/**
+	 * @brief Checks if every key of a chord is held at the same time
+	 * @return bool False for an empty chord, which would otherwise be "held" on every frame
+	 */
+	[[nodiscard]] bool AreKeysDown(std::span<const Types::KeyboardKeyCode> keys) const;
+
+	/**
+	 * @brief Checks if a chord was completed during the current frame
+	 * @return bool True in the one frame every key is held and at least one of them has just gone down
+	 */
+	[[nodiscard]] bool IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode> keys) const;
 
 	/**
 	 * @brief Checks if a mouse button is currently held down
@@ -141,6 +154,26 @@ private:
 	 * @brief Gets the vertical scroll accumulated during the current frame
 	 */
 	[[nodiscard]] f32 GetScrollDeltaY() const { return _scrollDeltaY; }
+
+	/**
+	 * @brief Gets who the pointer's motion currently belongs to
+	 */
+	[[nodiscard]] Types::CursorMode GetCursorMode() const { return _cursorMode; }
+
+private:
+	/**
+	 * @brief Remembers the window cursor modes are applied to
+	 * @details Optional: without a window the mode is only recorded, which is all the tests need.
+	 */
+	void BindWindow(I_Window* window) { _window = window; }
+
+	/**
+	 * @brief Hands the pointer to the cursor or to whatever reads the motion, and tells the window
+	 * @details Restarts the mouse delta: the position source changes with the mode (the real cursor or the virtual
+	 *			one), and the jump between the two is not motion. Unknown is rejected with a warning, since no window can
+	 *			apply it and recording it would leave the state saying something no backend did.
+	 */
+	void SetCursorMode(Types::CursorMode cursorMode);
 
 private:
 	/**
@@ -268,6 +301,9 @@ private:
 	f32 _previousMouseX = 0.0f, _previousMouseY = 0.0f;	///< Cursor position at the end of the previous frame, the delta's origin
 	bool _hasMousePosition = false;						///< False until the first position, and again after a focus loss
 	f32 _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;		///< Scroll accumulated during the current frame
+
+	Types::CursorMode _cursorMode = Types::CursorMode::Normal; ///< Who the pointer's motion belongs to
+	I_Window* _window = nullptr; ///< Non-owning; where cursor modes are applied, null in the tests
 
 	std::array<u32, _Count> _hubHandles{};				///< Handles of the hub subscriptions, used for unsubscription
 };

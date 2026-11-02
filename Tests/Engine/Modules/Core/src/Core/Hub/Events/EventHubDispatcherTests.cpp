@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
@@ -203,4 +203,29 @@ TEST_F(EventHubDispatcherTest, Factory_BuildsTheHubForTheRequestedBackend) {
 
 	ASSERT_NE(hub, nullptr);
 	EXPECT_EQ(hub->GetWindowApi(), WindowApi::GLFW);
+}
+
+/**
+ * @brief Test that a cursor mode change reaches the window channel and nothing else
+ */
+TEST_F(EventHubDispatcherTest, DispatchWindowCursorModeEvent_ReachesTheCursorModeChannel) {
+	ChannelSubscriber<Events::WindowCursorModeEvent> cursorSubscriber;
+	ChannelSubscriber<Events::WindowFocusEvent> focusSubscriber;
+
+	Hub().GetWindowEventHub().onCursorModeMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowCursorModeEvent&>::FromMethod<ChannelSubscriber<Events::WindowCursorModeEvent>,
+			&ChannelSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&cursorSubscriber)
+	);
+	Hub().GetWindowEventHub().onFocusMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowFocusEvent&>::FromMethod<ChannelSubscriber<Events::WindowFocusEvent>,
+			&ChannelSubscriber<Events::WindowFocusEvent>::OnEvent>(&focusSubscriber)
+	);
+
+	Events::WindowCursorModeEvent event{CE::Types::CursorMode::Captured};
+	Hub().DispatchWindowCursorModeEvent(event);
+
+	ASSERT_EQ(cursorSubscriber.calls, 1);
+	ASSERT_TRUE(cursorSubscriber.lastEvent.has_value());
+	EXPECT_TRUE(cursorSubscriber.lastEvent->IsCaptured());
+	EXPECT_EQ(focusSubscriber.calls, 0);
 }

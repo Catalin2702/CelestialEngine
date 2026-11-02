@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #include "Core/Input/Input.hpp"
@@ -46,6 +46,14 @@ bool Input::IsKeyJustPressed(const Types::KeyboardKeyCode keyCode) {
 
 bool Input::IsKeyJustReleased(const Types::KeyboardKeyCode keyCode) {
 	return _instance->_state.IsKeyJustReleased(keyCode);
+}
+
+bool Input::AreKeysPressed(std::span<const Types::KeyboardKeyCode> keys) {
+	return _instance->_state.AreKeysDown(keys);
+}
+
+bool Input::IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode> keys) {
+	return _instance->_state.IsShortcutJustPressed(keys);
 }
 
 bool Input::IsMouseButtonPressed(const Types::MouseButtonCode buttonCode) {
@@ -90,6 +98,18 @@ f32 Input::GetScrollDeltaX() {
 
 f32 Input::GetScrollDeltaY() {
 	return _instance->_state.GetScrollDeltaY();
+}
+
+Types::CursorMode Input::GetCursorMode() {
+	return _instance->_state.GetCursorMode();
+}
+
+void Input::SetCursorMode(Types::CursorMode mode) {
+	_instance->_state.SetCursorMode(mode);
+}
+
+void Input::BindWindow(I_Window* window) {
+	_instance->_state.BindWindow(window);
 }
 
 void Input::EndFrame() {

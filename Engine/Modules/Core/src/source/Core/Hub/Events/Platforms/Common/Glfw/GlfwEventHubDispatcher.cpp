@@ -4,13 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Types/KeyCode/KeyCode.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -117,6 +116,11 @@ void GlfwEventHubDispatcher::ReceiveWindowErrorEvent(const int errorCode, const 
 void GlfwEventHubDispatcher::ReceiveWindowFocusEvent(const int focused) {
 	Events::WindowFocusEvent windowFocusEvent{focused == GLFW_TRUE};
 	DispatchWindowFocusEvent(windowFocusEvent);
+}
+
+void GlfwEventHubDispatcher::ReceiveWindowCursorModeEvent(const Types::CursorMode cursorMode) {
+	Events::WindowCursorModeEvent windowCursorModeEvent{cursorMode};
+	DispatchWindowCursorModeEvent(windowCursorModeEvent);
 }
 
 }

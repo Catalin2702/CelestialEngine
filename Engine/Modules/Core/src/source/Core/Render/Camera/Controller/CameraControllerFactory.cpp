@@ -4,13 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-02
 //
 
-#include "Core/Render/Camera/Controller/CameraControllerDescriptor.hpp"
-#include "Core/Render/Camera/Controller/I_CameraController.hpp"
-#include "Core/Render/Camera/Controller/StaticCameraController.hpp"
-#include "Core/Render/Camera/Controller/FreeCameraController.hpp"
+#include "Core/Render/Camera/Controller/Controller.hpp"
 #include "Tools/Tools.hpp"
 
 #include <format>

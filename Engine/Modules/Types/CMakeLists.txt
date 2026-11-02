@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-10-31
+# Updated: 2026-11-02
 #
 
 set(HEADERS
@@ -48,6 +48,7 @@ set(HEADERS
 
 
 	# Window
+	src/include/Types/Window/CursorMode.hpp
 	src/include/Types/Window/Window.hpp
 	src/include/Types/Window/WindowProps.hpp
 

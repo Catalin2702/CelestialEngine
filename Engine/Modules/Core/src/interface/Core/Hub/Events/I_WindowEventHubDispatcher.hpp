@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -14,8 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
-#include "Events/GenericEvent.hpp"
-#include "Events/WindowEvent.hpp"
+#include "Events/Events.hpp"
 
 
 namespace CE::Core {
@@ -24,7 +23,7 @@ namespace CE::Core {
  * @class I_WindowEventHubDispatcher
  * @brief Interface for the hub side that multicasts window events
  * @details Implemented by the platform event hub dispatchers. Each Dispatch* hook forwards a window event
- *			(resize/close/error/focus) to every subscriber of the matching multicast dispatcher. Defaults are no-ops so an
+ *			(resize/close/error/focus/cursor mode) to every subscriber of the matching multicast dispatcher. Defaults are no-ops so an
  *			implementation only overrides the events it actually routes.
  */
 class CE_CORE_API I_WindowEventHubDispatcher {
@@ -48,6 +47,10 @@ public:
 	 * @brief Hook multicasting the window focus event to the hub subscribers (no-op by default)
 	 */
 	virtual void DispatchWindowFocusEvent(Events::WindowFocusEvent&) {}
+	/**
+	 * @brief Hook multicasting the window cursor mode event to the hub subscribers (no-op by default)
+	 */
+	virtual void DispatchWindowCursorModeEvent(Events::WindowCursorModeEvent&) {}
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-01
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -41,16 +41,16 @@ private:
 	void _Recalculate() const;
 
 private:
-	Types::ClipConvention _convention;
+	Types::ClipConvention _convention = Types::ClipConvention::None;
 	mutable bool _dirty = true;
 
-	f32 _nearClip;
-	f32 _farClip;
+	f32 _nearClip = 0.0_f32;
+	f32 _farClip = 0.0_f32;
 
-	u32 _width;
-	u32 _height;
+	u32 _width = 0;
+	u32 _height = 0;
 
-	f32 _orthographicSize;
+	f32 _orthographicSize = 0.0_f32;
 
 	mutable glm::mat4 _projection{1.0_f32};
 };

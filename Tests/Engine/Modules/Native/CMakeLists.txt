@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-11-02
 #
 
 enable_testing()
@@ -13,6 +13,7 @@ set(SOURCES
 	src/native.cpp
 
 	$<$<PLATFORM_ID:Darwin>:
+		src/Apple/AppleHeadersTests.cpp
 		src/Apple/Bridge/ImGui/ImGuiBridgeTests.cpp
 		src/Apple/MetalCpp/AppKit/NsViewEventDispatcherTests.cpp
 		src/Apple/MetalCpp/AppKit/NsWindowEventDispatcherTests.cpp

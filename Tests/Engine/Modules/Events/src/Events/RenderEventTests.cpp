@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-02
 //
 
-#include <Events/I_Event.hpp>
-#include <Events/RenderEvent.hpp>
+#include <Events/Events.hpp>
 
 #include <gtest/gtest.h>
 

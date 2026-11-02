@@ -4,11 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #include "Core/Input/InputState.hpp"
+#include "Core/Window/I_Window.hpp"
+#include "Tools/Tools.hpp"
 
+#include <algorithm>
 #include <utility>
 
 
@@ -55,6 +58,23 @@ bool InputState::IsKeyJustReleased(const Types::KeyboardKeyCode keyCode) const {
 	return KeyIndex(keyCode, index) and _keysJustReleased[index];
 }
 
+bool InputState::AreKeysDown(std::span<const Types::KeyboardKeyCode> keys) const {
+	if (keys.empty()) [[unlikely]]
+		return false;
+
+	return std::ranges::all_of(keys, [this](const Types::KeyboardKeyCode key) {
+		return IsKeyDown(key);
+	});
+}
+
+bool InputState::IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode> keys) const {
+	// All held, and one of them went down this frame: fires once per press whichever key completes the chord, and not
+	// again on the following frames while it stays held.
+	return AreKeysDown(keys) and std::ranges::any_of(keys, [this](const Types::KeyboardKeyCode key) {
+		return IsKeyJustPressed(key);
+	});
+}
+
 bool InputState::IsMouseButtonDown(const Types::MouseButtonCode buttonCode) const {
 	std::size_t index = 0;
 	return ButtonIndex(buttonCode, index) and _buttonsDown[index];
@@ -68,6 +88,24 @@ bool InputState::IsMouseButtonJustPressed(const Types::MouseButtonCode buttonCod
 bool InputState::IsMouseButtonJustReleased(const Types::MouseButtonCode buttonCode) const {
 	std::size_t index = 0;
 	return ButtonIndex(buttonCode, index) and _buttonsJustReleased[index];
+}
+
+void InputState::SetCursorMode(const Types::CursorMode cursorMode) {
+	if (cursorMode == Types::CursorMode::Unknown) [[unlikely]] {
+		CE_CORE_WARN("InputState::SetCursorMode: Unknown is not a mode a window can apply, ignored.");
+		return;
+	}
+
+	if (_cursorMode == cursorMode)
+		return;
+
+	_cursorMode = cursorMode;
+
+	if (_window)
+		_window->SetCursorMode(cursorMode);
+
+	// The same rebase a focus loss does: the first position after the switch becomes the delta's origin.
+	_hasMousePosition = false;
 }
 
 void InputState::EndFrame() {
@@ -93,6 +131,10 @@ void InputState::Reset() {
 
 	// The cursor moves elsewhere while the window is unfocused: its first position back must not count as motion.
 	_hasMousePosition = false;
+
+	// A captured cursor is detached from the mouse process-wide on macOS: kept captured, it would stay hidden and frozen
+	// over whatever application the user switched to.
+	SetCursorMode(Types::CursorMode::Normal);
 }
 
 void InputState::_OnKeyPressed(const Events::KeyPressedEvent& event) {

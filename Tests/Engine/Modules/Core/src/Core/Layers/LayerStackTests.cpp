@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
-#include <Core/Layers/I_Layer.hpp>
-#include <Core/Layers/LayerStack.hpp>
+#include <Core/Layers/Layers.hpp>
 #include <Types/Var/Vars.hpp>
 
 #include <gtest/gtest.h>

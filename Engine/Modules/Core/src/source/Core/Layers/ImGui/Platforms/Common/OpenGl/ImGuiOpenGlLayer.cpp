@@ -4,16 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
-#include "Core/Application/Application.hpp"
-#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
-#include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
+#include "Core/Core.hpp"
+#include "Events/Events.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/ImGui/ImGui.hpp"
@@ -34,9 +31,9 @@ ImGuiOpenGlLayer::ImGuiOpenGlLayer(): I_ImGuiLayer("ImGuiOpenGlLayer") {}
 ImGuiOpenGlLayer::~ImGuiOpenGlLayer() {
 	// Explicit, though _subscriptions would release itself a moment later anyway: the dispatchers must stop being able
 	// to call back into this layer before _Shutdown starts tearing its ImGui context down.
-	UnsubscribeFromEventHub();
+	ImGuiOpenGlLayer::UnsubscribeFromEventHub();
 
-	_Shutdown();
+	ImGuiOpenGlLayer::_Shutdown();
 }
 
 void ImGuiOpenGlLayer::OnRender() const {
@@ -173,21 +170,37 @@ void ImGuiOpenGlLayer::_Shutdown() {
 }
 
 void ImGuiOpenGlLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 }
 
 void ImGuiOpenGlLayer::_OnMouseDragged(Events::MouseDraggedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 }
 
 void ImGuiOpenGlLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 }
 
 void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;

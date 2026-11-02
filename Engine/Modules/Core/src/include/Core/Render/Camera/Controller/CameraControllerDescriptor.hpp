@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-01
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_CORE_RENDER_CAMERA_CONTROLLER_CAMERACONTROLLERDESCRIPTOR_HPP
 #define CE_CORE_RENDER_CAMERA_CONTROLLER_CAMERACONTROLLERDESCRIPTOR_HPP
 
+#include "Core/Input/KeyShortcut.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 
@@ -22,6 +23,19 @@
 
 
 namespace CE::Core {
+
+/**
+ * @enum CameraLookTrigger
+ * @brief When a controller turns the camera with the pointer
+ * @details The pointer cannot serve the UI and the camera at once, so something has to decide which of the two a
+ *			motion is for. CursorCaptured is Unreal's answer: the pointer belongs to one or the other, switched by
+ *			Input::SetCursorMode, and the camera never fights the cursor.
+ */
+enum class CameraLookTrigger: u8 {
+	CursorCaptured = 0,	///< While Input holds the cursor captured: the cursor is hidden and frozen, the camera gets the motion
+	ButtonHeld,			///< While lookButton is held, the visible cursor still moving: needs a real secondary button
+	Always				///< On every motion, captured or not
+};
 
 /**
  * @struct CameraLookSettings
@@ -100,8 +114,9 @@ struct CE_CORE_API CameraStaticControllerDescriptor {
  * @struct CameraFreeControllerDescriptor
  * @brief Unconstrained fly camera - the editor and debug default
  * @details Translates on all three axes in its own local basis and looks anywhere, ignoring gravity and collision.
- *			Holding lookButton to rotate is what lets the same pointer still click on the scene; a game that owns the
- *			whole window sets requireLookButton to false and rotates on every mouse motion.
+ *			By default it looks while the cursor is captured, and captureShortcut toggles the capture: with the cursor
+ *			free the pointer clicks the UI, with it captured every motion turns the camera. lookTrigger switches to
+ *			the hold-a-button style instead, for a mouse with a right button to hold.
  */
 struct CE_CORE_API CameraFreeControllerDescriptor {
 	static constexpr auto TYPE = Types::CameraController::Free;
@@ -109,9 +124,14 @@ struct CE_CORE_API CameraFreeControllerDescriptor {
 	CameraMoveSettings move;
 	CameraLookSettings look;
 
-	/// Held to rotate the camera; ignored when requireLookButton is false.
+	CameraLookTrigger lookTrigger = CameraLookTrigger::CursorCaptured;
+
+	/// Held to rotate the camera; only read when lookTrigger is ButtonHeld.
 	Types::MouseButtonCode lookButton = Types::MouseButtonCode::Right;
-	bool requireLookButton = true;
+
+	/// Toggles the cursor capture. Shift+F1 is the chord Unreal gives the cursor back with during Play In Editor; an
+	/// empty shortcut leaves the capture to someone else.
+	KeyShortcut captureShortcut{Types::KeyboardKeyCode::LeftShift, Types::KeyboardKeyCode::F1};
 
 	/// Multiplier applied to move.speed per wheel notch, so the wheel retunes the fly speed instead of dolling.
 	f32 speedScrollStep = 1.1_f32;

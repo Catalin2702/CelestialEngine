@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-11-02
 //
 
-#include "Core/Hub/Events/I_EventHubDispatcher.hpp"
-#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#include "Core/Hub/Hub.hpp"
 #include "Tools/Tools.hpp"
 
 #if CE_PLATFORM_MACOS

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-02
 //
 
 /**
@@ -20,6 +20,7 @@
 #ifndef CE_TYPES_WINDOW_WINDOW_HPP
 #define CE_TYPES_WINDOW_WINDOW_HPP
 
+#include "Types/Window/CursorMode.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 #endif //CE_TYPES_WINDOW_WINDOW_HPP

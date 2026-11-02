@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -19,18 +19,14 @@
 // ---- Use in CelestialEngine applications ------
 // One concrete class for every backend: the window, the renderer and the run loop are chosen at
 // runtime from the window properties, so there is nothing here for a client to pick between.
-#include <Core/Application/Application.hpp>
+#include <Core/Core.hpp>
 // -----------------------------------------------
 
 // ---- Event ------------------------------------
-#include <Events/ApplicationEvent.hpp>
-#include <Events/I_Event.hpp>
-#include <Events/KeyEvent.hpp>
-#include <Events/MouseEvent.hpp>
+#include <Events/Events.hpp>
 // -----------------------------------------------
 
 // ---- Input ------------------------------------
-#include <Core/Input/Input.hpp>
 // -----------------------------------------------
 
 // ---- Tools ------------------------------------

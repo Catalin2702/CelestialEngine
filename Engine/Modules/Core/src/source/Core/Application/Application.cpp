@@ -4,29 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-01
+// Updated: 2026-11-02
 //
 
 #include "Core/Application/Application.hpp"
 
-#include "Core/Input/Input.hpp"
-#include "Core/Layers/Scene/SceneLayer.hpp"
-#include "Core/Render/Camera/CameraDescriptor.hpp"
-#include "Core/Render/Camera/Controller/CameraControllerDescriptor.hpp"
-#include "Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp"
-#include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
-#include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
-#include "Core/Render/Buffer/I_Buffer.hpp"
-#include "Core/Render/Device/I_GraphicDevice.hpp"
-#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
-#include "Core/Render/Pipeline/PipelineDescriptor.hpp"
-#include "Core/Render/Renderer/I_Renderer.hpp"
-#include "Core/Render/Renderer/DrawCommand.hpp"
-#include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
-#include "Core/Render/Swapchain/I_Swapchain.hpp"
-#include "Core/RunLoop/I_RunLoop.hpp"
-#include "Core/Window/I_Platform.hpp"
-#include "Core/Window/I_Window.hpp"
+#include "Core/Core.hpp"
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
 
@@ -218,8 +201,8 @@ void Application::InitImguiLayer() {
 }
 
 void Application::_MakeSceneLayer() {
-	// Orthographic and Static: the only projection and the only controller implemented so far, and the factories throw
-	// on anything else rather than hand back something that does not work.
+	// Orthographic is still the only projection, and the factories throw on anything not implemented yet rather than
+	// hand back something that does not work.
 	constexpr CameraDescriptor cameraDescriptor{
 		.position = {0.0_f32, 0.0_f32, 1.0_f32},
 	};
@@ -239,9 +222,8 @@ void Application::_MakeSceneLayer() {
 
 	constexpr CameraControllerDescriptor controllerDescriptor{
 		.descriptor = CameraFreeControllerDescriptor{
-			.move = {},
-			.look = {},
-			.requireLookButton = false,
+			.move = {.speed = 1._f32},
+			.look = {}
 		}
 	};
 
@@ -356,6 +338,7 @@ void Application::_InitWindow() {
 	// Input must exist before the subscriptions below: the state it owns has to be the hub's first subscriber, so it
 	// has already updated when every other handler runs.
 	Input::Init();
+	Input::BindWindow(_window.get());
 
 	_SetEventHubDispatcher();
 	_SubscribeToEventHubDispatcher();

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Camera/Controller/FreeCameraController.hpp"
@@ -31,17 +31,43 @@ void FreeCameraController::OnAttach(Camera& camera) {
 	_velocity = glm::vec3{0._f32};
 }
 
-void FreeCameraController::OnDetach() {}
+void FreeCameraController::OnDetach() {
+	// A capture this controller started must not outlive it: the next controller may have no shortcut to undo it, and
+	// would inherit a hidden, frozen cursor. One captured by someone else is theirs to release.
+	if (std::exchange(_capturedCursor, false) and Input::IsCursorCaptured())
+		Input::SetCursorMode(Types::CursorMode::Normal);
+}
 
 void FreeCameraController::OnUpdate(Camera& camera, const f32 deltaTime) {
+	_UpdateCapture();
 	// Look first, so this frame's movement already follows the direction the camera faces now.
 	_UpdateLook(camera);
 	_UpdateSpeed();
 	_UpdateMove(camera, deltaTime);
 }
 
+bool FreeCameraController::_IsLooking() const {
+	switch (_descriptor.lookTrigger) {
+		case CameraLookTrigger::CursorCaptured: return Input::IsCursorCaptured();
+		case CameraLookTrigger::ButtonHeld: return Input::IsMouseButtonPressed(_descriptor.lookButton);
+		case CameraLookTrigger::Always: return true;
+	}
+
+	// No default inside the switch: -Wswitch then flags any trigger added to the enum and not handled above. This is
+	// only reached by a value outside the enum.
+	return false;
+}
+
+void FreeCameraController::_UpdateCapture() {
+	if (not Input::IsShortcutJustPressed(_descriptor.captureShortcut))
+		return;
+
+	_capturedCursor = not Input::IsCursorCaptured();
+	Input::SetCursorMode(_capturedCursor ? Types::CursorMode::Captured : Types::CursorMode::Normal);
+}
+
 void FreeCameraController::_UpdateLook(Camera& camera) {
-	if (_descriptor.requireLookButton and not Input::IsMouseButtonPressed(_descriptor.lookButton))
+	if (not _IsLooking())
 		return;
 
 	const auto [deltaX, deltaY] = Input::GetMouseDeltaXY();

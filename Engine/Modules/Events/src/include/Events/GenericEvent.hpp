@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_EVENTS_GENERICEVENT_HPP
 #define CE_EVENTS_GENERICEVENT_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Event.hpp"
+#include "Define/Define.hpp"
 
 #include "Events/I_Event.hpp"
 

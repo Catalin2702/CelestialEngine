@@ -4,26 +4,19 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
 #include "Apple/Bridge/ImGui/ImGuiBridge.h"
-#include "Core/Application/Application.hpp"
-#include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
-#include "Core/Render/Renderer/I_Renderer.hpp"
-#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
-#include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
-#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
+#include "Core/Core.hpp"
+#include "Events/Events.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/ImGui/ImGui.hpp"
 
 #include <Metal/Metal.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
 
 #include <imgui.h>
 
@@ -36,10 +29,10 @@ ImGuiMetalLayer::ImGuiMetalLayer(): I_ImGuiLayer("ImGuiMetalLayer"), _window(std
 ImGuiMetalLayer::~ImGuiMetalLayer() {
 	// Explicit, though _subscriptions would release itself a moment later anyway: the dispatchers must stop being able
 	// to call back into this layer before _Shutdown starts tearing its ImGui context down.
-	UnsubscribeFromEventHub();
+	ImGuiMetalLayer::UnsubscribeFromEventHub();
 
 	// Ensure _Shutdown is called if OnDetach was not called
-	_Shutdown();
+	ImGuiMetalLayer::_Shutdown();
 }
 
 void ImGuiMetalLayer::OnRender() const {
@@ -162,7 +155,7 @@ void ImGuiMetalLayer::_Init() {
 
 		auto& app = Application::Get();
 
-		auto* const window = dynamic_cast<CocoaWindow*>(&app.GetWindow());
+		const auto* const window = dynamic_cast<const CocoaWindow*>(&app.GetWindow());
 		if (not window) [[unlikely]] {
 			constexpr auto error = "ImGuiMetalLayer::_Init: the Metal ImGui layer needs a Cocoa window!";
 			CE_CORE_ERROR(error);
@@ -215,21 +208,37 @@ void ImGuiMetalLayer::_Shutdown() {
 }
 
 void ImGuiMetalLayer::_OnMouseMoved(Events::MouseMovedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 }
 
 void ImGuiMetalLayer::_OnMouseDragged(Events::MouseDraggedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMousePosEvent(event.GetX(), event.GetY());
 }
 
 void ImGuiMetalLayer::_OnMouseScrolled(Events::MouseWheelScrolledEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	auto& io = ImGui::GetIO();
 	io.AddMouseWheelEvent(event.GetXOffset(), event.GetYOffset());
 }
 
 void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& event) const {
+	// Captured, the pointer belongs to the camera: the virtual position must not hover or click an invisible UI.
+	if (Input::IsCursorCaptured())
+		return;
+
 	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;

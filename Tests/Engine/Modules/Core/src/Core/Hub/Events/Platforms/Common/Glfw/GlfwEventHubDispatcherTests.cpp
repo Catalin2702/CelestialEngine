@@ -4,14 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
 
 #include <Tools/Tools.hpp>
-#include <Types/KeyCode/KeyboardKeyCode.hpp>
-#include <Types/KeyCode/MouseButtonCode.hpp>
+#include <Types/Types.hpp>
 
 #include <GLFW/glfw3.h>
 #include <gtest/gtest.h>
@@ -410,4 +409,25 @@ TEST_F(GlfwEventHubDispatcherTest, Unsubscribe_StopsDeliveringEvents) {
 	_hub.ReceiveWindowCloseEvent();
 
 	EXPECT_EQ(subscriber.calls, 1);
+}
+
+/**
+ * @brief Test that a cursor mode applied by the window becomes a WindowCursorModeEvent carrying it
+ */
+TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowCursorModeEvent_ProducesTheMatchingEvent) {
+	HubSubscriber<Events::WindowCursorModeEvent> subscriber;
+	_hub.windowEventHub.onCursorModeMulticastDispatcher.Subscribe(
+		EventDelegate<Events::WindowCursorModeEvent&>::FromMethod<HubSubscriber<Events::WindowCursorModeEvent>,
+			&HubSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&subscriber)
+	);
+
+	_hub.ReceiveWindowCursorModeEvent(CE::Types::CursorMode::Captured);
+
+	ASSERT_EQ(subscriber.calls, 1);
+	EXPECT_EQ(subscriber.Last().GetCursorMode(), CE::Types::CursorMode::Captured);
+
+	_hub.ReceiveWindowCursorModeEvent(CE::Types::CursorMode::Normal);
+
+	ASSERT_EQ(subscriber.calls, 2);
+	EXPECT_EQ(subscriber.Last().GetCursorMode(), CE::Types::CursorMode::Normal);
 }

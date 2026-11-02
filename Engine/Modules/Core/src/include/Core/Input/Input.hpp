@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -15,10 +15,13 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "InputState.hpp"
+#include "KeyShortcut.hpp"
 
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Types/KeyCode/KeyCode.hpp"
 
+#include <array>
+#include <concepts>
+#include <span>
 #include <utility>
 
 
@@ -80,6 +83,45 @@ public:
 	 * @return bool True only in the frame the key went up
 	 */
 	static bool IsKeyJustReleased(Types::KeyboardKeyCode keyCode);
+
+	/**
+	 * @brief Checks if every key of a chord is held at the same time
+	 * @return bool True while all of them are down; false for an empty chord
+	 * @details For a continuous action (Ctrl held while dragging). A one-shot command wants IsShortcutJustPressed,
+	 *			which does not fire again on every frame the keys stay down.
+	 */
+	static bool AreKeysPressed(std::span<const Types::KeyboardKeyCode> keys);
+
+	/**
+	 * @brief AreKeysPressed(LeftControl, LeftShift, S), without building the array by hand
+	 */
+	template<std::same_as<Types::KeyboardKeyCode>... Keys> requires (sizeof...(Keys) > 0)
+	static bool AreKeysPressed(const Keys... keys) {
+		const std::array<Types::KeyboardKeyCode, sizeof...(Keys)> chord{keys...};
+		return AreKeysPressed(std::span<const Types::KeyboardKeyCode>{chord});
+	}
+
+	/**
+	 * @brief Checks if a chord was completed during the current frame, to run a shortcut once per press
+	 * @return bool True in the one frame every key is held and at least one has just gone down
+	 * @details The order the keys are pressed in does not matter: Shift then F1 and F1 then Shift both fire, on the
+	 *			frame the second key goes down. Extra keys held alongside do not prevent it.
+	 */
+	static bool IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode> keys);
+
+	/**
+	 * @brief IsShortcutJustPressed(LeftShift, F1), without building the array by hand
+	 */
+	template <std::same_as<Types::KeyboardKeyCode>... Keys> requires (sizeof...(Keys) > 0)
+	static bool IsShortcutJustPressed(const Keys... keys) {
+		const std::array<Types::KeyboardKeyCode, sizeof...(Keys)> chord{keys...};
+		return IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode>{chord});
+	}
+
+	/**
+	 * @brief IsShortcutJustPressed for a shortcut stored in a descriptor
+	 */
+	static bool IsShortcutJustPressed(const KeyShortcut& shortcut) { return IsShortcutJustPressed(shortcut.GetKeys()); }
 
 	/**
 	 * @brief Checks if a specific mouse button is currently pressed
@@ -151,6 +193,32 @@ public:
 	 * @return f32 The Y scroll delta
 	 */
 	static f32 GetScrollDeltaY();
+
+	/**
+	 * @brief Gets who the pointer's motion currently belongs to
+	 */
+	static Types::CursorMode GetCursorMode();
+
+	/**
+	 * @brief Shorthand for GetCursorMode() == Captured
+	 */
+	static bool IsCursorCaptured() { return GetCursorMode() == Types::CursorMode::Captured; }
+
+public:
+	/**
+	 * @brief Decides who the pointer's motion goes to: the cursor, or whatever reads the mouse delta
+	 * @param mode Normal moves the visible cursor; Captured hides it, holds it still and keeps the delta flowing with
+	 *			no screen edge to stop it - what a mouse-look camera wants
+	 * @details The Unreal-style switch between UI input and game input. Applied to the window straight away, and
+	 *			released automatically when the window loses focus.
+	 */
+	static void SetCursorMode(Types::CursorMode mode);
+
+	/**
+	 * @brief Gives the input system the window SetCursorMode acts on
+	 * @details Called by the application once the window exists. Without one the mode is only recorded.
+	 */
+	static void BindWindow(I_Window* window);
 
 public:
 	/**

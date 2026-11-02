@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -48,6 +48,10 @@ void GlfwWindowEventHandler::DispatchCloseEvent() const {
 
 void GlfwWindowEventHandler::DispatchFocusEvent(const int focused) const {
 	windowStateEvents.onFocusDispatcher.Dispatch(focused);
+}
+
+void GlfwWindowEventHandler::DispatchCursorModeEvent(const Types::CursorMode cursorMode) const {
+	windowStateEvents.onCursorModeDispatcher.Dispatch(cursorMode);
 }
 
 void GlfwWindowEventHandler::DispatchKeyEvent(const int key, const int action, const int scancode, const int mods) const {
@@ -101,7 +105,8 @@ GlfwWindow::GlfwWindow(GlfwWindow&& other) noexcept:
 	_height(other._height),
 	_frameWidth(other._frameWidth),
 	_frameHeight(other._frameHeight),
-	_pressedMouseButtons(other._pressedMouseButtons) {
+	_pressedMouseButtons(other._pressedMouseButtons),
+	_cursorMode(other._cursorMode) {
 #if not CE_PLATFORM_MACOS
 	_windowedX = other._windowedX;
 	_windowedY = other._windowedY;
@@ -130,6 +135,7 @@ GlfwWindow& GlfwWindow::operator = (GlfwWindow&& other) noexcept {
 	_frameWidth = other._frameWidth;
 	_frameHeight = other._frameHeight;
 	_pressedMouseButtons = other._pressedMouseButtons;
+	_cursorMode = other._cursorMode;
 
 #if not CE_PLATFORM_MACOS
 	_windowedX = other._windowedX;
@@ -163,6 +169,7 @@ void GlfwWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
 
 	windowStateEvents.onCloseDispatcher.Bind(EventDelegate<>::FromMethod<Hub, &Hub::ReceiveWindowCloseEvent>(hub));
 	windowStateEvents.onFocusDispatcher.Bind(EventDelegate<int>::FromMethod<Hub, &Hub::ReceiveWindowFocusEvent>(hub));
+	windowStateEvents.onCursorModeDispatcher.Bind(EventDelegate<Types::CursorMode>::FromMethod<Hub, &Hub::ReceiveWindowCursorModeEvent>(hub));
 
 	// The hub's resize event carries the drawable size, not the window size, because that is what the renderer and
 	// ImGui measure in - so it is the framebuffer callback that feeds it, not the window one.
@@ -256,6 +263,37 @@ void GlfwWindow::SetTitle(const std::string_view title) {
 	glfwSetWindowTitle(window, terminated.c_str());
 }
 
+void GlfwWindow::SetCursorMode(const Types::CursorMode cursorMode) {
+	// The same guard CocoaWindow needs for its reference-counted hide: here it only keeps the event from repeating.
+	if (cursorMode == _cursorMode)
+		return;
+
+	if (cursorMode == Types::CursorMode::Unknown) [[unlikely]] {
+		CE_CORE_WARN("GlfwWindow::SetCursorMode: Unknown cursor mode set.");
+		return;
+	}
+
+	auto* const window = _Native();
+	if (not window) [[unlikely]]
+		return;
+
+	_cursorMode = cursorMode;
+	const bool captured = _cursorMode == Types::CursorMode::Captured;
+
+	// GLFW_CURSOR_DISABLED is the captured mode exactly: the cursor is hidden and held in the window, and the position
+	// callback keeps reporting a virtual position that grows past the screen edge. GLFW also lets go of it on focus
+	// loss and takes it back on focus gain by itself.
+	glfwSetInputMode(window, GLFW_CURSOR, captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+
+	// Raw motion skips the OS pointer acceleration, which is what a camera wants. GLFW offers it on Windows and X11
+	// only; on macOS the call is skipped and the accelerated motion is used.
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, captured ? GLFW_TRUE : GLFW_FALSE);
+
+	// Raised after the mode is applied, so subscribers learn what took effect rather than what was asked.
+	windowEventHandler.DispatchCursorModeEvent(_cursorMode);
+}
+
 void GlfwWindow::SetSwapInterval(const i32 interval) {
 	auto* const window = _Native();
 	if (not window) [[unlikely]]
@@ -263,6 +301,15 @@ void GlfwWindow::SetSwapInterval(const i32 interval) {
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(interval);
+}
+
+std::string GlfwWindow::GetTitle() const {
+	auto* const window = _Native();
+	if (not window) [[unlikely]] {
+		return "";
+	}
+
+	return glfwGetWindowTitle(window);
 }
 
 f32 GlfwWindow::GetContentScale() const {

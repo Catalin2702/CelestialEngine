@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_TYPES_WINDOW_WINDOWPROPS_HPP
 #define CE_TYPES_WINDOW_WINDOWPROPS_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Types.hpp"
+#include "Define/Define.hpp"
 #include "Types/Render/GraphicsApi.hpp"
 #include "Types/Var/Vars.hpp"
 

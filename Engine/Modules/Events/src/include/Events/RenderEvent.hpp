@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_EVENTS_RENDEREVENT_HPP
 #define CE_EVENTS_RENDEREVENT_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Event.hpp"
+#include "Define/Define.hpp"
 
 #include "Events/I_Event.hpp"
 

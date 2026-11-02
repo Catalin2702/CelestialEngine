@@ -4,13 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
-#include "Core/Render/Command/I_CommandEncoder.hpp"
-#include "Core/Render/Command/RenderPassDescriptor.hpp"
-#include "Core/Render/Command/Viewport.hpp"
+#include "Core/Render/Command/Command.hpp"
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Core/Render/Pipeline/PipelineDescriptor.hpp"
 #include "Core/Render/Renderer/ForwardRenderer.hpp"

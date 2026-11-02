@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_EVENTS_I_EVENT_HPP
 #define CE_EVENTS_I_EVENT_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Types.hpp"
+#include "Define/Define.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include <format>
@@ -41,6 +40,7 @@ enum class EventType: u8 {
 	WindowClose,									///< Window close event
 	WindowResize,									///< Window resize event
 	WindowFocus,									///< Window focus change event (carries whether focus was gained or lost)
+	WindowCursorMode,								///< Cursor mode change event (carries who the pointer's motion now belongs to)
 	WindowMoved,									///< Window moved event
 
 	AppTick,										///< Application tick event
@@ -107,6 +107,7 @@ constexpr std::string_view format_as(const EventType eventType) {
 		case EventType::WindowClose: return "WindowClose";
 		case EventType::WindowResize: return "WindowResize";
 		case EventType::WindowFocus: return "WindowFocus";
+		case EventType::WindowCursorMode: return "WindowCursorMode";
 		case EventType::WindowMoved: return "WindowMoved";
 		case EventType::AppTick: return "AppTick";
 		case EventType::AppUpdate: return "AppUpdate";

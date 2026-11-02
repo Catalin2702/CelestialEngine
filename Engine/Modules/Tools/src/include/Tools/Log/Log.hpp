@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,8 +12,7 @@
 #ifndef CE_TOOLS_LOG_LOG_HPP
 #define CE_TOOLS_LOG_LOG_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Log.hpp"
+#include "Define/Define.hpp"
 
 #include <memory>
 #include <spdlog/spdlog.h>

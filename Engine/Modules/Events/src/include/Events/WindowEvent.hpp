@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,10 +12,10 @@
 #ifndef CE_EVENTS_WINDOWEVENT_HPP
 #define CE_EVENTS_WINDOWEVENT_HPP
 
-#include "Define/DynamicLinker.hpp"
-#include "Define/Event.hpp"
+#include "Define/Define.hpp"
 
 #include "Events/I_Event.hpp"
+#include "Types/Window/CursorMode.hpp"
 
 #include <string>
 
@@ -124,6 +124,46 @@ public:
 
 private:
 	bool _focused;									///< True when the window gained input focus, false when it lost it
+};
+
+/**
+ * @class WindowCursorModeEvent
+ * @brief Event triggered when the window hands the pointer to the cursor or takes it away from it
+ * @details Raised by the window after it applied a new Types::CursorMode, so it reports what actually happened rather
+ *			than what was asked. Subscribers that draw or hit-test the cursor (ImGui, a crosshair, a tooltip) use it to
+ *			react to the switch once, instead of querying Input::GetCursorMode on every event.
+ */
+class CE_EVENTS_API WindowCursorModeEvent: public I_Event {
+public:
+	/**
+	 * @brief Constructor
+	 * @param cursorMode The mode the window has just switched to
+	 * @param isMutable Flag indicating whether the event is mutable. If not it can't be consumed
+	 */
+	explicit WindowCursorModeEvent(Types::CursorMode cursorMode, bool isMutable = true);
+
+public:
+	/**
+	 * @brief Gets the mode the window has just switched to
+	 */
+	[[nodiscard]] Types::CursorMode GetCursorMode() const { return _cursorMode; }
+
+	/**
+	 * @brief Shorthand for GetCursorMode() == Captured
+	 */
+	[[nodiscard]] bool IsCaptured() const { return _cursorMode == Types::CursorMode::Captured; }
+
+	/**
+	 * @brief Converts the event to a string representation
+	 * @return std::string String containing the new cursor mode
+	 */
+	[[nodiscard]] std::string ToString() const override;
+
+	EVENT_CLASS_TYPE(WindowCursorMode)
+	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
+
+private:
+	Types::CursorMode _cursorMode;					///< The mode the window has just switched to
 };
 
 }

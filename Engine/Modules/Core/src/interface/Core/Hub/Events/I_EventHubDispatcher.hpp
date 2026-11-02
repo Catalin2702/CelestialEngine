@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -70,6 +70,7 @@ struct WindowEventHub {
 	MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
 	MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
 	MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher;	///< Input state resets held keys on focus loss
+	MulticastDispatcher<Events::WindowCursorModeEvent&> onCursorModeMulticastDispatcher;	///< The window applied a new cursor mode
 };
 
 /**
@@ -143,6 +144,7 @@ public:
 	void DispatchWindowCloseEvent(Events::WindowCloseEvent& windowCloseEvent) override;
 	void DispatchWindowErrorEvent(Events::ErrorEvent& windowErrorEvent) override;
 	void DispatchWindowFocusEvent(Events::WindowFocusEvent& windowFocusEvent) override;
+	void DispatchWindowCursorModeEvent(Events::WindowCursorModeEvent& windowCursorModeEvent) override;
 
 	void DispatchRenderChangeVSyncEvent(Events::VSyncEvent& vSyncChangeEvent) override;
 

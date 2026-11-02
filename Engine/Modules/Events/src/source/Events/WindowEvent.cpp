@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-11-02
 //
 
 #include "Events/WindowEvent.hpp"
@@ -25,6 +25,13 @@ WindowFocusEvent::WindowFocusEvent(const bool focused, const bool isMutable):
 
 std::string WindowFocusEvent::ToString() const {
 	return std::format("{0}: {1}", GetName(), _focused ? "gained" : "lost");
+}
+
+WindowCursorModeEvent::WindowCursorModeEvent(const Types::CursorMode cursorMode, const bool isMutable):
+	I_Event(isMutable), _cursorMode(cursorMode) {}
+
+std::string WindowCursorModeEvent::ToString() const {
+	return std::format("{0}: {1}", GetName(), _cursorMode);
 }
 
 }

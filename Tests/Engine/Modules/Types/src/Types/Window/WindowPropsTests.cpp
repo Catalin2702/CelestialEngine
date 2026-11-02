@@ -4,12 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-11-02
 //
 
-#include <Types/Window/WindowProps.hpp>
-
-#include <Types/Render/Render.hpp>
+#include <Types/Types.hpp>
 
 #include <gtest/gtest.h>
 

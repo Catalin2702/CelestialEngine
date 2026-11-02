@@ -4,15 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 // Include the macros we want to test
-#include <Define/Bind.hpp>
-#include <Define/Event.hpp>
-#include <Define/Render.hpp>
-#include <Define/Types.hpp>
-#include <Events/I_Event.hpp>
+#include <Define/Define.hpp>
+#include <Events/Events.hpp>
 #include <Types/Types.hpp>
 
 #include <functional>

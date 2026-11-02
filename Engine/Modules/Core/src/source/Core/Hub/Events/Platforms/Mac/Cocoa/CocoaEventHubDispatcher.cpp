@@ -4,14 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
-#include "Types/KeyCode/KeyboardKeyCode.hpp"
-#include "Types/KeyCode/MouseButtonCode.hpp"
+#include "Types/KeyCode/KeyCode.hpp"
 
 #include <AppKit/AppKit.hpp>
 
@@ -27,7 +26,7 @@ static std::pair<f32, f32> MouseLocationTopLeft(const CocoaWindow* window, const
 	// The content view, not the window's own MTK::View member. They are the same object today, and asking AppKit is
 	// still the right question: what input is delivered to is whatever is actually installed as the content view, not
 	// whatever this class happens to hold.
-	auto* const view = window->GetWindow()->contentView();
+	const auto* const view = window->GetWindow()->contentView();
 	if (not view) [[unlikely]]
 		return {0.0f, 0.0f};
 
@@ -156,7 +155,7 @@ void CocoaEventHubDispatcher::ReceiveMouseDraggedEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	const auto [x, y] = MouseLocationTopLeft(_window, event);
+	const auto [x, y] = _GetMousePosition(event);
 	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber()), x, y};
 	DispatchMouseDraggedEvent(mouseDraggedEvent);
 }
@@ -165,7 +164,7 @@ void CocoaEventHubDispatcher::ReceiveMouseMovedEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	const auto [x, y] = MouseLocationTopLeft(_window, event);
+	const auto [x, y] = _GetMousePosition(event);
 	Events::MouseMovedEvent mouseMovedEvent{x, y};
 	DispatchMouseMovedEvent(mouseMovedEvent);
 }
@@ -213,6 +212,24 @@ void CocoaEventHubDispatcher::ReceiveWindowDidBecomeKeyEvent(const NS::Notificat
 void CocoaEventHubDispatcher::ReceiveWindowDidResignKeyEvent(const NS::Notification*) {
 	Events::WindowFocusEvent windowFocusEvent{false};
 	DispatchWindowFocusEvent(windowFocusEvent);
+}
+
+void CocoaEventHubDispatcher::ReceiveWindowCursorModeEvent(const Types::CursorMode cursorMode) {
+	Events::WindowCursorModeEvent windowCursorModeEvent{cursorMode};
+	DispatchWindowCursorModeEvent(windowCursorModeEvent);
+}
+
+std::pair<f32, f32> CocoaEventHubDispatcher::_GetMousePosition(const NS::Event* event) {
+	if (_window and _window->GetCursorMode() == Types::CursorMode::Captured) {
+		// Points, and positive downwards, like the window space below: AppKit reports mouse deltas top-left.
+		_mouseX += static_cast<f32>(event->deltaX());
+		_mouseY += static_cast<f32>(event->deltaY());
+	}
+	else {
+		std::tie(_mouseX, _mouseY) = MouseLocationTopLeft(_window, event);
+	}
+
+	return {_mouseX, _mouseY};
 }
 
 }

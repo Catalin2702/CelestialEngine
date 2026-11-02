@@ -4,24 +4,29 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #include <Core/Input/Input.hpp>
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
-#include <Events/KeyEvent.hpp>
-#include <Events/MouseEvent.hpp>
-#include <Events/WindowEvent.hpp>
+#include <Core/Window/I_Window.hpp>
+#include <Events/Events.hpp>
 #include <Tools/Tools.hpp>
-#include <Types/KeyCode/KeyboardKeyCode.hpp>
-#include <Types/KeyCode/MouseButtonCode.hpp>
+#include <Types/Types.hpp>
 
 #include <gtest/gtest.h>
+
+#include <array>
+#include <span>
+#include <string>
+#include <vector>
 
 
 using CE::Core::GlfwEventHubDispatcher;
 using CE::Core::Input;
+using CE::Core::KeyShortcut;
+using CE::Types::CursorMode;
 using CE::Types::KeyboardKeyCode;
 using CE::Types::MouseButtonCode;
 
@@ -109,6 +114,42 @@ protected:
 
 protected:
 	GlfwEventHubDispatcher _hub;
+};
+
+/**
+ * @brief A window that only records the cursor modes it is told to apply
+ * @details Lets the tests check what Input asks of the window - how often, and with which mode - without a real
+ *			windowing backend. Everything else is an inert stub.
+ */
+class RecordingWindow final: public CE::Core::I_Window {
+public:
+	void Show() override {}
+	void ConnectToEventHub(CE::Core::I_EventHubDispatcher&) override {}
+	void Miniaturize() override {}
+	void Deminiaturize() override {}
+	void ToggleFullScreen() override {}
+	void SetWindowSize(u32, u32) override {}
+	void SetTitle(std::string_view) override {}
+
+	void SetCursorMode(const CursorMode cursorMode) override {
+		appliedModes.push_back(cursorMode);
+		_cursorMode = cursorMode;
+	}
+
+	[[nodiscard]] std::pair<u32, u32> GetWindowSize() const override { return {0, 0}; }
+	[[nodiscard]] std::string GetTitle() const override { return {}; }
+	[[nodiscard]] CursorMode GetCursorMode() const override { return _cursorMode; }
+	[[nodiscard]] std::pair<u32, u32> GetFrameSize() const override { return {0, 0}; }
+	[[nodiscard]] f32 GetContentScale() const override { return 1.0f; }
+	[[nodiscard]] u32 GetRefreshRate() const override { return 0; }
+	[[nodiscard]] void* GetNativeWindow() const override { return nullptr; }
+	[[nodiscard]] CE::Types::WindowApi GetWindowApi() const override { return CE::Types::WindowApi::None; }
+
+public:
+	std::vector<CursorMode> appliedModes;	///< Every mode SetCursorMode received, in order
+
+private:
+	CursorMode _cursorMode = CursorMode::Normal;
 };
 
 }
@@ -501,4 +542,260 @@ TEST_F(InputTest, RawHubCallbacks_FeedTheInputState) {
 	_hub.ReceiveKeyEvent(glfwKeyA, glfwRelease, 0, 0);
 
 	EXPECT_FALSE(Input::IsKeyPressed(KeyboardKeyCode::A));
+}
+
+// ============================================================================
+// Shortcut Tests
+// ============================================================================
+
+/**
+ * @brief Test that a chord is held only while every one of its keys is
+ */
+TEST_F(InputTest, AreKeysPressed_TrueOnlyWhileEveryKeyIsHeld) {
+	PressKey(KeyboardKeyCode::LeftControl);
+
+	EXPECT_FALSE(Input::AreKeysPressed(KeyboardKeyCode::LeftControl, KeyboardKeyCode::S));
+
+	PressKey(KeyboardKeyCode::S);
+
+	EXPECT_TRUE(Input::AreKeysPressed(KeyboardKeyCode::LeftControl, KeyboardKeyCode::S));
+
+	ReleaseKey(KeyboardKeyCode::LeftControl);
+
+	EXPECT_FALSE(Input::AreKeysPressed(KeyboardKeyCode::LeftControl, KeyboardKeyCode::S));
+}
+
+/**
+ * @brief Test that a shortcut fires on the frame its last key goes down, and not again while it stays held
+ */
+TEST_F(InputTest, ShortcutJustPressed_FiresOncePerPress) {
+	PressKey(KeyboardKeyCode::LeftShift);
+	Input::EndFrame();
+
+	EXPECT_FALSE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+
+	PressKey(KeyboardKeyCode::F1);
+
+	EXPECT_TRUE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+
+	Input::EndFrame();
+
+	EXPECT_FALSE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+	EXPECT_TRUE(Input::AreKeysPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+}
+
+/**
+ * @brief Test that the order the keys go down in does not matter
+ */
+TEST_F(InputTest, ShortcutJustPressed_IgnoresTheKeyOrder) {
+	PressKey(KeyboardKeyCode::F1);
+	Input::EndFrame();
+	PressKey(KeyboardKeyCode::LeftShift);
+
+	EXPECT_TRUE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+}
+
+/**
+ * @brief Test that a stored shortcut answers like the keys it holds, and that an empty one never fires
+ */
+TEST_F(InputTest, KeyShortcut_MatchesItsKeysAndEmptyNeverFires) {
+	constexpr KeyShortcut shortcut{KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1};
+	constexpr KeyShortcut empty{};
+
+	PressKey(KeyboardKeyCode::LeftShift);
+	PressKey(KeyboardKeyCode::F1);
+
+	EXPECT_TRUE(Input::IsShortcutJustPressed(shortcut));
+	EXPECT_FALSE(Input::IsShortcutJustPressed(empty));
+	EXPECT_FALSE(Input::AreKeysPressed(empty.GetKeys()));
+}
+
+// ============================================================================
+// Cursor Mode Tests
+// ============================================================================
+
+/**
+ * @brief Test that the cursor starts free, and that capturing it is reported
+ */
+TEST_F(InputTest, CursorMode_StartsNormalAndReportsTheCapture) {
+	EXPECT_EQ(Input::GetCursorMode(), CursorMode::Normal);
+
+	Input::SetCursorMode(CursorMode::Captured);
+
+	EXPECT_TRUE(Input::IsCursorCaptured());
+}
+
+/**
+ * @brief Test that switching mode does not turn the jump between real and virtual position into motion
+ */
+TEST_F(InputTest, SetCursorMode_FirstMoveAfterTheSwitchProducesNoDelta) {
+	MoveMouse(100.0f, 100.0f);
+	Input::EndFrame();
+
+	Input::SetCursorMode(CursorMode::Captured);
+	MoveMouse(500.0f, 300.0f);
+
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaX(), 0.0f);
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaY(), 0.0f);
+
+	Input::EndFrame();
+	MoveMouse(510.0f, 295.0f);
+
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaX(), 10.0f);
+	EXPECT_FLOAT_EQ(Input::GetMouseDeltaY(), -5.0f);
+}
+
+/**
+ * @brief Test that losing focus gives the cursor back, so it is never left frozen over another application
+ */
+TEST_F(InputTest, FocusLost_ReleasesTheCursor) {
+	Input::SetCursorMode(CursorMode::Captured);
+	ChangeFocus(false);
+
+	EXPECT_EQ(Input::GetCursorMode(), CursorMode::Normal);
+}
+
+// ============================================================================
+// Shortcut Edge Case Tests
+// ============================================================================
+
+/**
+ * @brief Test that the span overload answers like the variadic one
+ */
+TEST_F(InputTest, AreKeysPressed_SpanOverloadMatchesVariadic) {
+	PressKey(KeyboardKeyCode::LeftAlt);
+	PressKey(KeyboardKeyCode::Q);
+
+	const std::array chord{KeyboardKeyCode::LeftAlt, KeyboardKeyCode::Q};
+
+	EXPECT_TRUE(Input::AreKeysPressed(std::span<const KeyboardKeyCode>{chord}));
+	EXPECT_EQ(Input::AreKeysPressed(std::span<const KeyboardKeyCode>{chord}), Input::AreKeysPressed(KeyboardKeyCode::LeftAlt, KeyboardKeyCode::Q));
+}
+
+/**
+ * @brief Test that holding extra keys does not prevent a shortcut from firing
+ */
+TEST_F(InputTest, ShortcutJustPressed_ExtraHeldKeysDoNotBlockIt) {
+	PressKey(KeyboardKeyCode::LeftControl);
+	PressKey(KeyboardKeyCode::LeftShift);
+	PressKey(KeyboardKeyCode::F1);
+
+	EXPECT_TRUE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+}
+
+/**
+ * @brief Test that the shortcut fires again after one of its keys is released and pressed again
+ */
+TEST_F(InputTest, ShortcutJustPressed_FiresAgainAfterARepress) {
+	PressKey(KeyboardKeyCode::LeftShift);
+	PressKey(KeyboardKeyCode::F1);
+	Input::EndFrame();
+
+	ReleaseKey(KeyboardKeyCode::F1);
+	Input::EndFrame();
+	PressKey(KeyboardKeyCode::F1);
+
+	EXPECT_TRUE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+}
+
+/**
+ * @brief Test that an OS key repeat does not count as a new press of the shortcut
+ */
+TEST_F(InputTest, ShortcutJustPressed_IgnoresKeyRepeats) {
+	PressKey(KeyboardKeyCode::LeftShift);
+	PressKey(KeyboardKeyCode::F1);
+	Input::EndFrame();
+
+	PressKey(KeyboardKeyCode::F1, 1);
+
+	EXPECT_FALSE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::F1));
+}
+
+/**
+ * @brief Test that a shortcut naming an Unknown key can never fire
+ */
+TEST_F(InputTest, ShortcutWithUnknownKey_NeverFires) {
+	PressKey(KeyboardKeyCode::LeftShift);
+
+	EXPECT_FALSE(Input::IsShortcutJustPressed(KeyboardKeyCode::LeftShift, KeyboardKeyCode::Unknown));
+}
+
+// ============================================================================
+// Cursor Mode Window Tests
+// ============================================================================
+
+/**
+ * @brief Test that a bound window is told about every real change, and only once per change
+ */
+TEST_F(InputTest, SetCursorMode_AppliesEachChangeToTheBoundWindowOnce) {
+	RecordingWindow window;
+	Input::BindWindow(&window);
+
+	Input::SetCursorMode(CursorMode::Captured);
+	Input::SetCursorMode(CursorMode::Captured);
+	Input::SetCursorMode(CursorMode::Normal);
+
+	EXPECT_EQ(window.appliedModes, (std::vector{CursorMode::Captured, CursorMode::Normal}));
+
+	Input::BindWindow(nullptr);
+}
+
+/**
+ * @brief Test that losing focus releases the cursor on the window too, not only in the recorded state
+ */
+TEST_F(InputTest, FocusLost_ReleasesTheCursorOnTheBoundWindow) {
+	RecordingWindow window;
+	Input::BindWindow(&window);
+	Input::SetCursorMode(CursorMode::Captured);
+
+	ChangeFocus(false);
+
+	ASSERT_FALSE(window.appliedModes.empty());
+	EXPECT_EQ(window.appliedModes.back(), CursorMode::Normal);
+
+	Input::BindWindow(nullptr);
+}
+
+/**
+ * @brief Test that losing focus with a free cursor does not bother the window
+ */
+TEST_F(InputTest, FocusLost_WithAFreeCursorLeavesTheWindowAlone) {
+	RecordingWindow window;
+	Input::BindWindow(&window);
+
+	ChangeFocus(false);
+
+	EXPECT_TRUE(window.appliedModes.empty());
+
+	Input::BindWindow(nullptr);
+}
+
+/**
+ * @brief Test that unbinding the window stops forwarding modes to it
+ */
+TEST_F(InputTest, BindWindowNull_StopsForwardingModes) {
+	RecordingWindow window;
+	Input::BindWindow(&window);
+	Input::BindWindow(nullptr);
+
+	Input::SetCursorMode(CursorMode::Captured);
+
+	EXPECT_TRUE(window.appliedModes.empty());
+	EXPECT_TRUE(Input::IsCursorCaptured());
+}
+
+/**
+ * @brief Test that Unknown is refused instead of being recorded or forwarded to the window
+ */
+TEST_F(InputTest, SetCursorMode_RejectsUnknown) {
+	RecordingWindow window;
+	Input::BindWindow(&window);
+	Input::SetCursorMode(CursorMode::Captured);
+
+	Input::SetCursorMode(CursorMode::Unknown);
+
+	EXPECT_TRUE(Input::IsCursorCaptured());
+	EXPECT_EQ(window.appliedModes, (std::vector{CursorMode::Captured}));
+
+	Input::BindWindow(nullptr);
 }

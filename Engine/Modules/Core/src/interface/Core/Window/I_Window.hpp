@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -13,8 +13,7 @@
 #define CE_CORE_WINDOW_I_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Types/Var/Vars.hpp"
-#include "Types/Window/WindowProps.hpp"
+#include "Types/Types.hpp"
 
 #include <memory>
 #include <string_view>
@@ -117,6 +116,16 @@ public:
 	 */
 	virtual void SetTitle(std::string_view title) = 0;
 
+	/**
+	 * @brief Gives the pointer to the cursor, or takes it away from it
+	 * @param cursorMode Normal shows the cursor and lets it move; Captured hides it, holds it still and reports the motion as
+	 *			an unbounded virtual position
+	 * @details Called by Input::SetCursorMode only, which is what the rest of the engine asks: going around it would let
+	 *			the window and the input state disagree on who owns the pointer. The window keeps its own copy because
+	 *			its backend needs it while translating native mouse events.
+	 */
+	virtual void SetCursorMode(Types::CursorMode cursorMode) = 0;
+
 public:
 	/**
 	 * @brief Gets the current size of the window, in screen coordinates
@@ -125,6 +134,18 @@ public:
 	 *			Integer because no windowing API reports a fractional window size.
 	 */
 	[[nodiscard]] virtual std::pair<u32, u32> GetWindowSize() const = 0;
+
+	/**
+	 * @brief Gets the window's title
+	 * @return The title of the window
+	 */
+	[[nodiscard]] virtual std::string GetTitle() const = 0;
+
+	/**
+	 * @brief Gets the cursor mode used by the window
+	 * @return The cursor mode
+	 */
+	[[nodiscard]] virtual Types::CursorMode GetCursorMode() const = 0;
 
 	/**
 	 * @brief Gets the current size of the drawable, in backing pixels

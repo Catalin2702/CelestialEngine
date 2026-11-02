@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-11-02
 //
 
-#include "Core/Window/I_Platform.hpp"
-#include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
+#include "Core/Window/Window.hpp"
 #include "Tools/Tools.hpp"
 
 #if CE_PLATFORM_MACOS

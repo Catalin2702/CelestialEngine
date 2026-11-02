@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-02
 //
 
-#include <Events/I_Event.hpp>
-#include <Events/WindowEvent.hpp>
+#include <Events/Events.hpp>
 
 #include <gtest/gtest.h>
 
@@ -216,4 +215,62 @@ TEST_F(WindowEventTest, WindowEvents_ImmutableCannotBeConsumed) {
 	EXPECT_FALSE(event.IsMutable());
 	event.Consume();
 	EXPECT_FALSE(event.IsHandled());
+}
+
+// ============================================================================
+// WindowCursorModeEvent Tests
+// ============================================================================
+
+/**
+ * @brief Test that WindowCursorModeEvent stores the mode the window switched to
+ */
+TEST_F(WindowEventTest, WindowCursorModeEvent_Constructor_StoresTheMode) {
+	const WindowCursorModeEvent captured{CE::Types::CursorMode::Captured};
+	const WindowCursorModeEvent normal{CE::Types::CursorMode::Normal};
+
+	EXPECT_EQ(captured.GetCursorMode(), CE::Types::CursorMode::Captured);
+	EXPECT_TRUE(captured.IsCaptured());
+	EXPECT_EQ(normal.GetCursorMode(), CE::Types::CursorMode::Normal);
+	EXPECT_FALSE(normal.IsCaptured());
+}
+
+/**
+ * @brief Test that WindowCursorModeEvent has the correct event type and name
+ */
+TEST_F(WindowEventTest, WindowCursorModeEvent_GetEventType_ReturnsCorrectType) {
+	const WindowCursorModeEvent event{CE::Types::CursorMode::Captured};
+
+	EXPECT_EQ(event.GetEventType(), EventType::WindowCursorMode);
+	EXPECT_EQ(WindowCursorModeEvent::GetStaticType(), EventType::WindowCursorMode);
+	EXPECT_STREQ(event.GetName(), "WindowCursorMode");
+}
+
+/**
+ * @brief Test that WindowCursorModeEvent is in the Window category
+ */
+TEST_F(WindowEventTest, WindowCursorModeEvent_IsInCategory_WindowCategory) {
+	const WindowCursorModeEvent event{CE::Types::CursorMode::Normal};
+
+	EXPECT_TRUE(event.IsInCategory(EventCategory::EventCategoryWindow));
+	EXPECT_FALSE(event.IsInCategory(EventCategory::EventCategoryInput));
+}
+
+/**
+ * @brief Test that WindowCursorModeEvent ToString names the new mode
+ */
+TEST_F(WindowEventTest, WindowCursorModeEvent_ToString_NamesTheMode) {
+	const WindowCursorModeEvent event{CE::Types::CursorMode::Captured};
+
+	EXPECT_EQ(event.ToString(), "WindowCursorMode: Captured");
+}
+
+/**
+ * @brief Test that WindowCursorModeEvent is mutable by default and honours the immutable flag
+ */
+TEST_F(WindowEventTest, WindowCursorModeEvent_MutabilityFollowsTheFlag) {
+	const WindowCursorModeEvent mutableEvent{CE::Types::CursorMode::Normal};
+	const WindowCursorModeEvent immutableEvent{CE::Types::CursorMode::Normal, false};
+
+	EXPECT_TRUE(mutableEvent.IsMutable());
+	EXPECT_FALSE(immutableEvent.IsMutable());
 }

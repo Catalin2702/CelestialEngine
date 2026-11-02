@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -167,7 +167,7 @@ private:
 	MetalGraphicDevice* _graphicDevice = nullptr;
 	MetalSwapchain* _swapchain = nullptr;
 
-	std::optional<std::reference_wrapper<CocoaWindow>> _window;	///< Cached Cocoa window for the display size
+	std::optional<std::reference_wrapper<const CocoaWindow>> _window;	///< Cached Cocoa window for the display size
 	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
 
 	/// Owning tokens, ordered to match the enum above. The hub itself is not kept: each token already knows the

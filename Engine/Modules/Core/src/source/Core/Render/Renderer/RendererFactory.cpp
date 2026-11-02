@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
-#include "Core/Render/Renderer/I_Renderer.hpp"
-#include "Core/Render/Renderer/ForwardRenderer.hpp"
+#include "Core/Render/Renderer/Renderer.hpp"
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
 
 

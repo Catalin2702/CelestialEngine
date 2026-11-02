@@ -4,13 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-02
 //
 
 #pragma once
 
 #ifndef CE_TYPES_VAR_VARS_HPP
 #define CE_TYPES_VAR_VARS_HPP
+
+#include "Types/Var/Glm.hpp"
 
 #include <glm/glm.hpp>
 

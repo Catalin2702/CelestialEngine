@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-13
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-11-02
 #
 
 enable_testing()
@@ -27,6 +27,7 @@ set(RENDER_SOURCES
 )
 
 set(WINDOW_SOURCES
+	src/Types/Window/CursorModeTests.cpp
 	src/Types/Window/WindowPropsTests.cpp
 )
 

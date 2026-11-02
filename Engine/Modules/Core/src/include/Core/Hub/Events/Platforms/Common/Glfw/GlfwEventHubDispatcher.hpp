@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -115,6 +115,13 @@ public:
 	 *			delivered to another window and the keys would remain stuck as "down".
 	 */
 	void ReceiveWindowFocusEvent(int focused);
+	/**
+	 * @brief Turns a cursor mode the window has just applied into a WindowCursorModeEvent
+	 * @param cursorMode The mode now in effect
+	 * @details Not a native callback: no windowing API reports a cursor mode change, because it is the engine that makes
+	 *			it. The window calls this right after applying the mode, so the event reports what took effect.
+	 */
+	void ReceiveWindowCursorModeEvent(Types::CursorMode cursorMode);
 #pragma endregion
 
 public:

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-31
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -13,8 +13,7 @@
 #define CE_UTILITY_FILESYSTEM_FILE_HPP
 
 #include "Define/DynamicLinker.hpp"
-#include "Types/FileSystem/File.hpp"
-#include "Types/Var/Vars.hpp"
+#include "Types/Types.hpp"
 
 #include <filesystem>
 #include <string>

@@ -4,11 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
-#include "Core/RunLoop/I_RunLoop.hpp"
-#include "Core/RunLoop/PacedRunLoop.hpp"
+#include "Core/RunLoop/RunLoop.hpp"
 #include "Core/Window/I_Platform.hpp"
 
 

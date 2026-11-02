@@ -4,10 +4,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
+
+set(APPLE_HEADERS
+	src/include/Apple/Apple.hpp
+)
 
 set(BRIDGE_HEADERS
 	# ImGui
@@ -15,6 +19,8 @@ set(BRIDGE_HEADERS
 )
 
 set(METALCPP_HEADERS
+	src/include/Apple/MetalCpp/MetalCpp.hpp
+
 	# AppKit
 	src/include/Apple/MetalCpp/AppKit/NsApplicationDelegate.hpp
 	src/include/Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp
@@ -52,6 +58,7 @@ set(METALCPP_SOURCES
 )
 
 set(HEADERS
+	${APPLE_HEADERS}
 	${BRIDGE_HEADERS}
 	${METALCPP_HEADERS}
 )

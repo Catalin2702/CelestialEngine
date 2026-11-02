@@ -4,11 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
-#include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
+#include "Core/Render/Command/Command.hpp"
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
@@ -21,7 +21,6 @@
 #include <cassert>
 #include <utility>
 
-#include "Core/Render/Command/RenderPassDescriptor.hpp"
 #include "QuartzCore/CAMetalDrawable.hpp"
 
 

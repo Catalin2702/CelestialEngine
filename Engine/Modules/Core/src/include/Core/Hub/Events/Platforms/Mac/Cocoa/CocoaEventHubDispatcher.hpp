@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -170,6 +170,13 @@ public:
 	 *			delivered to another window and the keys would remain stuck as "down".
 	 */
 	void ReceiveWindowDidResignKeyEvent(const NS::Notification* notification);
+	/**
+	 * @brief Turns a cursor mode the window has just applied into a WindowCursorModeEvent
+	 * @param cursorMode The mode now in effect
+	 * @details Not a native callback: no windowing API reports a cursor mode change, because it is the engine that makes
+	 *			it. The window calls this right after applying the mode, so the event reports what took effect.
+	 */
+	void ReceiveWindowCursorModeEvent(Types::CursorMode cursorMode);
 #pragma endregion
 
 public:
@@ -189,6 +196,16 @@ public:
 	[[nodiscard]] RenderEventHub& GetRenderEventHub() override { return renderEventHub; }
 	[[nodiscard]] const RenderEventHub& GetRenderEventHub() const override { return renderEventHub; }
 
+private:
+	/**
+	 * @brief The cursor position a mouse event stands for, in window points (top-left origin)
+	 * @details While the cursor is captured it does not move, so locationInWindow stops changing and only the event's
+	 *			own deltas carry the motion. They are added to the last position instead, which turns it into a virtual
+	 *			position with no edge - the same thing GLFW reports with GLFW_CURSOR_DISABLED, so Input computes its delta
+	 *			the same way on both backends.
+	 */
+	[[nodiscard]] std::pair<f32, f32> _GetMousePosition(const NS::Event* event);
+
 public:
 	ApplicationEventHub applicationEventHub;
 	KeyboardEventHub keyboardEventHub;
@@ -198,6 +215,9 @@ public:
 
 private:
 	CocoaWindow* _window = nullptr;   ///< Non-owning; used to convert native mouse coordinates
+
+	f32 _mouseX = 0.0_f32; ///< Last position dispatched: the real cursor, or the virtual one while captured
+	f32 _mouseY = 0.0_f32; ///< Last position dispatched: the real cursor, or the virtual one while captured
 };
 
 }

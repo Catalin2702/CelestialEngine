@@ -4,12 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-11-02
 //
 
-#include "Core/Render/Camera/Projection/I_CameraProjection.hpp"
-#include "Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp"
-#include "Core/Render/Camera/Projection/OrthographicCameraProjection.hpp"
+#include "Core/Render/Camera/Projection/Projection.hpp"
 #include "Tools/Tools.hpp"
 
 #include <format>

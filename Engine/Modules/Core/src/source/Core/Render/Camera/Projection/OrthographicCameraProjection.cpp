@@ -41,7 +41,7 @@ f32 OrthographicCameraProjection::GetAspectRatio() const {
 
 void OrthographicCameraProjection::_Recalculate() const {
 	const f32 halfHeight = _orthographicSize;
-	const f32 halfWidth = _orthographicSize * GetAspectRatio();
+	const f32 halfWidth = _orthographicSize * OrthographicCameraProjection::GetAspectRatio();
 
 	_projection = _convention == Types::ClipConvention::ZeroToOne ?
 		glm::orthoRH_ZO(-halfWidth, halfWidth, -halfHeight, halfHeight, _nearClip, _farClip) :

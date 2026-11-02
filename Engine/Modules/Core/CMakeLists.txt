@@ -4,8 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-01
+# Updated: 2026-11-02
 #
+
+set(CORE_HEADERS
+	src/include/Core/Core.hpp
+)
 
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
@@ -14,13 +18,16 @@ set(APPLICATION_HEADERS
 set(INPUT_HEADERS
 	src/include/Core/Input/Input.hpp
 	src/include/Core/Input/InputState.hpp
+	src/include/Core/Input/KeyShortcut.hpp
 )
 
 set(LAYERS_HEADERS
+	src/include/Core/Layers/Layers.hpp
 	src/include/Core/Layers/LayerStack.hpp
 
 
 	# ImGui
+	src/include/Core/Layers/ImGui/ImGui.hpp
 	src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -33,7 +40,9 @@ set(LAYERS_HEADERS
 )
 
 set(HUB_HEADERS
-	#Events
+	src/include/Core/Hub/Hub.hpp
+
+	# Events
 	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -42,7 +51,10 @@ set(HUB_HEADERS
 )
 
 set(RENDER_HEADERS
+	src/include/Core/Render/Render.hpp
+
 	# Buffer
+	src/include/Core/Render/Buffer/Buffer.hpp
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
 	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
 
@@ -53,16 +65,20 @@ set(RENDER_HEADERS
 
 	# Camera
 	src/include/Core/Render/Camera/Camera.hpp
+	src/include/Core/Render/Camera/CameraDescriptor.hpp
 	src/include/Core/Render/Camera/CameraRig.hpp
 	src/include/Core/Render/Camera/Controller/CameraControllerDescriptor.hpp
+	src/include/Core/Render/Camera/Controller/Controller.hpp
 	src/include/Core/Render/Camera/Controller/FreeCameraController.hpp
 	src/include/Core/Render/Camera/Controller/MouseLook.hpp
 	src/include/Core/Render/Camera/Controller/StaticCameraController.hpp
 	src/include/Core/Render/Camera/Projection/CameraProjectionDescriptor.hpp
 	src/include/Core/Render/Camera/Projection/OrthographicCameraProjection.hpp
+	src/include/Core/Render/Camera/Projection/Projection.hpp
 
 
 	# Command
+	src/include/Core/Render/Command/Command.hpp
 	src/include/Core/Render/Command/RenderPassDescriptor.hpp
 	src/include/Core/Render/Command/Viewport.hpp
 	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
@@ -73,6 +89,7 @@ set(RENDER_HEADERS
 
 
 	# Device
+	src/include/Core/Render/Device/Device.hpp
 	src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -80,6 +97,7 @@ set(RENDER_HEADERS
 	>
 
 	# Pipeline
+	src/include/Core/Render/Pipeline/Pipeline.hpp
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
 	src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
 
@@ -91,10 +109,12 @@ set(RENDER_HEADERS
 	# Renderer
 	src/include/Core/Render/Renderer/DrawCommand.hpp
 	src/include/Core/Render/Renderer/ForwardRenderer.hpp
+	src/include/Core/Render/Renderer/Renderer.hpp
 	src/include/Core/Render/Renderer/RenderStats.hpp
 
 
 	# Shader
+	src/include/Core/Render/Shader/Shader.hpp
 	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
 	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
@@ -105,7 +125,12 @@ set(RENDER_HEADERS
 	>
 
 
+	# Surface
+	src/include/Core/Render/Surface/Surface.hpp
+
+
 	# Swapchain
+	src/include/Core/Render/Swapchain/Swapchain.hpp
 	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -114,6 +139,7 @@ set(RENDER_HEADERS
 
 
 	# Texture
+	src/include/Core/Render/Texture/Texture.hpp
 	src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
 
 	$<$<PLATFORM_ID:Darwin>:
@@ -123,9 +149,11 @@ set(RENDER_HEADERS
 
 set(RUNLOOP_HEADERS
 	src/include/Core/RunLoop/PacedRunLoop.hpp
+	src/include/Core/RunLoop/RunLoop.hpp
 )
 
 set(WINDOW_HEADERS
+	src/include/Core/Window/Window.hpp
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
 	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
@@ -343,6 +371,7 @@ set(WINDOW_SOURCES
 )
 
 set(HEADERS
+	${CORE_HEADERS}
 	${APPLICATION_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}

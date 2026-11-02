@@ -4,11 +4,15 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-01
+# Updated: 2026-11-02
 #
 
+set(CORE_SOURCES
+	src/Core/CoreHeadersTests.cpp
+)
 set(INPUT_SOURCES
 	src/Core/Input/InputTests.cpp
+	src/Core/Input/KeyShortcutTests.cpp
 )
 
 set(LAYERS_SOURCES
@@ -31,6 +35,7 @@ set(RENDER_SOURCES
 	src/Core/Render/Buffer/BufferLayoutTests.cpp
 
 	# Camera
+	src/Core/Render/Camera/FreeCameraControllerTests.cpp
 	src/Core/Render/Camera/MouseLookTests.cpp
 
 	# Command
@@ -46,6 +51,7 @@ set(RENDER_SOURCES
 )
 
 add_executable(CE_TestsCore
+	${CORE_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
 	${MAINHUB_SOURCES}

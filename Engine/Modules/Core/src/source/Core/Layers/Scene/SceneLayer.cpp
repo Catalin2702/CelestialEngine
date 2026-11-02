@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-11-02
 //
 
 #include "Core/Layers/Scene/SceneLayer.hpp"
@@ -13,10 +13,7 @@
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 #include "Core/Render/Renderer/I_Renderer.hpp"
 
-#include "Events/ApplicationEvent.hpp"
-#include "Events/KeyEvent.hpp"
-#include "Events/MouseEvent.hpp"
-#include "Events/WindowEvent.hpp"
+#include "Events/Events.hpp"
 
 
 namespace CE::Core {

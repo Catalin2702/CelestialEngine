@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -14,8 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 
-#include "Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp"
-#include "Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp"
+#include "Apple/MetalCpp/MetalCpp.hpp"
 #include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -23,6 +22,7 @@
 #include <AppKit/AppKit.hpp>
 #include <Foundation/Foundation.hpp>
 
+#include <source_location>
 #include <string_view>
 #include <utility>
 
@@ -116,6 +116,10 @@ public:
 	 */
 	[[nodiscard]] std::pair<u32, u32> GetWindowSize() const override;
 
+	[[nodiscard]] std::string GetTitle() const override;
+
+	[[nodiscard]] Types::CursorMode GetCursorMode() const override { return _cursorMode; }
+
 	/**
 	 * @brief Gets the current size of the frame
 	 * @return std::pair<u32, u32> Pair of frame width and height in backing pixels
@@ -169,6 +173,8 @@ public:
 	 * @brief Sets the text shown in the window's title bar
 	 */
 	void SetTitle(std::string_view title) override;
+
+	void SetCursorMode(Types::CursorMode cursorMode) override;
 
 public:
 	/**
@@ -240,6 +246,15 @@ private:
 	 */
 	void _Shutdown();
 
+	/**
+	 * @brief Gets the native window, or null with a warning when it is not initialized
+	 * @details The Cocoa counterpart of GlfwWindow::_Native. A CocoaWindow has no usable NSWindow between construction
+	 *			and Init (the platform must finish launching first) and none after shutdown, so every call into AppKit
+	 *			goes through here. The source location is a default argument, evaluated at the call site, so the warning
+	 *			names the caller and no call site carries a message of its own.
+	 */
+	[[nodiscard]] NS::Window* _Native(const std::source_location& location = std::source_location::current()) const;
+
 public:
 	/// The window's own AppKit delegate: close, focus and geometry notifications. It used to be a CocoaWindowEventHandler,
 	/// a subclass that added three "the window was created / initialised / is closing" channels; nothing ever bound to
@@ -257,6 +272,8 @@ private:
 
 	NS::SharedPtr<NS::Window> _window; ///< Native macOS window
 	NS::SharedPtr<MTK::View> _view; ///< The window's content view, backed by the CAMetalLayer everything presents into
+
+	Types::CursorMode _cursorMode = Types::CursorMode::Normal; ///< Last mode applied through SetCursorMode
 };
 
 }
