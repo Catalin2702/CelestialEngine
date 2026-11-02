@@ -12,7 +12,7 @@
 #ifndef CE_DEFINE_CONFIG_HPP
 #define CE_DEFINE_CONFIG_HPP
 
-// CMake (CE_Config, see config/cmake/CelestialEngineMacros.cmake) defines every macro below to 0 or 1 in every build, so they
+// CMake (CE_Config, see Engine/cmake/CelestialEngineMacros.cmake) defines every macro below to 0 or 1 in every build, so they
 // can be used both by the preprocessor and by `if constexpr`. The fallbacks exist because those two uses fail differently: an
 // undefined macro is silently 0 inside #if, but a hard "use of undeclared identifier" inside `if constexpr` - which is exactly
 // what a translation unit that forgot to link CE_Config would hit. Defaulting them here keeps that failure mode uniform, and
@@ -50,7 +50,7 @@
 	#error "Exactly one of CE_PLATFORM_WINDOWS, CE_PLATFORM_MACOS, CE_PLATFORM_LINUX must be 1 - CelestialEngine supports only Windows, macOS and Linux."
 #endif
 
-// Graphics backends compiled in, chosen with CE_RENDER_BACKENDS (config/cmake/CERenderBackends.cmake). These say what was
+// Graphics backends compiled in, chosen with CE_RENDER_BACKENDS (Engine/cmake/CERenderBackends.cmake). These say what was
 // BUILT; CE_PLATFORM_* says what the OS is. Code that only exists for a backend - a Metal swapchain, a GL loader call -
 // is guarded by these, never by the platform macro it happens to coincide with today.
 #ifndef CE_RENDER_OPENGL

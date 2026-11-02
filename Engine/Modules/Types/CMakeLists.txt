@@ -124,7 +124,7 @@ set_target_properties(CE_Types PROPERTIES
 ce_set_module_library_output(CE_Types)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
-# CE_App.app/Contents/Frameworks)
+# CelestialEngine.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Types)
 
 # Modules

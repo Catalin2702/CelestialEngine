@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-18
+# Updated: 2026-11-02
 #
 
 # Shared helpers for the static analysis scripts. Sourced, never executed directly.
@@ -26,7 +26,7 @@ NC='\033[0m' # No Color
 # Base directories. ${(%):-%x} is the path of the sourced file itself, not of the script that sourced it.
 STATIC_ANALYSIS_DIR="${${(%):-%x}:A:h}"
 PROJECT_DIR="${STATIC_ANALYSIS_DIR:h:h}"
-REPORTS_ROOT="${PROJECT_DIR}/.build/static-analysis"
+REPORTS_ROOT="${PROJECT_DIR}/.exclude/build/static-analysis"
 
 # Only the Ninja generators have a ninja file to extract the commands from; the Xcode project does not.
 ANALYSIS_TOOLCHAINS=(clang appleclang)
@@ -55,7 +55,7 @@ ce_find_llvm_tool() {
 # from the ninja file, not from the compiled objects.
 ce_make_compdb() {
 	local toolchain="$1" config="$2" out_dir="$3" with_objcxx="${4:-true}"
-	local build_dir="${PROJECT_DIR}/.build/${toolchain}"
+	local build_dir="${PROJECT_DIR}/.exclude/build/${toolchain}"
 	local ninja_file="${build_dir}/build-${config}.ninja"
 
 	if [ ! -f "${ninja_file}" ]; then
@@ -78,7 +78,7 @@ import json, os, shlex, sys
 
 raw, out, root, with_objcxx = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] == "true"
 extensions = (".cpp", ".cc", ".cxx") + ((".mm",) if with_objcxx else ())
-owned = tuple(os.path.join(root, d) + os.sep for d in ("Engine/Modules", "App", "Tests"))
+owned = tuple(os.path.join(root, d) + os.sep for d in ("Engine/Modules", "Engine/Tests", "Apps"))
 
 entries = []
 for entry in json.load(open(raw)):

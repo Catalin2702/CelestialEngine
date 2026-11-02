@@ -4,12 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-07-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-10-30
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/Engine/Submodules/MetalCpp MetalCpp)
+add_subdirectory(${CE_ENGINE_ROOT_DIR}/Submodules/MetalCpp MetalCpp)
 
 add_library(CE_Vendor_MetalCpp INTERFACE)
 
@@ -32,5 +32,5 @@ set_target_properties(METAL_CPP PROPERTIES
 )
 
 target_include_directories(CE_Vendor_MetalCpp SYSTEM INTERFACE
-	${CMAKE_SOURCE_DIR}/Engine/Submodules/MetalCpp
+	${CE_ENGINE_ROOT_DIR}/Submodules/MetalCpp
 )

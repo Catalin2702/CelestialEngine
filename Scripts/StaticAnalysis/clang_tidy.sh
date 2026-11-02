@@ -6,14 +6,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-18
+# Updated: 2026-11-02
 #
 
 # Runs clang-tidy over the project's own sources, with the checks listed in the root .clang-tidy.
 #
 # The clang-analyzer-* family is part of that list, so this is also the Clang Static Analyzer run: path-sensitive
 # checks for null dereferences, leaks, use-after-move and the like. Headers are reported only when they belong to the
-# project (Engine/Modules, App, Tests); vendored code and vcpkg dependencies are compiled but never reported.
+# project (Engine/Modules, Engine/Tests, Apps); vendored code and vcpkg dependencies are compiled but never reported.
 
 source "${0:A:h}/common.sh"
 
@@ -89,7 +89,7 @@ echo "${BLUE}========================================${NC}"
 echo "${BLUE}CelestialEngine - clang-tidy${NC}"
 echo "${BLUE}========================================${NC}"
 echo "clang-tidy:    ${CLANG_TIDY} ($("${CLANG_TIDY}" --version | grep -m1 -o 'version [0-9.]*'))"
-echo "Commands from: .build/${TOOLCHAIN} (${CONFIG})"
+echo "Commands from: .exclude/build/${TOOLCHAIN} (${CONFIG})"
 [ -n "${FILTER}" ] && echo "Files:         ${FILTER}"
 [ -n "${CHECKS}" ] && echo "Checks:        ${CHECKS}"
 [ "${FIX}" = true ] && echo "${YELLOW}Mode:          FIX (sources will be modified)${NC}"
@@ -99,7 +99,7 @@ echo -n "Compile commands: "
 ce_make_compdb "${TOOLCHAIN}" "${CONFIG}" "${REPORT_DIR}" || exit 1
 
 # Only the project's own headers are worth a diagnostic; the regex is matched against absolute paths.
-HEADER_FILTER="${PROJECT_DIR}/(Engine/Modules|App|Tests)/"
+HEADER_FILTER="${PROJECT_DIR}/(Engine/Modules|Engine/Tests|Apps)/"
 
 TIDY_ARGS=(
 	-clang-tidy-binary "${CLANG_TIDY}"
@@ -144,7 +144,7 @@ fi
 # The same header diagnostic is printed once per translation unit that includes it, so count unique locations. The
 # path-sensitive clang-analyzer checks ignore -header-filter and can end a path inside vendored code: only the
 # project's own files are counted.
-DIAGNOSTICS="$(grep -E "^${PROJECT_DIR}/(Engine/Modules|App|Tests)/.+:[0-9]+:[0-9]+: (warning|error): " "${REPORT}" | sort -u)"
+DIAGNOSTICS="$(grep -E "^${PROJECT_DIR}/(Engine/Modules|Engine/Tests|Apps)/.+:[0-9]+:[0-9]+: (warning|error): " "${REPORT}" | sort -u)"
 WARNINGS=$(echo -n "${DIAGNOSTICS}" | grep -c ': warning: ')
 ERRORS=$(echo -n "${DIAGNOSTICS}" | grep -c ': error: ')
 

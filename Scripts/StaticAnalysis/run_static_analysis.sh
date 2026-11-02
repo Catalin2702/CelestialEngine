@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-18
+# Updated: 2026-11-02
 #
 
 # Runs every static analyzer in turn (clang-tidy, which includes the Clang Static Analyzer, then cppcheck) and prints
@@ -34,7 +34,7 @@ print_usage() {
 	echo "  -h, --help               Show this help message"
 	echo ""
 	echo "Each tool has more options of its own: see clang_tidy.sh --help and cppcheck.sh --help."
-	echo "Reports are written under .build/static-analysis/<tool>/<toolchain>-<config>/."
+	echo "Reports are written under .exclude/build/static-analysis/<tool>/<toolchain>-<config>/."
 }
 
 while [[ $# -gt 0 ]]; do

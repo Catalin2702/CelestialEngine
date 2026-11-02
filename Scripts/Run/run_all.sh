@@ -6,11 +6,11 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-09
 # Updated by: Catalin Chirosca
-# Updated: 2026-04-18
+# Updated: 2026-11-02
 #
 
 # Script to run the CelestialEngine application and all tests
-# Uses the Binaries/Last folder to run the latest build
+# Uses the .exclude/Binaries/Last folder to run the latest build
 
 # Colors for output
 RED='\033[0;31m'
@@ -22,7 +22,7 @@ NC='\033[0m' # No Color
 # Base directories
 SCRIPT_DIR="${0:A:h}"
 PROJECT_DIR="${SCRIPT_DIR}/../.."
-BINARIES_DIR="${PROJECT_DIR}/Binaries/Last"
+BINARIES_DIR="${PROJECT_DIR}/.exclude/Binaries/Last"
 
 # Parse command line arguments
 RUN_GUI_APPS=true
@@ -77,11 +77,11 @@ if [ "$RUN_TESTS" = false ]; then
 fi
 echo ""
 
-# Verify that the Binaries/Last folder exists
+# Verify that the .exclude/Binaries/Last folder exists
 if [ ! -d "${BINARIES_DIR}" ]; then
 	echo "${RED}Error: The folder ${BINARIES_DIR} does not exist!${NC}"
 	echo "${YELLOW}Please compile the project with CMake first, configuring with${NC}"
-	echo "${YELLOW}-DCE_COPY_LAST=ON: nothing is copied to Binaries/Last without it${NC}"
+	echo "${YELLOW}-DCE_COPY_LAST=ON: nothing is copied to .exclude/Binaries/Last without it${NC}"
 	exit 1
 fi
 

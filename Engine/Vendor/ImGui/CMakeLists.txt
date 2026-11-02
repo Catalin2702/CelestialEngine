@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 4.1)
 # for ARC, so under manual retain/release every object they alloc leaks - one FramebufferDescriptor per frame out of
 # ImGui_ImplMetal_NewFrame, plus the MetalBuffer and MTLRenderPipelineDescriptor allocations. Owning the target is what
 # lets us set that one flag; see IMGUI_OBJCXX_SOURCES below.
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/Engine/Submodules/ImGui)
+set(IMGUI_DIR ${CE_ENGINE_ROOT_DIR}/Submodules/ImGui)
 
 set(IMGUI_SOURCES
 	${IMGUI_DIR}/imgui.cpp

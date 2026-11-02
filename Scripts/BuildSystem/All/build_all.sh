@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-11-02
 #
 
 # Script to build (and optionally test) every toolchain x configuration combination.
@@ -14,7 +14,7 @@
 # The build presets in CMakePresets.json deliberately carry no "configuration" field:
 # every generator is multi-config, so the configuration is chosen at build time (by the
 # IDE, or by --config here). One configure per toolchain then feeds all three
-# configurations, and the artifacts land in Binaries/<CE_TOOLCHAIN_NAME>/<Config>/ so
+# configurations, and the artifacts land in .exclude/Binaries/<CE_TOOLCHAIN_NAME>/<Config>/ so
 # nothing overwrites anything else.
 
 # Colors for output
@@ -275,8 +275,8 @@ for toolchain in "${TOOLCHAINS[@]}"; do
 	echo ""
 
 	# CMake exposes no way to query a preset's binaryDir, so --clean mirrors the
-	# .build/<toolchain> convention of CMakePresets.json. Keep the two in sync.
-	build_dir="${PROJECT_DIR}/.build/${toolchain}"
+	# .exclude/build/<toolchain> convention of CMakePresets.json. Keep the two in sync.
+	build_dir="${PROJECT_DIR}/.exclude/build/${toolchain}"
 
 	if [ "$CLEAN" = true ]; then
 		if [ -d "${build_dir}" ]; then

@@ -11,7 +11,7 @@
 		"Created by: Catalin Chirosca",
 		"Created: 2026-08-13",
 		"Updated by: Catalin Chirosca",
-		"Updated: 2026-08-18",
+		"Updated: 2026-11-02",
 		"",
 		"All generators are multi-config, so the build type lives in the build/test presets",
 		"(via 'configuration') instead of in a configure preset per type. That keeps the",
@@ -23,7 +23,7 @@
 		{
 			"name": "config-preset-base",
 			"hidden": true,
-			"binaryDir": "${sourceDir}/.build/${presetName}",
+			"binaryDir": "${sourceDir}/.exclude/build/${presetName}",
 			"toolchainFile": "$env{CMAKE_TOOLCHAIN_FILE}",
 			"cacheVariables": {
 				"VCPKG_MANIFEST_MODE": "ON",
@@ -40,7 +40,7 @@
 			"name": "config-preset-clang",
 			"displayName": "Config-Preset Clang",
 			"inherits": "config-preset-ninja-multi",
-			"binaryDir": "${sourceDir}/.build/clang",
+			"binaryDir": "${sourceDir}/.exclude/build/clang",
 			"condition": {
 				"type": "allOf",
 				"conditions": [
@@ -66,7 +66,7 @@
 			"name": "config-preset-appleclang",
 			"displayName": "Config-Preset AppleClang",
 			"inherits": "config-preset-ninja-multi",
-			"binaryDir": "${sourceDir}/.build/appleclang",
+			"binaryDir": "${sourceDir}/.exclude/build/appleclang",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -83,7 +83,7 @@
 			"displayName": "Config-Preset Xcode",
 			"inherits": "config-preset-base",
 			"generator": "Xcode",
-			"binaryDir": "${sourceDir}/.build/xcode",
+			"binaryDir": "${sourceDir}/.exclude/build/xcode",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -99,7 +99,7 @@
 			"displayName": "Config-Preset Visual Studio",
 			"inherits": "config-preset-base",
 			"generator": "Visual Studio 17 2022",
-			"binaryDir": "${sourceDir}/.build/vs",
+			"binaryDir": "${sourceDir}/.exclude/build/vs",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",

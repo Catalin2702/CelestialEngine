@@ -1,3 +1,7 @@
+# --- Generated, local-only ---
+# Build trees (.exclude/build/<preset>), delivered artifacts (.exclude/Binaries), scratch files: one folder for all.
+/.exclude/
+
 # --- Binaries ---
 *.o
 *.obj

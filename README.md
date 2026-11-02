@@ -15,33 +15,21 @@
 
 ## 📂 Project Structure
 ```text
-├── App/
-└── Engine/
-	├── config/
-		└── cmake # Cmake global configs
-	├── Core/
-		├── Core/ # Application class to inherit to change app behaviour
-		└── Layers/ # Layer and StackLayer
-	├── Define/
-	├── Events/ # Application events manager
-	├── src/
-		├── CelestialEngine.hpp # Header to include in the app
-		└── EntryPoint.hpp # Entry point with main function (DO NOT DEFINE your main function)
-	├── Tools/
-		├── CMD/ # Tools to run the app through CMD
-		├── Log/
-		├── Manipulation/ # String manipulation
-		└── Time/
-	├── Types/
-		└── Window/
-	├── Vendor
-		└── Apple
-			└── Metal
-				└── MetalCpp/ # Official and custom parts from metal-cpp
-	└── Window
-		└── Platforms
-			├── Linux
-			├── Mac/ # Metal implementation in GLFW
-			├── Universal/ # OpenGL implementation in GLFW
-			└── Windows
+├── CMakeLists.txt          # Top level: resolves the backends, includes Engine/cmake, adds the engine and the apps
+├── CMakePresets.json       # Shared presets, one per toolchain (CMakeUserPresets.json: local variants)
+├── Apps/
+│   └── Sandbox/            # The engine's test bed: its sources + one ce_add_application() call
+├── Engine/
+│   ├── cmake/              # Build machinery: CE_Config, Binaries/ layout, ce_add_application, backend selection
+│   │   └── templates/      # Default Info.plist and entitlements of every application
+│   ├── Modules/            # Core, Define, Events, Native, Tools, Types, Utility
+│   ├── Shaders/            # Metal and GLSL shaders, compiled per selected backend
+│   ├── src/
+│   │   ├── include/        # CelestialEngine.hpp, the header an application includes
+│   │   └── internal/       # EntryPoint.hpp - defines main(): do NOT define your own
+│   ├── Tests/              # GoogleTest suites, one per module (CE_BUILD_TESTS)
+│   ├── Vendor/             # CMake wrappers of the third-party libraries
+│   └── Submodules/         # ImGui, metal-cpp
+├── Scripts/                # Build-all, run-all, static analysis, Xcode project
+└── .exclude/               # Everything generated, git-ignored: build/<preset>, Binaries/<toolchain>/<config>, tmp/
 ```

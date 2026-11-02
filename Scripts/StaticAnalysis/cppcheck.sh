@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-18
+# Updated: 2026-11-02
 #
 
 # Runs cppcheck over the project's own C++ sources.
@@ -81,7 +81,7 @@ echo "${BLUE}========================================${NC}"
 echo "${BLUE}CelestialEngine - cppcheck${NC}"
 echo "${BLUE}========================================${NC}"
 echo "cppcheck:      ${CPPCHECK} ($("${CPPCHECK}" --version))"
-echo "Commands from: .build/${TOOLCHAIN} (${CONFIG})"
+echo "Commands from: .exclude/build/${TOOLCHAIN} (${CONFIG})"
 [ -n "${FILTER}" ] && echo "Files:         ${FILTER}"
 echo ""
 
@@ -114,7 +114,7 @@ CPPCHECK_ARGS=(
 	--inline-suppr
 	--suppressions-list="${SUPPRESSIONS}"
 	# Third-party code is parsed for the types it declares but never reported.
-	--suppress="*:${PROJECT_DIR}/.build/*"
+	--suppress="*:${PROJECT_DIR}/.exclude/build/*"
 	--suppress="*:${PROJECT_DIR}/Engine/Submodules/*"
 	--suppress="*:${PROJECT_DIR}/vcpkg_link/*"
 	--check-level="$([ "${EXHAUSTIVE}" = true ] && echo exhaustive || echo normal)"

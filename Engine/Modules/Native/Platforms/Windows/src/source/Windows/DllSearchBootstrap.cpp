@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-18
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-24
+// Updated: 2026-11-02
 //
 
 // Registers the executable's DLL/ subfolder as an additional DLL search directory before any
@@ -13,7 +13,7 @@
 // subfolder relative to me" - it only searches the executable's own directory, system directories
 // and PATH. Compiled directly into every executable that needs it (see ce_enable_dll_bootstrap in
 // CelestialEngineMacros.cmake) so the registration below runs as a global static initializer,
-// ahead of main(), regardless of which executable (CE_App or a Tests/*.exe) it ends up in.
+// ahead of main(), regardless of which executable (an application or a Tests/*.exe) it ends up in.
 
 #include <Windows.h>
 
@@ -31,7 +31,7 @@ namespace {
 
 		const auto exeDirectory = std::filesystem::path(exePath).parent_path();
 
-		// CE_App.exe sits directly in Binaries/<toolchain>/<config>/, so its DLL/ folder is a
+		// An application's .exe sits directly in Binaries/<toolchain>/<config>/, so its DLL/ folder is a
 		// direct sibling; the Tests/*.exe sit one level deeper in .../Tests/, so theirs is one
 		// level up. Probing both means every caller of ce_enable_dll_bootstrap "just works"
 		// regardless of which subfolder it itself lives in.

@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-04-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-17
+# Updated: 2026-11-02
 #
 
 # Script to create an XCode project for the Celestial Engine
@@ -34,7 +34,7 @@ PROJECT_DIR="${PROJECT_DIR:A}" # Collapse the ../.. so the printed paths stay re
 SCRIPT_NAME="${0}"
 
 CONFIGURE_PRESET="config-preset-xcode"
-XCODE_PROJECT="${PROJECT_DIR}/.build/xcode/CelestialEngine.xcodeproj"
+XCODE_PROJECT="${PROJECT_DIR}/.exclude/build/xcode/CelestialEngine.xcodeproj"
 
 # Parse command line arguments
 FRESH=false

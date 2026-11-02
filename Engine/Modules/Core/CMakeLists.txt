@@ -11,7 +11,7 @@
 #   $<BOOL:${CE_RENDER_OPENGL}> / $<BOOL:${CE_RENDER_METAL}>  - graphics backends (CE_RENDER_BACKENDS)
 #   $<BOOL:${CE_WINDOW_GLFW}>  / $<BOOL:${CE_WINDOW_COCOA}>   - window backends, derived from the graphics ones
 #   $<PLATFORM_ID:Darwin>                                      - the OS itself, whatever the backends (the menu bar)
-# See config/cmake/CERenderBackends.cmake.
+# See Engine/cmake/CERenderBackends.cmake.
 
 set(CORE_HEADERS
 	src/include/Core/Core.hpp
@@ -469,7 +469,7 @@ set_target_properties(CE_Core PROPERTIES
 ce_set_module_library_output(CE_Core)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
-# CE_App.app/Contents/Frameworks)
+# CelestialEngine.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Core)
 
 # Modules

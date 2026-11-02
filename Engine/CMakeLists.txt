@@ -9,7 +9,9 @@
 
 cmake_minimum_required(VERSION 4.1)
 
-include("${CMAKE_SOURCE_DIR}/config/cmake/CelestialEngineMacros.cmake")
+# Normally already included by the top-level CMakeLists.txt (it has to be, for the applications to see its variables);
+# included here too for a project that only adds this directory. The include guard makes the second inclusion free.
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/CelestialEngineMacros.cmake")
 
 project(CE_Engine LANGUAGES CXX VERSION 0.1.3)
 
@@ -69,7 +71,7 @@ set_target_properties(CE_Engine PROPERTIES
 ce_set_module_library_output(CE_Engine)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
-# CE_App.app/Contents/Frameworks)
+# CelestialEngine.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Engine)
 
 # Engine-internal: unlocks the CE_CORE_* logging macros (see CE_Internal in CelestialEngineMacros.cmake)
@@ -112,3 +114,15 @@ target_include_directories(CE_Engine PUBLIC
 
 # Copy to Binaries/Last folder
 ce_copy_to_last(CE_Engine)
+
+# The engine's tests live with it (Engine/Tests) and come last, once every module target they link exists. Building them
+# is what makes CMake create Binaries/<toolchain>/<config>/Tests/ - at GENERATE time, so the folder shows up (empty) even
+# in a build that only ever compiles an application. Turn them off to configure without them:
+#   cmake --preset config-preset-clang -DCE_BUILD_TESTS=OFF
+# A cache variable read at configure time, so flipping it needs a re-configure.
+option(CE_BUILD_TESTS "Build the engine's test executables" ON)
+
+if (CE_BUILD_TESTS)
+	enable_testing()
+	add_subdirectory(Tests)
+endif ()
