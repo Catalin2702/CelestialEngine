@@ -11,8 +11,9 @@
  * @file Swapchain.hpp
  * @brief Umbrella header for the Swapchain part of the Core renderer
  * @details One include for everything a swapchain is made of: its interface and the per-backend swapchains.
- *			Backend-specific headers come along too: the Common ones (OpenGL, GLFW) on every platform, the Mac ones
- *			(Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the same split Types/Render/Render.hpp makes.
+ *			Backend-specific headers come along too, each only where its backend is compiled in - CE_RENDER_* for
+ *			the graphics ones, CE_WINDOW_* for the window ones, both chosen by CE_RENDER_BACKENDS - the same split
+ *			Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -24,9 +25,11 @@
 
 #include "Core/Render/Swapchain/I_Swapchain.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
 #endif
 

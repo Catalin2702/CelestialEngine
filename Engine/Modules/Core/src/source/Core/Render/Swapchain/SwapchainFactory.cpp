@@ -9,12 +9,15 @@
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
 #include "Core/Render/Swapchain/Swapchain.hpp"
-#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_OPENGL
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
+#endif
+
+#if CE_RENDER_METAL
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
@@ -35,6 +38,7 @@ std::unique_ptr<I_Swapchain> I_Swapchain::MakeSwapchain(I_Window& window, I_Grap
 		throw std::runtime_error(error);
 	}
 	switch (api) {
+#if CE_RENDER_OPENGL
 		case Types::GraphicsApi::OpenGL: {
 			auto* const surface = dynamic_cast<I_OpenGlSurface*>(&window);
 			if (not surface) [[unlikely]] {
@@ -44,7 +48,8 @@ std::unique_ptr<I_Swapchain> I_Swapchain::MakeSwapchain(I_Window& window, I_Grap
 			}
 			return std::make_unique<OpenGlSwapchain>(*surface);
 		}
-#if CE_PLATFORM_MACOS
+#endif
+#if CE_RENDER_METAL
 		case Types::GraphicsApi::Metal: {
 			auto* const surface = dynamic_cast<I_MetalSurface*>(&window);
 			if (not surface) [[unlikely]] {
@@ -56,7 +61,8 @@ std::unique_ptr<I_Swapchain> I_Swapchain::MakeSwapchain(I_Window& window, I_Grap
 		}
 #endif
 		default: {
-			constexpr auto error = "I_Swapchain::MakeSwapchain: Not yet implemented!";
+			// Either a backend that does not exist yet, or one this build was configured without (CE_RENDER_BACKENDS).
+			const auto error = std::format("I_Swapchain::MakeSwapchain: {} is not compiled into this build!", api);
 			CE_CORE_ERROR(error);
 			throw std::logic_error(error);
 		}

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -23,14 +23,21 @@ set(IMGUI_SOURCES
 	${IMGUI_DIR}/imgui_tables.cpp
 	${IMGUI_DIR}/imgui_widgets.cpp
 	${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
-
-	# Backends. imgui_impl_glfw.cpp is deliberately NOT here - see CE_Vendor_ImGui_Glfw below.
-	${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
+
+# Backends, one per compiled-in graphics/window backend (CE_RENDER_BACKENDS). imgui_impl_glfw.cpp is deliberately NOT
+# here even with GLFW on - see CE_Vendor_ImGui_Glfw below.
+if (CE_RENDER_OPENGL)
+	list(APPEND IMGUI_SOURCES
+		${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+	)
+endif ()
 
 set(IMGUI_OBJCXX_SOURCES "")
 
-if (APPLE)
+# The OSX backend serves the Cocoa window and the Metal one the Metal device; they always come together, since a Cocoa
+# window is only built for Metal.
+if (CE_RENDER_METAL)
 	set(IMGUI_OBJCXX_SOURCES
 		${IMGUI_DIR}/backends/imgui_impl_metal.mm
 		${IMGUI_DIR}/backends/imgui_impl_osx.mm
@@ -68,7 +75,7 @@ set_source_files_properties(${IMGUI_SOURCES} PROPERTIES
 	COMPILE_OPTIONS "-w"
 )
 
-if (APPLE)
+if (IMGUI_OBJCXX_SOURCES)
 	# -fobjc-arc is the fix described at the top of this file. The port also passed -fobjc-weak; ARC implies it, and
 	# clang warns that it is unused, so it is not repeated here.
 	set_source_files_properties(${IMGUI_OBJCXX_SOURCES} PROPERTIES
@@ -85,7 +92,7 @@ target_link_libraries(CE_Vendor_ImGui PUBLIC
 # process a second copy of GLFW's code and global state next to CE_Core's - which the Objective-C
 # runtime reports as "Class GLFWWindow is implemented in both ...", and which would leave ImGui's
 # GLFW backend talking to a GLFW that was never initialised.
-if (APPLE)
+if (IMGUI_OBJCXX_SOURCES)
 	target_link_libraries(CE_Vendor_ImGui PRIVATE
 		"-framework AppKit"
 		"-framework GameController"
@@ -115,20 +122,23 @@ ce_copy_to_last(CE_Vendor_ImGui)
 # that target's "Third-party" comment: GLFW is a static library, so anything that links it grows its
 # own copy. Kept static and undefined-symbol-tolerant, it is resolved when CE_Core - the only
 # consumer of the GLFW backend, and already a GLFW client - links it, so the process holds one GLFW.
-add_library(CE_Vendor_ImGui_Glfw STATIC
-	${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-)
+# Only built when a GLFW window is (CE_WINDOW_GLFW, derived from CE_RENDER_BACKENDS).
+if (CE_WINDOW_GLFW)
+	add_library(CE_Vendor_ImGui_Glfw STATIC
+		${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+	)
 
-set_target_properties(CE_Vendor_ImGui_Glfw PROPERTIES
-	LINKER_LANGUAGE CXX
-	POSITION_INDEPENDENT_CODE ON
-)
+	set_target_properties(CE_Vendor_ImGui_Glfw PROPERTIES
+		LINKER_LANGUAGE CXX
+		POSITION_INDEPENDENT_CODE ON
+	)
 
-set_source_files_properties(${IMGUI_DIR}/backends/imgui_impl_glfw.cpp PROPERTIES
-	COMPILE_OPTIONS "-w"
-)
+	set_source_files_properties(${IMGUI_DIR}/backends/imgui_impl_glfw.cpp PROPERTIES
+		COMPILE_OPTIONS "-w"
+	)
 
-target_link_libraries(CE_Vendor_ImGui_Glfw PUBLIC
-	CE_Vendor_Glfw
-	CE_Vendor_ImGui
-)
+	target_link_libraries(CE_Vendor_ImGui_Glfw PUBLIC
+		CE_Vendor_Glfw
+		CE_Vendor_ImGui
+	)
+endif ()

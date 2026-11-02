@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -22,9 +22,16 @@ set(SOURCES
 	src/source/CelestialEngine.cpp
 )
 
-# Vendor libraries
-add_subdirectory(Vendor/Glad)
-add_subdirectory(Vendor/Glfw)
+# Vendor libraries. The backend-specific ones are added only when their backend is compiled in (CE_RENDER_BACKENDS), so
+# a build without OpenGL does not even look for glad, and one without a GLFW window does not look for GLFW.
+if (CE_RENDER_OPENGL)
+	add_subdirectory(Vendor/Glad)
+endif ()
+
+if (CE_WINDOW_GLFW)
+	add_subdirectory(Vendor/Glfw)
+endif ()
+
 add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
 add_subdirectory(Vendor/SpdLog)
@@ -64,6 +71,11 @@ ce_set_module_library_output(CE_Engine)
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
 # CE_App.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Engine)
+
+# Engine-internal: unlocks the CE_CORE_* logging macros (see CE_Internal in CelestialEngineMacros.cmake)
+target_link_libraries(CE_Engine PRIVATE
+	CE_Internal
+)
 
 target_compile_definitions(CE_Engine PRIVATE
 	CE_ENGINE_EXPORTS

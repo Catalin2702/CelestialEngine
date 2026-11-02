@@ -4,14 +4,16 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-11-02
 //
 
 #include "Utility/ImGui/ImGui.hpp"
 
 #include "Utility/FileSystem/FileSystem.hpp"
 
+#if CE_WINDOW_GLFW
 #include <GLFW/glfw3.h>
+#endif
 
 #include <string>
 
@@ -25,6 +27,8 @@ void SetImGuiIniFile(ImGuiIO& io, const char* fileName) {
 	io.IniFilename = iniFilePath.c_str();
 }
 
+// Only with a GLFW window (CE_WINDOW_GLFW, derived from CE_RENDER_BACKENDS).
+#if CE_WINDOW_GLFW
 ImGuiKey GlfwKeyToImGuiKey(const int key) {
 	switch (key) {
 		case GLFW_KEY_TAB: return ImGuiKey_Tab;
@@ -135,5 +139,6 @@ ImGuiKey GlfwKeyToImGuiKey(const int key) {
 		default: return ImGuiKey_None;
 	}
 }
+#endif
 
 }

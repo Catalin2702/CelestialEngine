@@ -4,49 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-09
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-11-02
 //
 
 #include "Types/KeyCode/MouseButtonCode.hpp"
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <GLFW/glfw3.h>
-
 
 namespace CE::Types {
-
-MouseButtonCode MouseButtonKeyCodeFromGlfw(const int buttonCode) {
-	switch (buttonCode) {
-		case GLFW_MOUSE_BUTTON_LEFT: return MouseButtonCode::Left;
-		case GLFW_MOUSE_BUTTON_RIGHT: return MouseButtonCode::Right;
-		case GLFW_MOUSE_BUTTON_MIDDLE: return MouseButtonCode::Middle;
-		case GLFW_MOUSE_BUTTON_4: return MouseButtonCode::Button4;
-		case GLFW_MOUSE_BUTTON_5: return MouseButtonCode::Button5;
-		case GLFW_MOUSE_BUTTON_6: return MouseButtonCode::Button6;
-		case GLFW_MOUSE_BUTTON_7: return MouseButtonCode::Button7;
-		case GLFW_MOUSE_BUTTON_8: return MouseButtonCode::Button8;
-
-		default: return MouseButtonCode::Unknown;
-	}
-}
-
-int GlfwKeyCodeFromMouseButton(const MouseButtonCode buttonCode) {
-	switch (buttonCode) {
-		case MouseButtonCode::Left: return GLFW_MOUSE_BUTTON_LEFT;
-		case MouseButtonCode::Right: return GLFW_MOUSE_BUTTON_RIGHT;
-		case MouseButtonCode::Middle:
-		case MouseButtonCode::WheelX:
-		case MouseButtonCode::WheelY: return GLFW_MOUSE_BUTTON_MIDDLE;
-		case MouseButtonCode::Button4: return GLFW_MOUSE_BUTTON_4;
-		case MouseButtonCode::Button5: return GLFW_MOUSE_BUTTON_5;
-		case MouseButtonCode::Button6: return GLFW_MOUSE_BUTTON_6;
-		case MouseButtonCode::Button7: return GLFW_MOUSE_BUTTON_7;
-		case MouseButtonCode::Button8: return GLFW_MOUSE_BUTTON_8;
-
-		case MouseButtonCode::Unknown:
-		default: return GLFW_KEY_UNKNOWN;
-	}
-}
 
 int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 	switch (buttonCode) {
@@ -57,28 +21,6 @@ int ImGuiKeyFromMouseButton(const MouseButtonCode buttonCode) {
 		case MouseButtonCode::WheelY: return 2;
 
 		default: return 5; // No valid mapping for this button
-	}
-}
-
-MouseButtonCode MouseButtonKeyCodeFromCocoa(const long buttonNumber) {
-	switch (buttonNumber) {
-		case 0: return MouseButtonCode::Left;
-		case 1: return MouseButtonCode::Right;
-		case 2: return MouseButtonCode::Middle;
-		default: return MouseButtonCode::Unknown;
-	}
-}
-
-int CocoaButtonNumberFromMouseButton(const MouseButtonCode buttonCode) {
-	switch (buttonCode) {
-		case MouseButtonCode::Left: return 0;
-		case MouseButtonCode::Right: return 1;
-		case MouseButtonCode::Middle:
-		case MouseButtonCode::WheelX:
-		case MouseButtonCode::WheelY: return 2;
-
-		case MouseButtonCode::Unknown:
-		default: return -1;
 	}
 }
 

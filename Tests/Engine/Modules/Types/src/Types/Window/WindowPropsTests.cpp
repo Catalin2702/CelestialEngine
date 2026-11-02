@@ -148,6 +148,48 @@ TEST_F(WindowPropsTest, IsGraphicsApiCompatibleWithWindowApi_MetalAndGlfw_AreInc
 }
 
 // ============================================================================
+// Build Selection Tests
+// ============================================================================
+
+/**
+ * @brief Test that the engine reports exactly the window backends derived from CE_RENDER_BACKENDS
+ */
+TEST_F(WindowPropsTest, IsWindowApiCompiled_MatchesTheBuildSelection) {
+	EXPECT_EQ(IsWindowApiCompiled(WindowApi::GLFW), static_cast<bool>(CE_WINDOW_GLFW));
+	EXPECT_EQ(IsWindowApiCompiled(WindowApi::Cocoa), static_cast<bool>(CE_WINDOW_COCOA));
+
+	// No backend exists for these, whatever the selection
+	EXPECT_FALSE(IsWindowApiCompiled(WindowApi::Win32));
+	EXPECT_FALSE(IsWindowApiCompiled(WindowApi::X11));
+	EXPECT_FALSE(IsWindowApiCompiled(WindowApi::Wayland));
+	EXPECT_FALSE(IsWindowApiCompiled(WindowApi::None));
+}
+
+/**
+ * @brief Test that each graphics API defaults to the window it is built with
+ */
+TEST_F(WindowPropsTest, GetDefaultWindowApi_PairsEachGraphicsApiWithItsWindow) {
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::OpenGL), WindowApi::GLFW);
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::Vulkan), WindowApi::GLFW);
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::Metal), WindowApi::Cocoa);
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::DirectX11), WindowApi::Win32);
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::DirectX12), WindowApi::Win32);
+	EXPECT_EQ(GetDefaultWindowApi(GraphicsApi::None), WindowApi::None);
+}
+
+/**
+ * @brief Test that the build's default graphics API comes with a window this build has, and that the two pair up
+ * @details What a launch with no arguments relies on: whatever CE_RENDER_BACKENDS selected, it has to open.
+ */
+TEST_F(WindowPropsTest, DefaultApis_AreCompiledAndCompatible) {
+	const auto graphicsApi = GetDefaultGraphicsApi();
+	const auto windowApi = GetDefaultWindowApi(graphicsApi);
+
+	EXPECT_TRUE(IsWindowApiCompiled(windowApi));
+	EXPECT_TRUE(IsGraphicsApiCompatible(graphicsApi, windowApi));
+}
+
+// ============================================================================
 // Formatting Tests
 // ============================================================================
 

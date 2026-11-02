@@ -17,9 +17,13 @@ set(SOURCES
 	src/Delegate/DelegateTests.cpp
 	src/Delegate/DispatcherTests.cpp
 	src/FileSystem/FileSystemTests.cpp
-	src/ImGui/ImGuiTests.cpp
 	src/Manipulation/StringManipulationTests.cpp
 	src/Time/ChronometerTests.cpp
+
+	# Only GLFW key mappings live there, compiled with a GLFW window (CE_WINDOW_GLFW)
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/ImGui/ImGuiTests.cpp
+	>
 )
 
 add_executable(CE_TestsUtility

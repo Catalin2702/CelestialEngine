@@ -16,6 +16,15 @@ set(BUILD_SOURCES
 set(KEYCODE_SOURCES
 	src/Types/KeyCode/KeyboardKeyCodeTests.cpp
 	src/Types/KeyCode/MouseButtonCodeTests.cpp
+
+	# Per-window-backend code conversions, tested only where they are compiled (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/Types/KeyCode/Platforms/Common/Glfw/GlfwTests.cpp
+	>
+
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
+		src/Types/KeyCode/Platforms/Mac/Cocoa/CocoaTests.cpp
+	>
 )
 
 set(RENDER_SOURCES
@@ -23,7 +32,11 @@ set(RENDER_SOURCES
 	src/Types/Render/GraphicsApiTests.cpp
 	src/Types/Render/PixelFormatTests.cpp
 	src/Types/Render/ShaderTests.cpp
-	src/Types/Render/Platforms/Common/OpenGl/OpenGlTests.cpp
+
+	# Per-backend conversion tables, tested only where they are compiled (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/Types/Render/Platforms/Common/OpenGl/OpenGlTests.cpp
+	>
 )
 
 set(WINDOW_SOURCES

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-11-02
 //
 
 #include <Tools/Tools.hpp>
@@ -88,12 +88,7 @@ TEST_F(LogTest, GetCoreLogger_AfterInit_ReturnsValidLogger) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#if not CE_DIST
 	EXPECT_NE(logger, nullptr);
-#else
-	// In distribution builds, logger might be null
-	EXPECT_EQ(logger, nullptr);
-#endif
 	Log::Shutdown();
 }
 
@@ -104,12 +99,7 @@ TEST_F(LogTest, GetClientLogger_AfterInit_ReturnsValidLogger) {
 	Log::Init();
 	const auto& logger = Log::GetClientLogger();
 
-#if not CE_DIST
 	EXPECT_NE(logger, nullptr);
-#else
-	// In distribution builds, logger might be null
-	EXPECT_EQ(logger, nullptr);
-#endif
 	Log::Shutdown();
 }
 
@@ -121,12 +111,7 @@ TEST_F(LogTest, GetLoggers_CoreAndClient_AreDifferent) {
 	const auto& coreLogger = Log::GetCoreLogger();
 	const auto& clientLogger = Log::GetClientLogger();
 
-#if not CE_DIST
 	EXPECT_NE(coreLogger, clientLogger);
-#else
-	// In distribution builds, both might be null
-	EXPECT_EQ(coreLogger, clientLogger);
-#endif
 	Log::Shutdown();
 }
 
@@ -137,7 +122,6 @@ TEST_F(LogTest, CoreLogger_LogMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->trace("Test trace message");
@@ -147,9 +131,6 @@ TEST_F(LogTest, CoreLogger_LogMessage_NoErrors) {
 			logger->error("Test error message");
 		}
 	});
-#else
-	EXPECT_EQ(logger, nullptr);
-#endif
 }
 
 /**
@@ -159,7 +140,6 @@ TEST_F(LogTest, ClientLogger_LogMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetClientLogger();
 
-#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->trace("Test trace message");
@@ -169,9 +149,6 @@ TEST_F(LogTest, ClientLogger_LogMessage_NoErrors) {
 			logger->error("Test error message");
 		}
 	});
-#else
-	EXPECT_EQ(logger, nullptr);
-#endif
 }
 
 /**
@@ -181,16 +158,12 @@ TEST_F(LogTest, Logger_FormattedMessage_NoErrors) {
 	Log::Init();
 	const auto& logger = Log::GetCoreLogger();
 
-#if not CE_DIST
 	EXPECT_NO_THROW({
 		if (logger) {
 			logger->info("Formatted message: {} {} {}", 1, 2.5, "test");
 			logger->info("Number: {0}, String: {1}", 42, "value");
 		}
 	});
-#else
-	EXPECT_EQ(logger, nullptr);
-#endif
 }
 
 /**
@@ -214,20 +187,48 @@ TEST_F(LogTest, GetLogger_BeforeInit_ReturnsLogger) {
 }
 
 /**
- * @brief Test that logging works in distribution builds
+ * @brief Test that every configuration has loggers, and that Dist keeps only the critical level
+ * @details Dist used to run with no logger at all; it now writes CRITICAL to stderr and to a file, so both loggers exist
+ *			there too - set to critical, while Debug and Release log everything the macros let through.
  */
-TEST_F(LogTest, Logger_DistBuild_HandlesGracefully) {
-	// This test ensures the code compiles and runs in both debug and dist modes
-	EXPECT_NO_THROW(Log::Init());
+TEST_F(LogTest, Loggers_LevelFollowsTheConfiguration) {
+	Log::Init();
 
-#if not CE_DIST
-	if (const auto& logger = Log::GetCoreLogger()) {
-		EXPECT_NO_THROW(logger->info("This should log in debug builds"));
-	}
-#endif
+	const auto& coreLogger = Log::GetCoreLogger();
+	const auto& clientLogger = Log::GetClientLogger();
+	ASSERT_NE(coreLogger, nullptr);
+	ASSERT_NE(clientLogger, nullptr);
 
-	EXPECT_NO_THROW(Log::Shutdown());
+	constexpr auto expected = CE_DIST ? spdlog::level::critical : spdlog::level::trace;
+	EXPECT_EQ(coreLogger->level(), expected);
+	EXPECT_EQ(clientLogger->level(), expected);
+
+	Log::Shutdown();
 }
+
+/**
+ * @brief Test that the critical path used by the terminate handler logs without throwing, in every configuration
+ */
+TEST_F(LogTest, LogCoreCritical_AfterInit_NoErrors) {
+	Log::Init();
+
+	EXPECT_NO_THROW(Log::LogCoreCritical("LogTest: critical message, expected in the test output"));
+	EXPECT_NO_THROW(Log::Flush());
+
+	Log::Shutdown();
+}
+
+/**
+ * @brief Test that the critical path is a no-op, not a crash, before Init
+ * @details Asserted in Debug as a caller's bug, so only checked where asserts are compiled out.
+ */
+#if not CE_DEBUG
+TEST_F(LogTest, LogCoreCritical_BeforeInit_DoesNothing) {
+	Log::Shutdown();
+
+	EXPECT_NO_THROW(Log::LogCoreCritical("never written"));
+}
+#endif
 
 /**
  * @brief Test logger thread safety with multiple accesses
@@ -235,7 +236,6 @@ TEST_F(LogTest, Logger_DistBuild_HandlesGracefully) {
 TEST_F(LogTest, Logger_MultipleAccesses_ThreadSafe) {
 	Log::Init();
 
-#if not CE_DIST
 	for (int i = 0; i < 10; ++i) {
 		const auto& coreLogger = Log::GetCoreLogger();
 		const auto& clientLogger = Log::GetClientLogger();
@@ -247,9 +247,30 @@ TEST_F(LogTest, Logger_MultipleAccesses_ThreadSafe) {
 			EXPECT_NO_THROW(clientLogger->info("Client message {}", i));
 		}
 	}
-#else
-	const auto& coreLogger = Log::GetCoreLogger();
-	const auto& clientLogger = Log::GetClientLogger();
-	EXPECT_EQ(coreLogger, clientLogger);
-#endif
+}
+
+/**
+ * @brief Test that every logging macro expands and runs in every configuration
+ * @details The levels a configuration removes expand to an empty statement, arguments included, so this mostly checks
+ *			that the macros stay well-formed in all three. CE_CORE_* is available here because the tests link
+ *			CE_Internal, as the engine modules do.
+ */
+TEST_F(LogTest, Macros_ExpandInEveryConfiguration) {
+	Log::Init();
+
+	EXPECT_NO_THROW({
+		CE_TRACE("LogTest: client trace {}", 1);
+		CE_INFO("LogTest: client info {}", 2);
+		CE_WARN("LogTest: client warning {}", 3);
+		CE_ERROR("LogTest: client error {}", 4);
+		CE_CRITICAL("LogTest: client critical {}, expected in the test output", 5);
+
+		CE_CORE_TRACE("LogTest: core trace {}", 1);
+		CE_CORE_INFO("LogTest: core info {}", 2);
+		CE_CORE_WARN("LogTest: core warning {}", 3);
+		CE_CORE_ERROR("LogTest: core error {}", 4);
+		CE_CORE_CRITICAL("LogTest: core critical {}, expected in the test output", 5);
+	});
+
+	Log::Shutdown();
 }

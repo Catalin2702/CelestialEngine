@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_UTILITY_IMGUI_IMGUI_HPP
 #define CE_UTILITY_IMGUI_IMGUI_HPP
 
+#include "Define/Config.hpp"
 #include "Define/DynamicLinker.hpp"
 
 #include <imgui.h>
@@ -21,6 +22,7 @@
 
 namespace CE::Utility {
 
+#if CE_WINDOW_GLFW
 /**
  * @brief Converts a GLFW key code to the corresponding ImGui key code
  * @param key GLFW key code (e.g., GLFW_KEY_A)
@@ -30,6 +32,7 @@ namespace CE::Utility {
  *			special keys, modifier keys, and keypad keys. If a GLFW key code does not have a corresponding ImGui key code, the function returns ImGuiKey_None.
  */
 CE_UTILITY_API ImGuiKey GlfwKeyToImGuiKey(int key);
+#endif
 
 /**
  * @brief Points ImGui's settings file at the per-user configuration directory

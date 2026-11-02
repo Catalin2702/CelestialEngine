@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-11-02
 //
 
 #include <Types/Render/Platforms/Common/OpenGl/OpenGl.hpp>
@@ -43,4 +43,24 @@ TEST_F(OpenGlTypesTest, BufferBit_CombinesIntoAClearMask) {
 	EXPECT_EQ(mask, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	EXPECT_TRUE(mask & GL_COLOR_BUFFER_BIT);
 	EXPECT_FALSE(mask & GL_STENCIL_BUFFER_BIT);
+}
+
+// ============================================================================
+// Shader Stage Mapping Tests
+// ============================================================================
+
+/**
+ * @brief Test that the stages the OpenGL back-end compiles map onto their GL constants
+ */
+TEST_F(OpenGlTypesTest, ToOpenGlShaderType_MapsCompilableStages) {
+	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Vertex), GL_VERTEX_SHADER);
+	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Fragment), GL_FRAGMENT_SHADER);
+}
+
+/**
+ * @brief Test that a stage without a GL mapping is reported as invalid
+ */
+TEST_F(OpenGlTypesTest, ToOpenGlShaderType_UnmappedStage_ReturnsInvalid) {
+	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Mesh), -1);
+	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Unknown), -1);
 }

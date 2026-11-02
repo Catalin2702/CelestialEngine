@@ -14,10 +14,14 @@ set(SOURCES
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/Apple/AppleHeadersTests.cpp
-		src/Apple/Bridge/ImGui/ImGuiBridgeTests.cpp
 		src/Apple/MetalCpp/AppKit/NsViewEventDispatcherTests.cpp
 		src/Apple/MetalCpp/AppKit/NsWindowEventDispatcherTests.cpp
 		src/Apple/MetalCpp/MetalKit/MtkViewDelegateTests.cpp
+	>
+
+	# The bridge only exists with Metal (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/Apple/Bridge/ImGui/ImGuiBridgeTests.cpp
 	>
 )
 

@@ -7,7 +7,7 @@
 // Updated: 2026-11-02
 //
 
-#include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
+#include "TestEventHub.hpp"
 
 #include <Tools/Tools.hpp>
 
@@ -15,9 +15,7 @@
 
 #include <optional>
 
-using CE::Core::GlfwEventHubDispatcher;
 using CE::Core::I_EventHubDispatcher;
-using CE::Types::WindowApi;
 
 namespace Events = CE::Events;
 
@@ -56,7 +54,7 @@ protected:
 	[[nodiscard]] I_EventHubDispatcher& Hub() { return _hub; }
 
 protected:
-	GlfwEventHubDispatcher _hub;
+	CE::Tests::TestEventHubDispatcher _hub;
 };
 
 }
@@ -93,7 +91,7 @@ TEST_F(EventHubDispatcherTest, Accessors_ConstAndNonConstAgree) {
  * @details What a subscriber checks before reaching for a backend-only channel, instead of guessing at a downcast.
  */
 TEST_F(EventHubDispatcherTest, ReportsTheBackendThatFeedsIt) {
-	EXPECT_EQ(Hub().GetWindowApi(), WindowApi::GLFW);
+	EXPECT_EQ(Hub().GetWindowApi(), CE::Tests::TestEventHubWindowApi);
 }
 
 // ============================================================================
@@ -199,10 +197,10 @@ TEST_F(EventHubDispatcherTest, Dispatch_WithNoSubscriber_IsSilent) {
  * @brief Test that the factory builds a hub reporting the backend it was asked for
  */
 TEST_F(EventHubDispatcherTest, Factory_BuildsTheHubForTheRequestedBackend) {
-	const auto hub = I_EventHubDispatcher::MakeEventHubDispatcher(WindowApi::GLFW);
+	const auto hub = I_EventHubDispatcher::MakeEventHubDispatcher(CE::Tests::TestEventHubWindowApi);
 
 	ASSERT_NE(hub, nullptr);
-	EXPECT_EQ(hub->GetWindowApi(), WindowApi::GLFW);
+	EXPECT_EQ(hub->GetWindowApi(), CE::Tests::TestEventHubWindowApi);
 }
 
 /**

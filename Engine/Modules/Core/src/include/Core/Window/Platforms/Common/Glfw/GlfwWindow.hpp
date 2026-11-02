@@ -15,10 +15,13 @@
 #include "Core/Window/I_Window.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
-#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
+
+#if CE_RENDER_OPENGL
+#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
+#endif
 
 #include <source_location>
 #include <string_view>
@@ -113,13 +116,18 @@ public:
 /**
  * @class GlfwWindow
  * @brief Cross-platform window implementation using GLFW
- * @details Concrete implementation of I_Window that uses GLFW for window management, and of I_OpenGlSurface so an
- *			OpenGL swapchain can present into it. Works on Windows, Linux and macOS.
+ * @details Concrete implementation of I_Window that uses GLFW for window management, and - when OpenGL is compiled in
+ *			(CE_RENDER_OPENGL) - of I_OpenGlSurface so an OpenGL swapchain can present into it. Without OpenGL the
+ *			window is created with no client API, the way Vulkan wants it. Works on Windows, Linux and macOS.
  *
  *			It owns one native window and nothing else: the library's own lifetime, its event queue and its window
  *			hints belong to GlfwPlatform, which must outlive every window built from it.
  */
-class CE_CORE_API GlfwWindow final: public I_WindowBase<Types::WindowApi::GLFW>, public I_OpenGlSurface {
+class CE_CORE_API GlfwWindow final: public I_WindowBase<Types::WindowApi::GLFW>
+#if CE_RENDER_OPENGL
+	, public I_OpenGlSurface
+#endif
+{
 public:
 	/**
 	 * @brief Creates the native window, fully initialized
@@ -182,6 +190,7 @@ public:
 	 */
 	void ToggleFullScreen() override;
 
+#if CE_RENDER_OPENGL
 	/**
 	 * @brief Makes this window's OpenGL context current on the calling thread
 	 */
@@ -191,6 +200,7 @@ public:
 	 * @brief Presents the back buffer
 	 */
 	void SwapBuffers() override;
+#endif
 
 public:
 	/**
@@ -205,12 +215,14 @@ public:
 
 	void SetCursorMode(Types::CursorMode cursorMode) override;
 
+#if CE_RENDER_OPENGL
 	/**
 	 * @brief Sets the swap interval on this window's context
 	 * @details Makes the context current first: glfwSwapInterval takes no window and applies to whichever context is
 	 *			current on the calling thread, so without that the setting could land on another window entirely.
 	 */
 	void SetSwapInterval(i32 interval) override;
+#endif
 
 public:
 	/**
@@ -256,6 +268,7 @@ public:
 	 */
 	[[nodiscard]] GLFWwindow* GetGlfwWindow() const { return _glfwWindow.get(); }
 
+#if CE_RENDER_OPENGL
 public:
 	/**
 	 * @brief Gets the size of the drawable, in backing pixels
@@ -270,6 +283,7 @@ public:
 	 *			is fixed rather than queried.
 	 */
 	[[nodiscard]] Types::PixelFormat GetColorFormat() const override { return Types::PixelFormat::RGBA8Unorm; }
+#endif
 
 private:
 	/**

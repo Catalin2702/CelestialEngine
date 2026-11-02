@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -14,7 +14,12 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
+#include "Types/Render/BlendFactor.hpp"
+#include "Types/Render/Compare.hpp"
+#include "Types/Render/CullMode.hpp"
 #include "Types/Render/PixelFormat.hpp"
+#include "Types/Render/PrimitiveTopology.hpp"
+#include "Types/Render/Shader.hpp"
 #include "Types/Render/ShaderConstants.hpp"
 
 #include <format>
@@ -63,6 +68,38 @@ struct GlFormat {
 };
 
 [[nodiscard]] CE_TYPES_API GlFormat ToOpenGl(PixelFormat pixelFormat);
+
+CE_TYPES_API u32 ToOpenGl(BlendFactor blendFactor);
+
+CE_TYPES_API u32 ToOpenGl(CompareFunc compareFunc);
+
+/**
+ * @brief Converts a CullMode to the face constant glCullFace expects
+ * @return u32 GL_FRONT or GL_BACK; GL_BACK for None, which has no face of its own
+ * @details CullMode::None is not a face but the absence of culling: the caller must glDisable(GL_CULL_FACE) for it
+ *			rather than pass the returned value on.
+ */
+CE_TYPES_API u32 ToOpenGl(CullMode cullMode);
+
+/**
+ * @brief Converts a FrontFace to the winding constant glFrontFace expects
+ */
+CE_TYPES_API u32 ToOpenGl(FrontFace frontFace);
+
+/**
+ * @brief Converts a PrimitiveTopology to the mode constant the glDraw* calls expect
+ * @details Unlike the rest of the pipeline state, topology is not something OpenGL stores: it is an argument of every
+ *			draw call, so the pipeline only exposes it and the command encoder passes it on.
+ */
+CE_TYPES_API u32 ToOpenGl(PrimitiveTopology topology);
+
+/**
+ * @brief Converts a ShaderType enum value to the corresponding OpenGL shader type constant
+ * @param type The ShaderType to convert
+ * @return int The OpenGL shader type constant corresponding to the given ShaderType, or -1 if the ShaderType is unknown or unsupported
+ * @details This function maps the ShaderType enum values to their corresponding OpenGL shader type constants (e.g., GL_VERTEX_SHADER, GL_FRAGMENT_SHADER). This is essential for compiling and using shaders in an OpenGL context. If the provided ShaderType does not have a corresponding OpenGL constant, the function returns -1 to indicate an error.
+ */
+CE_TYPES_API int ToOpenGlShaderType(ShaderType type);
 
 /**
  * @brief Names the bits set in a BufferBit mask, for fmt/spdlog and - through the formatter below - for std::format

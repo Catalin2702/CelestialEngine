@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -64,8 +64,6 @@ enum class BlendFactor: u8 {
  *			driver at pipeline creation - and only on the backends that bother to validate it.
  */
 CE_TYPES_API bool IsValidDestinationFactor(BlendFactor blendFactor);
-
-CE_TYPES_API u32 ToOpenGl(BlendFactor blendFactor);
 
 /**
  * @brief Names a BlendFactor, for fmt/spdlog and - through the formatter below - for std::format

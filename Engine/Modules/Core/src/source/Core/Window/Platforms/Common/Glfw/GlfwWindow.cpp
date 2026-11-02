@@ -14,7 +14,9 @@
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Utility.hpp"
 
+#if CE_RENDER_OPENGL
 #include <glad/glad.h>
+#endif
 
 #include <GLFW/glfw3.h>
 
@@ -238,6 +240,7 @@ void GlfwWindow::ToggleFullScreen() {
 #endif
 }
 
+#if CE_RENDER_OPENGL
 void GlfwWindow::MakeContextCurrent() {
 	if (auto* const window = _Native()) [[likely]]
 		glfwMakeContextCurrent(window);
@@ -247,6 +250,7 @@ void GlfwWindow::SwapBuffers() {
 	if (auto* const window = _Native()) [[likely]]
 		glfwSwapBuffers(window);
 }
+#endif
 
 void GlfwWindow::SetWindowSize(const u32 width, const u32 height) {
 	if (auto* const window = _Native()) [[likely]]
@@ -294,6 +298,7 @@ void GlfwWindow::SetCursorMode(const Types::CursorMode cursorMode) {
 	windowEventHandler.DispatchCursorModeEvent(_cursorMode);
 }
 
+#if CE_RENDER_OPENGL
 void GlfwWindow::SetSwapInterval(const i32 interval) {
 	auto* const window = _Native();
 	if (not window) [[unlikely]]
@@ -302,6 +307,7 @@ void GlfwWindow::SetSwapInterval(const i32 interval) {
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(interval);
 }
+#endif
 
 std::string GlfwWindow::GetTitle() const {
 	auto* const window = _Native();
@@ -367,6 +373,7 @@ void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
 	// facts the window owns - GLFW documents this exact sequence right after glfwCreateWindow. Every gl* call in the
 	// engine, including the first one the device makes, dereferences a pointer that does not exist until this runs.
 	// The other backends create no context at all (GLFW_NO_API), so there is nothing to make current or resolve.
+#if CE_RENDER_OPENGL
 	if (windowProps.graphicsApi == Types::GraphicsApi::OpenGL) {
 		glfwMakeContextCurrent(_glfwWindow.get());
 
@@ -376,6 +383,7 @@ void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
 			throw std::runtime_error(error);
 		}
 	}
+#endif
 }
 
 void GlfwWindow::_Shutdown() {

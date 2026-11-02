@@ -36,6 +36,17 @@ public:
 	 * @details Creates and configures both core and client loggers with appropriate
 	 *			formatting patterns and output sinks. Must be called before using any
 	 *			logging macros (CE_CORE_*, CE_*).
+	 *
+	 *			Debug and Release log every level to the console, in colour. Dist keeps only CRITICAL (the macros below
+	 *			it are compiled out, see Define/Log.hpp) and writes it twice: to stderr, for a launch from a terminal,
+	 *			and appended to a file, for a launch from Finder or Explorer where stderr goes nowhere:
+	 *			- macOS:   ~/Library/Logs/<name>/<name>.log
+	 *			- Windows: %LOCALAPPDATA%/<name>/Logs/<name>.log
+	 *			- Linux:   $XDG_STATE_HOME/<name>/<name>.log (default ~/.local/state)
+	 *			<name> is fixed at build time: the top-level CMake project's name (CelestialEngine in this repository,
+	 *			the game's once it includes the engine), or CE_LOG_NAME when set - see Tools/CMakeLists.txt.
+	 *			Every critical message is flushed at once - it is usually the last thing the process says. A file that
+	 *			cannot be opened costs only the file sink: stderr still works and Init never throws.
 	 */
 	static void Init();
 
@@ -63,7 +74,7 @@ public:
 	static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
 	/**
-	 * @brief Logs an already-formatted message at error level on the core logger
+	 * @brief Logs an already-formatted message at critical level on the core logger
 	 * @param message The message to log, formatted by the caller
 	 * @details Deliberately out-of-line (defined in Log.cpp) instead of the usual
 	 *			CE_CORE_* macros: those expand to a call into spdlog's templated,
@@ -74,16 +85,19 @@ public:
 	 *			Routing through this plain, compiled function keeps that call inside
 	 *			CE_Tools instead, which the executable already reaches through the
 	 *			regular (delay-loaded) module DLL machinery.
+	 *
+	 *			Critical rather than error because its caller is the terminate handler: the process is about to abort,
+	 *			and critical is the one level Dist still records.
 	 */
-	static void LogCoreError(const std::string& message);
+	static void LogCoreCritical(const std::string& message);
 
 	/**
 	 * @brief Writes out whatever the loggers still hold queued
 	 * @details For the paths that end the process without ever reaching Shutdown - a terminate handler above all,
 	 *			where the next call is abort() and anything still buffered is simply lost. Out-of-line for the same
-	 *			reason as LogCoreError: spdlog stays inside CE_Tools.
+	 *			reason as LogCoreCritical: spdlog stays inside CE_Tools.
 	 *
-	 *			A no-op before Init and in Dist, neither of which has a logger to flush.
+	 *			A no-op before Init, which has no logger to flush.
 	 */
 	static void Flush();
 

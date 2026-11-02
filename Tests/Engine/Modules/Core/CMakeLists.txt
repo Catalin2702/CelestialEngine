@@ -23,9 +23,12 @@ set(LAYERS_SOURCES
 set(MAINHUB_SOURCES
 	# Events
 	src/Core/Hub/Events/EventHubDispatcherTests.cpp
-	src/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
+	# One per compiled-in window backend (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcherTests.cpp
 	>
 )
@@ -60,6 +63,11 @@ add_executable(CE_TestsCore
 
 set_target_properties(CE_TestsCore PROPERTIES
 	LINKER_LANGUAGE CXX
+)
+
+# For the helpers shared by several test files (TestEventHub.hpp)
+target_include_directories(CE_TestsCore PRIVATE
+	src
 )
 
 # Modules

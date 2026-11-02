@@ -4,12 +4,24 @@
 	"description": "A course project for learning game engine",
 	"builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
 	"dependencies": [
-		"glad",
-		"glfw3",
 		"glm",
 		"gtest",
 		"spdlog"
 	],
+	"features": {
+		"glfw": {
+			"description": "GLFW window backend - selected by CE_RENDER_BACKENDS when OpenGL (or Vulkan) is compiled in",
+			"dependencies": [
+				"glfw3"
+			]
+		},
+		"opengl": {
+			"description": "OpenGL loader - selected by CE_RENDER_BACKENDS when OpenGL is compiled in",
+			"dependencies": [
+				"glad"
+			]
+		}
+	},
 	"overrides": [
 		{
 			"name": "glad",

@@ -21,9 +21,11 @@
 
 #include "Define/Config.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #endif
 

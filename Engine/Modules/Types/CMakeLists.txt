@@ -20,6 +20,15 @@ set(HEADERS
 	src/include/Types/KeyCode/KeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
 
+	# Per-window-backend code conversions, compiled only with their window (CE_WINDOW_*, from CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/include/Types/KeyCode/Platforms/Common/Glfw/Glfw.hpp
+	>
+
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
+		src/include/Types/KeyCode/Platforms/Mac/Cocoa/Cocoa.hpp
+	>
+
 
 	# Render
 	src/include/Types/Render/AttachmentAction.hpp
@@ -35,9 +44,13 @@ set(HEADERS
 	src/include/Types/Render/ShaderConstants.hpp
 	src/include/Types/Render/ShaderDataType.hpp
 	src/include/Types/Render/TextureUsage.hpp
-	src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
 
-	$<$<PLATFORM_ID:Darwin>:
+	# Per-backend conversion tables, compiled only with their backend (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
+	>
+
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Types/Render/Platforms/Mac/Metal/Metal.hpp
 	>
 
@@ -66,18 +79,27 @@ set(SOURCES
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
 	src/source/Types/KeyCode/MouseButtonCode.cpp
 
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/source/Types/KeyCode/Platforms/Common/Glfw/Glfw.cpp
+	>
+
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
+		src/source/Types/KeyCode/Platforms/Mac/Cocoa/Cocoa.cpp
+	>
+
 
 	# Render
 	src/source/Types/Render/BlendFactor.cpp
-	src/source/Types/Render/Compare.cpp
-	src/source/Types/Render/CullMode.cpp
 	src/source/Types/Render/GraphicsApi.cpp
 	src/source/Types/Render/PixelFormat.cpp
 	src/source/Types/Render/PrimitiveTopology.cpp
 	src/source/Types/Render/Shader.cpp
-	src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp
+	>
+
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Types/Render/Platforms/Mac/Metal/Metal.cpp
 	>
 
@@ -109,12 +131,33 @@ ce_configure_module_library_rpath(CE_Types)
 target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
-	CE_Vendor_Glad
-	CE_Vendor_Glfw
 	CE_Vendor_Glm
 	CE_Vendor_ImGui
-	CE_Vendor_MetalCpp
 )
+
+target_link_libraries(CE_Types PRIVATE
+	CE_Internal
+)
+
+# Backend-specific third parties: glad for the OpenGL conversions, GLFW for the GLFW key and button codes, metal-cpp
+# for the Metal conversions. Each one only exists when its backend is compiled in.
+if (CE_RENDER_OPENGL)
+	target_link_libraries(CE_Types PUBLIC
+		CE_Vendor_Glad
+	)
+endif ()
+
+if (CE_WINDOW_GLFW)
+	target_link_libraries(CE_Types PUBLIC
+		CE_Vendor_Glfw
+	)
+endif ()
+
+if (CE_RENDER_METAL)
+	target_link_libraries(CE_Types PUBLIC
+		CE_Vendor_MetalCpp
+	)
+endif ()
 
 target_include_directories(CE_Types PUBLIC
 	src/include

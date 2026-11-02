@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -32,8 +32,23 @@ namespace CE::Utility {
  *			- --graphics-api / -g : Graphics API (e.g. metal, opengl)
  *			- --window-api / -wa : Windowing API (e.g. cocoa, glfw)
  *			Unrecognized or valueless flags are ignored and the corresponding defaults are kept.
+ *
+ *			Without -g the graphics API is the build's default (Types::GetDefaultGraphicsApi, the first entry of
+ *			CE_RENDER_BACKENDS); without -wa the window API is the one that API is paired with
+ *			(Types::GetDefaultWindowApi). This only parses: an API this build lacks is returned as asked, and rejected
+ *			by ValidateWindowProps.
  */
 CE_UTILITY_API Types::WindowProps GetWindowProps(int argc, const char* argv[]);
+
+/**
+ * @brief Checks that the engine can actually open the window the properties describe
+ * @param windowProps The parsed properties, typically from GetWindowProps
+ * @throws std::runtime_error When the graphics or window API is not compiled into this build (CE_RENDER_BACKENDS), or
+ *		   when the two cannot work together (e.g. Metal in a GLFW window). The message names what is available.
+ * @details Run once at startup, before anything is built from the properties: the factories would fail too, but later,
+ *			one at a time, and without the list of what the build does offer.
+ */
+CE_UTILITY_API void ValidateWindowProps(const Types::WindowProps& windowProps);
 
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -12,16 +12,37 @@
 #ifndef CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 #define CE_UTILITY_CALLBACK_EVENTDISPATCHER_HPP
 
+#include "Define/DynamicLinker.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Var/Vars.hpp"
 #include "Utility/Delegate/Delegate.hpp"
 
 #include <cassert>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
 
 namespace CE::Utility {
+
+namespace Detail {
+
+// The dispatchers are templates, so their bodies are compiled in every translation unit that uses them - client code
+// included, where the engine's CE_CORE_* macros do not exist (Define/CoreLog.hpp). Their messages go through these two
+// functions instead, defined in Dispatcher.cpp inside the engine, where the core logger is in reach.
+
+/**
+ * @brief Reports, on the core logger, a Bind refused because a delegate is already bound
+ */
+CE_UTILITY_API void ReportDelegateAlreadyBound();
+
+/**
+ * @brief Reports, on the core logger, an Execute on a CallbackDispatcher with nothing bound, then throws
+ * @throws std::runtime_error Always - a callback that must produce a result has none to produce
+ */
+[[noreturn]] CE_UTILITY_API void ThrowCallbackNotBound();
+
+}
 
 /**
  * @class UnicastDispatcher
@@ -56,7 +77,7 @@ public:
 	 */
 	void Bind(DelegateType delegate) {
 		if (IsBound()) [[unlikely]] {
-			CE_CORE_WARN("A delegate is already assigned");
+			Detail::ReportDelegateAlreadyBound();
 			return;
 		}
 		_delegate = delegate;
@@ -121,7 +142,7 @@ public:
 	 */
 	void Bind(CallbackType callback) {
 		if (IsBound()) [[unlikely]] {
-			CE_CORE_WARN("A delegate is already assigned");
+			Detail::ReportDelegateAlreadyBound();
 			return;
 		}
 		_callback = callback;
@@ -141,11 +162,9 @@ public:
 	 * @details Throws std::runtime_error if no callback is bound: a missing result cannot be silently ignored.
 	 */
 	R Execute(Args... args) {
-		if (not IsBound()) [[unlikely]] {
-			constexpr auto error = "CallbackDispatcher::Execute: Set the callback before trying to execute this method.";
-			CE_CORE_ERROR(error);
-			throw std::runtime_error(error);
-		}
+		if (not IsBound()) [[unlikely]]
+			Detail::ThrowCallbackNotBound();
+
 		return _callback(args...);
 	}
 

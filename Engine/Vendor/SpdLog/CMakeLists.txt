@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-13
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -22,9 +22,8 @@ target_link_libraries(CE_Vendor_SpdLog INTERFACE
 	CE_Config
 )
 
-# Third-party
+# Third-party. Every configuration, Dist included: Dist keeps CE_CRITICAL / CE_CORE_CRITICAL and gives them a stderr and
+# a file sink (Tools/Log/Log.cpp), so it needs spdlog like the others.
 target_link_libraries(CE_Vendor_SpdLog INTERFACE
-	$<$<NOT:$<CONFIG:Dist>>:
-		spdlog::spdlog
-	>
+	spdlog::spdlog
 )

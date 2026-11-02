@@ -39,7 +39,6 @@
 TEST(CoreHeadersTest, Umbrellas_ExposeEverySubModule) {
 	EXPECT_TRUE(std::is_class_v<CE::Core::Application>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::I_EventHubDispatcher>);
-	EXPECT_TRUE(std::is_class_v<CE::Core::GlfwEventHubDispatcher>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::Input>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::KeyShortcut>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::LayerStack>);
@@ -47,10 +46,25 @@ TEST(CoreHeadersTest, Umbrellas_ExposeEverySubModule) {
 	EXPECT_TRUE(std::is_class_v<CE::Core::FreeCameraController>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::ForwardRenderer>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::I_Window>);
-	EXPECT_TRUE(std::is_class_v<CE::Core::GlfwWindow>);
 
-#if CE_PLATFORM_MACOS
+	// The backends' own types come along only when the backend is compiled in (CE_RENDER_BACKENDS).
+#if CE_WINDOW_GLFW
+	EXPECT_TRUE(std::is_class_v<CE::Core::GlfwEventHubDispatcher>);
+	EXPECT_TRUE(std::is_class_v<CE::Core::GlfwWindow>);
+#endif
+
+#if CE_WINDOW_COCOA
 	EXPECT_TRUE(std::is_class_v<CE::Core::CocoaWindow>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::CocoaEventHubDispatcher>);
+#endif
+
+#if CE_RENDER_OPENGL
+	EXPECT_TRUE(std::is_class_v<CE::Core::OpenGlGraphicDevice>);
+	EXPECT_TRUE(std::is_class_v<CE::Core::OpenGlSwapchain>);
+#endif
+
+#if CE_RENDER_METAL
+	EXPECT_TRUE(std::is_class_v<CE::Core::MetalGraphicDevice>);
+	EXPECT_TRUE(std::is_class_v<CE::Core::MetalSwapchain>);
 #endif
 }

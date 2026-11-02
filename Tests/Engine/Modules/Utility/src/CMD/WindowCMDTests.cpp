@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-13
+// Updated: 2026-11-02
 //
 
 #include <Utility/CMD/Window.hpp>
@@ -39,6 +39,7 @@ protected:
 
 /**
  * @brief Test default window properties with no arguments
+ * @details The APIs follow the build: the first entry of CE_RENDER_BACKENDS, and the window it pairs with.
  */
 TEST_F(WindowCMDTest, GetWindowProps_NoArguments_ReturnsDefaults) {
 	const char* argv[] = {"program"};
@@ -50,8 +51,8 @@ TEST_F(WindowCMDTest, GetWindowProps_NoArguments_ReturnsDefaults) {
 	EXPECT_EQ(props.width, 1280);
 	EXPECT_EQ(props.height, 720);
 	EXPECT_TRUE(props.VSync);
-	EXPECT_EQ(props.graphicsApi, GraphicsApi::OpenGL);
-	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
+	EXPECT_EQ(props.graphicsApi, GetDefaultGraphicsApi());
+	EXPECT_EQ(props.windowApi, GetDefaultWindowApi(GetDefaultGraphicsApi()));
 }
 
 /**
@@ -327,9 +328,9 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX12_SetsDirectX12) {
 }
 
 /**
- * @brief Test graphics API with unsupported value defaults to OpenGL
+ * @brief Test graphics API with unsupported value defaults to the build's default API
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToOpenGL) {
+TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToTheBuildDefault) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -339,7 +340,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToOpenGL) {
 
 	const WindowProps props = GetWindowProps(argc, argv);
 
-	EXPECT_EQ(props.graphicsApi, GraphicsApi::OpenGL);
+	EXPECT_EQ(props.graphicsApi, GetDefaultGraphicsApi());
 }
 
 /**
@@ -423,9 +424,9 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiCocoa_SetsCocoa) {
 }
 
 /**
- * @brief Test window API with unsupported value defaults to GLFW
+ * @brief Test window API with unsupported value defaults to the window the graphics API pairs with
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToGLFW) {
+TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToTheGraphicsApisWindow) {
 	const char* argv[] = {
 		"program",
 		"-wa",
@@ -435,6 +436,29 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToGLFW) {
 
 	const WindowProps props = GetWindowProps(argc, argv);
 
+	EXPECT_EQ(props.windowApi, GetDefaultWindowApi(props.graphicsApi));
+}
+
+/**
+ * @brief Test that without -wa the window follows the graphics API asked for, wherever -g appears
+ */
+TEST_F(WindowCMDTest, GetWindowProps_NoWindowApi_FollowsTheGraphicsApi) {
+	const char* metal[] = {"program", "-g", "metal"};
+	const char* opengl[] = {"program", "-g", "opengl"};
+
+	EXPECT_EQ(GetWindowProps(3, metal).windowApi, WindowApi::Cocoa);
+	EXPECT_EQ(GetWindowProps(3, opengl).windowApi, WindowApi::GLFW);
+}
+
+/**
+ * @brief Test that an explicit -wa wins over the pairing, even when it comes before -g
+ */
+TEST_F(WindowCMDTest, GetWindowProps_ExplicitWindowApi_WinsOverThePairing) {
+	const char* argv[] = {"program", "-wa", "glfw", "-g", "metal"};
+
+	const WindowProps props = GetWindowProps(5, argv);
+
+	EXPECT_EQ(props.graphicsApi, GraphicsApi::Metal);
 	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
 }
 
@@ -640,3 +664,63 @@ TEST_F(WindowCMDTest, GetWindowProps_InvalidRefresh_ThrowsException) {
 
 	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
 }
+
+// ============================================================================
+// Validation Tests
+// ============================================================================
+
+namespace {
+
+/// Properties for the given pair, everything else at its usual value.
+WindowProps PropsFor(const GraphicsApi graphicsApi, const WindowApi windowApi) {
+	return {"Test", 1280, 720, true, 0, graphicsApi, windowApi};
+}
+
+}
+
+/**
+ * @brief Test that the build's own defaults always pass validation
+ * @details What a launch with no arguments depends on, whatever CE_RENDER_BACKENDS selected.
+ */
+TEST_F(WindowCMDTest, ValidateWindowProps_BuildDefaults_Pass) {
+	const char* argv[] = {"program"};
+
+	EXPECT_NO_THROW(ValidateWindowProps(GetWindowProps(1, argv)));
+}
+
+/**
+ * @brief Test that every compiled-in graphics API passes with the window it pairs with
+ */
+TEST_F(WindowCMDTest, ValidateWindowProps_EveryCompiledApiWithItsWindow_Passes) {
+	for (const auto api: {GraphicsApi::OpenGL, GraphicsApi::Metal, GraphicsApi::Vulkan, GraphicsApi::DirectX11,
+			GraphicsApi::DirectX12}) {
+		if (IsGraphicsApiCompiled(api))
+			EXPECT_NO_THROW(ValidateWindowProps(PropsFor(api, GetDefaultWindowApi(api)))) << format_as(api);
+	}
+}
+
+/**
+ * @brief Test that a graphics API this build lacks is rejected
+ * @details Vulkan has no backend yet, so it is missing from every build.
+ */
+TEST_F(WindowCMDTest, ValidateWindowProps_GraphicsApiNotCompiled_Throws) {
+	EXPECT_THROW(ValidateWindowProps(PropsFor(GraphicsApi::Vulkan, WindowApi::GLFW)), std::runtime_error);
+}
+
+/**
+ * @brief Test that a window API this build lacks is rejected
+ * @details Win32 has no backend yet, so it is missing from every build.
+ */
+TEST_F(WindowCMDTest, ValidateWindowProps_WindowApiNotCompiled_Throws) {
+	EXPECT_THROW(ValidateWindowProps(PropsFor(GetDefaultGraphicsApi(), WindowApi::Win32)), std::runtime_error);
+}
+
+#if CE_RENDER_METAL and CE_WINDOW_GLFW
+/**
+ * @brief Test that two compiled-in APIs that cannot work together are rejected
+ * @details Needs both Metal and GLFW in the build to be meaningful - otherwise one of the earlier checks fires first.
+ */
+TEST_F(WindowCMDTest, ValidateWindowProps_IncompatiblePair_Throws) {
+	EXPECT_THROW(ValidateWindowProps(PropsFor(GraphicsApi::Metal, WindowApi::GLFW)), std::runtime_error);
+}
+#endif

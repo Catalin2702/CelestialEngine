@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Utility/CMD/Window.hpp"
@@ -13,8 +13,11 @@
 #include "Types/Window/WindowProps.hpp"
 #include "Utility/Manipulation/String.hpp"
 
+#include <array>
 #include <cctype>
+#include <format>
 #include <stdexcept>
+#include <string>
 
 namespace CE::Utility {
 
@@ -26,11 +29,11 @@ unsigned int ParseUnsigned(const std::string& arg, const char* value, const std:
 		return static_cast<unsigned int>(std::stoi(value));
 	}
 	catch (const std::invalid_argument& invalidArgument) {
-		CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, value, invalidArgument.what());
+		CE_CORE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, value, invalidArgument.what());
 		throw std::runtime_error("Invalid " + label + " parameter: " + std::string(value));
 	}
 	catch (const std::out_of_range& ofRange) {
-		CE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, value, ofRange.what());
+		CE_CORE_ERROR("Error retrieving {0} parameter with value '{1}'.\nError: {2}", arg, value, ofRange.what());
 		// Capitalised because it starts the message: "Width parameter out of range: ...".
 		std::string capitalised = label;
 		capitalised.front() = static_cast<char>(std::toupper(static_cast<unsigned char>(capitalised.front())));
@@ -51,11 +54,13 @@ Types::GraphicsApi ParseGraphicsApi(const char* value) {
 	if (apiArg == "directx12" or apiArg == "dx12" or apiArg == "d3d12")
 		return Types::GraphicsApi::DirectX12;
 
-	CE_CORE_WARN("Unsupported graphics API specified: ({0}). Defaulting to OpenGL.", value);
-	return Types::GraphicsApi::OpenGL;
+	const auto fallback = Types::GetDefaultGraphicsApi();
+	CE_CORE_WARN("Unsupported graphics API specified: ({0}). Defaulting to {1}.", value, fallback);
+	return fallback;
 }
 
-Types::WindowApi ParseWindowApi(const char* value) {
+/// Parses -wa. `graphicsApi` is what an unknown value falls back to the pairing of.
+Types::WindowApi ParseWindowApi(const char* value, const Types::GraphicsApi graphicsApi) {
 	const std::string apiArg = ToLowerCase(value);
 	if (apiArg == "glfw")
 		return Types::WindowApi::GLFW;
@@ -66,8 +71,39 @@ Types::WindowApi ParseWindowApi(const char* value) {
 	if (apiArg == "cocoa")
 		return Types::WindowApi::Cocoa;
 
-	CE_CORE_WARN("Unsupported window API specified: ({0}). Defaulting to GLFW.", value);
-	return Types::WindowApi::GLFW;
+	const auto fallback = Types::GetDefaultWindowApi(graphicsApi);
+	CE_CORE_WARN("Unsupported window API specified: ({0}). Defaulting to {1}.", value, fallback);
+	return fallback;
+}
+
+/// Every graphics API this build contains, comma-separated, for error messages.
+std::string CompiledGraphicsApis() {
+	constexpr std::array all{Types::GraphicsApi::OpenGL, Types::GraphicsApi::Metal, Types::GraphicsApi::Vulkan,
+							 Types::GraphicsApi::DirectX11, Types::GraphicsApi::DirectX12};
+	std::string names;
+	for (const auto api: all) {
+		if (not Types::IsGraphicsApiCompiled(api))
+			continue;
+		if (not names.empty())
+			names += ", ";
+		names += format_as(api);
+	}
+	return names;
+}
+
+/// Every window API this build contains, comma-separated, for error messages.
+std::string CompiledWindowApis() {
+	constexpr std::array all{Types::WindowApi::GLFW, Types::WindowApi::Cocoa, Types::WindowApi::Win32,
+							 Types::WindowApi::X11, Types::WindowApi::Wayland};
+	std::string names;
+	for (const auto api: all) {
+		if (not Types::IsWindowApiCompiled(api))
+			continue;
+		if (not names.empty())
+			names += ", ";
+		names += format_as(api);
+	}
+	return names;
 }
 
 }
@@ -78,8 +114,10 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 	unsigned int height = 720;
 	auto VSync = true;
 	unsigned int refreshRate = 0;
-	auto graphicsApi = Types::GraphicsApi::OpenGL;
-	auto windowApi = Types::WindowApi::GLFW;
+	auto graphicsApi = Types::GetDefaultGraphicsApi();
+
+	// Resolved after the loop: the default window depends on the graphics API, and -g may come after -wa.
+	const char* windowApiArg = nullptr;
 
 	// Start from 1 to skip executable path
 	for (int i = 1; i < argc; ++i) {
@@ -107,13 +145,43 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 			graphicsApi = ParseGraphicsApi(argv[++i]);
 		}
 		else if ((arg == "--window-api" or arg == "-wa") and hasValue) {
-			windowApi = ParseWindowApi(argv[++i]);
+			windowApiArg = argv[++i];
 		}
 		else {
 			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
 		}
 	}
+	const auto windowApi = windowApiArg ? ParseWindowApi(windowApiArg, graphicsApi) : Types::GetDefaultWindowApi(graphicsApi);
+
 	return {title, width, height, VSync, refreshRate, graphicsApi, windowApi};
+}
+
+void ValidateWindowProps(const Types::WindowProps& windowProps) {
+	// Thrown without logging: the one caller is main(), which reports what it catches - at critical level, so the
+	// message survives even in Dist, where an error-level log here would be compiled out.
+	const auto graphicsApi = windowProps.graphicsApi;
+	const auto windowApi = windowProps.windowApi;
+
+	if (not Types::IsGraphicsApiCompiled(graphicsApi)) [[unlikely]] {
+		const auto error = std::format(
+			"Graphics API {} is not compiled into this build (CE_RENDER_BACKENDS). Available: {}.",
+			graphicsApi, CompiledGraphicsApis());
+		throw std::runtime_error(error);
+	}
+
+	if (not Types::IsWindowApiCompiled(windowApi)) [[unlikely]] {
+		const auto error = std::format(
+			"Window API {} is not compiled into this build (it follows CE_RENDER_BACKENDS). Available: {}.",
+			windowApi, CompiledWindowApis());
+		throw std::runtime_error(error);
+	}
+
+	if (not Types::IsGraphicsApiCompatible(graphicsApi, windowApi)) [[unlikely]] {
+		const auto error = std::format(
+			"Graphics API {} cannot render into a {} window; {} pairs with {}.",
+			graphicsApi, windowApi, graphicsApi, Types::GetDefaultWindowApi(graphicsApi));
+		throw std::runtime_error(error);
+	}
 }
 
 }

@@ -7,6 +7,12 @@
 # Updated: 2026-11-02
 #
 
+# Backend-specific files are grouped by what they belong to, and each group is compiled only when it is selected:
+#   $<BOOL:${CE_RENDER_OPENGL}> / $<BOOL:${CE_RENDER_METAL}>  - graphics backends (CE_RENDER_BACKENDS)
+#   $<BOOL:${CE_WINDOW_GLFW}>  / $<BOOL:${CE_WINDOW_COCOA}>   - window backends, derived from the graphics ones
+#   $<PLATFORM_ID:Darwin>                                      - the OS itself, whatever the backends (the menu bar)
+# See config/cmake/CERenderBackends.cmake.
+
 set(CORE_HEADERS
 	src/include/Core/Core.hpp
 )
@@ -28,9 +34,11 @@ set(LAYERS_HEADERS
 
 	# ImGui
 	src/include/Core/Layers/ImGui/ImGui.hpp
-	src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
 	>
 
@@ -43,9 +51,11 @@ set(HUB_HEADERS
 	src/include/Core/Hub/Hub.hpp
 
 	# Events
-	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
 	>
 )
@@ -55,10 +65,12 @@ set(RENDER_HEADERS
 
 	# Buffer
 	src/include/Core/Render/Buffer/Buffer.hpp
-	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
-	src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
+		src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp
 	>
 
@@ -81,27 +93,33 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Command/Command.hpp
 	src/include/Core/Render/Command/RenderPassDescriptor.hpp
 	src/include/Core/Render/Command/Viewport.hpp
-	src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp
 	>
 
 
 	# Device
 	src/include/Core/Render/Device/Device.hpp
-	src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp
 	>
 
 	# Pipeline
 	src/include/Core/Render/Pipeline/Pipeline.hpp
 	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
-	src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp
 	>
 
@@ -116,10 +134,12 @@ set(RENDER_HEADERS
 	# Shader
 	src/include/Core/Render/Shader/Shader.hpp
 	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
-	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
-	src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
+		src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
 		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp
 	>
@@ -131,18 +151,22 @@ set(RENDER_HEADERS
 
 	# Swapchain
 	src/include/Core/Render/Swapchain/Swapchain.hpp
-	src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp
 	>
 
 
 	# Texture
 	src/include/Core/Render/Texture/Texture.hpp
-	src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/include/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp
 	>
 )
@@ -154,13 +178,17 @@ set(RUNLOOP_HEADERS
 
 set(WINDOW_HEADERS
 	src/include/Core/Window/Window.hpp
-	src/include/Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp
-	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
-	src/include/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/include/Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp
+		src/include/Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp
+		src/include/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp
+	>
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/include/Core/Window/Platforms/Mac/MacMenuBar.hpp
+	>
 
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp
 		src/include/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp
 	>
@@ -211,9 +239,11 @@ set(RENDER_INTERFACES
 	src/interface/Core/Render/Shader/I_ShaderModule.hpp
 
 	# Surface
-	src/interface/Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/interface/Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/interface/Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp
 	>
 
@@ -247,9 +277,11 @@ set(LAYERS_SOURCES
 
 
 	# ImGui
-	src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.cpp
 	>
 
@@ -263,9 +295,11 @@ set(HUB_SOURCES
 	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
 	src/source/Core/Hub/Events/EventHubDispatcherFactory.cpp
 
-	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
 	>
 )
@@ -273,10 +307,12 @@ set(HUB_SOURCES
 set(RENDER_SOURCES
 	# Buffer
 	src/source/Core/Render/Buffer/Buffer.cpp
-	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
-	src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
+		src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.cpp
 	>
 
@@ -293,26 +329,32 @@ set(RENDER_SOURCES
 
 
 	# Command
-	src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.cpp
 	>
 
 
 	# Device
 	src/source/Core/Render/Device/GraphicDeviceFactory.cpp
-	src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.cpp
 	>
 
 
 	# Pipeline
-	src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.cpp
 	>
 
@@ -323,10 +365,12 @@ set(RENDER_SOURCES
 
 
 	# Shader
-	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
-	src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
+		src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
 		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.cpp
 	>
@@ -334,17 +378,21 @@ set(RENDER_SOURCES
 
 	# Swapchain
 	src/source/Core/Render/Swapchain/SwapchainFactory.cpp
-	src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.cpp
 	>
 
 
 	# Texture
-	src/source/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
+	>
 
-	$<$<PLATFORM_ID:Darwin>:
+	$<$<BOOL:${CE_RENDER_METAL}>:
 		src/source/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.cpp
 	>
 )
@@ -358,13 +406,17 @@ set(WINDOW_SOURCES
 	src/source/Core/Window/PlatformFactory.cpp
 	src/source/Core/Window/WindowFactory.cpp
 
-	src/source/Core/Window/Platforms/Common/Glfw/GlfwPlatform.cpp
-	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
-	src/source/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.cpp
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+		src/source/Core/Window/Platforms/Common/Glfw/GlfwPlatform.cpp
+		src/source/Core/Window/Platforms/Common/Glfw/GlfwWindow.cpp
+		src/source/Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.cpp
+	>
 
 	$<$<PLATFORM_ID:Darwin>:
 		src/source/Core/Window/Platforms/Mac/MacMenuBar.cpp
+	>
 
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.cpp
 		src/source/Core/Window/Platforms/Mac/Cocoa/CocoaWindow.cpp
 	>
@@ -431,13 +483,24 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Utility
 )
 
+target_link_libraries(CE_Core PRIVATE
+	CE_Internal
+)
+
 # Vendor libraries
 target_link_libraries(CE_Core PUBLIC
-	CE_Vendor_Glfw
 	CE_Vendor_ImGui
-	CE_Vendor_ImGui_Glfw
 	CE_Vendor_SpdLog
 )
+
+# GLFW and its ImGui backend exist only when a GLFW window is compiled in (CE_WINDOW_GLFW, derived from
+# CE_RENDER_BACKENDS); glad comes along with CE_Types whenever OpenGL is.
+if (CE_WINDOW_GLFW)
+	target_link_libraries(CE_Core PUBLIC
+		CE_Vendor_Glfw
+		CE_Vendor_ImGui_Glfw
+	)
+endif ()
 
 target_include_directories(CE_Core PUBLIC
 	src/include

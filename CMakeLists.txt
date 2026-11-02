@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-18
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -35,6 +35,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")
 		endif ()
 	endif()
 endif()
+
+# Which graphics (and so window) backends are compiled in: CE_RENDER_BACKENDS, resolved into the CE_RENDER_* and
+# CE_WINDOW_* variables every subdirectory below reads. BEFORE project(): the vcpkg toolchain installs the dependencies
+# inside project(), and the selection decides which optional ones (glad, GLFW) it has to install at all.
+include("${CMAKE_SOURCE_DIR}/config/cmake/CERenderBackends.cmake")
 
 project(CelestialEngine LANGUAGES CXX VERSION 0.1.3)
 

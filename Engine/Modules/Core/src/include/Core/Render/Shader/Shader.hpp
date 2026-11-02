@@ -10,10 +10,10 @@
 /**
  * @file Shader.hpp
  * @brief Umbrella header for the Shader part of the Core renderer
- * @details One include for everything a shader is made of: its descriptor, its interface and the per-backend modules
- *			and compilers. Backend-specific headers come along too: the Common ones (OpenGL, GLFW) on every platform,
- *			the Mac ones (Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the same split Types/Render/Render.hpp
- *			makes.
+ * @details One include for everything a shader is made of: its descriptor, its interface and the per-backend
+ *			modules and compilers. Backend-specific headers come along too, each only where its backend is compiled
+ *			in - CE_RENDER_* for the graphics ones, CE_WINDOW_* for the window ones, both chosen by
+ *			CE_RENDER_BACKENDS - the same split Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -26,10 +26,12 @@
 #include "Core/Render/Shader/I_ShaderModule.hpp"
 #include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
 #endif

@@ -70,8 +70,6 @@ constexpr bool HasAnyFlags(const CompareFunc x, const CompareFunc y) {
 	return (x & y) != CompareFunc::Never;
 }
 
-CE_TYPES_API u32 ToOpenGl(CompareFunc compareFunc);
-
 /**
  * @brief Names a CompareFunc, for fmt/spdlog and - through the formatter below - for std::format
  * @param compareFunc The value to name

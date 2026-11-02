@@ -9,7 +9,7 @@
 
 #include <Core/Input/Input.hpp>
 
-#include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
+#include "TestEventHub.hpp"
 #include <Core/Window/I_Window.hpp>
 #include <Events/Events.hpp>
 #include <Tools/Tools.hpp>
@@ -23,7 +23,6 @@
 #include <vector>
 
 
-using CE::Core::GlfwEventHubDispatcher;
 using CE::Core::Input;
 using CE::Core::KeyShortcut;
 using CE::Types::CursorMode;
@@ -113,7 +112,7 @@ protected:
 	}
 
 protected:
-	GlfwEventHubDispatcher _hub;
+	CE::Tests::TestEventHubDispatcher _hub;
 };
 
 /**
@@ -518,9 +517,11 @@ TEST_F(InputTest, UnsubscribeFromHub_StopsTrackingEvents) {
 	Input::SubscribeToHub(_hub.keyboardEventHub, _hub.mouseEventHub, _hub.windowEventHub);
 }
 
+#if CE_WINDOW_GLFW
 /**
  * @brief Test that the raw platform callbacks feed the input state through the hub
- * @details This is the full runtime path: GLFW callback → hub Receive → engine event → multicast → input state.
+ * @details This is the full runtime path: GLFW callback → hub Receive → engine event → multicast → input state. GLFW's
+ *			raw callbacks only exist where the GLFW backend does (CE_WINDOW_GLFW).
  */
 TEST_F(InputTest, RawHubCallbacks_FeedTheInputState) {
 	constexpr int glfwKeyA = 65;			// GLFW_KEY_A
@@ -543,6 +544,7 @@ TEST_F(InputTest, RawHubCallbacks_FeedTheInputState) {
 
 	EXPECT_FALSE(Input::IsKeyPressed(KeyboardKeyCode::A));
 }
+#endif
 
 // ============================================================================
 // Shortcut Tests

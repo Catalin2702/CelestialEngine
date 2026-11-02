@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-10-30
+# Updated: 2026-11-02
 #
 
 if(NOT CMAKE_C_COMPILER)
@@ -55,6 +55,13 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
+# The backend selection is resolved once, by the root CMakeLists.txt (config/cmake/CERenderBackends.cmake), and only
+# read here. A subdirectory configured on its own would otherwise get CE_RENDER_* = 0 for everything and fail much
+# later, inside Define/Config.hpp, with a message that no longer names the cause.
+if (NOT DEFINED CE_RENDER_DEFAULT_BACKEND)
+	message(FATAL_ERROR "CE_RENDER_BACKENDS has not been resolved: configure from the repository root, whose CMakeLists.txt includes config/cmake/CERenderBackends.cmake.")
+endif ()
+
 if (NOT TARGET CE_Config)
 	add_library(CE_Config INTERFACE)
 
@@ -66,6 +73,21 @@ if (NOT TARGET CE_Config)
 		CE_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
 		CE_PLATFORM_MACOS=$<PLATFORM_ID:Darwin>
 		CE_PLATFORM_LINUX=$<PLATFORM_ID:Linux>
+
+		# Graphics and window backends compiled in, 0 or 1 like the platform macros above (see CERenderBackends.cmake).
+		# On the INTERFACE, not private to the engine: the public umbrella headers include a backend's headers only when
+		# it exists, so every consumer has to agree with the engine on which ones do.
+		CE_RENDER_OPENGL=$<BOOL:${CE_RENDER_OPENGL}>
+		CE_RENDER_METAL=$<BOOL:${CE_RENDER_METAL}>
+		CE_RENDER_VULKAN=$<BOOL:${CE_RENDER_VULKAN}>
+		CE_RENDER_DIRECTX11=$<BOOL:${CE_RENDER_DIRECTX11}>
+		CE_RENDER_DIRECTX12=$<BOOL:${CE_RENDER_DIRECTX12}>
+
+		# A bare GraphicsApi enumerator name (OpenGL, Metal, ...), spliced in as Types::GraphicsApi::CE_RENDER_DEFAULT_API.
+		CE_RENDER_DEFAULT_API=${CE_RENDER_DEFAULT_BACKEND}
+
+		CE_WINDOW_GLFW=$<BOOL:${CE_WINDOW_GLFW}>
+		CE_WINDOW_COCOA=$<BOOL:${CE_WINDOW_COCOA}>
 
 		$<$<CONFIG:Debug>:DEBUG>
 		$<$<CONFIG:Release>:NDEBUG>
@@ -130,6 +152,17 @@ if (NOT TARGET CE_Config)
 			>
 			/VERBOSE
 		>
+	)
+endif ()
+
+# Marks a translation unit as part of the engine itself. Linked PRIVATE by every engine module and by the tests - never
+# by CE_Config, which reaches the client too. What it unlocks today is the CE_CORE_* logging macros (Define/CoreLog.hpp):
+# the core logger is the engine's voice, and a client writing to it would make the two indistinguishable in the output.
+if (NOT TARGET CE_Internal)
+	add_library(CE_Internal INTERFACE)
+
+	target_compile_definitions(CE_Internal INTERFACE
+		CE_ENGINE_INTERNAL=1
 	)
 endif ()
 

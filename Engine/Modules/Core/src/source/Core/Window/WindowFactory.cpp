@@ -10,10 +10,11 @@
 #include "Core/Window/Window.hpp"
 #include "Tools/Tools.hpp"
 
-#if CE_PLATFORM_MACOS
+#if CE_WINDOW_COCOA
 	#include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #endif
 
+#include <format>
 #include <stdexcept>
 
 
@@ -21,6 +22,7 @@ namespace CE::Core {
 
 std::unique_ptr<I_Window> I_Window::MakeWindow(I_Platform& platform) {
 	switch (platform.GetWindowApi()) {
+#if CE_WINDOW_GLFW
 		case Types::WindowApi::GLFW: {
 			// GLFW configures the next window through global, sticky hints, which is an idiom no other backend has -
 			// so applying them stays on GlfwPlatform rather than being forced onto I_Platform, and reaching it costs
@@ -35,15 +37,17 @@ std::unique_ptr<I_Window> I_Window::MakeWindow(I_Platform& platform) {
 
 			return std::make_unique<GlfwWindow>(*glfwPlatform);
 		}
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_WINDOW_COCOA
 		// The Cocoa window needs nothing from the platform: AppKit has no library to configure before creating one.
 		case Types::WindowApi::Cocoa:
 			return std::make_unique<CocoaWindow>();
 #endif
 
 		default: {
-			constexpr auto error = "I_Window::MakeWindow: Not yet implemented!";
+			// Either a backend that does not exist yet, or one this build was configured without (CE_RENDER_BACKENDS).
+			const auto error = std::format("I_Window::MakeWindow: {} is not compiled into this build!", platform.GetWindowApi());
 			CE_CORE_ERROR(error);
 			throw std::logic_error(error);
 		}

@@ -10,10 +10,11 @@
 /**
  * @file Hub.hpp
  * @brief Umbrella header for the Hub sub-module of Core
- * @details One include for everything the event hub is made of: the dispatcher interfaces, the multicast channels and
- *			the per-backend hubs that translate native callbacks into engine events. Backend-specific headers come along
- *			too: the Common ones (OpenGL, GLFW) on every platform, the Mac ones (Metal, Cocoa) only where
- *			CE_PLATFORM_MACOS is set - the same split Types/Render/Render.hpp makes.
+ * @details One include for everything the event hub is made of: the dispatcher interfaces, the multicast channels
+ *			and the per-backend hubs that translate native callbacks into engine events. Backend-specific headers
+ *			come along too, each only where its backend is compiled in - CE_RENDER_* for the graphics ones,
+ *			CE_WINDOW_* for the window ones, both chosen by CE_RENDER_BACKENDS - the same split
+ *			Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -30,9 +31,11 @@
 #include "Core/Hub/Events/I_RenderEventHubDispatcher.hpp"
 #include "Core/Hub/Events/I_WindowEventHubDispatcher.hpp"
 
+#if CE_WINDOW_GLFW
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_WINDOW_COCOA
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #endif
 

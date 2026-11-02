@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
 #include "Tools/Tools.hpp"
-#include "Types/Render/Shader.hpp"
+#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 
 #include <glad/glad.h>
 

@@ -9,6 +9,8 @@
 
 #include <Core/Core.hpp>
 
+#include "TestEventHub.hpp"
+
 #include <Events/Events.hpp>
 #include <Tools/Tools.hpp>
 #include <Types/Types.hpp>
@@ -26,7 +28,6 @@ using CE::Core::CameraFreeControllerDescriptor;
 using CE::Core::CameraLookTrigger;
 using CE::Core::CameraProjectionDescriptor;
 using CE::Core::FreeCameraController;
-using CE::Core::GlfwEventHubDispatcher;
 using CE::Core::Input;
 using CE::Types::CursorMode;
 using CE::Types::KeyboardKeyCode;
@@ -117,7 +118,7 @@ protected:
 	}
 
 protected:
-	GlfwEventHubDispatcher _hub;
+	CE::Tests::TestEventHubDispatcher _hub;
 
 	Camera _camera{
 		CameraDescriptor{.position = {0.0f, 0.0f, 0.0f}},

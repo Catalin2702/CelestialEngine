@@ -27,6 +27,7 @@ Binaries/
 obj/
 
 # --- IDE ---
+CMakeUserPresets.json
 .vscode/
 .vs/
 *.sln

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -15,12 +15,13 @@
 #include <exception>
 
 #include <cstdio>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <cstdlib>
 
 
 static void Report(const char* message) noexcept {
 	if (Tools::Log::GetCoreLogger()) {
-		Tools::Log::LogCoreError(message);
+		Tools::Log::LogCoreCritical(message);
 
 		// Nobody will shut the logger down in an orderly way after a terminate: what is queued is written now or lost.
 		Tools::Log::Flush();
@@ -59,7 +60,7 @@ static void Report(const char* message) noexcept {
  * @return int Exit code (0 for success, 1 for failure)
  * @details This is the engine's main function that:
  *			1. Initializes the logging system
- *			2. Parses command-line arguments for window properties
+ *			2. Parses command-line arguments for window properties, and checks the build can honour them
  *			3. Creates the application using the factory function
  *			4. Runs the main application loop
  *			5. Cleans up and terminates logging
@@ -76,7 +77,12 @@ int main(const int argc, const char* argv[]) {
 #if CE_DEBUG
 		Utility::Chronometer chronometer;
 #endif
-		Utility::Config::SetWindowProps(Utility::GetWindowProps(argc, argv));
+		const auto windowProps = Utility::GetWindowProps(argc, argv);
+
+		// Before anything is built from them: a backend this build was configured without (CE_RENDER_BACKENDS), or a
+		// graphics/window pair that cannot work together, is reported here with the list of what is available.
+		Utility::ValidateWindowProps(windowProps);
+		Utility::Config::SetWindowProps(windowProps);
 		Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
 		Core::Application app{};
 		app.InitImguiLayer();

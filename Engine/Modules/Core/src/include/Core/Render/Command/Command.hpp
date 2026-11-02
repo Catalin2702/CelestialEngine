@@ -10,10 +10,10 @@
 /**
  * @file Command.hpp
  * @brief Umbrella header for the Command part of the Core renderer
- * @details One include for everything a frame is recorded with: render pass, viewport, the encoder interface and its
- *			per-backend encoders. Backend-specific headers come along too: the Common ones (OpenGL, GLFW) on every
- *			platform, the Mac ones (Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the same split
- *			Types/Render/Render.hpp makes.
+ * @details One include for everything a frame is recorded with: render pass, viewport, the encoder interface and
+ *			its per- backend encoders. Backend-specific headers come along too, each only where its backend is
+ *			compiled in - CE_RENDER_* for the graphics ones, CE_WINDOW_* for the window ones, both chosen by
+ *			CE_RENDER_BACKENDS - the same split Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -27,9 +27,11 @@
 #include "Core/Render/Command/RenderPassDescriptor.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
 #endif
 

@@ -11,9 +11,9 @@
  * @file ImGui.hpp
  * @brief Umbrella header for the ImGui layers of Core
  * @details One include for everything the ImGui overlay is built from: the layer interface and its per-backend
- *			implementations. Backend-specific headers come along too: the Common ones (OpenGL, GLFW) on every platform,
- *			the Mac ones (Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the same split Types/Render/Render.hpp
- *			makes.
+ *			implementations. Backend-specific headers come along too, each only where its backend is compiled in -
+ *			CE_RENDER_* for the graphics ones, CE_WINDOW_* for the window ones, both chosen by CE_RENDER_BACKENDS -
+ *			the same split Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -25,9 +25,11 @@
 
 #include "Core/Layers/ImGui/I_ImGuiLayer.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 #endif
 

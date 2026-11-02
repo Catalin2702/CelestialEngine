@@ -110,6 +110,24 @@ CE_TYPES_API bool IsWindowApiSupported(const WindowApi& api);
 CE_TYPES_API bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& windowApi);
 
 /**
+ * @brief Checks if the specified window API was compiled into this build of the engine
+ * @param api Window API to check
+ * @return bool True if the engine library contains this window backend, false otherwise
+ * @details Window backends are not chosen directly: they follow CE_RENDER_BACKENDS (GLFW with OpenGL or Vulkan, Cocoa
+ *			with Metal). Narrower than IsWindowApiSupported, which answers for the OS.
+ */
+CE_TYPES_API bool IsWindowApiCompiled(WindowApi api);
+
+/**
+ * @brief Gets the window API a graphics API is paired with when -wa is not given
+ * @param graphicsApi The graphics API the window will render with
+ * @return WindowApi GLFW for OpenGL and Vulkan, Cocoa for Metal, Win32 for DirectX; None for None
+ * @details The pairing the engine builds for that API, not a check that it was compiled in: combine it with
+ *			IsWindowApiCompiled for that.
+ */
+CE_TYPES_API WindowApi GetDefaultWindowApi(GraphicsApi graphicsApi);
+
+/**
  * @brief Names a WindowApi, for fmt/spdlog and - through the formatter below - for std::format
  * @param windowApi The value to name
  * @return std::string_view The enumerator's name, or "Unknown Window API" for a value outside the enum

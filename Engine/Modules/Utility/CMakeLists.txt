@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-08-25
+# Updated: 2026-11-02
 #
 
 set(HEADERS
@@ -44,6 +44,9 @@ set(SOURCES
 
 	# Config
 	src/source/Utility/Config/Config.cpp
+
+	# Delegate
+	src/source/Utility/Delegate/Dispatcher.cpp
 
 	# FileSystem
 	src/source/Utility/FileSystem/FileSystem.cpp
@@ -88,6 +91,11 @@ target_link_libraries(CE_Utility PUBLIC
 
 target_include_directories(CE_Utility PUBLIC
 	src/include
+)
+
+# Engine-internal: unlocks the CE_CORE_* logging macros (see CE_Internal in CelestialEngineMacros.cmake)
+target_link_libraries(CE_Utility PRIVATE
+	CE_Internal
 )
 
 target_compile_definitions(CE_Utility PRIVATE

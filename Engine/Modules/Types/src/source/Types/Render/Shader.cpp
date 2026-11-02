@@ -4,12 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-02
 //
 
 #include "Types/Render/Shader.hpp"
-
-#include <glad/glad.h>
 
 #include "Types/Render/GraphicsApi.hpp"
 
@@ -72,17 +70,6 @@ bool IsShaderTypeSupported(const GraphicsApi graphicsApi, const ShaderType shade
 		}
 		default:
 			return false;
-	}
-}
-
-int ToOpenGlShaderType(const ShaderType type) {
-	switch (type) {
-		case ShaderType::Vertex:
-			return GL_VERTEX_SHADER;
-		case ShaderType::Fragment:
-			return GL_FRAGMENT_SHADER;
-		default:
-			return -1; // Invalid shader type
 	}
 }
 

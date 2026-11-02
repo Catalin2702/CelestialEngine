@@ -13,9 +13,13 @@ set(APPLE_HEADERS
 	src/include/Apple/Apple.hpp
 )
 
+# The ImGui bridge drives ImGui's Metal and OSX backends, so it exists only with Metal (CE_RENDER_BACKENDS). The rest of
+# CE_Apple is the platform layer - AppKit, Foundation, the menu bar's plumbing - and is built whatever the backends.
 set(BRIDGE_HEADERS
 	# ImGui
-	src/include/Apple/Bridge/ImGui/ImGuiBridge.h
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/include/Apple/Bridge/ImGui/ImGuiBridge.h
+	>
 )
 
 set(METALCPP_HEADERS
@@ -38,7 +42,9 @@ set(METALCPP_HEADERS
 
 set(BRIDGE_SOURCES
 	# ImGui
-	src/source/Apple/Bridge/ImGui/ImGuiBridge.mm
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/source/Apple/Bridge/ImGui/ImGuiBridge.mm
+	>
 )
 
 set(METALCPP_SOURCES
@@ -84,6 +90,10 @@ target_link_libraries(CE_Apple PUBLIC
 	CE_Config
 	CE_Tools
 	CE_Utility
+)
+
+target_link_libraries(CE_Apple PRIVATE
+	CE_Internal
 )
 
 # Vendor libraries

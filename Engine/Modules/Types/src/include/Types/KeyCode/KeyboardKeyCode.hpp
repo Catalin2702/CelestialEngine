@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -17,7 +17,6 @@
 
 #include <format>
 #include <string>
-
 
 enum ImGuiKey: int;
 
@@ -70,7 +69,6 @@ enum class KeyboardKeyCode : u16 {
 	Unknown = 0
 };
 
-
 /**
  *
  * @param key The KeyboardKeyCode to convert to an integer
@@ -101,28 +99,6 @@ inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned in
 CE_TYPES_API std::string_view format_as(KeyboardKeyCode key);
 
 /**
- * @brief Converts a GLFW key code to a KeyCode enum value
- * @param keycode The integer key code from GLFW to convert
- * @return KeyCode The corresponding KeyCode enum value
- * @details Maps GLFW key codes to the corresponding KeyCode enum values defined in this module.
- *			This allows for easy integration with GLFW's input handling while maintaining a consistent set of key codes within the engine.
- *			The function uses a switch statement to match known GLFW key codes to their KeyCode equivalents.
- *			If the provided keycode does not match any known GLFW key code, it returns KeyCode::Unknown.
- */
-CE_TYPES_API KeyboardKeyCode KeyboardKeyCodeFromGlfw(int keycode);
-
-/**
- * @brief Converts a KeyCode enum value to a GLFW key code
- * @param keycode The KeyCode enum value to convert
- * @return int The corresponding integer key code for GLFW
- * @details Maps KeyCode enum values to the corresponding integer codes used by GLFW.
- *			This allows for easy integration with GLFW's input handling when generating events or querying key states.
- *			The function uses a switch statement to match known KeyCode enum values to their GLFW integer equivalents.
- *			If the provided keycode does not match any known KeyCode value, it returns -1 to indicate an invalid key code for GLFW.
- */
-CE_TYPES_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
-
-/**
  * @brief Converts a KeyCode enum value to an ImGuiKey
  * @param keycode The KeyCode enum value to convert
  * @return ImGuiKey The corresponding ImGuiKey for the given KeyCode, or ImGuiKey_None if no mapping exists
@@ -132,18 +108,6 @@ CE_TYPES_API int GlfwKeyCodeFromKeyboard(KeyboardKeyCode keycode);
  *			If the provided keycode does not match any known KeyCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that key.
  */
 CE_TYPES_API ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
-
-/**
- * @brief Converts macOS/Cocoa virtual key codes to CE::KeyCode::KeyboardKeyCode
- * @details Maps the NSEvent keyCode values to the engine's keyboard key codes
- */
-CE_TYPES_API KeyboardKeyCode KeyboardKeyCodeFromCocoa(unsigned short keyCode);
-
-/**
- * @brief Converts CE::KeyCode::KeyboardKeyCode to macOS/Cocoa virtual key codes
- * @details Maps the engine's keyboard key codes to NSEvent keyCode values
- */
-CE_TYPES_API unsigned short CocoaKeyCodeFromKeyboard(KeyboardKeyCode keyCode);
 
 }
 

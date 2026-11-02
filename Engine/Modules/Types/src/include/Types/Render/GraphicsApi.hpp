@@ -62,6 +62,23 @@ constexpr bool HasAnyFlags(const GraphicsApi x, const GraphicsApi y) {
 CE_TYPES_API bool IsGraphicsApiSupported(const GraphicsApi& api);
 
 /**
+ * @brief Checks if the specified graphics API was compiled into this build of the engine
+ * @param api Graphics API to check
+ * @return bool True if the backend for this API exists in the engine library, false otherwise
+ * @details Narrower than IsGraphicsApiSupported, which answers for the OS: CE_RENDER_BACKENDS chooses the backends at
+ *			configure time, so Metal can be supported by the machine and still absent from a build made without it.
+ *			Answered by the engine library rather than inline, so it reports what the engine was built with even to
+ *			code compiled with different flags.
+ */
+CE_TYPES_API bool IsGraphicsApiCompiled(GraphicsApi api);
+
+/**
+ * @brief Gets the graphics API a launch without -g starts on
+ * @return GraphicsApi The first entry of CE_RENDER_BACKENDS - always one of the compiled-in APIs
+ */
+CE_TYPES_API GraphicsApi GetDefaultGraphicsApi();
+
+/**
  * @brief Names a GraphicsApi, for fmt/spdlog and - through the formatter below - for std::format
  * @param graphicsApi The value to name
  * @return std::string_view The enumerator's name, or "Unknown Graphics API" for a value outside the enum

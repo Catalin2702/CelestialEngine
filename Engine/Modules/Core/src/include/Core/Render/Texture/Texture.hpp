@@ -10,9 +10,10 @@
 /**
  * @file Texture.hpp
  * @brief Umbrella header for the Texture part of the Core renderer
- * @details One include for everything a texture is made of: its interface and the per-backend textures.
- *			Backend-specific headers come along too: the Common ones (OpenGL, GLFW) on every platform, the Mac ones
- *			(Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the same split Types/Render/Render.hpp makes.
+ * @details One include for everything a texture is made of: its interface and the per-backend textures. Backend-
+ *			specific headers come along too, each only where its backend is compiled in - CE_RENDER_* for the
+ *			graphics ones, CE_WINDOW_* for the window ones, both chosen by CE_RENDER_BACKENDS - the same split
+ *			Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -24,9 +25,11 @@
 
 #include "Core/Render/Texture/I_Texture.hpp"
 
+#if CE_RENDER_OPENGL
 #include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 #include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #endif
 

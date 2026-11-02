@@ -13,7 +13,9 @@
 
 #include <gtest/gtest.h>
 
+#if CE_RENDER_OPENGL
 using CE::Core::ToOpenGlViewport;
+#endif
 using CE::Core::Viewport;
 
 namespace {
@@ -63,6 +65,9 @@ TEST_F(ViewportTest, DefaultConstructed_IsEmptyOverTheWholeDepthRange) {
 	EXPECT_FLOAT_EQ(viewport.minDepth, 0.f);
 	EXPECT_FLOAT_EQ(viewport.maxDepth, 1.f);
 }
+
+// The conversions below belong to the OpenGL encoder, compiled only with OpenGL (CE_RENDER_BACKENDS).
+#if CE_RENDER_OPENGL
 
 // ============================================================================
 // Origin Conversion Tests
@@ -143,3 +148,5 @@ TEST_F(ViewportTest, ToOpenGl_WithoutATargetHeight_LeavesTheRectangleUnflipped) 
 	EXPECT_FLOAT_EQ(converted.width, 300.f);
 	EXPECT_FLOAT_EQ(converted.height, 200.f);
 }
+
+#endif

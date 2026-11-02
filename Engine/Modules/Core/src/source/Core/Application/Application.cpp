@@ -13,9 +13,13 @@
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 	#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 	#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+#endif
+
+// The pool is the platform's, not Metal's: AppKit autoreleases on every macOS frame, GLFW's NSWindow included.
+#if CE_PLATFORM_MACOS
 	#include "Apple/MetalCpp/Foundation/NsAutoreleasePool.hpp"
 #endif
 
@@ -240,11 +244,13 @@ void Application::_MakeImGuiLayer() {
 	// third party and each wants the concrete window and the concrete device, so a layer that does not match the API
 	// cannot be built at all.
 	switch (Props().graphicsApi) {
+#if CE_RENDER_OPENGL
 		case Types::GraphicsApi::OpenGL:
 			SetImGuiLayer(std::make_shared<ImGuiOpenGlLayer>());
 			return;
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 		case Types::GraphicsApi::Metal:
 			SetImGuiLayer(std::make_shared<ImGuiMetalLayer>());
 			return;
@@ -366,8 +372,10 @@ void Application::_InitRenderer() {
 	// Some backends bind their device state to the calling thread and nothing else makes it current; the rest have no
 	// such notion. That is why this is asked of the surface rather than of the window: the ones that need it are
 	// exactly the ones that offer it, so the question answers itself.
+#if CE_RENDER_OPENGL
 	if (auto* const surface = dynamic_cast<I_OpenGlSurface*>(_window.get()))
 		surface->MakeContextCurrent();
+#endif
 
 	_renderer = I_Renderer::MakeRenderer(*_window, Props().graphicsApi);
 	_renderer->SetClearColor(glm::vec4{
@@ -455,7 +463,7 @@ void Application::_OnVSyncChange(const Events::VSyncEvent& event) const {
 }
 
 void Application::_ApplyPresentPacing([[maybe_unused]] const bool vsync) const {
-#if CE_PLATFORM_MACOS
+#if CE_RENDER_METAL
 	if (_renderer->GetGraphicApi() != Types::GraphicsApi::Metal)
 		return;
 

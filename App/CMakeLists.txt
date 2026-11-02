@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-11-02
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -24,7 +24,13 @@ set(SOURCES
 	src/App.cpp
 )
 
-if (APPLE)
+# The shaders of every compiled-in graphics backend (CE_RENDER_BACKENDS), and the targets that produce them. Selected by
+# the CE_RENDER_* switches rather than by whether the variables are set: those are cache variables, and a re-configure
+# that drops a backend would otherwise still find the previous selection's value in them.
+set(CE_APP_SHADER_RESOURCES "")
+set(CE_APP_SHADER_TARGETS "")
+
+if (CE_RENDER_METAL)
 	# Shaders are listed as bundle resources instead of being copied in POST_BUILD
 	# steps: that way they are real build dependencies of CE_App, so editing a
 	# shader re-copies it into the bundle without needing a relink.
@@ -33,58 +39,68 @@ if (APPLE)
 		MACOSX_PACKAGE_LOCATION "Resources/Shaders/Metal"
 	)
 
-	# GLSL is loaded and compiled at runtime, so the .glsl files are bundled as-is.
-	set_source_files_properties(${CE_OPENGL_SHADERS_SOURCES} PROPERTIES
-		MACOSX_PACKAGE_LOCATION "Resources/Shaders/OpenGL"
-	)
+	list(APPEND CE_APP_SHADER_RESOURCES ${CE_METAL_SHADERS_LIB_PATH})
+	list(APPEND CE_APP_SHADER_TARGETS CE_MetalShaders)
+endif ()
 
+if (CE_RENDER_OPENGL)
+	# GLSL is loaded and compiled at runtime, so the .glsl files are bundled as-is.
+	if (APPLE)
+		set_source_files_properties(${CE_OPENGL_SHADERS_SOURCES} PROPERTIES
+			MACOSX_PACKAGE_LOCATION "Resources/Shaders/OpenGL"
+		)
+	endif ()
+
+	list(APPEND CE_APP_SHADER_RESOURCES ${CE_OPENGL_SHADERS_SOURCES})
+	list(APPEND CE_APP_SHADER_TARGETS CE_OpenGLShaders)
+endif ()
+
+if (APPLE)
 	add_executable(CE_App MACOSX_BUNDLE
 		${SOURCES}
-		${CE_METAL_SHADERS_LIB_PATH}
-		${CE_OPENGL_SHADERS_SOURCES}
-	)
-
-	add_dependencies(CE_App CE_MetalShaders CE_OpenGLShaders)
-
-	# Treating the shaders as link dependencies forces CE_App to relink when they
-	# change, which is what re-runs the POST_BUILD steps below (code signing and the
-	# copy to Binaries/Last). Without it the freshly built shaders would land in the
-	# bundle but never reach Binaries/Last, and the ad-hoc signature would still
-	# seal the previous ones.
-	set_property(TARGET CE_App APPEND PROPERTY
-		LINK_DEPENDS ${CE_METAL_SHADERS_LIB_PATH} ${CE_OPENGL_SHADERS_SOURCES}
+		${CE_APP_SHADER_RESOURCES}
 	)
 else ()
 	add_executable(CE_App
 		${SOURCES}
 	)
+endif ()
 
-	add_dependencies(CE_App CE_OpenGLShaders)
+add_dependencies(CE_App ${CE_APP_SHADER_TARGETS})
 
-	# Mirrors the macOS branch above: treating the shaders as link dependencies forces CE_App to
-	# relink (and thus re-run the POST_BUILD copy below) whenever a .glsl file changes, instead of
-	# only picking up the change on the next full reconfigure.
-	set_property(TARGET CE_App APPEND PROPERTY
-		LINK_DEPENDS ${CE_OPENGL_SHADERS_SOURCES}
-	)
+# Treating the shaders as link dependencies forces CE_App to relink when they
+# change, which is what re-runs the POST_BUILD steps below (code signing, the
+# non-Apple copy into Resources/, the copy to Binaries/Last). Without it the freshly
+# built shaders would land in the bundle but never reach Binaries/Last, and the
+# ad-hoc signature would still seal the previous ones.
+set_property(TARGET CE_App APPEND PROPERTY
+	LINK_DEPENDS ${CE_APP_SHADER_RESOURCES}
+)
 
-	# GLSL is loaded and compiled at runtime, so the .glsl files are copied next to the executable
-	# as-is, mirroring the macOS bundle's Resources/Shaders/OpenGL layout (see the platform-specific
-	# relative path chosen in Application.cpp).
+if (NOT APPLE)
+	# A plain executable has no bundle to carry its resources, so they are copied next to it, mirroring the macOS
+	# bundle's Resources/Shaders/<API> layout (see the platform-specific relative path chosen in Application.cpp).
 	add_custom_command(TARGET CE_App POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL"
-		COMMENT "Creating Resources/Shaders/OpenGL"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:CE_App>/Resources/Shaders"
+		COMMENT "Creating Resources/Shaders"
 	)
 
-	foreach (SHADER_FILE ${CE_OPENGL_SHADERS_SOURCES})
+	if (CE_RENDER_OPENGL)
 		add_custom_command(TARGET CE_App POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"${SHADER_FILE}"
-				"$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL/"
-			COMMENT "Copying ${SHADER_FILE} to Resources/Shaders/OpenGL"
+			COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL"
+			COMMENT "Creating Resources/Shaders/OpenGL"
 		)
-	endforeach ()
-endif()
+
+		foreach (SHADER_FILE ${CE_OPENGL_SHADERS_SOURCES})
+			add_custom_command(TARGET CE_App POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					"${SHADER_FILE}"
+					"$<TARGET_FILE_DIR:CE_App>/Resources/Shaders/OpenGL/"
+				COMMENT "Copying ${SHADER_FILE} to Resources/Shaders/OpenGL"
+			)
+		endforeach ()
+	endif ()
+endif ()
 
 set_target_properties(CE_App PROPERTIES
 	LINKER_LANGUAGE CXX

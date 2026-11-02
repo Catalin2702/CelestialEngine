@@ -10,10 +10,11 @@
 #include "Core/Window/Window.hpp"
 #include "Tools/Tools.hpp"
 
-#if CE_PLATFORM_MACOS
+#if CE_WINDOW_COCOA
 	#include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"
 #endif
 
+#include <format>
 #include <stdexcept>
 
 
@@ -21,16 +22,19 @@ namespace CE::Core {
 
 std::unique_ptr<I_Platform> I_Platform::MakePlatform(const Types::WindowApi windowApi) {
 	switch (windowApi) {
+#if CE_WINDOW_GLFW
 		case Types::WindowApi::GLFW:
 			return std::make_unique<GlfwPlatform>();
+#endif
 
-#if CE_PLATFORM_MACOS
+#if CE_WINDOW_COCOA
 		case Types::WindowApi::Cocoa:
 			return std::make_unique<CocoaPlatform>();
 #endif
 
 		default: {
-			constexpr auto error = "I_Platform::MakePlatform: Not yet implemented!";
+			// Either a backend that does not exist yet, or one this build was configured without (CE_RENDER_BACKENDS).
+			const auto error = std::format("I_Platform::MakePlatform: {} is not compiled into this build!", windowApi);
 			CE_CORE_ERROR(error);
 			throw std::logic_error(error);
 		}

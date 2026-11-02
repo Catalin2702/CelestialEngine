@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-02
 //
 
 #pragma once
@@ -52,14 +52,6 @@ enum class ShaderType: u8 {
  *			ray-tracing ones, Metal has mesh/amplification/ray generation but no geometry or tessellation stages.
  */
 CE_TYPES_API bool IsShaderTypeSupported(GraphicsApi graphicsApi, ShaderType shaderType);
-
-/**
- * @brief Converts a ShaderType enum value to the corresponding OpenGL shader type constant
- * @param type The ShaderType to convert
- * @return int The OpenGL shader type constant corresponding to the given ShaderType, or -1 if the ShaderType is unknown or unsupported
- * @details This function maps the ShaderType enum values to their corresponding OpenGL shader type constants (e.g., GL_VERTEX_SHADER, GL_FRAGMENT_SHADER). This is essential for compiling and using shaders in an OpenGL context. If the provided ShaderType does not have a corresponding OpenGL constant, the function returns -1 to indicate an error.
- */
-CE_TYPES_API int ToOpenGlShaderType(ShaderType type);
 
 /**
  * @brief Names a ShaderType, for fmt/spdlog and - through the formatter below - for std::format

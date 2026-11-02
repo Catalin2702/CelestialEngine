@@ -62,6 +62,11 @@ target_include_directories(CE_Events PUBLIC
 	src/interface
 )
 
+# Engine-internal: unlocks the CE_CORE_* logging macros (see CE_Internal in CelestialEngineMacros.cmake)
+target_link_libraries(CE_Events PRIVATE
+	CE_Internal
+)
+
 target_compile_definitions(CE_Events PRIVATE
 	CE_EVENTS_EXPORTS
 )

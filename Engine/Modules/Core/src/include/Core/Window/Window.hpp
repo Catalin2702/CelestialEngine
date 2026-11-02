@@ -10,10 +10,10 @@
 /**
  * @file Window.hpp
  * @brief Umbrella header for the Window sub-module of Core
- * @details One include for everything a window is made of: the platform and window interfaces, the GLFW backend and, on
- *			macOS, the Cocoa one with the process-wide menu bar. Backend-specific headers come along too: the Common
- *			ones (OpenGL, GLFW) on every platform, the Mac ones (Metal, Cocoa) only where CE_PLATFORM_MACOS is set - the
- *			same split Types/Render/Render.hpp makes.
+ * @details One include for everything a window is made of: the platform and window interfaces, the GLFW backend
+ *			and, on macOS, the Cocoa one with the process-wide menu bar. Backend-specific headers come along too,
+ *			each only where its backend is compiled in - CE_RENDER_* for the graphics ones, CE_WINDOW_* for the
+ *			window ones, both chosen by CE_RENDER_BACKENDS - the same split Types/Render/Render.hpp makes.
  */
 
 #pragma once
@@ -26,12 +26,17 @@
 #include "Core/Window/I_Platform.hpp"
 #include "Core/Window/I_Window.hpp"
 
+#if CE_WINDOW_GLFW
 #include "Core/Window/Platforms/Common/Glfw/GlfwPlatform.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
+#endif
 
 #if CE_PLATFORM_MACOS
 #include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
+#endif
+
+#if CE_WINDOW_COCOA
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 #endif

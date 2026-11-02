@@ -9,7 +9,6 @@
 
 #include <Types/Types.hpp>
 
-#include <glad/glad.h>
 #include <gtest/gtest.h>
 
 #include <format>
@@ -104,22 +103,3 @@ TEST_F(ShaderTypesTest, IsShaderTypeSupported_UnknownStage_IsNeverSupported) {
 	EXPECT_FALSE(IsShaderTypeSupported(GraphicsApi::Metal, ShaderType::Unknown));
 }
 
-// ============================================================================
-// OpenGL Mapping Tests
-// ============================================================================
-
-/**
- * @brief Test that the stages the OpenGL back-end compiles map onto their GL constants
- */
-TEST_F(ShaderTypesTest, ToOpenGlShaderType_MapsCompilableStages) {
-	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Vertex), GL_VERTEX_SHADER);
-	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Fragment), GL_FRAGMENT_SHADER);
-}
-
-/**
- * @brief Test that a stage without a GL mapping is reported as invalid
- */
-TEST_F(ShaderTypesTest, ToOpenGlShaderType_UnmappedStage_ReturnsInvalid) {
-	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Mesh), -1);
-	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Unknown), -1);
-}
