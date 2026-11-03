@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 /**
@@ -22,6 +22,8 @@
 #define CE_CORE_CORE_HPP
 
 #include "Core/Application/Application.hpp"
+#include "Core/Application/ApplicationSpecification.hpp"
+#include "Core/Application/I_ApplicationClient.hpp"
 
 #include "Core/Hub/Hub.hpp"
 

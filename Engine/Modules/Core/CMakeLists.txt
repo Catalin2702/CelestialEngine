@@ -196,6 +196,7 @@ set(WINDOW_HEADERS
 )
 
 set(APPLICATION_INTERFACES
+	src/interface/Core/Application/I_ApplicationClient.hpp
 )
 
 set(LAYERS_INTERFACES
