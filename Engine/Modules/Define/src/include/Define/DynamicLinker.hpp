@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-25
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -74,12 +74,6 @@
 	#define CE_APPLE_API CE_API_EXPORT
 #else
 	#define CE_APPLE_API CE_API_IMPORT
-#endif
-
-#ifdef CE_ENGINE_EXPORTS
-	#define CE_ENGINE_API CE_API_EXPORT
-#else
-	#define CE_ENGINE_API CE_API_IMPORT
 #endif
 
 #endif //CE_DEFINE_DYNAMICLINKER_HPP

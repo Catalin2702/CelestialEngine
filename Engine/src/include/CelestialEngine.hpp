@@ -26,9 +26,6 @@
 #include <Events/Events.hpp>
 // -----------------------------------------------
 
-// ---- Input ------------------------------------
-// -----------------------------------------------
-
 // ---- Tools ------------------------------------
 #include <Tools/Tools.hpp>
 // -----------------------------------------------
@@ -41,20 +38,11 @@
 #include <Utility/Utility.hpp>
 // -----------------------------------------------
 
-// ---- Engine Info -------------------------------
-namespace CE {
-	/**
-	 * @brief Returns the CelestialEngine version this application was built against, as "MAJOR.MINOR.PATCH"
-	 */
-	CE_ENGINE_API const char* GetEngineVersion();
-}
-// -----------------------------------------------
-
 // ---- Convenient namespace aliases -------------
-namespace Core = CE::Core;		///< Application framework
-namespace Events = CE::Events;						///< Event system
-namespace Tools = CE::Tools;						///< Logging and tooling
-namespace Utility = CE::Utility;					///< Utility
+namespace Core = CE::Core;
+namespace Events = CE::Events;
+namespace Tools = CE::Tools;
+namespace Utility = CE::Utility;
 // -----------------------------------------------
 
 #endif //CE_CELESTIALENGINE_HPP

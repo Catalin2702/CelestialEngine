@@ -37,4 +37,6 @@
 
 #include "Core/Window/Window.hpp"
 
+#include "Core/Version.hpp"
+
 #endif //CE_CORE_CORE_HPP

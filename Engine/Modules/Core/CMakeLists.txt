@@ -15,6 +15,7 @@
 
 set(CORE_HEADERS
 	src/include/Core/Core.hpp
+	src/include/Core/Version.hpp
 )
 
 set(APPLICATION_HEADERS
@@ -265,6 +266,10 @@ set(WINDOW_INTERFACES
 	src/interface/Core/Window/I_Window.hpp
 )
 
+set(CORE_SOURCES
+	src/source/Core/Version.cpp
+)
+
 set(APPLICATION_SOURCES
 	src/source/Core/Application/Application.cpp
 )
@@ -445,6 +450,7 @@ set(INTERFACES
 )
 
 set(SOURCES
+	${CORE_SOURCES}
 	${APPLICATION_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
@@ -511,6 +517,8 @@ target_include_directories(CE_Core PUBLIC
 
 target_compile_definitions(CE_Core PRIVATE
 	CE_CORE_EXPORTS
+	# GetEngineVersion (Core/Version.hpp). Core has no project() of its own, so this is Engine/CMakeLists.txt's version.
+	CE_ENGINE_VERSION="${PROJECT_VERSION}"
 )
 
 # Copy to Binaries/Last folder

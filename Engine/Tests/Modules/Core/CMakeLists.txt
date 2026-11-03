@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 set(CORE_SOURCES
 	src/Core/CoreHeadersTests.cpp
+	src/Core/VersionTests.cpp
 )
 set(INPUT_SOURCES
 	src/Core/Input/InputTests.cpp

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 # The engine's build entry point: CE_Config and CE_Internal, the output layout (Binaries/, Out/, Modules/), the module
@@ -250,7 +250,6 @@ endfunction()
 # Binaries/<toolchain>/<config>/ only ever holds executables.
 set(CE_MODULE_DLL_NAMES
 	CE_Core
-	CE_Engine
 	CE_Events
 	CE_Tools
 	CE_Types
@@ -376,7 +375,7 @@ function(ce_set_module_library_output TARGET_NAME)
 	endif ()
 endfunction()
 
-# Gives a CE module SHARED library (Core, Events, Tools, Types, Utility, Engine, and on macOS also
+# Gives a CE module SHARED library (Core, Events, Tools, Types, Utility, and on macOS also
 # Apple) its own "look in my own directory" RPATH, so once every module library ends up sitting
 # flat in the same folder - DLL/ in the build tree and on Linux, or CelestialEngine.app/Contents/Frameworks
 # on macOS (see ce_bundle_apple_frameworks) - it resolves its dependencies on sibling module

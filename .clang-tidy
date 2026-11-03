@@ -125,3 +125,5 @@ CheckOptions:
   misc-const-correctness.WarnPointersAsPointers: false
   performance-unnecessary-value-param.AllowedTypes: 'std::shared_ptr;NS::SharedPtr'
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
+
+QualifierAlignment: Left
