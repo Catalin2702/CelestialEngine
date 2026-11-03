@@ -12,6 +12,8 @@
 #ifndef CE_ENTRYPOINT_HPP
 #define CE_ENTRYPOINT_HPP
 
+#include "CelestialEngine.hpp"
+
 #include <exception>
 
 #include <cstdio>

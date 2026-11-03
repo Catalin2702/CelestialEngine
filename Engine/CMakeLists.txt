@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -17,7 +17,7 @@ project(CE_Engine LANGUAGES CXX VERSION 0.1.3)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
-	src/internal/EntryPoint.hpp
+	src/include/EntryPoint.hpp
 )
 
 set(SOURCES
@@ -109,7 +109,6 @@ target_link_libraries(CE_Engine PUBLIC
 
 target_include_directories(CE_Engine PUBLIC
 	src/include
-	src/internal
 )
 
 # Copy to Binaries/Last folder

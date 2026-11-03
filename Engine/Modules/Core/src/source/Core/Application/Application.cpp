@@ -422,7 +422,7 @@ void Application::_RenderFrame(const f32 deltaTime) {
 		imguiLayer->Begin(deltaTime);
 
 		for (const auto& layer: _layerStack)
-			layer->OnRender();
+			layer->OnRenderScene(*_renderer);
 
 		Events::AppRenderEvent renderEvent{};
 		_dispatcher->DispatchAppRenderEvent(renderEvent);

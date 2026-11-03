@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -22,6 +22,7 @@
 namespace CE::Core {
 
 class I_EventHubDispatcher;
+class I_Renderer;
 
 /**
  * @class I_Layer
@@ -72,6 +73,15 @@ public:
 	 * @brief Pure virtual method for handling rendering logic
 	 */
 	virtual void OnRender() const = 0;
+
+	/**
+	 * @brief Records this layer's draws into the frame's main pass (no-op by default)
+	 * @param renderer The renderer whose pass is open: Submit what the layer draws, and nothing else
+	 * @details Called between BeginPass and EndPass, for every layer from the bottom of the stack to the top, overlays
+	 *			last. Distinct from OnRender, which runs later, inside the ImGui frame, where only UI belongs. Const for
+	 *			the same reason OnRender is: drawing reads the layer's state, and the state changes in OnUpdate.
+	 */
+	virtual void OnRenderScene([[maybe_unused]] I_Renderer& renderer) const {}
 
 	/**
 	 * @brief Subscribes the layer's handlers to the event hub (no-op by default)

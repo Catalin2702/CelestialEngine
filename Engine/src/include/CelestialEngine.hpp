@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -55,10 +55,6 @@ namespace Core = CE::Core;		///< Application framework
 namespace Events = CE::Events;						///< Event system
 namespace Tools = CE::Tools;						///< Logging and tooling
 namespace Utility = CE::Utility;					///< Utility
-// -----------------------------------------------
-
-// ---- Entry Point ------------------------------
-#include <EntryPoint.hpp>
 // -----------------------------------------------
 
 #endif //CE_CELESTIALENGINE_HPP
