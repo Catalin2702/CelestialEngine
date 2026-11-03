@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 # Backend-specific files are grouped by what they belong to, and each group is compiled only when it is selected:
@@ -19,6 +19,7 @@ set(CORE_HEADERS
 
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
+	src/include/Core/Application/ApplicationSpecification.hpp
 )
 
 set(INPUT_HEADERS
