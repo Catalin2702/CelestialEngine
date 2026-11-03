@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -22,11 +22,11 @@
 
 
 static void Report(const char* message) noexcept {
-	if (Tools::Log::GetCoreLogger()) {
-		Tools::Log::LogCoreCritical(message);
+	if (CE::Tools::Log::GetCoreLogger()) {
+		CE::Tools::Log::LogCoreCritical(message);
 
 		// Nobody will shut the logger down in an orderly way after a terminate: what is queued is written now or lost.
-		Tools::Log::Flush();
+		CE::Tools::Log::Flush();
 	}
 	else {
 		std::fputs(message, stderr);
@@ -72,21 +72,21 @@ static void Report(const char* message) noexcept {
 int main(const int argc, const char* argv[]) {
 	int code = 0;
 
-	Tools::Log::Init();
+	CE::Tools::Log::Init();
 	std::set_terminate(&_OnTerminate);
 
 	try {
 #if CE_DEBUG
-		Utility::Chronometer chronometer;
+		CE::Utility::Chronometer chronometer;
 #endif
-		const auto windowProps = Utility::GetWindowProps(argc, argv);
+		const auto windowProps = CE::Utility::GetWindowProps(argc, argv);
 
 		// Before anything is built from them: a backend this build was configured without (CE_RENDER_BACKENDS), or a
 		// graphics/window pair that cannot work together, is reported here with the list of what is available.
-		Utility::ValidateWindowProps(windowProps);
-		Utility::Config::SetWindowProps(windowProps);
-		Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
-		Core::Application app{};
+		CE::Utility::ValidateWindowProps(windowProps);
+		CE::Utility::Config::SetWindowProps(windowProps);
+		CE::Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
+		CE::Core::Application app{};
 		app.InitImguiLayer();
 		app.Start();
 	}
@@ -99,7 +99,7 @@ int main(const int argc, const char* argv[]) {
 		code = 1;
 	}
 
-	Tools::Log::Shutdown();
+	CE::Tools::Log::Shutdown();
 
 	return code;
 }

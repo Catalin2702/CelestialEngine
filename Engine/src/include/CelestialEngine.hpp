@@ -38,11 +38,4 @@
 #include <Utility/Utility.hpp>
 // -----------------------------------------------
 
-// ---- Convenient namespace aliases -------------
-namespace Core = CE::Core;
-namespace Events = CE::Events;
-namespace Tools = CE::Tools;
-namespace Utility = CE::Utility;
-// -----------------------------------------------
-
 #endif //CE_CELESTIALENGINE_HPP
