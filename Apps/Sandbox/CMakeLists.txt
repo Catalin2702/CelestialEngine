@@ -23,5 +23,5 @@ ce_add_application(CE_Sandbox
 	BUNDLE_ID com.celestialengine.app
 	ASSET_CATALOG Resources/Assets.xcassets
 	SOURCES
-		src/SandboxApp.cpp
+		src/App.cpp
 )

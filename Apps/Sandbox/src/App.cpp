@@ -1,6 +1,6 @@
 //
 // Module: CelestialEngine/Apps/Sandbox
-// File: SandboxApp.cpp
+// File: App.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
@@ -18,3 +18,4 @@
 // What a client adds is layers - pushed onto the application once it exists, not a subclass of it.
 
 #include <CelestialEngine.hpp>
+#include <EntryPoint.hpp>
