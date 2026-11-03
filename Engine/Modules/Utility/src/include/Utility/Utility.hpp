@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 /**
@@ -25,6 +25,7 @@
 #ifndef CE_UTILITY_HPP
 #define CE_UTILITY_HPP
 
+#include "Utility/CMD/CommandLine.hpp"
 #include "Utility/CMD/Window.hpp"
 
 #include "Utility/Config/Config.hpp"

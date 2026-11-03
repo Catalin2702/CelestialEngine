@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #include "Core/Application/Application.hpp"
@@ -42,15 +42,20 @@ const Types::WindowProps& Props() { return Utility::Config::GetWindowProps(); }
 
 std::atomic<Application*> Application::_instance = nullptr;
 
-Application::Application():
+Application::Application(std::unique_ptr<I_ApplicationClient> client):
 	_dispatcher(I_EventHubDispatcher::MakeEventHubDispatcher(Props().windowApi)),
 	_platform(I_Platform::MakePlatform(Props().windowApi)),
 	_window(I_Window::MakeWindow(*_platform)),
-	// _graphicDevice(I_GraphicDevice::MakeDevice(Props().graphicsApi)),
-	// _swapchain(I_Swapchain::MakeSwapchain(*_window, Props().graphicsApi)),
-	_runLoop(I_RunLoop::MakeRunLoop(*_platform))
+	_runLoop(I_RunLoop::MakeRunLoop(*_platform)),
+	_client(std::move(client))
 {
 	assert(_instance == nullptr and "Application::Application: An application already exists!");
+
+	if (not _client) [[unlikely]] {
+		constexpr auto error = "Application::Application: No client! CE::CreateApplicationClient must return one.";
+		CE_CORE_ERROR(error);
+		throw std::invalid_argument(error);
+	}
 
 	// Published before the init steps because they reach back through Get(); a throw from any of them has to clear it
 	// by hand, since the destructor - which is what normally resets it - never runs for an object whose constructor
@@ -64,6 +69,10 @@ Application::Application():
 		// see _OnPlatformReady. Immediate wherever the window is usable at once, and deferred wherever the platform has
 		// to finish launching first - which cannot happen while this constructor is still running.
 		_platform->onReadyDispatcher.Bind(EventDelegate<>::FromMethod<Application, &Application::_OnPlatformReady>(this));
+
+		// Only recorded here: the overlay is built once the renderer exists, right after the client's OnInit.
+		if (_client->GetSpecification().imguiOverlay)
+			InitImguiLayer();
 	}
 	catch (...) {
 		_instance = nullptr;
@@ -147,6 +156,10 @@ void Application::End() {
 	_runLoop->Pause();
 	_runLoop->Stop();
 
+	// The client goes first, while everything it may still reach - layers, hub, renderer, window - is alive.
+	if (std::exchange(_clientInitialized, false))
+		_client->OnShutdown(*this);
+
 	_UnsubscribeFromEventHubDispatcher();
 	Input::Shutdown();
 
@@ -157,6 +170,10 @@ void Application::End() {
 void Application::Tick(const f32 deltaTime) {
 	Events::AppTickEvent tickEvent{deltaTime};
 	_dispatcher->DispatchAppTickEvent(tickEvent);
+
+	// Before the layers, and outside the loop over them: the client may change the stack here.
+	if (_clientInitialized) [[likely]]
+		_client->OnUpdate(*this, deltaTime);
 
 	for (const auto& layer: _layerStack)
 		layer->OnUpdate();
@@ -194,49 +211,14 @@ void Application::Init() {
 
 void Application::InitImguiLayer() {
 	// Deferred, not built: an ImGui layer is attached as soon as it is created, and attaching it runs its _Init, which
-	// asks the renderer for a device. The entry point calls this between constructing the application and starting it,
-	// so at this point there is no renderer yet - the same wait everything else moved to.
+	// asks the renderer for a device. The constructor calls this - when the client's specification asks for the
+	// overlay - before the platform is up, so at this point there is no renderer yet.
 	if (not _renderer) {
 		_imguiLayerRequested = true;
 		return;
 	}
 
 	_MakeImGuiLayer();
-}
-
-void Application::_MakeSceneLayer() {
-	// Orthographic is still the only projection, and the factories throw on anything not implemented yet rather than
-	// hand back something that does not work.
-	constexpr CameraDescriptor cameraDescriptor{
-		.position = {0.0_f32, 0.0_f32, 1.0_f32},
-	};
-
-	const CameraProjectionDescriptor projectionDescriptor{
-		.type = Types::CameraProjection::Orthographic,
-		// Backends disagree on the depth range clip space maps onto, and the projection matrix is where that
-		// difference lives - so it is asked of the device, which is the object that knows, rather than worked out
-		// here from the API's name. Safe to ask at this point: the renderer is built before the scene layer is.
-		.convention = _renderer->GetGraphicDevice().GetClipConvention(),
-		.viewportWidth = Props().width,
-		.viewportHeight = Props().height,
-		// The test geometry spans about ±0.9, so a box one unit tall above and below the centre frames it. The
-		// default of 10 would show it at a tenth of the window.
-		.orthographicSize = 1.0_f32
-	};
-
-	constexpr CameraControllerDescriptor controllerDescriptor{
-		.descriptor = CameraFreeControllerDescriptor{
-			.move = {.speed = 1._f32},
-			.look = {}
-		}
-	};
-
-	const auto sceneLayer = std::make_shared<SceneLayer>(cameraDescriptor, projectionDescriptor, controllerDescriptor);
-
-	PushLayer(sceneLayer);
-	sceneLayer->SubscribeToEventHub(*_dispatcher);
-
-	_sceneLayer = sceneLayer;
 }
 
 void Application::_MakeImGuiLayer() {
@@ -361,8 +343,10 @@ void Application::_OnPlatformReady() {
 	// renderer that _InitRenderer has just built.
 	Init();
 
-	// Before the ImGui layer, so the overlay ends up on top of the scene in the stack.
-	_MakeSceneLayer();
+	// The window and the renderer exist now, which is what OnInit promises the client. Marked initialised only once
+	// OnInit has returned: a client whose OnInit threw gets no OnShutdown.
+	_client->OnInit(*this);
+	_clientInitialized = true;
 
 	if (std::exchange(_imguiLayerRequested, false))
 		_MakeImGuiLayer();
@@ -381,8 +365,6 @@ void Application::_InitRenderer() {
 	_renderer->SetClearColor(glm::vec4{
 		0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32
 	});
-
-	_CreateRenderResources();
 }
 
 void Application::_OnFrame() {
@@ -406,14 +388,10 @@ void Application::_OnLoopStarted() const {
 void Application::_RenderFrame(const f32 deltaTime) {
 	_renderer->BeginPass();
 
-	if (_pipeline and _vertexBuffer and _indexBuffer) [[likely]] {
-		DrawCommand command{};
-		command.pipelineState = _pipeline.get();
-		command.vertexBuffer = _vertexBuffer.get();
-		command.indexBuffer = _indexBuffer.get();
-
-		_renderer->Submit(command);
-	}
+	// Every layer records its own draws while the pass is open, bottom of the stack first: the order of the stack is
+	// the order things land on screen.
+	for (const auto& layer: _layerStack)
+		layer->OnRenderScene(*_renderer);
 
 	_renderer->EndPass();
 
@@ -422,7 +400,7 @@ void Application::_RenderFrame(const f32 deltaTime) {
 		imguiLayer->Begin(deltaTime);
 
 		for (const auto& layer: _layerStack)
-			layer->OnRenderScene(*_renderer);
+			layer->OnRender();
 
 		Events::AppRenderEvent renderEvent{};
 		_dispatcher->DispatchAppRenderEvent(renderEvent);
@@ -511,66 +489,6 @@ void Application::SetVSync(const bool enabled) const {
 	// channel. It is the one the render context used to fire, and it had no one left to fire it.
 	Events::VSyncEvent vsyncEvent{enabled};
 	_dispatcher->DispatchRenderChangeVSyncEvent(vsyncEvent);
-}
-
-void Application::_CreateRenderResources() {
-	auto& graphicDevice = _renderer->GetGraphicDevice();
-	constexpr std::array vertices {
-		// Front face
-		-0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 0
-		 0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 1
-		 0.55f,  0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 2
-		-0.55f,  0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 3
-
-		// Lateral face
-		 0.55f, -0.75f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 4
-		 0.70f, -0.60f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 5
-		 0.70f,  0.90f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 6
-		 0.55f,  0.75f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 7
-
-		// Upper face
-		 0.55f,  0.75f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 8
-		 0.70f,  0.90f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 9
-		-0.40f,  0.90f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 10
-		-0.55f,  0.75f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 11
-	};
-
-	constexpr std::array indices {
-		0_u32, 1_u32, 2_u32, 2_u32, 3_u32, 0_u32,		// Front face
-		4_u32, 5_u32, 6_u32, 6_u32, 7_u32, 4_u32,		// Lateral face
-		8_u32, 9_u32, 10_u32, 10_u32, 11_u32, 8_u32		// Upper face
-	};
-
-	// Named, because it is needed twice: the buffer uses it to compute its stride, and the pipeline needs it to build
-	// its vertex descriptor. Backends that bake that descriptor into the compiled pipeline draw nothing without it,
-	// while those that read the layout at bind time never miss it - so leaving it off is a bug that hides on some.
-	const BufferLayout vertexLayout{
-		{Types::ShaderDataType::Float3, "inputPosition"},
-		{Types::ShaderDataType::Float4, "inputColor"}
-	};
-
-	_vertexBuffer = graphicDevice.CreateVertexBuffer(vertices, vertexLayout);
-	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
-
-	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
-	// Whatever the backend underneath compiles or loads, this asks for the same two shaders in the same way.
-	PipelineDescriptor pipelineDescriptor{};
-	pipelineDescriptor.vertexLayout = vertexLayout;
-	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({
-		.stage = Types::ShaderType::Vertex,
-		.name = "Vertex"
-	});
-	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({
-		.stage = Types::ShaderType::Fragment,
-		.name = "Fragment"
-	});
-
-	// Asked rather than assumed: the descriptor's default need not be the format the target actually has, and most
-	// backends reject a pipeline whose format disagrees with what it draws into.
-	pipelineDescriptor.formats.colors[0] = _renderer->GetSceneColorFormat();
-	pipelineDescriptor.formats.colorCount = 1;
-
-	_pipeline = graphicDevice.CreatePipelineState(pipelineDescriptor);
 }
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #include "Utility/CMD/Window.hpp"
@@ -108,7 +108,7 @@ std::string CompiledWindowApis() {
 
 }
 
-Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
+Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 	std::string title = "CelestialEngine";
 	unsigned int width = 1280;
 	unsigned int height = 720;
@@ -157,7 +157,7 @@ Types::WindowProps GetWindowProps(const int argc, const char* argv[]){
 }
 
 void ValidateWindowProps(const Types::WindowProps& windowProps) {
-	// Thrown without logging: the one caller is main(), which reports what it catches - at critical level, so the
+	// Thrown without logging: it runs from InitFromCommandLine, called by main(), which reports what it catches - at critical level, so the
 	// message survives even in Dist, where an error-level log here would be compiled out.
 	const auto graphicsApi = windowProps.graphicsApi;
 	const auto windowApi = windowProps.windowApi;

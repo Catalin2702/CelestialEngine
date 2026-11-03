@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -19,7 +19,7 @@
 namespace CE::Utility {
 
 /**
- * @brief Parses command-line arguments to create window properties
+ * @brief Parses the window options out of the command-line arguments
  * @param argc Number of command-line arguments
  * @param argv Array of command-line argument strings
  * @return Types::WindowProps Window configuration extracted from arguments
@@ -36,16 +36,17 @@ namespace CE::Utility {
  *			Without -g the graphics API is the build's default (Types::GetDefaultGraphicsApi, the first entry of
  *			CE_RENDER_BACKENDS); without -wa the window API is the one that API is paired with
  *			(Types::GetDefaultWindowApi). This only parses: an API this build lacks is returned as asked, and rejected
- *			by ValidateWindowProps.
+ *			by ValidateWindowProps. Nothing is stored either - InitFromCommandLine (CMD/CommandLine.hpp) is what parses,
+ *			validates and hands the result to Config, which is where the rest of the engine reads it from.
  */
-CE_UTILITY_API Types::WindowProps GetWindowProps(int argc, const char* argv[]);
+[[nodiscard]] CE_UTILITY_API Types::WindowProps ParseWindowArgs(int argc, const char* argv[]);
 
 /**
  * @brief Checks that the engine can actually open the window the properties describe
- * @param windowProps The parsed properties, typically from GetWindowProps
+ * @param windowProps The parsed properties, typically from ParseWindowArgs
  * @throws std::runtime_error When the graphics or window API is not compiled into this build (CE_RENDER_BACKENDS), or
  *		   when the two cannot work together (e.g. Metal in a GLFW window). The message names what is available.
- * @details Run once at startup, before anything is built from the properties: the factories would fail too, but later,
+ * @details Run once at startup by InitFromCommandLine, before anything is built from the properties: the factories would fail too, but later,
  *			one at a time, and without the list of what the build does offer.
  */
 CE_UTILITY_API void ValidateWindowProps(const Types::WindowProps& windowProps);

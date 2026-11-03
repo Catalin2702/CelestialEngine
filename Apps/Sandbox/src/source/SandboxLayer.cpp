@@ -11,8 +11,9 @@
 
 namespace Sandbox {
 
-SandboxLayer::SandboxLayer(CE::Core::I_Renderer& renderer): I_Layer("Sandbox"),
-															_renderer(renderer) {
+SandboxLayer::SandboxLayer(CE::Core::I_Renderer& renderer):
+	I_Layer("Sandbox"),
+	_renderer(renderer) {
 }
 
 void SandboxLayer::OnAttach() {

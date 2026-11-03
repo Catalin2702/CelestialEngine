@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-03
 //
 
 #include <Utility/CMD/Window.hpp>
@@ -41,11 +41,11 @@ protected:
  * @brief Test default window properties with no arguments
  * @details The APIs follow the build: the first entry of CE_RENDER_BACKENDS, and the window it pairs with.
  */
-TEST_F(WindowCMDTest, GetWindowProps_NoArguments_ReturnsDefaults) {
+TEST_F(WindowCMDTest, ParseWindowArgs_NoArguments_ReturnsDefaults) {
 	const char* argv[] = {"program"};
 	constexpr int argc = 1;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.title, "CelestialEngine");
 	EXPECT_EQ(props.width, 1280);
@@ -58,7 +58,7 @@ TEST_F(WindowCMDTest, GetWindowProps_NoArguments_ReturnsDefaults) {
 /**
  * @brief Test title argument with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_TitleLongForm_SetsTitle) {
+TEST_F(WindowCMDTest, ParseWindowArgs_TitleLongForm_SetsTitle) {
 	const char* argv[] = {
 		"program",
 		"--title",
@@ -66,7 +66,7 @@ TEST_F(WindowCMDTest, GetWindowProps_TitleLongForm_SetsTitle) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.title, "MyWindow");
 }
@@ -74,7 +74,7 @@ TEST_F(WindowCMDTest, GetWindowProps_TitleLongForm_SetsTitle) {
 /**
  * @brief Test title argument with short form
  */
-TEST_F(WindowCMDTest, GetWindowProps_TitleShortForm_SetsTitle) {
+TEST_F(WindowCMDTest, ParseWindowArgs_TitleShortForm_SetsTitle) {
 	const char* argv[] = {
 		"program",
 		"-t",
@@ -82,7 +82,7 @@ TEST_F(WindowCMDTest, GetWindowProps_TitleShortForm_SetsTitle) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.title, "GameEngine");
 }
@@ -90,7 +90,7 @@ TEST_F(WindowCMDTest, GetWindowProps_TitleShortForm_SetsTitle) {
 /**
  * @brief Test width argument with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_WidthLongForm_SetsWidth) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WidthLongForm_SetsWidth) {
 	const char* argv[] = {
 		"program",
 		"--width",
@@ -98,7 +98,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WidthLongForm_SetsWidth) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.width, 1920);
 }
@@ -106,7 +106,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WidthLongForm_SetsWidth) {
 /**
  * @brief Test width argument with short form
  */
-TEST_F(WindowCMDTest, GetWindowProps_WidthShortForm_SetsWidth) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WidthShortForm_SetsWidth) {
 	const char* argv[] = {
 		"program",
 		"-w",
@@ -114,7 +114,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WidthShortForm_SetsWidth) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.width, 2560);
 }
@@ -122,7 +122,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WidthShortForm_SetsWidth) {
 /**
  * @brief Test height argument with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_HeightLongForm_SetsHeight) {
+TEST_F(WindowCMDTest, ParseWindowArgs_HeightLongForm_SetsHeight) {
 	const char* argv[] = {
 		"program",
 		"--height",
@@ -130,7 +130,7 @@ TEST_F(WindowCMDTest, GetWindowProps_HeightLongForm_SetsHeight) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.height, 1080);
 }
@@ -138,7 +138,7 @@ TEST_F(WindowCMDTest, GetWindowProps_HeightLongForm_SetsHeight) {
 /**
  * @brief Test height argument with short form
  */
-TEST_F(WindowCMDTest, GetWindowProps_HeightShortForm_SetsHeight) {
+TEST_F(WindowCMDTest, ParseWindowArgs_HeightShortForm_SetsHeight) {
 	const char* argv[] = {
 		"program",
 		"-h",
@@ -146,7 +146,7 @@ TEST_F(WindowCMDTest, GetWindowProps_HeightShortForm_SetsHeight) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.height, 1440);
 }
@@ -154,7 +154,7 @@ TEST_F(WindowCMDTest, GetWindowProps_HeightShortForm_SetsHeight) {
 /**
  * @brief Test VSync true with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_VSyncTrueLongForm_EnablesVSync) {
+TEST_F(WindowCMDTest, ParseWindowArgs_VSyncTrueLongForm_EnablesVSync) {
 	const char* argv[] = {
 		"program",
 		"--vsync",
@@ -162,7 +162,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncTrueLongForm_EnablesVSync) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_TRUE(props.VSync);
 }
@@ -170,7 +170,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncTrueLongForm_EnablesVSync) {
 /**
  * @brief Test VSync false with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_VSyncFalseLongForm_DisablesVSync) {
+TEST_F(WindowCMDTest, ParseWindowArgs_VSyncFalseLongForm_DisablesVSync) {
 	const char* argv[] = {
 		"program",
 		"--vsync",
@@ -178,7 +178,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncFalseLongForm_DisablesVSync) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_FALSE(props.VSync);
 }
@@ -186,7 +186,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncFalseLongForm_DisablesVSync) {
 /**
  * @brief Test VSync with numeric value 1
  */
-TEST_F(WindowCMDTest, GetWindowProps_VSyncOne_EnablesVSync) {
+TEST_F(WindowCMDTest, ParseWindowArgs_VSyncOne_EnablesVSync) {
 	const char* argv[] = {
 		"program",
 		"-v",
@@ -194,7 +194,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncOne_EnablesVSync) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_TRUE(props.VSync);
 }
@@ -202,7 +202,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncOne_EnablesVSync) {
 /**
  * @brief Test VSync with numeric value 0
  */
-TEST_F(WindowCMDTest, GetWindowProps_VSyncZero_DisablesVSync) {
+TEST_F(WindowCMDTest, ParseWindowArgs_VSyncZero_DisablesVSync) {
 	const char* argv[] = {
 		"program",
 		"-v",
@@ -210,7 +210,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncZero_DisablesVSync) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_FALSE(props.VSync);
 }
@@ -218,7 +218,7 @@ TEST_F(WindowCMDTest, GetWindowProps_VSyncZero_DisablesVSync) {
 /**
  * @brief Test graphics API OpenGL
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiOpenGL_SetsOpenGL) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiOpenGL_SetsOpenGL) {
 	const char* argv[] = {
 		"program",
 		"--graphics-api",
@@ -226,7 +226,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiOpenGL_SetsOpenGL) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::OpenGL);
 }
@@ -234,7 +234,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiOpenGL_SetsOpenGL) {
 /**
  * @brief Test graphics API Metal
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiMetal_SetsMetal) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiMetal_SetsMetal) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -242,7 +242,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiMetal_SetsMetal) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::Metal);
 }
@@ -250,7 +250,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiMetal_SetsMetal) {
 /**
  * @brief Test graphics API Vulkan
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiVulkan_SetsVulkan) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiVulkan_SetsVulkan) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -258,7 +258,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiVulkan_SetsVulkan) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::Vulkan);
 }
@@ -266,7 +266,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiVulkan_SetsVulkan) {
 /**
  * @brief Test graphics API DirectX11 with full name
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX11_SetsDirectX11) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiDirectX11_SetsDirectX11) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -274,7 +274,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX11_SetsDirectX11) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::DirectX11);
 }
@@ -282,7 +282,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX11_SetsDirectX11) {
 /**
  * @brief Test graphics API DirectX11 with dx11 alias
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDX11_SetsDirectX11) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiDX11_SetsDirectX11) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -290,7 +290,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDX11_SetsDirectX11) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::DirectX11);
 }
@@ -298,7 +298,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDX11_SetsDirectX11) {
 /**
  * @brief Test graphics API DirectX11 with d3d11 alias
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiD3D11_SetsDirectX11) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiD3D11_SetsDirectX11) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -306,7 +306,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiD3D11_SetsDirectX11) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::DirectX11);
 }
@@ -314,7 +314,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiD3D11_SetsDirectX11) {
 /**
  * @brief Test graphics API DirectX12
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX12_SetsDirectX12) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiDirectX12_SetsDirectX12) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -322,7 +322,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX12_SetsDirectX12) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::DirectX12);
 }
@@ -330,7 +330,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiDirectX12_SetsDirectX12) {
 /**
  * @brief Test graphics API with unsupported value defaults to the build's default API
  */
-TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToTheBuildDefault) {
+TEST_F(WindowCMDTest, ParseWindowArgs_GraphicsApiUnsupported_DefaultsToTheBuildDefault) {
 	const char* argv[] = {
 		"program",
 		"-g",
@@ -338,7 +338,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToTheBuildDe
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.graphicsApi, GetDefaultGraphicsApi());
 }
@@ -346,7 +346,7 @@ TEST_F(WindowCMDTest, GetWindowProps_GraphicsApiUnsupported_DefaultsToTheBuildDe
 /**
  * @brief Test window API GLFW with long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWLongForm_SetsGLFW) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiGLFWLongForm_SetsGLFW) {
 	const char* argv[] = {
 		"program",
 		"--window-api",
@@ -354,7 +354,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWLongForm_SetsGLFW) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
 }
@@ -362,7 +362,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWLongForm_SetsGLFW) {
 /**
  * @brief Test window API GLFW with short form
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWShortForm_SetsGLFW) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiGLFWShortForm_SetsGLFW) {
 	const char* argv[] = {
 		"program",
 		"-wa",
@@ -370,7 +370,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWShortForm_SetsGLFW) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
 }
@@ -378,7 +378,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiGLFWShortForm_SetsGLFW) {
 /**
  * @brief Test window API Win32
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiWin32_SetsWin32) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiWin32_SetsWin32) {
 	const char* argv[] = {
 		"program",
 		"--window-api",
@@ -386,7 +386,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiWin32_SetsWin32) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::Win32);
 }
@@ -394,7 +394,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiWin32_SetsWin32) {
 /**
  * @brief Test window API X11
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiX11_SetsX11) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiX11_SetsX11) {
 	const char* argv[] = {
 		"program",
 		"-wa",
@@ -402,7 +402,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiX11_SetsX11) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::X11);
 }
@@ -410,7 +410,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiX11_SetsX11) {
 /**
  * @brief Test window API Cocoa
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiCocoa_SetsCocoa) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiCocoa_SetsCocoa) {
 	const char* argv[] = {
 		"program",
 		"-wa",
@@ -418,7 +418,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiCocoa_SetsCocoa) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::Cocoa);
 }
@@ -426,7 +426,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiCocoa_SetsCocoa) {
 /**
  * @brief Test window API with unsupported value defaults to the window the graphics API pairs with
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToTheGraphicsApisWindow) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiUnsupported_DefaultsToTheGraphicsApisWindow) {
 	const char* argv[] = {
 		"program",
 		"-wa",
@@ -434,7 +434,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToTheGraphicsA
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, GetDefaultWindowApi(props.graphicsApi));
 }
@@ -442,21 +442,21 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiUnsupported_DefaultsToTheGraphicsA
 /**
  * @brief Test that without -wa the window follows the graphics API asked for, wherever -g appears
  */
-TEST_F(WindowCMDTest, GetWindowProps_NoWindowApi_FollowsTheGraphicsApi) {
+TEST_F(WindowCMDTest, ParseWindowArgs_NoWindowApi_FollowsTheGraphicsApi) {
 	const char* metal[] = {"program", "-g", "metal"};
 	const char* opengl[] = {"program", "-g", "opengl"};
 
-	EXPECT_EQ(GetWindowProps(3, metal).windowApi, WindowApi::Cocoa);
-	EXPECT_EQ(GetWindowProps(3, opengl).windowApi, WindowApi::GLFW);
+	EXPECT_EQ(ParseWindowArgs(3, metal).windowApi, WindowApi::Cocoa);
+	EXPECT_EQ(ParseWindowArgs(3, opengl).windowApi, WindowApi::GLFW);
 }
 
 /**
  * @brief Test that an explicit -wa wins over the pairing, even when it comes before -g
  */
-TEST_F(WindowCMDTest, GetWindowProps_ExplicitWindowApi_WinsOverThePairing) {
+TEST_F(WindowCMDTest, ParseWindowArgs_ExplicitWindowApi_WinsOverThePairing) {
 	const char* argv[] = {"program", "-wa", "glfw", "-g", "metal"};
 
-	const WindowProps props = GetWindowProps(5, argv);
+	const WindowProps props = ParseWindowArgs(5, argv);
 
 	EXPECT_EQ(props.graphicsApi, GraphicsApi::Metal);
 	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
@@ -465,7 +465,7 @@ TEST_F(WindowCMDTest, GetWindowProps_ExplicitWindowApi_WinsOverThePairing) {
 /**
  * @brief Test window API case insensitivity
  */
-TEST_F(WindowCMDTest, GetWindowProps_WindowApiUppercase_ParsesCorrectly) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiUppercase_ParsesCorrectly) {
 	const char* argv[] = {
 		"program",
 		"--window-api",
@@ -473,7 +473,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiUppercase_ParsesCorrectly) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.windowApi, WindowApi::GLFW);
 }
@@ -481,7 +481,7 @@ TEST_F(WindowCMDTest, GetWindowProps_WindowApiUppercase_ParsesCorrectly) {
 /**
  * @brief Test multiple arguments combined
  */
-TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
+TEST_F(WindowCMDTest, ParseWindowArgs_MultipleArguments_SetsAllProperties) {
 	const char* argv[] = {
 		"program",
 		"--title",
@@ -499,7 +499,7 @@ TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
 	};
 	constexpr int argc = 13;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.title, "TestWindow");
 	EXPECT_EQ(props.width, 1920);
@@ -512,7 +512,7 @@ TEST_F(WindowCMDTest, GetWindowProps_MultipleArguments_SetsAllProperties) {
 /**
  * @brief Test case insensitivity for arguments
  */
-TEST_F(WindowCMDTest, GetWindowProps_UppercaseArguments_ParsesCorrectly) {
+TEST_F(WindowCMDTest, ParseWindowArgs_UppercaseArguments_ParsesCorrectly) {
 	const char* argv[] = {
 		"program",
 		"--TITLE",
@@ -522,7 +522,7 @@ TEST_F(WindowCMDTest, GetWindowProps_UppercaseArguments_ParsesCorrectly) {
 	};
 	constexpr int argc = 5;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.title, "UpperCase");
 	EXPECT_EQ(props.width, 800);
@@ -531,7 +531,7 @@ TEST_F(WindowCMDTest, GetWindowProps_UppercaseArguments_ParsesCorrectly) {
 /**
  * @brief Test invalid width throws exception
  */
-TEST_F(WindowCMDTest, GetWindowProps_InvalidWidth_ThrowsException) {
+TEST_F(WindowCMDTest, ParseWindowArgs_InvalidWidth_ThrowsException) {
 	const char* argv[] = {
 		"program",
 		"--width",
@@ -539,13 +539,13 @@ TEST_F(WindowCMDTest, GetWindowProps_InvalidWidth_ThrowsException) {
 	};
 	constexpr int argc = 3;
 
-	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
+	EXPECT_THROW((void)ParseWindowArgs(argc, argv), std::runtime_error);
 }
 
 /**
  * @brief Test invalid height throws exception
  */
-TEST_F(WindowCMDTest, GetWindowProps_InvalidHeight_ThrowsException) {
+TEST_F(WindowCMDTest, ParseWindowArgs_InvalidHeight_ThrowsException) {
 	const char* argv[] = {
 		"program",
 		"--height",
@@ -553,13 +553,13 @@ TEST_F(WindowCMDTest, GetWindowProps_InvalidHeight_ThrowsException) {
 	};
 	constexpr int argc = 3;
 
-	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
+	EXPECT_THROW((void)ParseWindowArgs(argc, argv), std::runtime_error);
 }
 
 /**
  * @brief Test width out of range throws exception
  */
-TEST_F(WindowCMDTest, GetWindowProps_WidthOutOfRange_ThrowsException) {
+TEST_F(WindowCMDTest, ParseWindowArgs_WidthOutOfRange_ThrowsException) {
 	const char* argv[] = {
 		"program",
 		"--width",
@@ -567,20 +567,20 @@ TEST_F(WindowCMDTest, GetWindowProps_WidthOutOfRange_ThrowsException) {
 	};
 	constexpr int argc = 3;
 
-	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
+	EXPECT_THROW((void)ParseWindowArgs(argc, argv), std::runtime_error);
 }
 
 /**
  * @brief Test missing value for argument uses defaults
  */
-TEST_F(WindowCMDTest, GetWindowProps_MissingValue_UsesDefaults) {
+TEST_F(WindowCMDTest, ParseWindowArgs_MissingValue_UsesDefaults) {
 	const char* argv[] = {
 		"program",
 		"--width"
 	};
 	constexpr int argc = 2;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.width, 1280); // Should use default
 }
@@ -588,7 +588,7 @@ TEST_F(WindowCMDTest, GetWindowProps_MissingValue_UsesDefaults) {
 /**
  * @brief Test unrecognized arguments are ignored
  */
-TEST_F(WindowCMDTest, GetWindowProps_UnrecognizedArguments_Ignored) {
+TEST_F(WindowCMDTest, ParseWindowArgs_UnrecognizedArguments_Ignored) {
 	const char* argv[] = {
 		"program",
 		"--unknown",
@@ -598,7 +598,7 @@ TEST_F(WindowCMDTest, GetWindowProps_UnrecognizedArguments_Ignored) {
 	};
 	constexpr int argc = 5;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.width, 1024);
 }
@@ -610,11 +610,11 @@ TEST_F(WindowCMDTest, GetWindowProps_UnrecognizedArguments_Ignored) {
 /**
  * @brief Test that the refresh rate defaults to 0 (uncapped)
  */
-TEST_F(WindowCMDTest, GetWindowProps_NoRefreshArgument_DefaultsToUncapped) {
+TEST_F(WindowCMDTest, ParseWindowArgs_NoRefreshArgument_DefaultsToUncapped) {
 	const char* argv[] = {"program"};
 	constexpr int argc = 1;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.refreshRate, 0);
 }
@@ -622,7 +622,7 @@ TEST_F(WindowCMDTest, GetWindowProps_NoRefreshArgument_DefaultsToUncapped) {
 /**
  * @brief Test the refresh rate argument in long form
  */
-TEST_F(WindowCMDTest, GetWindowProps_RefreshLongForm_SetsRefreshRate) {
+TEST_F(WindowCMDTest, ParseWindowArgs_RefreshLongForm_SetsRefreshRate) {
 	const char* argv[] = {
 		"program",
 		"--refresh",
@@ -630,7 +630,7 @@ TEST_F(WindowCMDTest, GetWindowProps_RefreshLongForm_SetsRefreshRate) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.refreshRate, 144);
 }
@@ -638,7 +638,7 @@ TEST_F(WindowCMDTest, GetWindowProps_RefreshLongForm_SetsRefreshRate) {
 /**
  * @brief Test the refresh rate argument in short form
  */
-TEST_F(WindowCMDTest, GetWindowProps_RefreshShortForm_SetsRefreshRate) {
+TEST_F(WindowCMDTest, ParseWindowArgs_RefreshShortForm_SetsRefreshRate) {
 	const char* argv[] = {
 		"program",
 		"-r",
@@ -646,7 +646,7 @@ TEST_F(WindowCMDTest, GetWindowProps_RefreshShortForm_SetsRefreshRate) {
 	};
 	constexpr int argc = 3;
 
-	const WindowProps props = GetWindowProps(argc, argv);
+	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.refreshRate, 60);
 }
@@ -654,7 +654,7 @@ TEST_F(WindowCMDTest, GetWindowProps_RefreshShortForm_SetsRefreshRate) {
 /**
  * @brief Test that an invalid refresh rate throws
  */
-TEST_F(WindowCMDTest, GetWindowProps_InvalidRefresh_ThrowsException) {
+TEST_F(WindowCMDTest, ParseWindowArgs_InvalidRefresh_ThrowsException) {
 	const char* argv[] = {
 		"program",
 		"--refresh",
@@ -662,7 +662,7 @@ TEST_F(WindowCMDTest, GetWindowProps_InvalidRefresh_ThrowsException) {
 	};
 	constexpr int argc = 3;
 
-	EXPECT_THROW(GetWindowProps(argc, argv), std::runtime_error);
+	EXPECT_THROW((void)ParseWindowArgs(argc, argv), std::runtime_error);
 }
 
 // ============================================================================
@@ -685,7 +685,7 @@ WindowProps PropsFor(const GraphicsApi graphicsApi, const WindowApi windowApi) {
 TEST_F(WindowCMDTest, ValidateWindowProps_BuildDefaults_Pass) {
 	const char* argv[] = {"program"};
 
-	EXPECT_NO_THROW(ValidateWindowProps(GetWindowProps(1, argv)));
+	EXPECT_NO_THROW(ValidateWindowProps(ParseWindowArgs(1, argv)));
 }
 
 /**

@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 set(HEADERS
 	# CMD
+	src/include/Utility/CMD/CommandLine.hpp
 	src/include/Utility/CMD/Window.hpp
 
 	# Config
@@ -40,6 +41,7 @@ set(HEADERS
 
 set(SOURCES
 	# CMD
+	src/source/Utility/CMD/CommandLine.cpp
 	src/source/Utility/CMD/Window.cpp
 
 	# Config

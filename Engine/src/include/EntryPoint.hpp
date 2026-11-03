@@ -79,14 +79,10 @@ int main(const int argc, const char* argv[]) {
 #if CE_DEBUG
 		CE::Utility::Chronometer chronometer;
 #endif
-		const auto windowProps = CE::Utility::GetWindowProps(argc, argv);
-
-		// Before anything is built from them: a backend this build was configured without (CE_RENDER_BACKENDS), or a
-		// graphics/window pair that cannot work together, is reported here with the list of what is available.
-		CE::Utility::ValidateWindowProps(windowProps);
-		CE::Utility::Config::SetWindowProps(windowProps);
-		CE::Utility::FileSystem::SetRootDirectory(fs::path(argv[0]).parent_path());
-		CE::Core::Application app{};
+		// Window options into Config - validated first, so a backend this build lacks (CE_RENDER_BACKENDS) is reported
+		// here with the list of what is available - and the FileSystem root from argv[0].
+		CE::Utility::InitFromCommandLine(argc, argv);
+		CE::Core::Application app{CE::CreateApplicationClient()};
 		app.InitImguiLayer();
 		app.Start();
 	}

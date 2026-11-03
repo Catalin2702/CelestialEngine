@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-29
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 enable_testing()
@@ -12,6 +12,7 @@ enable_testing()
 set(SOURCES
 	src/UtilityHeadersTests.cpp
 
+	src/CMD/CommandLineTests.cpp
 	src/CMD/WindowCMDTests.cpp
 	src/Config/ConfigTests.cpp
 	src/Delegate/DelegateTests.cpp

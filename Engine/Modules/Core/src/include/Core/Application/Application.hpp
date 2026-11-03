@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-03
 //
 
 #pragma once
@@ -23,15 +23,12 @@
 
 namespace CE::Core {
 
+class I_ApplicationClient;
 class I_ImGuiLayer;
-class I_IndexBuffer;
-class I_PipelineState;
 class I_Platform;
 class I_Renderer;
 class I_RunLoop;
-class I_VertexBuffer;
 class I_Window;
-class SceneLayer;
 
 /**
  * @class Application
@@ -58,7 +55,13 @@ class CE_CORE_API Application {
 	};
 
 public:
-	Application();
+	/**
+	 * @brief Builds the application around the client that gives it its content
+	 * @param client What this executable adds to the engine; must not be null. Owned from here on
+	 * @details Reads the client's ApplicationSpecification here, the one moment before anything depends on it. The
+	 *			client's OnInit waits for the platform to be ready, like the window and the renderer it needs.
+	 */
+	explicit Application(std::unique_ptr<I_ApplicationClient> client);
 
 	Application(const Application&) = delete;
 	Application(Application&&) noexcept = delete;
@@ -141,11 +144,6 @@ public:
 	[[nodiscard]] const I_Window& GetWindow() const { return *_window; }
 	[[nodiscard]] I_Window& GetWindow() { return *_window; }
 
-	/**
-	 * @brief Gets the scene layer, or null if the renderer was not up when it should have been built
-	 */
-	[[nodiscard]] std::shared_ptr<SceneLayer> GetSceneLayer() const { return _sceneLayer.lock(); }
-
 	[[nodiscard]] const I_Renderer& GetRenderer() const { return *_renderer; }
 	[[nodiscard]] I_Renderer& GetRenderer() { return *_renderer; }
 
@@ -187,15 +185,6 @@ private:
 	 */
 	void _MakeImGuiLayer();
 
-	/**
-	 * @brief Builds the scene layer and pushes it onto the stack
-	 * @details Runs once the renderer exists, because the layer publishes its camera to it every frame. The camera it
-	 *			starts with is the only pairing the engine can build today - an orthographic projection and a static
-	 *			controller are the only implementations there are - so a client that wants another calls
-	 *			GetSceneLayer().GetCameraRig() and sets it.
-	 */
-	void _MakeSceneLayer();
-
 private:
 	void _OnFrame();
 
@@ -232,9 +221,6 @@ public:
 	 */
 	void SetVSync(bool enabled) const;
 
-	/// @todo Renderer territory: an application should not know what a vertex buffer is.
-	void _CreateRenderResources();
-
 protected:
 	std::unique_ptr<I_EventHubDispatcher> _dispatcher;
 
@@ -246,26 +232,29 @@ private:
 	std::unique_ptr<I_Renderer> _renderer;
 	std::unique_ptr<I_RunLoop> _runLoop;
 
-	/// @todo Renderer territory: an application should not know what a vertex buffer is.
-	std::shared_ptr<I_PipelineState> _pipeline;
-	std::shared_ptr<I_VertexBuffer> _vertexBuffer;
-	std::shared_ptr<I_IndexBuffer> _indexBuffer;
+	/// @brief The executable's own content, behind the one interface the engine knows it by.
+	/// @details Declared after _renderer on purpose: members are destroyed in reverse order, so the client - and anything
+	///			 it might still hold - goes before the device that created it.
+	std::unique_ptr<I_ApplicationClient> _client;
 
 	std::weak_ptr<I_ImGuiLayer> _imguiLayer;
-	std::weak_ptr<SceneLayer> _sceneLayer;
 
 	std::array<u32, _EventHubSubscriptionCount> _eventHubHandlers{};	///< Hub subscription tokens, indexed by the enum above
+
+	mutable std::atomic<TimePoint> _lastFrameTime = Clock::now(); ///< Timestamp of the last frame for delta time calculation
+	LayerStack _layerStack; ///< Stack of layers and overlays
+
+	/// @brief Set by InitImguiLayer when it is called before the renderer exists - the normal case, since the
+	///		   constructor asks for the overlay (when the client's specification wants one) before the platform is up.
+	bool _imguiLayerRequested = false;
+
+	/// @brief True between the client's OnInit and its OnShutdown, so OnShutdown runs once, and only after an OnInit.
+	bool _clientInitialized = false;
 
 	/// @brief True once End() has torn the application down, so a second call does nothing.
 	/// @details Not derived from the run loop: End() runs precisely because the loop has already stopped, so asking
 	///			 the loop whether it is running would make the first call the one that gets skipped.
-	/// Set by InitImguiLayer when it is called before the renderer exists - which is the normal case, since the
-	/// entry point asks for the overlay between constructing the application and starting it.
-	bool _imguiLayerRequested = false;
-
 	bool _ended = false;
-	mutable std::atomic<TimePoint> _lastFrameTime = Clock::now(); ///< Timestamp of the last frame for delta time calculation
-	LayerStack _layerStack; ///< Stack of layers and overlays
 };
 
 }
