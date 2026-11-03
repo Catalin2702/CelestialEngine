@@ -18,9 +18,9 @@
 ├── CMakeLists.txt          # Top level: resolves the backends, includes Engine/cmake, adds the engine and the apps
 ├── CMakePresets.json       # Shared presets, one per toolchain (CMakeUserPresets.json: local variants)
 ├── Apps/
-│   └── Sandbox/            # The engine's test bed: its sources + one ce_add_application() call
+│   └── Sandbox/            # The engine's test bed: add_executable() + one ce_configure_application() call
 ├── Engine/
-│   ├── cmake/              # Build machinery: CE_Config, Binaries/ layout, ce_add_application, backend selection
+│   ├── cmake/              # Build machinery: CE_Config, Binaries/ layout, ce_configure_application, backend selection
 │   │   └── templates/      # Default Info.plist and entitlements of every application
 │   ├── Modules/            # Core, Define, Events, Native, Tools, Types, Utility
 │   ├── Shaders/            # Metal and GLSL shaders, compiled per selected backend

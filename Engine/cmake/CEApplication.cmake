@@ -4,11 +4,10 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
-# ce_add_application(<target>
-#     SOURCES <file>...                  the client's own sources (required)
+# ce_configure_application(<target>
 #     [OUTPUT_NAME <name>]               executable / bundle name, Contents/MacOS/<name> (default: <target>)
 #     [BUNDLE_NAME <name>]               CFBundleName, what Finder and the menu bar show (default: OUTPUT_NAME)
 #     [BUNDLE_ID <reverse.dns.id>]       CFBundleIdentifier (default: com.celestialengine.<output name, lowercase>)
@@ -17,13 +16,22 @@
 #     [ENTITLEMENTS <file.plist>]        default: templates/Entitlements.plist next to this file
 # )
 #
-# Everything an executable built on the engine needs, in one call, so a sandbox, an editor and a game differ only in
-# what they pass here and in their own sources:
+# Turns an executable the application already created into one built on the engine. The application keeps the plain
+# CMake part - add_executable() with its sources, target_include_directories(), any target_* of its own - so IDEs see
+# a standard target they can edit (CLion's "add to target" works on add_executable, not on a custom function's
+# arguments). This call adds what every engine executable needs, so a sandbox, an editor and a game differ only in what
+# they pass here and in their own sources:
+#
+#   add_executable(MyGame src/source/Main.cpp ...)
+#   target_include_directories(MyGame PRIVATE src/include)
+#   ce_configure_application(MyGame OUTPUT_NAME "My Game" ...)
+#
 #   - links CE_Engine (and CE_Config);
+#   - macOS: makes the target a MACOSX_BUNDLE - a self-contained .app with Info.plist (two variants, Dist without the
+#     Metal tooling keys), asset catalog, embedded module dylibs in Contents/Frameworks, ad-hoc signature with the
+#     entitlements;
 #   - bundles the shaders of every compiled-in backend (CE_RENDER_BACKENDS): as bundle resources on macOS, copied into
 #     Resources/Shaders/<API>/ next to the executable elsewhere;
-#   - macOS: a self-contained .app - Info.plist (two variants, Dist without the Metal tooling keys), asset catalog,
-#     embedded module dylibs in Contents/Frameworks, ad-hoc signature with the entitlements;
 #   - Windows/Linux: DLL/ search path for the module libraries;
 #   - delivery to Binaries/<toolchain>/<config>/ and, with CE_COPY_LAST, to Binaries/Last/.
 #
@@ -32,18 +40,28 @@
 
 set(CE_APPLICATION_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/templates")
 
-function(ce_add_application target)
+function(ce_configure_application target)
 	cmake_parse_arguments(PARSE_ARGV 1 ARG
 		""
 		"OUTPUT_NAME;BUNDLE_NAME;BUNDLE_ID;ASSET_CATALOG;INFO_PLIST;ENTITLEMENTS"
-		"SOURCES"
+		""
 	)
 
 	if (ARG_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "ce_add_application(${target}): unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
+		message(FATAL_ERROR "ce_configure_application(${target}): unknown arguments: ${ARG_UNPARSED_ARGUMENTS}")
 	endif ()
-	if (NOT ARG_SOURCES)
-		message(FATAL_ERROR "ce_add_application(${target}): SOURCES is required")
+	if (NOT TARGET ${target})
+		message(FATAL_ERROR "ce_configure_application(${target}): no such target - create it first with add_executable()")
+	endif ()
+	get_target_property(_ce_target_type ${target} TYPE)
+	if (NOT _ce_target_type STREQUAL "EXECUTABLE")
+		message(FATAL_ERROR "ce_configure_application(${target}): is a ${_ce_target_type}, expected an add_executable() target")
+	endif ()
+	# Source file properties (MACOSX_PACKAGE_LOCATION on the shaders, below) are scoped to a directory: they are set in
+	# the calling directory, so the target has to live there too or the bundle silently loses its shaders.
+	get_target_property(_ce_target_dir ${target} SOURCE_DIR)
+	if (NOT _ce_target_dir STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+		message(FATAL_ERROR "ce_configure_application(${target}): call it from the CMakeLists.txt that creates the target (${_ce_target_dir})")
 	endif ()
 
 	# The name of the produced binary (Contents/MacOS/<name> inside the bundle). Kept in ONE place because Info.plist's
@@ -104,14 +122,14 @@ function(ce_add_application target)
 		list(APPEND _ce_shader_targets CE_OpenGLShaders)
 	endif ()
 
+	# On macOS the executable becomes a bundle, and the shaders become its resources (MACOSX_PACKAGE_LOCATION above).
+	# MACOSX_BUNDLE is a target property, so setting it after add_executable() is the same as passing it there.
 	if (APPLE)
-		add_executable(${target} MACOSX_BUNDLE
-			${ARG_SOURCES}
-			${_ce_shader_resources}
+		set_target_properties(${target} PROPERTIES
+			MACOSX_BUNDLE TRUE
 		)
-	else ()
-		add_executable(${target}
-			${ARG_SOURCES}
+		target_sources(${target} PRIVATE
+			${_ce_shader_resources}
 		)
 	endif ()
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	Default Info.plist of every application made with ce_add_application (Engine/cmake/CEApplication.cmake);
+	Default Info.plist of every application configured with ce_configure_application (Engine/cmake/CEApplication.cmake);
 	pass INFO_PLIST to use another. It is configured with @ONLY, from the CE_APP_OUTPUT_NAME, CE_APP_BUNDLE_NAME,
 	CE_APP_BUNDLE_ID, PROJECT_VERSION and CE_APP_METAL_TOOLING_KEYS variables that function sets.
 -->

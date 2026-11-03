@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-03
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -45,12 +45,12 @@ project(CelestialEngine LANGUAGES CXX VERSION 0.1.3)
 
 enable_testing()
 
-# The engine's build machinery - CE_Config, the Binaries/ layout, the module helpers, ce_add_application - included here,
+# The engine's build machinery - CE_Config, the Binaries/ layout, the module helpers, ce_configure_application - included here,
 # at the top, so that both the engine and the applications next to it see the same variables.
 include("${CMAKE_CURRENT_LIST_DIR}/Engine/cmake/CelestialEngineMacros.cmake")
 
 # The engine: its modules, vendors, shaders and - with CE_BUILD_TESTS, ON by default - its tests.
 add_subdirectory(Engine)
 
-# The applications built on it. Each is self-contained: a directory with its sources and one ce_add_application() call.
+# The applications built on it. Each is self-contained: a directory with add_executable() and one ce_configure_application() call.
 add_subdirectory(Apps/Sandbox)

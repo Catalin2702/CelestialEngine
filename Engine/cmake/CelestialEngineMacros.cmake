@@ -8,14 +8,14 @@
 #
 
 # The engine's build entry point: CE_Config and CE_Internal, the output layout (Binaries/, Out/, Modules/), the module
-# helpers below and, through CEApplication.cmake, ce_add_application. Include it ONCE, from the top-level CMakeLists.txt
+# helpers below and, through CEApplication.cmake, ce_configure_application. Include it ONCE, from the top-level CMakeLists.txt
 # after project() and before add_subdirectory() of the engine and of the applications, so its variables reach both:
 #
 #   include(<engine>/cmake/CERenderBackends.cmake)      # before project(), see that file
 #   project(MyGame LANGUAGES CXX)
 #   include(<engine>/cmake/CelestialEngineMacros.cmake)
 #   add_subdirectory(<engine>)
-#   add_subdirectory(<my application>)                  # calls ce_add_application()
+#   add_subdirectory(<my application>)                  # add_executable() + ce_configure_application()
 #
 # Engine/CMakeLists.txt includes it too, for a project that only adds the engine directory - the include guard makes
 # that second inclusion free. Paths inside the engine are taken from CE_ENGINE_ROOT_DIR, never from CMAKE_SOURCE_DIR,
@@ -577,5 +577,5 @@ function(ce_bundle_apple_frameworks TARGET_NAME)
 	endforeach ()
 endfunction()
 
-# ce_add_application(), the one call an executable built on the engine needs
+# ce_configure_application(), the one call an executable built on the engine needs after add_executable()
 include("${CMAKE_CURRENT_LIST_DIR}/CEApplication.cmake")
