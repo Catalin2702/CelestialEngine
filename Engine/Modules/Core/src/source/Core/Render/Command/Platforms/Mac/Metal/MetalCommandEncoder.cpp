@@ -4,14 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-08
 //
 
-#include "Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
-#include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
-#include "Core/Render/Command/Viewport.hpp"
-#include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
-#include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
+#include "Core/Render/Render.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -25,7 +21,8 @@ namespace {
 constexpr u32 U32_SIZE = sizeof(u32);
 }
 
-MetalCommandEncoder::MetalCommandEncoder(MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor):
+MetalCommandEncoder::MetalCommandEncoder(MetalGraphicDevice& graphicDevice, MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor):
+	_graphicDevice(&graphicDevice),
 	_nativeCommandBuffer(nativeCommandBuffer)
 {
 	if (not _nativeCommandBuffer or not nativePassDescriptor) [[unlikely]] {
@@ -146,15 +143,28 @@ void MetalCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& te
 void MetalCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
 	assert(not _ended and "MetalCommandEncoder::SetVertexConstants: The pass has already been ended!");
 	assert(slot != Types::METAL_VERTEX_BUFFER_INDEX and "MetalCommandEncoder::SetVertexConstants: The slot is the one the geometry is bound to!");
-	assert(data.size() <= 4096 and "MetalCommandEncoder::SetVertexConstants: setVertexBytes takes at most 4 KB; larger blocks need a buffer!");
 
+	// Copied into this frame's slice and bound by offset. The GPU reads the bytes as they are now: a later call - the
+	// next draw's transform, or the next frame - writes somewhere else in the ring, never over these.
+	if (const auto [nativeBuffer, offset] = _graphicDevice->AllocateFrameConstants(data); nativeBuffer) [[likely]] {
+		_nativeCommandEncoder->setVertexBuffer(nativeBuffer, offset, slot);
+		return;
+	}
+
+	assert(data.size() <= 4096 and "MetalCommandEncoder::SetVertexConstants: The ring is full and setVertexBytes takes at most 4KB!");
 	_nativeCommandEncoder->setVertexBytes(data.data(), data.size(), slot);
 }
 
 void MetalCommandEncoder::SetFragmentConstants(const u32 slot, const std::span<const std::byte> data) {
 	assert(not _ended and "MetalCommandEncoder::SetFragmentConstants: The pass has already been ended!");
-	assert(data.size() <= 4096 and "MetalCommandEncoder::SetFragmentConstants: setFragmentBytes takes at most 4 KB; larger blocks need a buffer!");
 
+	// Same as the vertex stage: the fragment stage has its own table of buffer slots, so no slot is shared with the
+	// geometry and there is nothing to check against.
+	if (const auto [nativeBuffer, offset] = _graphicDevice->AllocateFrameConstants(data); nativeBuffer) [[likely]] {
+		_nativeCommandEncoder->setFragmentBuffer(nativeBuffer, offset, slot);
+	}
+
+	assert(data.size() <= 4096 and "MetalCommandEncoder::SetFragmentConstants: The ring is full and setFragmentBytes takes at most 4 KB!");
 	_nativeCommandEncoder->setFragmentBytes(data.data(), data.size(), slot);
 }
 

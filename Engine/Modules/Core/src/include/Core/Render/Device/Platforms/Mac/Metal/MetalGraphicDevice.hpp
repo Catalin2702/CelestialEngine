@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-08
 //
 
 #pragma once
@@ -19,12 +19,18 @@
 
 #include <Foundation/Foundation.hpp>
 
+#include <array>
+#include <cstddef>
+#include <memory>
+#include <semaphore>
+
 
 namespace CA {
 	class MetalDrawable;
 }
 
 namespace MTL {
+	class Buffer;
 	class CommandBuffer;
 	class CommandQueue;
 	class Device;
@@ -34,12 +40,45 @@ namespace MTL {
 namespace CE::Core {
 
 /**
+ * @struct MetalConstantAllocation
+ * @brief Where a block of constants landed in the frame's ring: the buffer to bind, and the offset to bind it at
+ * @details A null buffer means the frame's slice is full, and the caller has to carry the block some other way.
+ */
+struct MetalConstantAllocation {
+	MTL::Buffer* buffer = nullptr; ///< Borrowed; owned by the device's ring
+	size_t offset = 0; ///< In bytes, a multiple of MetalGraphicDevice::CONSTANT_OFFSET_ALIGNMENT
+};
+
+/**
  * @class MetalGraphicDevice
  * @brief The Metal device, its queue and its shader library - everything a resource is created from
  * @details Owns what outlives a frame; owns nothing that belongs to one. The drawable a frame renders into comes from
  *			the swapchain, and is published here through SetFrameTarget for the duration of that frame.
  */
 class CE_CORE_API MetalGraphicDevice final: public I_GraphicDeviceBase<Types::GraphicsApi::Metal> {
+public:
+	/**
+	 * @brief How many frames the CPU may hand to the GPU before it has to wait for the oldest one to finish
+	 * @details Three, the same count CAMetalLayer rotates its drawables through by default. One fewer and the GPU
+	 *			goes idle whenever a frame runs long on the CPU; one more buys no throughput once the GPU is the
+	 *			bottleneck, only another frame of latency between an input and the pixels that answer it.
+	 */
+	static constexpr u32 MAX_FRAMES_IN_FLIGHT = 3;
+
+	/**
+	 * @brief Bytes of constants one frame can write into its slice of the ring
+	 * @details 256 KB is about a thousand blocks at one aligned block each. A frame that needs more falls back to
+	 *			inline bytes instead of failing, so this is a ceiling on performance, not on correctness.
+	 */
+	static constexpr size_t FRAME_CONSTANTS_CAPACITY = 256 * 1024;
+
+	/**
+	 * @brief The alignment Metal asks of an offset into a buffer bound to the constant address space
+	 * @details 256 bytes on macOS, against 4 on iOS. Every block costs at least this much of the slice, which is
+	 *			why a 64-byte matrix takes 256: the rest is padding Metal requires, not waste we chose.
+	 */
+	static constexpr size_t CONSTANT_OFFSET_ALIGNMENT = 256;
+
 public:
 	/**
 	 * @brief Creates the system default device, its command queue and loads the bundled .metallib
@@ -53,9 +92,11 @@ public:
 	MetalGraphicDevice(MetalGraphicDevice&& other) noexcept = default;
 
 	/**
-	 * @brief Implemented by default in the .cpp file because of the forward declarations
-	 * @details Implemented by default in the .cpp file because otherwise the destructor calls made by `NS::SharedPtr`
-	 *			for the forward declared classes would cause the linker to fail.
+	 * @brief Waits until the GPU has finished every frame in flight, then releases the device
+	 * @details In the .cpp file for two reasons. The old one: `NS::SharedPtr` destroys the forward declared classes,
+	 *			and only the .cpp sees them complete. The new one is the wait: every command buffer in flight has a
+	 *			completion handler holding the address of _framesInFlight, and a handler that runs after the semaphore
+	 *			is gone writes into freed memory.
 	 */
 	~MetalGraphicDevice() override;
 
@@ -102,6 +143,9 @@ public:
 	 *			does not do so between separate ones, where all that is guaranteed is the order they execute in. On a
 	 *			tile-based GPU that difference is visible: the second pass loads tiles the first has not resolved yet,
 	 *			and redraws them as it found them.
+	 *			Opening the buffer is also where the CPU is held back. With MAX_FRAMES_IN_FLIGHT frames still on the
+	 *			GPU this blocks until the oldest completes: it runs before the first byte of the frame's constants is
+	 *			written, and waiting any earlier would only stall work that touches nothing the GPU reads.
 	 */
 	[[nodiscard]] MTL::CommandBuffer* GetFrameCommandBuffer();
 
@@ -115,6 +159,15 @@ public:
 	 *			which that cannot happen.
 	 */
 	[[nodiscard]] NS::SharedPtr<MTL::CommandBuffer> TakeFrameCommandBuffer();
+
+	/**
+	 * @brief Copies a block of constants into the current frame's slice of the ring
+	 * @return MetalConstantAllocation The buffer and the offset to bind it at, or a null buffer when the slice is full
+	 * @details Valid only while the frame's command buffer is open: opening it is what waited, through the semaphore,
+	 *			for the GPU to finish the frame that used this slice last. The copy is what lets the caller change its
+	 *			own bytes right after the call, the same promise setVertexBytes makes.
+	 */
+	[[nodiscard]] MetalConstantAllocation AllocateFrameConstants(std::span<const std::byte> data);
 
 public:
 	/// Clip space runs from 0 at the near plane to 1 at the far one here; the projection matrix has to be built for
@@ -136,6 +189,16 @@ private:
 	/// The last command buffer encoded into the frame's target, waiting for the present to be added to it. Owned only
 	/// until the swapchain takes it, which is once per frame.
 	NS::SharedPtr<MTL::CommandBuffer> _nativeFrameCommandBuffer;
+
+	/// One count per frame the GPU has not finished: taken when a frame opens its command buffer, given back by that
+	/// buffer's completion handler. Behind a pointer because every pending handler holds its address, and the address
+	/// must not change when the device is moved - std::counting_semaphore cannot be moved anyway.
+	std::unique_ptr<std::counting_semaphore<MAX_FRAMES_IN_FLIGHT>> _framesInFlight;
+
+	/// The ring: one slice per frame in flight, so the frame being encoded never writes the slice the GPU is reading
+	std::array<NS::SharedPtr<MTL::Buffer>, MAX_FRAMES_IN_FLIGHT> _frameConstantBuffers;
+	u32 _frameIndex = 0; ///< The slice the open frame writes into
+	size_t _frameConstantOffset = 0; ///< First free byte of that slice
 };
 
 }

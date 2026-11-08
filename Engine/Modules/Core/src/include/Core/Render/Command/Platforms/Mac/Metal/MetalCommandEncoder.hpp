@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-08
 //
 
 #pragma once
@@ -49,13 +49,15 @@ class MetalGraphicDevice;
 class CE_CORE_API MetalCommandEncoder final: public I_CommandEncoderBase<Types::GraphicsApi::Metal> {
 public:
 	/**
-	 * @brief Opens a command buffer on the queue and starts encoding the pass described by the descriptor
+	 * @brief Starts encoding the pass described by the descriptor into the frame's command buffer
+	 * @param graphicDevice The device whose ring the constants of this pass are copied into; it opened the pass, so it
+	 *			outlives it
 	 * @param nativeCommandBuffer The frame's command buffer, shared with every other pass of the same frame
 	 * @param nativePassDescriptor The already built MTL render pass descriptor - attachments, load and store actions
 	 * @details Throws std::runtime_error when the queue hands back no command buffer, or when the descriptor is one
 	 *			Metal will not encode against; both are fatal for the frame, not skippable.
 	 */
-	MetalCommandEncoder(MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor);
+	MetalCommandEncoder(MetalGraphicDevice& graphicDevice, MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor);
 
 	MetalCommandEncoder(const MetalCommandEncoder&) = delete;
 	MetalCommandEncoder(MetalCommandEncoder&&) noexcept = default;
@@ -110,6 +112,9 @@ public:
 	void SetFragmentConstants(u32 slot, std::span<const std::byte> data) override;
 
 private:
+	/// Borrowed; owns the ring SetVertexConstants and SetFragmentConstants copy into
+	MetalGraphicDevice* _graphicDevice = nullptr;
+
 	/// Borrowed, and shared with every other pass of this frame: the device owns it and the swapchain commits it.
 	MTL::CommandBuffer* _nativeCommandBuffer = nullptr;
 	NS::SharedPtr<MTL::RenderCommandEncoder> _nativeCommandEncoder;
