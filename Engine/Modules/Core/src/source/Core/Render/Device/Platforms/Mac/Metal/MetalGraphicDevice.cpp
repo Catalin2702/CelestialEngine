@@ -229,7 +229,7 @@ NS::SharedPtr<MTL::CommandBuffer> MetalGraphicDevice::TakeFrameCommandBuffer() {
 	return std::move(_nativeFrameCommandBuffer);
 }
 
-MetalConstantAllocation MetalGraphicDevice::AllocateFrameConstants(std::span<const std::byte> data) {
+MetalConstantAllocation MetalGraphicDevice::AllocateFrameConstants(const std::span<const std::byte> data) {
 	assert(_nativeFrameCommandBuffer and "MetalGraphicDevice::AllocateFrameConstants: No frame is open, so no slice of the ring is safe to write!");
 	assert(not data.empty() and "MetalGraphicDevice::AllocateFrameConstants: There are no constants to copy!");
 
