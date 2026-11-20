@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -63,9 +63,9 @@ public:
 	static void SetWindowProps(Types::WindowProps windowProps);
 
 private:
-	static std::atomic<Config*> _instance;		///< Singleton instance (atomic for thread-safe first access)
+	static std::atomic<Config*> _instance;  ///< Singleton instance (atomic for thread-safe first access)
 
-	Types::WindowProps _windowProps;				///< Stored window configuration
+	Types::WindowProps _windowProps;    ///< Stored window configuration
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -27,9 +27,9 @@
  *				// ...
  *			};
  */
-#define EVENT_CLASS_TYPE(type)\
-	static CE::Events::EventType GetStaticType() { return CE::Events::EventType::type; }\
-	virtual CE::Events::EventType GetEventType() const override { return GetStaticType(); }\
+#define EVENT_CLASS_TYPE(type)                                                              \
+	static CE::Events::EventType GetStaticType() { return CE::Events::EventType::type; }    \
+	virtual CE::Events::EventType GetEventType() const override { return GetStaticType(); } \
 	inline virtual const char* GetName() const override { return #type; }
 
 /**
@@ -45,7 +45,7 @@
  *				// ...
  *			};
  */
-#define EVENT_CLASS_CATEGORY(category)\
-	virtual EventCategory GetCategoryFlags() const override {return category; }
+#define EVENT_CLASS_CATEGORY(category) \
+	virtual EventCategory GetCategoryFlags() const override { return category; }
 
 #endif //CE_DEFINE_EVENT_HPP

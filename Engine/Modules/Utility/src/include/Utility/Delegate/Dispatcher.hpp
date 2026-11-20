@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -109,7 +109,7 @@ public:
 	[[nodiscard]] bool IsBound() const { return _delegate.IsValid(); }
 
 private:
-	DelegateType _delegate;							///< The single bound listener
+	DelegateType _delegate;       ///< The single bound listener
 };
 
 /**
@@ -175,7 +175,7 @@ public:
 	[[nodiscard]] bool IsBound() const { return _callback.IsValid(); }
 
 private:
-	CallbackType _callback;						///< The single bound callback
+	CallbackType _callback;      ///< The single bound callback
 };
 
 template <typename... Args> class MulticastDispatcher;
@@ -262,9 +262,9 @@ public:
 	[[nodiscard]] bool IsConnected() const { return _unsubscribe != nullptr; }
 
 private:
-	void* _dispatcher = nullptr;					///< The dispatcher that issued the handle, type erased
-	u32 _handle = 0;								///< The token it issued; 0 is never handed out, so it means "empty"
-	void (*_unsubscribe)(void*, u32) = nullptr;		///< Casts the dispatcher back and unsubscribes; null when empty
+	void* _dispatcher = nullptr;     ///< The dispatcher that issued the handle, type erased
+	u32 _handle = 0;        ///< The token it issued; 0 is never handed out, so it means "empty"
+	void (*_unsubscribe)(void*, u32) = nullptr;  ///< Casts the dispatcher back and unsubscribes; null when empty
 };
 
 /**
@@ -373,8 +373,8 @@ public:
 
 private:
 	struct Entry {
-		Handle handle;								///< Subscription token
-		DelegateType delegate;						///< Subscriber to invoke
+		Handle handle;        ///< Subscription token
+		DelegateType delegate;      ///< Subscriber to invoke
 	};
 
 	/**
@@ -403,22 +403,22 @@ private:
 	}
 
 private:
-	std::vector<Entry> _callbacks;					///< Active subscribers, in subscription order
-	std::vector<Entry> _pendingAdds;				///< Subscriptions requested during a dispatch, flushed after it
-	std::vector<Handle> _pendingRemoves;			///< Unsubscriptions requested during a dispatch, flushed after it
-	Handle _handle = 1;								///< Next subscription token to hand out
-	bool _isDispatching = false;					///< True while Dispatch iterates: defers (un)subscriptions
+	std::vector<Entry> _callbacks;     ///< Active subscribers, in subscription order
+	std::vector<Entry> _pendingAdds;    ///< Subscriptions requested during a dispatch, flushed after it
+	std::vector<Handle> _pendingRemoves;   ///< Unsubscriptions requested during a dispatch, flushed after it
+	Handle _handle = 1;        ///< Next subscription token to hand out
+	bool _isDispatching = false;     ///< True while Dispatch iterates: defers (un)subscriptions
 };
 
 }
 
-template<typename... Args>
+template <typename... Args>
 using UnicastDispatcher = CE::Utility::UnicastDispatcher<Args...>;
 
-template<typename R, typename... Args>
+template <typename R, typename... Args>
 using CallbackDispatcher = CE::Utility::CallbackDispatcher<R, Args...>;
 
-template<typename... Args>
+template <typename... Args>
 using MulticastDispatcher = CE::Utility::MulticastDispatcher<Args...>;
 
 using CE::Utility::Subscription;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -96,7 +96,7 @@ public:
 	UnicastDispatcher<> onReadyDispatcher;
 };
 
-template<Types::WindowApi Api>
+template <Types::WindowApi Api>
 class I_PlatformBase: public I_Platform {
 public:
 	// Every specialisation is the base of an exported platform class, whose vtable instantiates this override on any

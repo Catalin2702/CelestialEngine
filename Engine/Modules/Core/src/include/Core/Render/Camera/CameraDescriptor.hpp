@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -23,7 +23,7 @@
 namespace CE::Core {
 
 struct CE_CORE_API CameraDescriptor {
-	glm::vec3 position {0.0, 0.0, 0.0};
+	glm::vec3 position{0.0, 0.0, 0.0};
 	/**
 	 * @brief Orientation of the camera, as a unit quaternion
 	 * @details A rotation of angle t around the unit axis (ax, ay, az) is stored as
@@ -34,7 +34,7 @@ struct CE_CORE_API CameraDescriptor {
 	 *			To build it from angles use glm::quat(glm::radians(glm::vec3(pitch, yaw, roll))).
 	 *			Identity: glm::quat takes w first, so {1,0,0,0} is no rotation at all.
 	 */
-	glm::quat rotation {1.0, 0.0, 0.0, 0.0};
+	glm::quat rotation{1.0, 0.0, 0.0, 0.0};
 	std::optional<glm::vec3> lookAtTarget = std::nullopt; ///< If present, wins against rotation
 };
 

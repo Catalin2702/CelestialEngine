@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -102,8 +102,8 @@ public:
 	static void Flush();
 
 private:
-	static std::shared_ptr<spdlog::logger> _s_coreLogger;	///< Logger for engine core messages
-	static std::shared_ptr<spdlog::logger> _s_clientLogger;	///< Logger for client application messages
+	static std::shared_ptr<spdlog::logger> _s_coreLogger; ///< Logger for engine core messages
+	static std::shared_ptr<spdlog::logger> _s_clientLogger; ///< Logger for client application messages
 };
 
 }

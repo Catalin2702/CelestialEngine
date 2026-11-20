@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -27,7 +27,7 @@ namespace CE::Types {
  *			The enum includes standard buttons (Left, Right, Middle) as well as additional buttons (Button4-Button8) and wheel actions (WheelX, WheelY).
  *			An Unknown value is also provided to represent unrecognized or unsupported mouse button codes.
  */
-enum class MouseButtonCode : u8 {
+enum class MouseButtonCode: u8 {
 	Left = 0,
 	Right = 1,
 	Middle = 2,
@@ -101,7 +101,7 @@ struct std::formatter<CE::Types::MouseButtonCode>: std::formatter<std::string_vi
 	}
 };
 
-inline auto operator<=>(const unsigned lhs, const CE::Types::MouseButtonCode rhs) {
+inline auto operator <=> (const unsigned lhs, const CE::Types::MouseButtonCode rhs) {
 	return lhs <=> CE::Types::ToUInt(rhs);
 }
 

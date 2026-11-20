@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
@@ -228,7 +228,6 @@ void CocoaWindow::Show() {
 void CocoaWindow::Init() {
 	_InitWindow();
 	_CreateView();
-
 }
 
 void CocoaWindow::_CreateView() {
@@ -339,8 +338,7 @@ void CocoaWindow::ConnectToEventHub(I_EventHubDispatcher& eventHub) {
 	flagsChangedDispatcher.Bind(NsEvent::FromMethod<Hub, &Hub::ReceiveFlagsChangedEvent>(hub));
 
 	viewEventDispatcher.stateEvents.viewDidLayoutDispatcher.Bind(
-		EventDelegate<>::FromConstMethod<CocoaWindow, &CocoaWindow::_OnViewDidLayout>(this)
-	);
+		EventDelegate<>::FromConstMethod<CocoaWindow, &CocoaWindow::_OnViewDidLayout>(this));
 }
 
 void CocoaWindow::_ReportSize() const {
@@ -397,10 +395,9 @@ void CocoaWindow::_InitWindow() {
 		rawWindow = NS::Window::alloc()->init(
 			frame,
 			NS::WindowStyleMaskTitled | NS::WindowStyleMaskClosable |
-			NS::WindowStyleMaskResizable | NS::WindowStyleMaskMiniaturizable,
+				NS::WindowStyleMaskResizable | NS::WindowStyleMaskMiniaturizable,
 			NS::BackingStoreBuffered,
-			false
-		);
+			false);
 		if (not rawWindow) [[unlikely]] {
 			CE_CORE_ERROR("CocoaWindow::_InitWindow: Could not create Cocoa window!");
 			throw std::runtime_error("CocoaWindow::_InitWindow: Could not create Cocoa window!");

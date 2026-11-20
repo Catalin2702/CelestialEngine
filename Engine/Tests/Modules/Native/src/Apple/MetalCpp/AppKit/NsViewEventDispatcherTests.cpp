@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Apple/MetalCpp/AppKit/NsViewEventDispatcher.hpp>
@@ -65,8 +65,7 @@ TEST_F(NsViewEventDispatcherTest, DispatchMouseDown_ForwardsEventToListener) {
 	NativeEventListener listener;
 	NsViewEventDispatcher dispatcher;
 	dispatcher.mouseEvents.mouseDownDispatcher.Bind(
-		EventDelegate<const NS::Event*>::FromMethod<NativeEventListener, &NativeEventListener::OnEvent>(&listener)
-	);
+		EventDelegate<const NS::Event*>::FromMethod<NativeEventListener, &NativeEventListener::OnEvent>(&listener));
 
 	auto* event = MakeFakeEvent();
 	dispatcher.DispatchMouseDown(event);

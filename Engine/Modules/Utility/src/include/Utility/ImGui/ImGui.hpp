@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -50,7 +50,7 @@ CE_UTILITY_API ImGuiKey GlfwKeyToImGuiKey(int key);
  */
 CE_UTILITY_API void SetImGuiIniFile(ImGuiIO& io, const char* fileName = "imgui.ini");
 
-template<typename... Args>
+template <typename... Args>
 void ImguiText(const std::format_string<Args...> fmt, Args&&... args) {
 	std::array<char, 256> buffer{};
 	const auto result = std::format_to_n(buffer.data(), buffer.size(), fmt, std::forward<Args>(args)...);

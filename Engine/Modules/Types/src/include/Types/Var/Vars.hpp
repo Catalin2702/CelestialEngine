@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -39,21 +39,21 @@ using f32 = float;
 using f64 = double;
 using f128 = long double;
 
-constexpr auto operator ""_u32(const u64 x) { return static_cast<u32>(x); }
+constexpr auto operator ""_u32 (const u64 x) { return static_cast<u32>(x); }
 
-constexpr auto operator ""_i32(const u64 x) { return static_cast<i32>(x); }
+constexpr auto operator ""_i32 (const u64 x) { return static_cast<i32>(x); }
 
-constexpr auto operator ""_u64(const u64 x) { return static_cast<u64>(x); }
+constexpr auto operator ""_u64 (const u64 x) { return static_cast<u64>(x); }
 
-constexpr auto operator ""_i64(const u64 x) { return static_cast<i64>(x); }
+constexpr auto operator ""_i64 (const u64 x) { return static_cast<i64>(x); }
 
-constexpr auto operator ""_b(const u64 x) { return static_cast<byte>(x); }
+constexpr auto operator ""_b (const u64 x) { return static_cast<byte>(x); }
 
-constexpr auto operator ""_f32(const f128 x) { return static_cast<f32>(x); }
+constexpr auto operator ""_f32 (const f128 x) { return static_cast<f32>(x); }
 
-constexpr auto operator ""_f64(const f128 x) { return static_cast<f64>(x); }
+constexpr auto operator ""_f64 (const f128 x) { return static_cast<f64>(x); }
 
-constexpr auto operator ""_f128(const f128 x) { return static_cast<f128>(x); }
+constexpr auto operator ""_f128 (const f128 x) { return static_cast<f128>(x); }
 
 constexpr glm::vec3 CE_WORLD_RIGHT{1.0_f32, 0.0_f32, 0.0_f32};
 constexpr glm::vec3 CE_WORLD_UP{0.0_f32, 1.0_f32, 0.0_f32};

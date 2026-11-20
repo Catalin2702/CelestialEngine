@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -187,7 +187,7 @@ public:
 	[[nodiscard]] virtual Types::WindowApi GetWindowApi() const = 0;
 };
 
-template<Types::WindowApi Api>
+template <Types::WindowApi Api>
 class I_WindowBase: public I_Window {
 public:
 	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return Api; }

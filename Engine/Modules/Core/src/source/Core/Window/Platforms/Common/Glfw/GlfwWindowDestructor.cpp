@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindowDestructor.hpp"
@@ -14,7 +14,7 @@
 
 namespace CE::Core {
 
-void GlfwWindowDestructor::operator()(GLFWwindow *window) const {
+void GlfwWindowDestructor::operator () (GLFWwindow* window) const {
 	if (window) [[likely]]
 		glfwDestroyWindow(window);
 }

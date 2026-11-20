@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Apple/MetalCpp/MetalKit/MtkViewDelegate.hpp>
@@ -67,8 +67,7 @@ TEST_F(MtkViewDelegateTest, DrawInMTKView_ForwardsViewToDelegate) {
 	ViewCallbackListener listener;
 	MtkViewDelegate delegate;
 	delegate.SetDrawInMtkViewDelegate(
-		EventDelegate<MTK::View*>::FromMethod<ViewCallbackListener, &ViewCallbackListener::OnDraw>(&listener)
-	);
+		EventDelegate<MTK::View*>::FromMethod<ViewCallbackListener, &ViewCallbackListener::OnDraw>(&listener));
 
 	auto* view = MakeFakeView();
 	delegate.drawInMTKView(view);
@@ -85,8 +84,7 @@ TEST_F(MtkViewDelegateTest, DrawableSizeWillChange_ForwardsViewAndSize) {
 	ViewCallbackListener listener;
 	MtkViewDelegate delegate;
 	delegate.SetDrawableSizeWillChangeDelegate(
-		EventDelegate<MTK::View*, CGSize>::FromMethod<ViewCallbackListener, &ViewCallbackListener::OnResize>(&listener)
-	);
+		EventDelegate<MTK::View*, CGSize>::FromMethod<ViewCallbackListener, &ViewCallbackListener::OnResize>(&listener));
 
 	auto* view = MakeFakeView();
 	delegate.drawableSizeWillChange(view, CGSize{.width = 1280.0, .height = 720.0});

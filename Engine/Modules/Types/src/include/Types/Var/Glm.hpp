@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-31
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -22,10 +22,10 @@ constexpr std::string format_as(const glm::vec3 value) {
 	return std::format("({}, {}, {})", value.x, value.y, value.z);
 }
 
-template<>
+template <>
 struct std::formatter<glm::vec3>: std::formatter<std::string_view> {
 	auto format(const glm::vec3 value, std::format_context& ctx) const {
-		return std::formatter<std::string_view>::format(format_as(value),ctx);
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 
@@ -33,10 +33,10 @@ constexpr std::string format_as(const glm::quat value) {
 	return std::format("({}, {}, {}, {})", value.w, value.x, value.y, value.z);
 }
 
-template<>
+template <>
 struct std::formatter<glm::quat>: std::formatter<std::string_view> {
 	auto format(const glm::quat value, std::format_context& ctx) const {
-		return std::formatter<std::string_view>::format(format_as(value),ctx);
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 

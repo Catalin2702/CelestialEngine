@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaPlatform.hpp"
@@ -96,8 +96,7 @@ void CocoaPlatform::PollEvents() const {
 	auto* const expiration = NS::Date::dateWithTimeIntervalSinceNow(-1.0);
 
 	while (NS::Event* const event = _application->nextEventMatchingMask(
-		NS::EventMaskAny, expiration, NS::RunLoop::defaultMode(), true))
-	{
+			   NS::EventMaskAny, expiration, NS::RunLoop::defaultMode(), true)) {
 		_application->sendEvent(event);
 	}
 
@@ -110,7 +109,8 @@ void CocoaPlatform::PollEvents() const {
 	// NSApplication::run() did this for us, which is why the problem arrived with our own loop and not before. Zero
 	// seconds and returnAfterSourceHandled keep it non-blocking; the loop repeats while there is something to handle,
 	// so nothing is left queued for the next frame.
-	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) == kCFRunLoopRunHandledSource) {}
+	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, true) == kCFRunLoopRunHandledSource) {
+	}
 }
 
 }

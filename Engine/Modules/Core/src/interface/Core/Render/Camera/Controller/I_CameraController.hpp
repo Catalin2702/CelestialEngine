@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 #include <memory>
 
 namespace CE::Events {
-	class I_Event;
+class I_Event;
 }
 
 namespace CE::Core {

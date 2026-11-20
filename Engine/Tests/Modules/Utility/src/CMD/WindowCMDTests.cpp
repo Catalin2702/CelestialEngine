@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #include <Utility/CMD/Window.hpp>
@@ -692,8 +692,7 @@ TEST_F(WindowCMDTest, ValidateWindowProps_BuildDefaults_Pass) {
  * @brief Test that every compiled-in graphics API passes with the window it pairs with
  */
 TEST_F(WindowCMDTest, ValidateWindowProps_EveryCompiledApiWithItsWindow_Passes) {
-	for (const auto api: {GraphicsApi::OpenGL, GraphicsApi::Metal, GraphicsApi::Vulkan, GraphicsApi::DirectX11,
-			GraphicsApi::DirectX12}) {
+	for (const auto api: {GraphicsApi::OpenGL, GraphicsApi::Metal, GraphicsApi::Vulkan, GraphicsApi::DirectX11, GraphicsApi::DirectX12}) {
 		if (IsGraphicsApiCompiled(api))
 			EXPECT_NO_THROW(ValidateWindowProps(PropsFor(api, GetDefaultWindowApi(api)))) << format_as(api);
 	}

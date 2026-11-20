@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #include "SandboxLayer.hpp"
@@ -21,22 +21,94 @@ void SandboxLayer::OnAttach() {
 
 	constexpr std::array vertices{
 		// Front face
-		-0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 0
-		0.55f, -0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 1
-		0.55f, 0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 2
-		-0.55f, 0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // 3
+		-0.55f,
+		-0.75f,
+		0.0f,
+		0.0f,
+		1.0f,
+		0.0f,
+		1.0f, // 0
+		0.55f,
+		-0.75f,
+		0.0f,
+		0.0f,
+		1.0f,
+		0.0f,
+		1.0f, // 1
+		0.55f,
+		0.75f,
+		0.0f,
+		0.0f,
+		1.0f,
+		0.0f,
+		1.0f, // 2
+		-0.55f,
+		0.75f,
+		0.0f,
+		0.0f,
+		1.0f,
+		0.0f,
+		1.0f, // 3
 
 		// Lateral face
-		0.55f, -0.75f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 4
-		0.70f, -0.60f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 5
-		0.70f, 0.90f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 6
-		0.55f, 0.75f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 7
+		0.55f,
+		-0.75f,
+		0.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		1.0f, // 4
+		0.70f,
+		-0.60f,
+		0.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		1.0f, // 5
+		0.70f,
+		0.90f,
+		0.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		1.0f, // 6
+		0.55f,
+		0.75f,
+		0.0f,
+		1.0f,
+		0.0f,
+		0.0f,
+		1.0f, // 7
 
 		// Upper face
-		0.55f, 0.75f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 8
-		0.70f, 0.90f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 9
-		-0.40f, 0.90f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 10
-		-0.55f, 0.75f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 11
+		0.55f,
+		0.75f,
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f,
+		1.0f, // 8
+		0.70f,
+		0.90f,
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f,
+		1.0f, // 9
+		-0.40f,
+		0.90f,
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f,
+		1.0f, // 10
+		-0.55f,
+		0.75f,
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f,
+		1.0f, // 11
 	};
 
 	constexpr std::array indices{
@@ -59,14 +131,8 @@ void SandboxLayer::OnAttach() {
 	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
 	CE::Core::PipelineDescriptor pipelineDescriptor{};
 	pipelineDescriptor.vertexLayout = vertexLayout;
-	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({
-		.stage = CE::Types::ShaderType::Vertex,
-		.name = "Vertex"
-	});
-	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({
-		.stage = CE::Types::ShaderType::Fragment,
-		.name = "Fragment"
-	});
+	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({.stage = CE::Types::ShaderType::Vertex, .name = "Vertex"});
+	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({.stage = CE::Types::ShaderType::Fragment, .name = "Fragment"});
 
 	// Asked rather than assumed: most backends reject a pipeline whose format disagrees with what it draws into.
 	pipelineDescriptor.formats.colors[0] = _renderer.GetSceneColorFormat();
@@ -83,7 +149,7 @@ void SandboxLayer::OnDetach() {
 }
 
 void SandboxLayer::OnRenderScene(CE::Core::I_Renderer& renderer) const {
-	if (not (_pipeline and _vertexBuffer and _indexBuffer)) [[unlikely]]
+	if (not(_pipeline and _vertexBuffer and _indexBuffer)) [[unlikely]]
 		return;
 
 	CE::Core::DrawCommand command{};

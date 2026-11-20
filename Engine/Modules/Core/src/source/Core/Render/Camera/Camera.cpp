@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Camera/Camera.hpp"
@@ -39,7 +39,7 @@ void Camera::LookAt(const glm::vec3& target, const glm::vec3& up) {
 	/// straight up or straight down. Swapping in a perpendicular axis keeps the basis well formed.
 	glm::vec3 safeUp = up;
 	if (const glm::vec3 side = glm::cross(direction, up); glm::dot(side, side) < glm::epsilon<f32>())
-		safeUp = glm::abs(glm::normalize(direction).y) < 0.999_f32 ? CE_WORLD_UP: CE_WORLD_FORWARD;
+		safeUp = glm::abs(glm::normalize(direction).y) < 0.999_f32 ? CE_WORLD_UP : CE_WORLD_FORWARD;
 
 	SetRotation(glm::conjugate(glm::quat_cast(glm::lookAt(_position, target, safeUp))));
 }

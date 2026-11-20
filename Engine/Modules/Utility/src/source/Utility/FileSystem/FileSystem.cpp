@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Utility/FileSystem/FileSystem.hpp"
@@ -172,8 +172,7 @@ File FileSystem::StLoad(const fs::path& path, const bool autoSave) {
 
 	std::vector<u8> bytes(
 		std::istreambuf_iterator(inputFile),
-		std::istreambuf_iterator<char>{}
-	);
+		std::istreambuf_iterator<char>{});
 
 	File file(path, Types::FileLoadState::Loaded, autoSave);
 	file.SetContent(std::move(bytes));

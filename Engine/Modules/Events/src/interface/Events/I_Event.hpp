@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -22,7 +22,7 @@
 
 namespace CE::Events {
 
-	class I_Event;
+class I_Event;
 
 /**
  * @enum EventType
@@ -33,29 +33,29 @@ namespace CE::Events {
 enum class EventType: u8 {
 	None = 0,
 
-	Error,											///< Error event
+	Error,           ///< Error event
 
-	VSyncChange,									///< VSync change event
+	VSyncChange,         ///< VSync change event
 
-	WindowClose,									///< Window close event
-	WindowResize,									///< Window resize event
-	WindowFocus,									///< Window focus change event (carries whether focus was gained or lost)
-	WindowCursorMode,								///< Cursor mode change event (carries who the pointer's motion now belongs to)
-	WindowMoved,									///< Window moved event
+	WindowClose,         ///< Window close event
+	WindowResize,         ///< Window resize event
+	WindowFocus,         ///< Window focus change event (carries whether focus was gained or lost)
+	WindowCursorMode,        ///< Cursor mode change event (carries who the pointer's motion now belongs to)
+	WindowMoved,         ///< Window moved event
 
-	AppTick,										///< Application tick event
-	AppUpdate,										///< Application update event
-	AppRender,										///< Application render event
+	AppTick,          ///< Application tick event
+	AppUpdate,          ///< Application update event
+	AppRender,          ///< Application render event
 
-	KeyPressed,										///< Keyboard key pressed event
-	KeyReleased,									///< Keyboard key released event
-	KeyTyped,										///< Keyboard character typed event
+	KeyPressed,          ///< Keyboard key pressed event
+	KeyReleased,         ///< Keyboard key released event
+	KeyTyped,          ///< Keyboard character typed event
 
-	MouseButtonPressed,								///< Mouse button pressed event
-	MouseButtonReleased,							///< Mouse button released event
-	MouseMoved,										///< Mouse moved event
-	MouseScrolled,									///< Mouse scroll wheel event
-	MouseDragged,									///< Mouse dragged event (movement while a button is pressed)
+	MouseButtonPressed,        ///< Mouse button pressed event
+	MouseButtonReleased,       ///< Mouse button released event
+	MouseMoved,          ///< Mouse moved event
+	MouseScrolled,         ///< Mouse scroll wheel event
+	MouseDragged,         ///< Mouse dragged event (movement while a button is pressed)
 };
 
 /**
@@ -67,13 +67,13 @@ enum class EventType: u8 {
  */
 enum class EventCategory: u8 {
 	None = 0,
-	EventCategoryApplication = BIT(0),				///< Application-related events (tick, update, render)
-	EventCategoryInput = BIT(1),					///< Input-related events (keyboard, mouse)
-	EventCategoryKeyboard = BIT(2),					///< Keyboard-specific events
-	EventCategoryMouse = BIT(3),					///< Mouse-specific events
-	EventCategoryMouseButton = BIT(4),				///< Mouse button-specific events
-	EventCategoryRender = BIT(5),					///< Render-related events
-	EventCategoryWindow = BIT(6),					///< Window-related events
+	EventCategoryApplication = BIT(0),    ///< Application-related events (tick, update, render)
+	EventCategoryInput = BIT(1),     ///< Input-related events (keyboard, mouse)
+	EventCategoryKeyboard = BIT(2),     ///< Keyboard-specific events
+	EventCategoryMouse = BIT(3),     ///< Mouse-specific events
+	EventCategoryMouseButton = BIT(4),    ///< Mouse button-specific events
+	EventCategoryRender = BIT(5),     ///< Render-related events
+	EventCategoryWindow = BIT(6),     ///< Window-related events
 };
 
 constexpr EventCategory operator & (EventCategory x, EventCategory y) {
@@ -237,8 +237,8 @@ public:
 	}
 
 protected:
-	mutable bool _handled = false;							///< Flag indicating whether the event has been handled
-	bool _isMutable;											///< Flag indicating whether the event is mutable. If not it can't be consumed
+	mutable bool _handled = false;       ///< Flag indicating whether the event has been handled
+	bool _isMutable;           ///< Flag indicating whether the event is mutable. If not it can't be consumed
 };
 
 /**

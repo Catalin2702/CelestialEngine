@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -29,7 +29,7 @@ namespace CE::Events {
  * @details Abstract base class that provides common functionality for keyboard events.
  *			All keyboard events store a key code and belong to both the Keyboard and Input categories.
  */
-template<typename T>
+template <typename T>
 class I_KeyEvent: public I_Event {
 public:
 	/**
@@ -52,7 +52,7 @@ protected:
 		I_Event(isMutable), _keyCode(keycode) {}
 
 protected:
-	T _keyCode;										///< Key code
+	T _keyCode;          ///< Key code
 };
 
 /**
@@ -61,7 +61,7 @@ protected:
  *			It uses the KeyboardKeyCodes enum defined in the Types namespace, which provides a standardized set of key codes across the application.
  */
 using KeyType = Types::KeyboardKeyCode;
-using KeyCharType = unsigned int;	///< Unicode code point of a typed character (as delivered by the platform)
+using KeyCharType = unsigned int; ///< Unicode code point of a typed character (as delivered by the platform)
 
 /**
  * @class KeyPressedEvent
@@ -96,7 +96,7 @@ public:
 
 	EVENT_CLASS_TYPE(KeyPressed)
 private:
-	int _repeatCount;								///< Number of times the key has repeated
+	int _repeatCount;        ///< Number of times the key has repeated
 };
 
 /**

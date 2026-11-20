@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Camera/Controller/FreeCameraController.hpp"
@@ -112,8 +112,7 @@ void FreeCameraController::_UpdateMove(Camera& camera, f32 deltaTime) {
 
 	// Nothing held, or opposite keys cancelling out, asks for a stop: normalising a null vector would fill the
 	// position with NaNs. Normalised otherwise, so W + D does not fly sqrt(2) times faster than W alone.
-	const glm::vec3 targetVelocity = IsNearlyZero(glm::dot(direction, direction)) ?
-		glm::vec3{0.0_f32} : glm::normalize(direction) * speed;
+	const glm::vec3 targetVelocity = IsNearlyZero(glm::dot(direction, direction)) ? glm::vec3{0.0_f32} : glm::normalize(direction) * speed;
 
 	if (const auto acceleration = _descriptor.move.acceleration; acceleration <= 0._f32) {
 		// 0 means instant, as the descriptor documents - and it keeps the division below away from zero.

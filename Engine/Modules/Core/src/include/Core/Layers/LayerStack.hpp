@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -119,8 +119,8 @@ public:
 	StackContainer::iterator end() { return _layers.end(); }
 
 private:
-	StackContainer _layers;							///< Vector containing all layers and overlays
-	unsigned int _lastLayerIndex = 0;						///< Iterator marking the position to insert layers (before overlays)
+	StackContainer _layers;       ///< Vector containing all layers and overlays
+	unsigned int _lastLayerIndex = 0;      ///< Iterator marking the position to insert layers (before overlays)
 };
 
 }

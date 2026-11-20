@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-01
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -71,7 +71,7 @@ public:
 	/**
 	 * @brief Degrees around the camera right, within [minPitch, maxPitch]; positive looks up.
 	 */
-	[[nodiscard]] f32 GetPitch() const {return _pitch; }
+	[[nodiscard]] f32 GetPitch() const { return _pitch; }
 
 private:
 	CameraLookSettings _settings;

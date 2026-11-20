@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -51,7 +51,7 @@ constexpr std::string_view format_as(const CursorMode cursorMode) {
 
 }
 
-template<>
+template <>
 struct std::formatter<CE::Types::CursorMode>: std::formatter<std::string_view> {
 	auto format(const CE::Types::CursorMode value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);

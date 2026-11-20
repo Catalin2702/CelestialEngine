@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -54,7 +54,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryRender)
 
 private:
-	bool _state;									///< New VSync state (true = enabled)
+	bool _state;         ///< New VSync state (true = enabled)
 };
 
 }

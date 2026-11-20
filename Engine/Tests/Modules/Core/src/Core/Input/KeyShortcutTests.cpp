@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Input/KeyShortcut.hpp>
@@ -52,7 +52,9 @@ TEST(KeyShortcutTest, GetKeys_ReturnsOnlyTheGivenKeysInOrder) {
 	constexpr std::array expected{KeyboardKeyCode::LeftControl, KeyboardKeyCode::LeftShift, KeyboardKeyCode::S};
 
 	EXPECT_TRUE(std::ranges::equal(keys, expected));
-	EXPECT_TRUE(std::ranges::none_of(keys, [](const KeyboardKeyCode key) { return key == KeyboardKeyCode::Unknown; }));
+	EXPECT_TRUE(std::ranges::none_of(keys, [](const KeyboardKeyCode key) {
+		return key == KeyboardKeyCode::Unknown;
+	}));
 }
 
 /**

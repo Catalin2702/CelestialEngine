@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -44,18 +44,18 @@ public:
 	 * @brief Gets the X coordinate of the mouse cursor
 	 * @return f32 X position in window coordinates
 	 */
-	[[nodiscard]] f32 GetX() const {return _x; }
+	[[nodiscard]] f32 GetX() const { return _x; }
 
 	/**
 	 * @brief Gets the Y coordinate of the mouse cursor
 	 * @return f32 Y position in window coordinates
 	 */
-	[[nodiscard]] f32 GetY() const {return _y; }
+	[[nodiscard]] f32 GetY() const { return _y; }
 
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
 protected:
-	f32 _x, _y;									///< Mouse cursor position in window coordinates
+	f32 _x, _y;         ///< Mouse cursor position in window coordinates
 };
 
 /**
@@ -125,8 +125,8 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
 private:
-	f32 _xOffset = 0.f;							///< Horizontal scroll wheel offset
-	f32 _yOffset = 0.f;							///< Vertical scroll wheel offset
+	f32 _xOffset = 0.f;       ///< Horizontal scroll wheel offset
+	f32 _yOffset = 0.f;       ///< Vertical scroll wheel offset
 };
 
 /**
@@ -156,7 +156,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput)
 
 protected:
-	Types::MouseButtonCode _button;									///< Platform-specific mouse button code
+	Types::MouseButtonCode _button;         ///< Platform-specific mouse button code
 };
 
 /**
@@ -245,7 +245,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryMouseButton | EventCategory::EventCategoryInput)
 
 private:
-	Types::MouseButtonCode _button{};								///< Platform-specific mouse button code for the button being dragged
+	Types::MouseButtonCode _button{};        ///< Platform-specific mouse button code for the button being dragged
 };
 
 }

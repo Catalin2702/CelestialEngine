@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -47,7 +47,8 @@ public:
 	 * @brief A shortcut made of the given keys
 	 * @details Implicit on purpose, so a descriptor can write `.captureShortcut = {LeftShift, F1}`.
 	 */
-	template<std::same_as<Types::KeyboardKeyCode>... Keys> requires (sizeof...(Keys) >= 1 and sizeof...(Keys) <= stMaxKeys)
+	template <std::same_as<Types::KeyboardKeyCode>... Keys>
+		requires (sizeof...(Keys) >= 1 and sizeof...(Keys) <= stMaxKeys)
 	constexpr KeyShortcut(const Keys... keys): // NOLINT(cppcoreguidelines-explicit-constructor, misc-explicit-constructor)
 		_keys{keys...},
 		_count{static_cast<u8>(sizeof...(Keys))} {}

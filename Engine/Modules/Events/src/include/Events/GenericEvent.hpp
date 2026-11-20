@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -60,8 +60,8 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 
 private:
-	int _errorCode;									///< Numeric error code (platform-specific)
-	const char* _description;						///< Human-readable error description (non-owning)
+	int _errorCode;         ///< Numeric error code (platform-specific)
+	const char* _description;      ///< Human-readable error description (non-owning)
 };
 
 }

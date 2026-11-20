@@ -1,1 +1,153 @@
+#
+# Module: CelestialEngine
+# File: .clang-format
+# Created by: Catalin Chirosca
+# Created: 2026-11-20
+# Updated by: Catalin Chirosca
+# Updated: 2026-11-20
+# Comment: CelestialEngine code style (clang-format 23).
+#   Derived from the code as it is written, not from a preset: run over Engine/Modules, Engine/Tests and Apps it touches
+#   about 2% of the lines. What it still changes are the places clang-format cannot express - hand-aligned tables
+#   (vertex arrays, enums packed several per line, `case` lists), several statements in a one-line function body,
+#   trailing `///<` comments aligned with tabs. Wrap a table in `// clang-format off` / `// clang-format on` to keep it.
+#
+#   Requires clang-format 23 (SpaceBeforeEnumUnderlyingTypeColon, Break{After,Before}{Open,Close}Bracket*). CLion's
+#   bundled one is 22: it rejects those keys, cannot read the file at all and silently falls back to its own settings
+#   (8-column tabs among them). Point CLion at Homebrew's instead: Settings > Editor > Code Style > C/C++ > General >
+#   Clang-Format, custom binary /opt/homebrew/opt/llvm/bin/clang-format. Check a binary with `--dump-config <file>`.
+#
+
+Language: Cpp
+BasedOnStyle: LLVM
+Standard: Latest
+
+# --- Indentation --------------------------------------------------------------------------------------------------
+# Tabs, four columns wide. Alignment after the indentation uses spaces, so it survives any tab width.
+UseTab: AlignWithSpaces
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ConstructorInitializerIndentWidth: 4
+
+# `public:` flush with `class`, cases one level inside `switch`, namespace bodies not indented.
+AccessModifierOffset: -4
+IndentCaseLabels: true
+NamespaceIndentation: None
+FixNamespaceComments: false
+CompactNamespaces: false
+
+# Nested directives are indented by hand (`#if` at column 0, `\t#include` under it) and the include guard follows
+# `#pragma once`, which hides it from clang-format's guard detection: leave them as written.
+IndentPPDirectives: Leave
+PPIndentWidth: 4
+
+# --- Line length --------------------------------------------------------------------------------------------------
+# No limit: comments are wrapped at 120 by hand, but asserts and log lines deliberately run past it, and a limit
+# would break every one of them. With 0, clang-format keeps the line breaks it finds.
+ColumnLimit: 0
+ReflowComments: Never
+
+# --- Braces -------------------------------------------------------------------------------------------------------
+# Attached everywhere, except `else` and `catch`, which start their own line after the closing brace.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+InsertBraces: false
+RemoveBracesLLVM: false
+
+# --- Short constructs ---------------------------------------------------------------------------------------------
+# One-line getters in the class body, `case X: return Y;` on one line. An `if` without braces always puts its
+# statement on the next line (`if (not x) [[unlikely]]` / `\treturn;`).
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortLambdasOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: false
+BreakTemplateDeclarations: Leave
+
+# --- Classes and constructors -------------------------------------------------------------------------------------
+# `class X final: public Y`, `enum class E: u8`, `Ctor(...):` with the initializers on the next line.
+SpaceBeforeInheritanceColon: false
+SpaceBeforeEnumUnderlyingTypeColon: false
+SpaceBeforeCtorInitializerColon: false
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+PackConstructorInitializers: BinPack
+EmptyLineBeforeAccessModifier: Leave
+EmptyLineAfterAccessModifier: Never
+
+# --- Spaces -------------------------------------------------------------------------------------------------------
+# `operator = (`, `template <...>`, `for (auto& x: xs)`, `Viewport{.x = 0}`.
+SpaceAfterOperatorKeyword: true
+SpaceAfterTemplateKeyword: true
+SpaceBeforeRangeBasedForLoopColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterFunctionDeclarationName: false
+  AfterFunctionDefinitionName: false
+  AfterIfMacros: true
+  AfterOverloadedOperator: true
+  AfterPlacementOperator: true
+  AfterRequiresInClause: true
+  AfterRequiresInExpression: false
+  BeforeNonEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+
+# --- Pointers and qualifiers --------------------------------------------------------------------------------------
+# `const T* p`, `auto& r`: the `*`/`&` belongs to the type, `const` goes first.
+PointerAlignment: Left
+ReferenceAlignment: Pointer
 QualifierAlignment: Left
+
+# --- Arguments, parameters, braced lists ---------------------------------------------------------------------------
+# A long call opens its parenthesis and continues one tab in; the closing parenthesis stays where it was written.
+AlignAfterOpenBracket: false
+BreakAfterOpenBracketFunction: false
+BreakBeforeCloseBracketFunction: false
+BreakAfterOpenBracketBracedList: true
+BreakBeforeCloseBracketBracedList: true
+Cpp11BracedListStyle: FunctionCall
+BinPackArguments: true
+BinPackParameters: BinPack
+AlignOperands: DontAlign
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignTrailingComments:
+  Kind: Leave
+
+# --- Blank lines --------------------------------------------------------------------------------------------------
+# Two blank lines between the includes and the namespace; none at the start of a block.
+MaxEmptyLinesToKeep: 2
+KeepEmptyLines:
+  AtStartOfBlock: false
+  AtStartOfFile: false
+  AtEndOfFile: false
+SeparateDefinitionBlocks: Leave
+InsertNewlineAtEOF: true
+
+# --- Includes -----------------------------------------------------------------------------------------------------
+# Grouped by hand (engine headers, third party, standard library) and not always alphabetical inside a group.
+SortIncludes: Never
+IncludeBlocks: Preserve
+SortUsingDeclarations: Never

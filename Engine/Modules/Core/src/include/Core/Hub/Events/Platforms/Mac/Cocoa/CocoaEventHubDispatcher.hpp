@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -15,8 +15,8 @@
 #include "Core/Hub/Events/I_EventHubDispatcher.hpp"
 
 namespace NS {
-	class Event;
-	class Notification;
+class Event;
+class Notification;
 }
 
 namespace CE::Core {
@@ -66,7 +66,6 @@ public:
 	void SetSources(CocoaWindow* window);
 
 public:
-
 	/**
 	 * @brief Multicasts the drawable resize the MetalKit view raises to every subscriber
 	 * @details The one hook with no shared counterpart: OpenGL learns about a resize from the window instead.

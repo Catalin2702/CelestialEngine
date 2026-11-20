@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -45,7 +45,7 @@ public:
 	void SetMetalDisplayLinkNeedsUpdateDelegate(const EventDelegate<CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*>& delegate);
 
 private:
-	CallbackDispatcher<void, CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*> _metalDisplayLinkNeedsUpdateDispatcher;	///< Receiver of the display link update callback
+	CallbackDispatcher<void, CA::MetalDisplayLink*, CA::MetalDisplayLinkUpdate*> _metalDisplayLinkNeedsUpdateDispatcher; ///< Receiver of the display link update callback
 };
 
 }

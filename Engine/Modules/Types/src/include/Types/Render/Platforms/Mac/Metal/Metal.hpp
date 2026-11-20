@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -26,21 +26,21 @@
 #include "Types/Var/Vars.hpp"
 
 namespace NS {
-	using UInteger = std::uintptr_t;
+using UInteger = std::uintptr_t;
 }
 
 namespace MTL {
-	enum PixelFormat: std::uintptr_t;
-	enum CompareFunction: std::uintptr_t;
-	enum BlendFactor: std::uintptr_t;
-	enum CullMode: std::uintptr_t;
-	enum Winding: std::uintptr_t;
-	enum LoadAction: std::uintptr_t;
-	enum StoreAction: std::uintptr_t;
-	enum PrimitiveType: std::uintptr_t;
-	enum PrimitiveTopologyClass: std::uintptr_t;
-	using TextureUsage = NS::UInteger;
-	enum VertexFormat: std::uintptr_t;
+enum PixelFormat: std::uintptr_t;
+enum CompareFunction: std::uintptr_t;
+enum BlendFactor: std::uintptr_t;
+enum CullMode: std::uintptr_t;
+enum Winding: std::uintptr_t;
+enum LoadAction: std::uintptr_t;
+enum StoreAction: std::uintptr_t;
+enum PrimitiveType: std::uintptr_t;
+enum PrimitiveTopologyClass: std::uintptr_t;
+using TextureUsage = NS::UInteger;
+enum VertexFormat: std::uintptr_t;
 }
 
 namespace CE::Types {

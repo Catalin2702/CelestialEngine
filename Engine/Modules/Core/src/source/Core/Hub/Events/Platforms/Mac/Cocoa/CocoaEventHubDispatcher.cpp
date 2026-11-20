@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
@@ -20,7 +20,7 @@ namespace CE::Core {
 // Convert it into the view's space, then flip Y so the engine (and ImGui) receive TOP-left origin coordinates with Y
 // growing downward. Without this flip the vertical axis is inverted (moving the mouse down moves the cursor up).
 static std::pair<f32, f32> MouseLocationTopLeft(const CocoaWindow* window, const NS::Event* event) {
-	if (not (window and window->GetWindow())) [[unlikely]]
+	if (not(window and window->GetWindow())) [[unlikely]]
 		return {0.0f, 0.0f};
 
 	// The content view, not the window's own MTK::View member. They are the same object today, and asking AppKit is
@@ -104,14 +104,14 @@ void CocoaEventHubDispatcher::ReceiveKeyUpEvent(const NS::Event* event) {
 // device-independent masks cannot, since e.g. releasing LeftShift while RightShift is held keeps the generic Shift bit set.
 static NS::UInteger DeviceMaskForModifierKey(const Types::KeyboardKeyCode keyCode) {
 	switch (keyCode) {
-		case Types::KeyboardKeyCode::LeftControl: return 0x00000001;	// NX_DEVICELCTLKEYMASK
-		case Types::KeyboardKeyCode::LeftShift: return 0x00000002;		// NX_DEVICELSHIFTKEYMASK
-		case Types::KeyboardKeyCode::RightShift: return 0x00000004;		// NX_DEVICERSHIFTKEYMASK
-		case Types::KeyboardKeyCode::LeftSuper: return 0x00000008;		// NX_DEVICELCMDKEYMASK
-		case Types::KeyboardKeyCode::RightSuper: return 0x00000010;		// NX_DEVICERCMDKEYMASK
-		case Types::KeyboardKeyCode::LeftAlt: return 0x00000020;		// NX_DEVICELALTKEYMASK
-		case Types::KeyboardKeyCode::RightAlt: return 0x00000040;		// NX_DEVICERALTKEYMASK
-		case Types::KeyboardKeyCode::RightControl: return 0x00002000;	// NX_DEVICERCTLKEYMASK
+		case Types::KeyboardKeyCode::LeftControl: return 0x00000001; // NX_DEVICELCTLKEYMASK
+		case Types::KeyboardKeyCode::LeftShift: return 0x00000002;  // NX_DEVICELSHIFTKEYMASK
+		case Types::KeyboardKeyCode::RightShift: return 0x00000004;  // NX_DEVICERSHIFTKEYMASK
+		case Types::KeyboardKeyCode::LeftSuper: return 0x00000008;  // NX_DEVICELCMDKEYMASK
+		case Types::KeyboardKeyCode::RightSuper: return 0x00000010;  // NX_DEVICERCMDKEYMASK
+		case Types::KeyboardKeyCode::LeftAlt: return 0x00000020;  // NX_DEVICELALTKEYMASK
+		case Types::KeyboardKeyCode::RightAlt: return 0x00000040;  // NX_DEVICERALTKEYMASK
+		case Types::KeyboardKeyCode::RightControl: return 0x00002000; // NX_DEVICERCTLKEYMASK
 		default: return 0;
 	}
 }

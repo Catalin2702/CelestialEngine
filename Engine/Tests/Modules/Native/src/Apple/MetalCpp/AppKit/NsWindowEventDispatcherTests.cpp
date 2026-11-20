@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Apple/MetalCpp/AppKit/NsWindowEventDispatcher.hpp>
@@ -57,8 +57,7 @@ TEST_F(NsWindowEventDispatcherTest, DispatchWindowDidResize_ForwardsNotification
 	NotificationListener listener;
 	NsWindowEventDispatcher dispatcher;
 	dispatcher.nsWindowGeometryEvents.didResizeDispatcher.Bind(
-		EventDelegate<const NS::Notification*>::FromMethod<NotificationListener, &NotificationListener::OnNotification>(&listener)
-	);
+		EventDelegate<const NS::Notification*>::FromMethod<NotificationListener, &NotificationListener::OnNotification>(&listener));
 
 	auto* notification = MakeFakeNotification();
 	dispatcher.DispatchWindowDidResize(notification);
@@ -127,8 +126,7 @@ TEST_F(NsWindowEventDispatcherTest, DispatchWindowWillClose_ForwardsNotification
 	NotificationListener listener;
 	NsWindowEventDispatcher dispatcher;
 	dispatcher.nsWindowLifecycleEvents.willCloseDispatcher.Bind(
-		EventDelegate<const NS::Notification*>::FromMethod<NotificationListener, &NotificationListener::OnNotification>(&listener)
-	);
+		EventDelegate<const NS::Notification*>::FromMethod<NotificationListener, &NotificationListener::OnNotification>(&listener));
 
 	dispatcher.DispatchWindowWillClose(MakeFakeNotification());
 

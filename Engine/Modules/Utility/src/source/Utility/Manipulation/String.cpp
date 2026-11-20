@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-22
+// Updated: 2026-11-20
 //
 
 #include "Utility/Manipulation/String.hpp"

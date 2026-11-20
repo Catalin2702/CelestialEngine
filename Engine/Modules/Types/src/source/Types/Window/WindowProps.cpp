@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Types/Window/WindowProps.hpp"
@@ -58,8 +58,7 @@ bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& wi
 bool IsWindowApiCompiled(const WindowApi api) {
 	// Comparisons rather than a switch, for the reason given in IsGraphicsApiCompiled. Win32, X11 and Wayland have no
 	// backend yet, whatever the selection.
-	return (CE_WINDOW_GLFW and api == WindowApi::GLFW)
-		or (CE_WINDOW_COCOA and api == WindowApi::Cocoa);
+	return (CE_WINDOW_GLFW and api == WindowApi::GLFW) or (CE_WINDOW_COCOA and api == WindowApi::Cocoa);
 }
 
 WindowApi GetDefaultWindowApi(const GraphicsApi graphicsApi) {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -24,17 +24,17 @@
 
 
 namespace CA {
-	class MetalLayer;
+class MetalLayer;
 }
 
 namespace MTL {
-	class CommandBuffer;
-	class RenderCommandEncoder;
-	class Texture;
+class CommandBuffer;
+class RenderCommandEncoder;
+class Texture;
 }
 
 namespace CE::Events {
-	class MouseDraggedEvent;
+class MouseDraggedEvent;
 }
 
 namespace CE::Core {
@@ -61,7 +61,7 @@ class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 		MTL::Texture* sceneTexture = nullptr;
 		/// Borrowed from the device: it is the frame's buffer, shared with every other pass.
 		MTL::CommandBuffer* commandBuffer = nullptr;
-		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;		///< Pointer to the Metal render command encoder
+		MTL::RenderCommandEncoder* renderCommandEncoder = nullptr;  ///< Pointer to the Metal render command encoder
 	};
 
 public:
@@ -167,8 +167,8 @@ private:
 	MetalGraphicDevice* _graphicDevice = nullptr;
 	MetalSwapchain* _swapchain = nullptr;
 
-	std::optional<std::reference_wrapper<const CocoaWindow>> _window;	///< Cached Cocoa window for the display size
-	MetalFrameContext _frameContext;				///< Cached frame context for the current frame
+	std::optional<std::reference_wrapper<const CocoaWindow>> _window; ///< Cached Cocoa window for the display size
+	MetalFrameContext _frameContext;    ///< Cached frame context for the current frame
 
 	/// Owning tokens, ordered to match the enum above. The hub itself is not kept: each token already knows the
 	/// dispatcher it came from, so releasing the array is the whole of unsubscribing - including when the array is

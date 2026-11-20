@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -33,7 +33,7 @@ struct alignas(16) ObjectConstants {
 };
 
 static_assert(CAMERA_CONSTANTS_SLOT < MAX_CONSTANT_SLOTS and OBJECT_CONSTANTS_SLOT < MAX_CONSTANT_SLOTS,
-			"A constant slot is past the last one every backend reserves!");
+	"A constant slot is past the last one every backend reserves!");
 
 static_assert(sizeof(CameraConstants) == 64, "CameraConstants must match its twins in the shader files!");
 

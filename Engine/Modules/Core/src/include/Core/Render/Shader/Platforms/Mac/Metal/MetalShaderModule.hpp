@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -20,7 +20,7 @@
 
 
 namespace MTL {
-	class Function;
+class Function;
 }
 
 namespace CE::Core {
@@ -72,7 +72,7 @@ public:
 
 private:
 	std::string _entryPoint;
-	MTL::Function* _function = nullptr;		///< Retained by this module, released in the destructor
+	MTL::Function* _function = nullptr;  ///< Retained by this module, released in the destructor
 	Types::ShaderType _stage = Types::ShaderType::None;
 };
 

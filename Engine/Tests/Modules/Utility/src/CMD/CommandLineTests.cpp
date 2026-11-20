@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #include <Utility/CMD/CommandLine.hpp>
@@ -34,8 +34,7 @@ protected:
 	void SetUp() override {
 		Log::Init();
 		_previousRoot = FileSystem::GetRootDirectory();
-		Config::SetWindowProps(WindowProps{"Before", 640, 480, false, 0, GetDefaultGraphicsApi(),
-			GetDefaultWindowApi(GetDefaultGraphicsApi())});
+		Config::SetWindowProps(WindowProps{"Before", 640, 480, false, 0, GetDefaultGraphicsApi(), GetDefaultWindowApi(GetDefaultGraphicsApi())});
 	}
 
 	void TearDown() override {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -37,7 +37,7 @@ namespace CE::Core {
  *			it needs to keep.
  */
 struct CE_CORE_API ShaderModuleDescriptor {
-	Types::ShaderType stage = Types::ShaderType::None;	///< The pipeline stage the module is built for
+	Types::ShaderType stage = Types::ShaderType::None; ///< The pipeline stage the module is built for
 
 	/// The engine's name for the shader, e.g. "Vertex" or "CompositeFragment". Also what the module is called in log
 	/// messages, so it needs no separate debug name.

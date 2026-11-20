@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
@@ -113,8 +113,7 @@ u32 OpenGlVertexBuffer::BindLayout(const u32 firstAttributeIndex) const {
 			ShaderDataTypeToOpenGlBaseType(element.type),
 			element.normalized,
 			stride,
-			OpenGlBufferOffset(element.offset)
-		);
+			OpenGlBufferOffset(element.offset));
 	}
 
 	return static_cast<u32>(_vertexBufferLayout.GetElements().size());

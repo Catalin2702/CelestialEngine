@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Utility/Time/Chronometer.hpp"
@@ -26,7 +26,8 @@ Chronometer::~Chronometer() {
 	try {
 		PrintResult();
 	}
-	catch (...) {} // NOLINT(bugprone-empty-catch)
+	catch (...) {
+	} // NOLINT(bugprone-empty-catch)
 }
 
 void Chronometer::Start() {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -15,17 +15,17 @@
 #include "Core/Layers/I_Layer.hpp"
 
 namespace CE::Events {
-	class MouseMovedEvent;
-	class MouseDraggedEvent;
-	class MouseWheelScrolledEvent;
-	class MouseButtonPressedEvent;
-	class MouseButtonReleasedEvent;
+class MouseMovedEvent;
+class MouseDraggedEvent;
+class MouseWheelScrolledEvent;
+class MouseButtonPressedEvent;
+class MouseButtonReleasedEvent;
 
-	class KeyPressedEvent;
-	class KeyReleasedEvent;
-	class KeyTypedEvent;
+class KeyPressedEvent;
+class KeyReleasedEvent;
+class KeyTypedEvent;
 
-	class WindowResizeEvent;
+class WindowResizeEvent;
 }
 
 namespace CE::Core {
@@ -151,7 +151,7 @@ protected:
 	virtual void _OnViewResized(Events::WindowResizeEvent& event) const = 0;
 
 protected:
-	bool _initialized = false;						///< Flag to track if ImGui backend was successfully initialized
+	bool _initialized = false;      ///< Flag to track if ImGui backend was successfully initialized
 
 	/// Whether Begin got as far as ImGui::NewFrame. OnRender and End both bail when it is false, so a frame the
 	/// backend refused cannot leave widgets declared outside a frame - which is what makes ImGui assert.

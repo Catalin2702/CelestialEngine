@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Utility/ImGui/ImGui.hpp>
@@ -228,7 +228,7 @@ TEST_F(ImGuiTest, GlfwKeyToImGuiKey_CommonKeys_AllMapped) {
 		GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN
 	};
 
-	for (const int key : commonKeys) {
+	for (const int key: commonKeys) {
 		const ImGuiKey imguiKey = GlfwKeyToImGuiKey(key);
 		EXPECT_NE(imguiKey, ImGuiKey_None) << "Common key " << key << " should be mapped";
 	}
@@ -244,4 +244,3 @@ TEST_F(ImGuiTest, GlfwKeyToImGuiKey_Consistency_SameInputSameOutput) {
 
 	EXPECT_EQ(result1, result2);
 }
-

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -79,7 +79,7 @@ public:
 	[[nodiscard]] virtual u32 BindLayout(u32 firstAttributeIndex) const = 0;
 };
 
-template<Types::GraphicsApi Api>
+template <Types::GraphicsApi Api>
 class I_VertexBufferBase: public I_VertexBuffer {
 public:
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return Api; }
@@ -93,7 +93,7 @@ public:
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
 };
 
-template<Types::GraphicsApi Api>
+template <Types::GraphicsApi Api>
 class I_IndexBufferBase: public I_IndexBuffer {
 public:
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return Api; }

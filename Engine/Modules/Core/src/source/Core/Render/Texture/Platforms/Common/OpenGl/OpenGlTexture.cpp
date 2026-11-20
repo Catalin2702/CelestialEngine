@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
@@ -19,8 +19,7 @@
 namespace CE::Core {
 
 OpenGlTexture::OpenGlTexture(const TextureDescriptor& descriptor):
-	_width(descriptor.width), _height(descriptor.height), _format(descriptor.format), _usage(descriptor.usage)
-{
+	_width(descriptor.width), _height(descriptor.height), _format(descriptor.format), _usage(descriptor.usage) {
 	const auto [internalFormat, format, type] = Types::ToOpenGl(_format);
 	if (internalFormat == 0 or _width == 0 or _height == 0) [[unlikely]] {
 		constexpr auto error = "OpenGlTexture::OpenGlTexture: Unsupported format, or a zero-sized texture!";

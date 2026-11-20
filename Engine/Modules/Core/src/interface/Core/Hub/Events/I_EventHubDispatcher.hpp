@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -69,8 +69,8 @@ struct WindowEventHub {
 	MulticastDispatcher<Events::WindowCloseEvent&> onCloseMulticastDispatcher;
 	MulticastDispatcher<Events::ErrorEvent&> onErrorMulticastDispatcher;
 	MulticastDispatcher<Events::WindowResizeEvent&> onResizeMulticastDispatcher;
-	MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher;	///< Input state resets held keys on focus loss
-	MulticastDispatcher<Events::WindowCursorModeEvent&> onCursorModeMulticastDispatcher;	///< The window applied a new cursor mode
+	MulticastDispatcher<Events::WindowFocusEvent&> onFocusMulticastDispatcher; ///< Input state resets held keys on focus loss
+	MulticastDispatcher<Events::WindowCursorModeEvent&> onCursorModeMulticastDispatcher; ///< The window applied a new cursor mode
 };
 
 /**
@@ -101,12 +101,11 @@ struct RenderEventHub {
  */
 // The bases are not pure interfaces on purpose: each one owns the dispatchers of its channel, see above.
 class CE_CORE_API I_EventHubDispatcher: // NOLINT(misc-multiple-inheritance)
-	public I_ApplicationEventHubDispatcher,
-	public I_KeyboardEventHubDispatcher,
-	public I_MouseEventHubDispatcher,
-	public I_RenderEventHubDispatcher,
-	public I_WindowEventHubDispatcher
-{
+										public I_ApplicationEventHubDispatcher,
+										public I_KeyboardEventHubDispatcher,
+										public I_MouseEventHubDispatcher,
+										public I_RenderEventHubDispatcher,
+										public I_WindowEventHubDispatcher {
 public:
 	~I_EventHubDispatcher() override = default;
 
@@ -189,7 +188,7 @@ public:
 	[[nodiscard]] virtual Types::WindowApi GetWindowApi() const = 0;
 };
 
-template<Types::WindowApi Api>
+template <Types::WindowApi Api>
 class I_EventHubDispatcherBase: public I_EventHubDispatcher {
 public:
 	[[nodiscard]] Types::WindowApi GetWindowApi() const override { return Api; }

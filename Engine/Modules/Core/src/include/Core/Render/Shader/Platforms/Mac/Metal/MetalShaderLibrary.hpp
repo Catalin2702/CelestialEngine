@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -21,9 +21,9 @@
 
 
 namespace MTL {
-	class Device;
-	class Function;
-	class Library;
+class Device;
+class Function;
+class Library;
 }
 
 namespace CE::Core {
@@ -33,8 +33,8 @@ namespace CE::Core {
  * @brief Pair of Metal shader entry points forming a render pipeline program
  */
 struct ShaderProgram {
-	MTL::Function* vertexFunction = nullptr;		///< Vertex stage entry point (non-owning)
-	MTL::Function* fragmentFunction = nullptr;		///< Fragment stage entry point (non-owning)
+	MTL::Function* vertexFunction = nullptr;  ///< Vertex stage entry point (non-owning)
+	MTL::Function* fragmentFunction = nullptr;  ///< Fragment stage entry point (non-owning)
 };
 
 /**
@@ -108,11 +108,11 @@ private:
 	void _Release();
 
 private:
-	NS::SharedPtr<MTL::Device> _device;				///< Device the library was created on
-	NS::SharedPtr<MTL::Library> _library;			///< Loaded Metal library
-	std::string _path;								///< Where the library was loaded from
+	NS::SharedPtr<MTL::Device> _device;    ///< Device the library was created on
+	NS::SharedPtr<MTL::Library> _library;   ///< Loaded Metal library
+	std::string _path;        ///< Where the library was loaded from
 
-	std::unordered_map<std::string, MTL::Function*> _functions;	///< Functions cached by entry-point name
+	std::unordered_map<std::string, MTL::Function*> _functions; ///< Functions cached by entry-point name
 };
 
 }

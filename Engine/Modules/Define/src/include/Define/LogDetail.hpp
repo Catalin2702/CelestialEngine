@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 /**
@@ -28,14 +28,17 @@
  * @details Asserts the logger exists, because logging before Log::Init is a caller's bug, but also checks it: the assert
  *			is compiled out under NDEBUG, and a Release or Dist build must not dereference a null logger over it.
  */
-#define CE_DETAIL_LOG(getter, level, ...) do {                                       \
-	const auto& ceDetailLogger = CE::Tools::Log::getter();                           \
-	assert(ceDetailLogger and #getter " returned no logger: call Log::Init first");  \
-	if (ceDetailLogger) [[likely]]                                                   \
-		ceDetailLogger->level(__VA_ARGS__);                                          \
-} while (0)
+#define CE_DETAIL_LOG(getter, level, ...)                                               \
+	do {                                                                                \
+		const auto& ceDetailLogger = CE::Tools::Log::getter();                          \
+		assert(ceDetailLogger and #getter " returned no logger: call Log::Init first"); \
+		if (ceDetailLogger) [[likely]]                                                  \
+			ceDetailLogger->level(__VA_ARGS__);                                         \
+	} while (0)
 
 /// @brief Expands to nothing - what a logging macro becomes in a configuration that removes its level.
-#define CE_DETAIL_LOG_DISABLED(...) do { } while (0)
+#define CE_DETAIL_LOG_DISABLED(...) \
+	do {                            \
+	} while (0)
 
 #endif //CE_DEFINE_LOGDETAIL_HPP

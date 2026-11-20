@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Render/Render.hpp>
@@ -246,20 +246,12 @@ public:
 
 	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override {
 		auto& pass = _recorder->passes[_passIndex];
-		pass.vertexConstants.push_back({
-			.slot = slot,
-			.bytes = {data.begin(), data.end()},
-			.drawsBefore = pass.drawIndexedCalls
-		});
+		pass.vertexConstants.push_back({.slot = slot, .bytes = {data.begin(), data.end()}, .drawsBefore = pass.drawIndexedCalls});
 	}
 
 	void SetFragmentConstants(u32 slot, std::span<const std::byte> data) override {
 		auto& pass = _recorder->passes[_passIndex];
-		pass.fragmentConstants.push_back({
-			.slot = slot,
-			.bytes = {data.begin(), data.end()},
-			.drawsBefore = pass.drawIndexedCalls
-		});
+		pass.fragmentConstants.push_back({.slot = slot, .bytes = {data.begin(), data.end()}, .drawsBefore = pass.drawIndexedCalls});
 	}
 
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return FakeApi; }
@@ -298,13 +290,7 @@ public:
 	}
 
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override {
-		_recorder->textures.push_back({
-			.width = descriptor.width,
-			.height = descriptor.height,
-			.format = descriptor.format,
-			.usage = descriptor.usage,
-			.debugName = std::string(descriptor.debugName)
-		});
+		_recorder->textures.push_back({.width = descriptor.width, .height = descriptor.height, .format = descriptor.format, .usage = descriptor.usage, .debugName = std::string(descriptor.debugName)});
 
 		// Thrown, not returned null: it is what MetalTexture does when the allocation fails, and _EnsureSceneTarget
 		// is written around catching it.
@@ -380,8 +366,7 @@ protected:
 	[[nodiscard]] std::unique_ptr<ForwardRenderer> MakeRenderer() {
 		return std::make_unique<ForwardRenderer>(
 			std::make_unique<FakeGraphicDevice>(recorder),
-			std::make_unique<FakeSwapchain>(recorder)
-		);
+			std::make_unique<FakeSwapchain>(recorder));
 	}
 
 	/// The pass every frame ends with: the composite. Named so the assertions read as what they mean.
@@ -392,7 +377,7 @@ protected:
 
 /// Reads an upload back as the struct the renderer sent. Checks the size first: reading a 64-byte struct out of
 /// fewer bytes would be reading past the vector.
-template<typename T>
+template <typename T>
 [[nodiscard]] T ReadConstants(const ConstantsRecord& record) {
 	T value{};
 	EXPECT_EQ(record.bytes.size(), sizeof(T));
@@ -405,7 +390,9 @@ template<typename T>
 /// Every upload the pass received at one slot, in the order it received them.
 [[nodiscard]] std::vector<ConstantsRecord> AtSlot(const std::vector<ConstantsRecord>& records, const u32 slot) {
 	std::vector<ConstantsRecord> found;
-	std::ranges::copy_if(records, std::back_inserter(found), [slot](const ConstantsRecord& record) { return record.slot == slot; });
+	std::ranges::copy_if(records, std::back_inserter(found), [slot](const ConstantsRecord& record) {
+		return record.slot == slot;
+	});
 
 	return found;
 }

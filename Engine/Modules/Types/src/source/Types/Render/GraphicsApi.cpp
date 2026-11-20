@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Types/Render/GraphicsApi.hpp"
@@ -34,11 +34,7 @@ bool IsGraphicsApiSupported(const GraphicsApi& api) {
 bool IsGraphicsApiCompiled(const GraphicsApi api) {
 	// A chain of comparisons rather than a switch: the CE_RENDER_* values are 0 or 1, so the branches of a switch would
 	// read as identical to the compiler. A combination of flags, or None, matches none of them.
-	return (CE_RENDER_OPENGL and api == GraphicsApi::OpenGL)
-		or (CE_RENDER_METAL and api == GraphicsApi::Metal)
-		or (CE_RENDER_VULKAN and api == GraphicsApi::Vulkan)
-		or (CE_RENDER_DIRECTX11 and api == GraphicsApi::DirectX11)
-		or (CE_RENDER_DIRECTX12 and api == GraphicsApi::DirectX12);
+	return (CE_RENDER_OPENGL and api == GraphicsApi::OpenGL) or (CE_RENDER_METAL and api == GraphicsApi::Metal) or (CE_RENDER_VULKAN and api == GraphicsApi::Vulkan) or (CE_RENDER_DIRECTX11 and api == GraphicsApi::DirectX11) or (CE_RENDER_DIRECTX12 and api == GraphicsApi::DirectX12);
 }
 
 GraphicsApi GetDefaultGraphicsApi() {

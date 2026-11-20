@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -32,9 +32,9 @@ namespace CE::Core {
  *			Input::SetCursorMode, and the camera never fights the cursor.
  */
 enum class CameraLookTrigger: u8 {
-	CursorCaptured = 0,	///< While Input holds the cursor captured: the cursor is hidden and frozen, the camera gets the motion
-	ButtonHeld,			///< While lookButton is held, the visible cursor still moving: needs a real secondary button
-	Always				///< On every motion, captured or not
+	CursorCaptured = 0, ///< While Input holds the cursor captured: the cursor is hidden and frozen, the camera gets the motion
+	ButtonHeld,   ///< While lookButton is held, the visible cursor still moving: needs a real secondary button
+	Always    ///< On every motion, captured or not
 };
 
 /**
@@ -362,14 +362,17 @@ struct CE_CORE_API CameraControllerDescriptor {
 		CameraTopDownControllerDescriptor,
 		CameraSideScrollerControllerDescriptor,
 		CameraCinematicControllerDescriptor,
-		CameraScriptedControllerDescriptor
-	> descriptor;
+		CameraScriptedControllerDescriptor>
+		descriptor;
 
 	/**
 	 * @brief Gets the controller type the active alternative describes
 	 */
 	[[nodiscard]] Types::CameraController GetController() const {
-		return std::visit([]<typename Descriptor>(const Descriptor&) { return std::decay_t<Descriptor>::TYPE; }, descriptor);
+		return std::visit([]<typename Descriptor>(const Descriptor&) {
+			return std::decay_t<Descriptor>::TYPE;
+		},
+			descriptor);
 	}
 };
 

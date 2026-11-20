@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
@@ -161,7 +161,7 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 	NS::Error* errorPtr = nullptr;
 	_nativePipelineState = NS::TransferPtr(nativeDevice->newRenderPipelineState(pipelineDescriptor.get(), &errorPtr));
 	if (not _nativePipelineState) [[unlikely]] {
-		const auto error = std::format("MetalPipelineState::MetalPipelineState: The pipeline creation failed to compile. Error: {}", errorPtr ? errorPtr->localizedDescription()->utf8String(): "Unknown");
+		const auto error = std::format("MetalPipelineState::MetalPipelineState: The pipeline creation failed to compile. Error: {}", errorPtr ? errorPtr->localizedDescription()->utf8String() : "Unknown");
 		CE_CORE_ERROR(error);
 		throw std::runtime_error(error);
 	}
@@ -169,7 +169,7 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 	// The depth state is its own object in Metal, and it is built unconditionally: a pipeline with no depth test
 	// still needs one that says so, otherwise the encoder keeps whatever the previous draw left set.
 	const auto depthDescriptor = NS::TransferPtr(MTL::DepthStencilDescriptor::alloc()->init());
-	depthDescriptor->setDepthCompareFunction(_descriptor.depthState.testEnabled ? Types::ToMetal(_descriptor.depthState.compareFunc): MTL::CompareFunctionAlways);
+	depthDescriptor->setDepthCompareFunction(_descriptor.depthState.testEnabled ? Types::ToMetal(_descriptor.depthState.compareFunc) : MTL::CompareFunctionAlways);
 	depthDescriptor->setDepthWriteEnabled(_descriptor.depthState.writeEnabled);
 
 	_nativeDepthStencilState = NS::TransferPtr(nativeDevice->newDepthStencilState(depthDescriptor.get()));

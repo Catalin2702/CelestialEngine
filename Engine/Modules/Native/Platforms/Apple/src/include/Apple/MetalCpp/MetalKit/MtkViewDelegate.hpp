@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -56,8 +56,8 @@ public:
 	void SetDrawableSizeWillChangeDelegate(const EventDelegate<MTK::View*, CGSize>& delegate);
 
 private:
-	CallbackDispatcher<void, MTK::View*> _drawInMtkViewDispatcher;					///< Receiver of the per-frame draw callback
-	CallbackDispatcher<void, MTK::View*, CGSize> _drawableSizeWillChangeDispatcher;	///< Receiver of the drawable resize callback
+	CallbackDispatcher<void, MTK::View*> _drawInMtkViewDispatcher;     ///< Receiver of the per-frame draw callback
+	CallbackDispatcher<void, MTK::View*, CGSize> _drawableSizeWillChangeDispatcher; ///< Receiver of the drawable resize callback
 };
 
 }

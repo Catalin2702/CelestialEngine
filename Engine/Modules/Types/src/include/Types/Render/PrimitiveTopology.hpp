@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -36,11 +36,11 @@ namespace CE::Types {
  */
 enum class PrimitiveTopology: u8 {
 	None,
-	PointList,		///< one point per vertex
-	LineList,		///< one line per vertex pair, no sharing
-	LineStrip,		///< each vertex after the first extends the line
-	TriangleList,	///< one triangle per vertex triple - the default, and what an index buffer usually feeds
-	TriangleStrip,	///< each vertex after the second adds a triangle, winding alternating every step
+	PointList,  ///< one point per vertex
+	LineList,  ///< one line per vertex pair, no sharing
+	LineStrip,  ///< each vertex after the first extends the line
+	TriangleList, ///< one triangle per vertex triple - the default, and what an index buffer usually feeds
+	TriangleStrip, ///< each vertex after the second adds a triangle, winding alternating every step
 };
 
 /**

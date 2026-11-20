@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-03
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -32,33 +32,33 @@ namespace CE::Types {
  *			convenience, and neither Metal nor DirectX can use one as a render target. Pad to RGBA8 instead.
  */
 enum class PixelFormat: u8 {
-	None = 0,					///< No format specified
+	None = 0,     ///< No format specified
 
 	// --- 8 bits per channel, normalised to [0, 1] in the shader ---
-	R8Unorm,					///< single channel, masks and coverage
-	RG8Unorm,					///< two channels
-	RGBA8Unorm,					///< the portable colour default
-	RGBA8UnormSrgb,				///< as above, with the sRGB transfer function applied by the hardware
-	BGRA8Unorm,					///< channel order preferred by CAMetalLayer and DXGI swapchains
-	BGRA8UnormSrgb,				///< as above, sRGB
+	R8Unorm,     ///< single channel, masks and coverage
+	RG8Unorm,     ///< two channels
+	RGBA8Unorm,     ///< the portable colour default
+	RGBA8UnormSrgb,    ///< as above, with the sRGB transfer function applied by the hardware
+	BGRA8Unorm,     ///< channel order preferred by CAMetalLayer and DXGI swapchains
+	BGRA8UnormSrgb,    ///< as above, sRGB
 
 	// --- floating point, for HDR and intermediate targets ---
 	R16Float,
 	RG16Float,
-	RGBA16Float,				///< the usual HDR render target
+	RGBA16Float,    ///< the usual HDR render target
 	R32Float,
 	RG32Float,
 	RGBA32Float,
 
 	// --- packed ---
-	RGB10A2Unorm,				///< 10 bits per colour channel, 2 of alpha - wide-gamut presentation
-	RG11B10Float,				///< no alpha, cheap HDR - half the footprint of RGBA16Float
+	RGB10A2Unorm,    ///< 10 bits per colour channel, 2 of alpha - wide-gamut presentation
+	RG11B10Float,    ///< no alpha, cheap HDR - half the footprint of RGBA16Float
 
 	// --- depth and stencil ---
 	Depth16Unorm,
-	Depth32Float,				///< the depth default: no precision cliff, supported everywhere
-	Depth24UnormStencil8,		///< NOT guaranteed on Apple silicon - query before using it
-	Depth32FloatStencil8,		///< the portable choice when a stencil buffer is needed
+	Depth32Float,    ///< the depth default: no precision cliff, supported everywhere
+	Depth24UnormStencil8,  ///< NOT guaranteed on Apple silicon - query before using it
+	Depth32FloatStencil8,  ///< the portable choice when a stencil buffer is needed
 };
 
 /**

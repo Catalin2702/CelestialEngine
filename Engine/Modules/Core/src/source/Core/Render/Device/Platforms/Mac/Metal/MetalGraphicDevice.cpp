@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-08
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -49,8 +49,7 @@ MetalGraphicDevice::MetalGraphicDevice() {
 	for (auto& frameConstantBuffer: _frameConstantBuffers) {
 		frameConstantBuffer = NS::TransferPtr(_nativeDevice->newBuffer(
 			FRAME_CONSTANTS_CAPACITY,
-			MTL::ResourceStorageModeShared | MTL::ResourceCPUCacheModeWriteCombined
-		));
+			MTL::ResourceStorageModeShared | MTL::ResourceCPUCacheModeWriteCombined));
 		if (not frameConstantBuffer) [[unlikely]] {
 			constexpr auto error = "MetalGraphicDevice::MetalGraphicDevice: Could not allocate the frame constant ring!";
 			CE_CORE_ERROR(error);

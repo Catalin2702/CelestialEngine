@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Utility/Delegate/Dispatcher.hpp>
@@ -43,8 +43,8 @@ public:
 	int lastValue = 0;
 
 private:
-	std::vector<int>* _order;						///< Optional shared log recording the invocation order
-	int _id;										///< Identifier pushed into the invocation order log
+	std::vector<int>* _order;      ///< Optional shared log recording the invocation order
+	int _id;          ///< Identifier pushed into the invocation order log
 };
 
 }
@@ -385,10 +385,10 @@ TEST_F(DispatcherTest, Multicast_SubscribeDuringDispatch_IsDeferred) {
 	dispatcher.Subscribe(EventDelegate<>::FromMethod<Subscriber, &Subscriber::OnEvent>(&subscriber));
 
 	dispatcher.Dispatch();
-	EXPECT_EQ(added.calls, 0);	// added during the dispatch: not invoked for that event
+	EXPECT_EQ(added.calls, 0); // added during the dispatch: not invoked for that event
 
 	dispatcher.Dispatch();
-	EXPECT_EQ(added.calls, 1);	// flushed after the first dispatch: invoked from the next one on
+	EXPECT_EQ(added.calls, 1); // flushed after the first dispatch: invoked from the next one on
 }
 
 /**
@@ -409,8 +409,8 @@ TEST_F(DispatcherTest, Multicast_UnsubscribeDuringDispatch_IsDeferred) {
 	dispatcher.Subscribe(EventDelegate<>::FromConstMethod<Unsubscriber, &Unsubscriber::OnEvent>(&unsubscriber));
 
 	dispatcher.Dispatch();
-	EXPECT_EQ(target.calls, 1);	// still subscribed for the dispatch it was removed in
+	EXPECT_EQ(target.calls, 1); // still subscribed for the dispatch it was removed in
 
 	dispatcher.Dispatch();
-	EXPECT_EQ(target.calls, 1);	// removal flushed: no further invocations
+	EXPECT_EQ(target.calls, 1); // removal flushed: no further invocations
 }

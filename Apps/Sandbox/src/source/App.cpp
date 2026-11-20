@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 // The sandbox's entry point. EntryPoint.hpp defines main(), so it is included here and nowhere else: every other
@@ -28,7 +28,7 @@ using namespace CE;
  * @class SandboxClient
  * @brief The engine's test bed: a free-flying camera over the test geometry
  */
-class SandboxClient final: public  Core::I_ApplicationClient {
+class SandboxClient final: public Core::I_ApplicationClient {
 public:
 	[[nodiscard]] Core::ApplicationSpecification GetSpecification() const override {
 		return {};
@@ -53,7 +53,7 @@ private:
 		};
 
 		const Core::CameraProjectionDescriptor projectionDescriptor{
-			.type =  Types::CameraProjection::Orthographic,
+			.type = Types::CameraProjection::Orthographic,
 			// Backends disagree on the depth range clip space maps onto: asked of the device, which knows.
 			.convention = application.GetRenderer().GetGraphicDevice().GetClipConvention(),
 			.viewportWidth = windowProps.width,
@@ -63,7 +63,7 @@ private:
 		};
 
 		constexpr Core::CameraControllerDescriptor controllerDescriptor{
-			.descriptor =  Core::CameraFreeControllerDescriptor{
+			.descriptor = Core::CameraFreeControllerDescriptor{
 				.move = {.speed = 1._f32},
 				.look = {}
 			}

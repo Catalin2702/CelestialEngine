@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #include "Types/Render/Platforms/Mac/Metal/Metal.hpp"
@@ -36,7 +36,8 @@ MTL::PixelFormat ToMetal(const PixelFormat pixelFormat) {
 		case PixelFormat::RG11B10Float: return MTL::PixelFormatRG11B10Float;
 
 		case PixelFormat::Depth16Unorm: return MTL::PixelFormatDepth16Unorm;
-		case PixelFormat::Depth32Float: return MTL::PixelFormatDepth32Float;
+		case PixelFormat::Depth32Float:
+			return MTL::PixelFormatDepth32Float;
 			// Not present on Apple silicon: the device reports it unsupported and pipeline creation fails, which is the
 			// right place for that to be caught - the conversion's job is only to name the format.
 		case PixelFormat::Depth24UnormStencil8: return MTL::PixelFormatDepth24Unorm_Stencil8;
@@ -68,7 +69,8 @@ PixelFormat FromMetal(MTL::PixelFormat pixelFormat) {
 		case MTL::PixelFormatRG11B10Float: return PixelFormat::RG11B10Float;
 
 		case MTL::PixelFormatDepth16Unorm: return PixelFormat::Depth16Unorm;
-		case MTL::PixelFormatDepth32Float: return PixelFormat::Depth32Float;
+		case MTL::PixelFormatDepth32Float:
+			return PixelFormat::Depth32Float;
 			// Not present on Apple silicon: the device reports it unsupported and pipeline creation fails, which is the
 			// right place for that to be caught - the conversion's job is only to name the format.
 		case MTL::PixelFormatDepth24Unorm_Stencil8: return PixelFormat::Depth24UnormStencil8;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 /**
@@ -34,11 +34,11 @@
 namespace CE::Tests {
 
 #if CE_WINDOW_GLFW
-	using TestEventHubDispatcher = Core::GlfwEventHubDispatcher;
-	inline constexpr auto TestEventHubWindowApi = Types::WindowApi::GLFW;
+using TestEventHubDispatcher = Core::GlfwEventHubDispatcher;
+inline constexpr auto TestEventHubWindowApi = Types::WindowApi::GLFW;
 #elif CE_WINDOW_COCOA
-	using TestEventHubDispatcher = Core::CocoaEventHubDispatcher;
-	inline constexpr auto TestEventHubWindowApi = Types::WindowApi::Cocoa;
+using TestEventHubDispatcher = Core::CocoaEventHubDispatcher;
+inline constexpr auto TestEventHubWindowApi = Types::WindowApi::Cocoa;
 #else
 	#error "No window backend compiled in: the Core tests need at least one event hub."
 #endif

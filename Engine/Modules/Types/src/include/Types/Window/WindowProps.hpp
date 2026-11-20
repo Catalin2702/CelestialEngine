@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -30,12 +30,12 @@ namespace CE::Types {
  *			Includes options for GLFW (cross-platform), Win32 (Windows), X11 (Linux), Wayland (Linux) and Cocoa (macOS).
  */
 enum class WindowApi: u8 {
-	None = 0,											///< No window API specified
-	GLFW = BIT(0),										///< GLFW windowing library
-	Cocoa = BIT(1),										///< Cocoa (macOS)
-	Win32 = BIT(2),										///< Win32 API (Windows)
-	X11 = BIT(3),										///< X11 (Linux)
-	Wayland = BIT(4),									///< Wayland (Linux)
+	None = 0,           ///< No window API specified
+	GLFW = BIT(0),          ///< GLFW windowing library
+	Cocoa = BIT(1),          ///< Cocoa (macOS)
+	Win32 = BIT(2),          ///< Win32 API (Windows)
+	X11 = BIT(3),          ///< X11 (Linux)
+	Wayland = BIT(4),         ///< Wayland (Linux)
 };
 
 constexpr WindowApi operator & (WindowApi x, WindowApi y) {
@@ -61,13 +61,13 @@ constexpr bool HasAnyFlags(const WindowApi x, const WindowApi y) {
  *			including title, dimensions, and VSync setting.
  */
 struct CE_TYPES_API WindowProps {
-	std::string title;								///< Window title displayed in the title bar
-	unsigned int width = 0;							///< Window width in pixels
-	unsigned int height = 0;						///< Window height in pixels
-	unsigned int refreshRate = 0;					///< Target frame rate used when VSync is off (0 = uncapped). When VSync is on, the display's actual refresh rate is used instead.
-	bool VSync = false;								///< Vertical synchronization enabled/disabled
-	GraphicsApi graphicsApi = GraphicsApi::None;	///< Graphics API to be used for rendering
-	WindowApi windowApi = WindowApi::None;			///< Windowing API to be used for window management
+	std::string title;        ///< Window title displayed in the title bar
+	unsigned int width = 0;       ///< Window width in pixels
+	unsigned int height = 0;      ///< Window height in pixels
+	unsigned int refreshRate = 0;     ///< Target frame rate used when VSync is off (0 = uncapped). When VSync is on, the display's actual refresh rate is used instead.
+	bool VSync = false;        ///< Vertical synchronization enabled/disabled
+	GraphicsApi graphicsApi = GraphicsApi::None; ///< Graphics API to be used for rendering
+	WindowApi windowApi = WindowApi::None;   ///< Windowing API to be used for window management
 
 	/**
 	 * @brief Default constructor

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -87,9 +87,9 @@ private:
 	void PrintResult() const;
 
 private:
-	TimePoint _start;								///< Start time point
-	TimePoint _end;									///< End time point, meaningful only once the chronometer is stopped
-	bool _isStopped = false;						///< True once Stop() froze the measure, so the destructor does not overwrite it
+	TimePoint _start;        ///< Start time point
+	TimePoint _end;         ///< End time point, meaningful only once the chronometer is stopped
+	bool _isStopped = false;      ///< True once Stop() froze the measure, so the destructor does not overwrite it
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -28,22 +28,22 @@
 
 
 namespace CA {
-	class MetalLayer;
+class MetalLayer;
 }
 
 namespace MTK {
-	class View;
+class View;
 }
 
 namespace MTL {
-	class CommandQueue;
-	class Device;
+class CommandQueue;
+class Device;
 }
 
 namespace NS {
-	class Notification;
-	class Screen;
-	class Window;
+class Notification;
+class Screen;
+class Window;
 }
 
 namespace CE::Core {

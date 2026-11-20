@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #include "Utility/CMD/Window.hpp"
@@ -78,8 +78,7 @@ Types::WindowApi ParseWindowApi(const char* value, const Types::GraphicsApi grap
 
 /// Every graphics API this build contains, comma-separated, for error messages.
 std::string CompiledGraphicsApis() {
-	constexpr std::array all{Types::GraphicsApi::OpenGL, Types::GraphicsApi::Metal, Types::GraphicsApi::Vulkan,
-							 Types::GraphicsApi::DirectX11, Types::GraphicsApi::DirectX12};
+	constexpr std::array all{Types::GraphicsApi::OpenGL, Types::GraphicsApi::Metal, Types::GraphicsApi::Vulkan, Types::GraphicsApi::DirectX11, Types::GraphicsApi::DirectX12};
 	std::string names;
 	for (const auto api: all) {
 		if (not Types::IsGraphicsApiCompiled(api))
@@ -93,8 +92,7 @@ std::string CompiledGraphicsApis() {
 
 /// Every window API this build contains, comma-separated, for error messages.
 std::string CompiledWindowApis() {
-	constexpr std::array all{Types::WindowApi::GLFW, Types::WindowApi::Cocoa, Types::WindowApi::Win32,
-							 Types::WindowApi::X11, Types::WindowApi::Wayland};
+	constexpr std::array all{Types::WindowApi::GLFW, Types::WindowApi::Cocoa, Types::WindowApi::Win32, Types::WindowApi::X11, Types::WindowApi::Wayland};
 	std::string names;
 	for (const auto api: all) {
 		if (not Types::IsWindowApiCompiled(api))

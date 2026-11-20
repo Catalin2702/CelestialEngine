@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -94,21 +94,21 @@ constexpr std::string_view format_as(const CE::Types::ClipConvention convention)
 	}
 }
 
-template<>
+template <>
 struct std::formatter<CE::Types::CameraProjection>: std::formatter<std::string_view> {
 	auto format(const CE::Types::CameraProjection value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 
-template<>
+template <>
 struct std::formatter<CE::Types::CameraController>: std::formatter<std::string_view> {
 	auto format(const CE::Types::CameraController value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 
-template<>
+template <>
 struct std::formatter<CE::Types::ClipConvention>: std::formatter<std::string_view> {
 	auto format(const CE::Types::ClipConvention value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);

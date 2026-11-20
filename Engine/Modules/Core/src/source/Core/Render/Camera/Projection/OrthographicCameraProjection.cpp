@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Camera/Projection/OrthographicCameraProjection.hpp"
@@ -22,8 +22,7 @@ OrthographicCameraProjection::OrthographicCameraProjection(const CameraProjectio
 	_farClip(descriptor.farClip),
 	_width(descriptor.viewportWidth),
 	_height(descriptor.viewportHeight),
-	_orthographicSize(descriptor.orthographicSize)
-{
+	_orthographicSize(descriptor.orthographicSize) {
 	_Recalculate();
 }
 
@@ -43,9 +42,7 @@ void OrthographicCameraProjection::_Recalculate() const {
 	const f32 halfHeight = _orthographicSize;
 	const f32 halfWidth = _orthographicSize * OrthographicCameraProjection::GetAspectRatio();
 
-	_projection = _convention == Types::ClipConvention::ZeroToOne ?
-		glm::orthoRH_ZO(-halfWidth, halfWidth, -halfHeight, halfHeight, _nearClip, _farClip) :
-		glm::orthoRH_NO(-halfWidth, halfWidth, -halfHeight, halfHeight, _nearClip, _farClip);
+	_projection = _convention == Types::ClipConvention::ZeroToOne ? glm::orthoRH_ZO(-halfWidth, halfWidth, -halfHeight, halfHeight, _nearClip, _farClip) : glm::orthoRH_NO(-halfWidth, halfWidth, -halfHeight, halfHeight, _nearClip, _farClip);
 }
 
 }

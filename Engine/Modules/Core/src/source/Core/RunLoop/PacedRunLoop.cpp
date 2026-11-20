@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-01
+// Updated: 2026-11-20
 //
 
 #include "Core/RunLoop/PacedRunLoop.hpp"
@@ -48,8 +48,7 @@ void PacedRunLoop::Start() {
 			continue;
 
 		nextFrame += std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-			std::chrono::duration<f64>(1.0_f64 / _targetFrameRate)
-		);
+			std::chrono::duration<f64>(1.0_f64 / _targetFrameRate));
 
 		if (const auto now = std::chrono::steady_clock::now(); nextFrame > now)
 			std::this_thread::sleep_until(nextFrame);

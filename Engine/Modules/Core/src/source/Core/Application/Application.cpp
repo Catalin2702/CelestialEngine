@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #include "Core/Application/Application.hpp"
@@ -47,8 +47,7 @@ Application::Application(std::unique_ptr<I_ApplicationClient> client):
 	_platform(I_Platform::MakePlatform(Props().windowApi)),
 	_window(I_Window::MakeWindow(*_platform)),
 	_runLoop(I_RunLoop::MakeRunLoop(*_platform)),
-	_client(std::move(client))
-{
+	_client(std::move(client)) {
 	assert(_instance == nullptr and "Application::Application: An application already exists!");
 
 	if (not _client) [[unlikely]] {
@@ -288,14 +287,11 @@ void Application::_SubscribeToEventHubDispatcher() {
 	auto& [onChangeVSyncDispatcher] = _dispatcher->GetRenderEventHub();
 
 	_eventHubHandlers[_WindowClose] = windowEventHub.onCloseMulticastDispatcher.Subscribe(
-		EventDelegate<Events::WindowCloseEvent&>::FromConstMethod<Application, &Application::_OnWindowClose>(this)
-	);
+		EventDelegate<Events::WindowCloseEvent&>::FromConstMethod<Application, &Application::_OnWindowClose>(this));
 	_eventHubHandlers[_WindowResize] = windowEventHub.onResizeMulticastDispatcher.Subscribe(
-		EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<Application, &Application::_OnWindowResize>(this)
-	);
+		EventDelegate<Events::WindowResizeEvent&>::FromConstMethod<Application, &Application::_OnWindowResize>(this));
 	_eventHubHandlers[_VSyncChange] = onChangeVSyncDispatcher.Subscribe(
-		EventDelegate<Events::VSyncEvent&>::FromConstMethod<Application, &Application::_OnVSyncChange>(this)
-	);
+		EventDelegate<Events::VSyncEvent&>::FromConstMethod<Application, &Application::_OnVSyncChange>(this));
 
 	Input::SubscribeToHub(_dispatcher->GetKeyboardEventHub(), _dispatcher->GetMouseEventHub(), windowEventHub);
 }

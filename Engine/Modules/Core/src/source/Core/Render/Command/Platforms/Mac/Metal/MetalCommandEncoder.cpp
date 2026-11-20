@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-08
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Render.hpp"
@@ -23,8 +23,7 @@ constexpr u32 U32_SIZE = sizeof(u32);
 
 MetalCommandEncoder::MetalCommandEncoder(MetalGraphicDevice& graphicDevice, MTL::CommandBuffer* nativeCommandBuffer, const MTL::RenderPassDescriptor* nativePassDescriptor):
 	_graphicDevice(&graphicDevice),
-	_nativeCommandBuffer(nativeCommandBuffer)
-{
+	_nativeCommandBuffer(nativeCommandBuffer) {
 	if (not _nativeCommandBuffer or not nativePassDescriptor) [[unlikely]] {
 		constexpr auto error = "MetalCommandEncoder::MetalCommandEncoder: The pass was given no command buffer or no descriptor!";
 		CE_CORE_ERROR(error);

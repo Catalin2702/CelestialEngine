@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -152,7 +152,6 @@ void ImGuiOpenGlLayer::_Init() {
 		_initialized = false;
 		throw;
 	}
-
 }
 
 void ImGuiOpenGlLayer::_Shutdown() {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Types/KeyCode/Platforms/Mac/Cocoa/Cocoa.hpp>
@@ -47,8 +47,7 @@ TEST_F(CocoaKeyCodeTest, KeyboardKeyCodeFromCocoa_UnmappedKey_ReturnsUnknown) {
  * @brief Test that the Cocoa mapping round trips
  */
 TEST_F(CocoaKeyCodeTest, CocoaMapping_RoundTrips) {
-	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::W, KeyboardKeyCode::S, KeyboardKeyCode::D,
-			KeyboardKeyCode::Space, KeyboardKeyCode::Escape}) {
+	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::W, KeyboardKeyCode::S, KeyboardKeyCode::D, KeyboardKeyCode::Space, KeyboardKeyCode::Escape}) {
 		EXPECT_EQ(KeyboardKeyCodeFromCocoa(CocoaKeyCodeFromKeyboard(key)), key) << "Key: " << format_as(key);
 	}
 }
@@ -73,7 +72,7 @@ TEST_F(CocoaKeyCodeTest, MouseButtonKeyCodeFromCocoa_MapsKnownButtons) {
 TEST_F(CocoaKeyCodeTest, CocoaMapping_RoundTripsForMainButtons) {
 	for (const auto button: {MouseButtonCode::Left, MouseButtonCode::Right, MouseButtonCode::Middle}) {
 		EXPECT_EQ(MouseButtonKeyCodeFromCocoa(CocoaButtonNumberFromMouseButton(button)), button)
-			<< "Button: " << format_as(button);
+		    << "Button: " << format_as(button);
 	}
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -46,7 +46,7 @@ public:
 	 * @brief Gets the new width of the window
 	 * @return unsigned int Width in pixels
 	 */
-	[[nodiscard]] unsigned int GetWidth() const { return _width;}
+	[[nodiscard]] unsigned int GetWidth() const { return _width; }
 
 	/**
 	 * @brief Gets the new height of the window
@@ -64,7 +64,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 
 private:
-	unsigned int _width, _height;					///< New window dimensions in pixels
+	unsigned int _width, _height;     ///< New window dimensions in pixels
 };
 
 using ViewResizeEvent = WindowResizeEvent;
@@ -123,7 +123,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 
 private:
-	bool _focused;									///< True when the window gained input focus, false when it lost it
+	bool _focused;         ///< True when the window gained input focus, false when it lost it
 };
 
 /**
@@ -163,7 +163,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryWindow)
 
 private:
-	Types::CursorMode _cursorMode;					///< The mode the window has just switched to
+	Types::CursorMode _cursorMode;     ///< The mode the window has just switched to
 };
 
 }

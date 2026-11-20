@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -42,7 +42,7 @@ class I_Window;
  *			window and the keys would remain stuck as "down".
  */
 class CE_CORE_API InputState {
-	friend class Input;										///< Sole interface to the state: exposes its members as static methods
+	friend class Input;          ///< Sole interface to the state: exposes its members as static methods
 
 	enum HubSubscription: u8 {
 		KeyPressed = 0,
@@ -57,8 +57,8 @@ class CE_CORE_API InputState {
 	};
 
 public:
-	static constexpr std::size_t stMaxKeys = 512;			///< KeyboardKeyCode values are GLFW-based; the highest one (RightSuper) is 347
-	static constexpr std::size_t stMaxMouseButtons = 16;	///< MouseButtonCode buttons are 0-7 (wheel pseudo-buttons 8-9 are not tracked as buttons)
+	static constexpr std::size_t stMaxKeys = 512;   ///< KeyboardKeyCode values are GLFW-based; the highest one (RightSuper) is 347
+	static constexpr std::size_t stMaxMouseButtons = 16; ///< MouseButtonCode buttons are 0-7 (wheel pseudo-buttons 8-9 are not tracked as buttons)
 
 private:
 	/**
@@ -203,31 +203,23 @@ private:
 		using state = InputState;
 
 		_hubHandles[KeyPressed] = keyboardHub.onPressedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::KeyPressedEvent&>::FromMethod<state, &state::_OnKeyPressed>(this)
-		);
+			EventDelegate<Events::KeyPressedEvent&>::FromMethod<state, &state::_OnKeyPressed>(this));
 		_hubHandles[KeyReleased] = keyboardHub.onReleasedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::KeyReleasedEvent&>::FromMethod<state, &state::_OnKeyReleased>(this)
-		);
+			EventDelegate<Events::KeyReleasedEvent&>::FromMethod<state, &state::_OnKeyReleased>(this));
 
 		_hubHandles[MouseMoved] = mouseHub.onMovedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::MouseMovedEvent&>::FromMethod<state, &state::_OnMouseMoved>(this)
-		);
+			EventDelegate<Events::MouseMovedEvent&>::FromMethod<state, &state::_OnMouseMoved>(this));
 		_hubHandles[MouseButtonPressed] = mouseHub.onButtonPressedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::MouseButtonPressedEvent&>::FromMethod<state, &state::_OnMouseButtonPressed>(this)
-		);
+			EventDelegate<Events::MouseButtonPressedEvent&>::FromMethod<state, &state::_OnMouseButtonPressed>(this));
 		_hubHandles[MouseButtonReleased] = mouseHub.onButtonReleasedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::MouseButtonReleasedEvent&>::FromMethod<state, &state::_OnMouseButtonReleased>(this)
-		);
+			EventDelegate<Events::MouseButtonReleasedEvent&>::FromMethod<state, &state::_OnMouseButtonReleased>(this));
 		_hubHandles[MouseDragged] = mouseHub.onDraggedMulticastDispatcher.Subscribe(
-			EventDelegate<Events::MouseDraggedEvent&>::FromMethod<state, &state::_OnMouseDragged>(this)
-		);
+			EventDelegate<Events::MouseDraggedEvent&>::FromMethod<state, &state::_OnMouseDragged>(this));
 		_hubHandles[MouseWheelScrolled] = mouseHub.onWheelScrolledMulticastDispatcher.Subscribe(
-			EventDelegate<Events::MouseWheelScrolledEvent&>::FromMethod<state, &state::_OnMouseWheelScrolled>(this)
-		);
+			EventDelegate<Events::MouseWheelScrolledEvent&>::FromMethod<state, &state::_OnMouseWheelScrolled>(this));
 
 		_hubHandles[WindowFocus] = windowHub.onFocusMulticastDispatcher.Subscribe(
-			EventDelegate<Events::WindowFocusEvent&>::FromMethod<state, &state::_OnWindowFocus>(this)
-		);
+			EventDelegate<Events::WindowFocusEvent&>::FromMethod<state, &state::_OnWindowFocus>(this));
 	}
 
 	/**
@@ -289,23 +281,23 @@ private:
 	void _SetMousePosition(f32 x, f32 y);
 
 private:
-	std::bitset<stMaxKeys> _keysDown;						///< Keys currently held (persists across frames)
-	std::bitset<stMaxKeys> _keysJustPressed;				///< Keys that went down during the current frame
-	std::bitset<stMaxKeys> _keysJustReleased;				///< Keys that went up during the current frame
+	std::bitset<stMaxKeys> _keysDown;      ///< Keys currently held (persists across frames)
+	std::bitset<stMaxKeys> _keysJustPressed;    ///< Keys that went down during the current frame
+	std::bitset<stMaxKeys> _keysJustReleased;    ///< Keys that went up during the current frame
 
-	std::bitset<stMaxMouseButtons> _buttonsDown;			///< Mouse buttons currently held (persists across frames)
-	std::bitset<stMaxMouseButtons> _buttonsJustPressed;		///< Mouse buttons that went down during the current frame
-	std::bitset<stMaxMouseButtons> _buttonsJustReleased;	///< Mouse buttons that went up during the current frame
+	std::bitset<stMaxMouseButtons> _buttonsDown;   ///< Mouse buttons currently held (persists across frames)
+	std::bitset<stMaxMouseButtons> _buttonsJustPressed;  ///< Mouse buttons that went down during the current frame
+	std::bitset<stMaxMouseButtons> _buttonsJustReleased; ///< Mouse buttons that went up during the current frame
 
-	f32 _mouseX = 0.0f, _mouseY = 0.0f;					///< Last known cursor position in window space (top-left origin)
-	f32 _previousMouseX = 0.0f, _previousMouseY = 0.0f;	///< Cursor position at the end of the previous frame, the delta's origin
-	bool _hasMousePosition = false;						///< False until the first position, and again after a focus loss
-	f32 _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;		///< Scroll accumulated during the current frame
+	f32 _mouseX = 0.0f, _mouseY = 0.0f;     ///< Last known cursor position in window space (top-left origin)
+	f32 _previousMouseX = 0.0f, _previousMouseY = 0.0f; ///< Cursor position at the end of the previous frame, the delta's origin
+	bool _hasMousePosition = false;      ///< False until the first position, and again after a focus loss
+	f32 _scrollDeltaX = 0.0f, _scrollDeltaY = 0.0f;  ///< Scroll accumulated during the current frame
 
 	Types::CursorMode _cursorMode = Types::CursorMode::Normal; ///< Who the pointer's motion belongs to
 	I_Window* _window = nullptr; ///< Non-owning; where cursor modes are applied, null in the tests
 
-	std::array<u32, _Count> _hubHandles{};				///< Handles of the hub subscriptions, used for unsubscription
+	std::array<u32, _Count> _hubHandles{};    ///< Handles of the hub subscriptions, used for unsubscription
 };
 
 }

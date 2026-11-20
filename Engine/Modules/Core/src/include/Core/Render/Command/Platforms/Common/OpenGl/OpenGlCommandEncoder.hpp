@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -127,14 +127,14 @@ private:
 	/// Taken from the pipeline, not from the draw call: OpenGL wants the primitive mode as an argument of glDraw*,
 	/// while the other backends bake it into the pipeline object.
 	Types::PrimitiveTopology _topology = Types::PrimitiveTopology::None;
-	bool _ended = false;	///< Guards against recording after End()
+	bool _ended = false; ///< Guards against recording after End()
 
-	u32 _vaoID = 0;			///< The vertex array the attribute layout is recorded into
+	u32 _vaoID = 0;   ///< The vertex array the attribute layout is recorded into
 
 	/// Height of the render area the pass was opened on, kept to flip the origin of every viewport set on it.
 	u32 _targetHeight = 0;
 
-	size_t _indexCount = 0;	///< Indices held by the bound element buffer, to bounds-check the draws in Debug
+	size_t _indexCount = 0; ///< Indices held by the bound element buffer, to bounds-check the draws in Debug
 
 	std::span<const u32> _uniformBuffers;
 };

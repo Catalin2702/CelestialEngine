@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Input/Input.hpp>
@@ -145,7 +145,7 @@ public:
 	[[nodiscard]] CE::Types::WindowApi GetWindowApi() const override { return CE::Types::WindowApi::None; }
 
 public:
-	std::vector<CursorMode> appliedModes;	///< Every mode SetCursorMode received, in order
+	std::vector<CursorMode> appliedModes; ///< Every mode SetCursorMode received, in order
 
 private:
 	CursorMode _cursorMode = CursorMode::Normal;
@@ -524,10 +524,10 @@ TEST_F(InputTest, UnsubscribeFromHub_StopsTrackingEvents) {
  *			raw callbacks only exist where the GLFW backend does (CE_WINDOW_GLFW).
  */
 TEST_F(InputTest, RawHubCallbacks_FeedTheInputState) {
-	constexpr int glfwKeyA = 65;			// GLFW_KEY_A
-	constexpr int glfwPress = 1;			// GLFW_PRESS
-	constexpr int glfwRelease = 0;			// GLFW_RELEASE
-	constexpr int glfwMouseButtonLeft = 0;	// GLFW_MOUSE_BUTTON_LEFT
+	constexpr int glfwKeyA = 65;   // GLFW_KEY_A
+	constexpr int glfwPress = 1;   // GLFW_PRESS
+	constexpr int glfwRelease = 0;   // GLFW_RELEASE
+	constexpr int glfwMouseButtonLeft = 0; // GLFW_MOUSE_BUTTON_LEFT
 
 	_hub.ReceiveKeyEvent(glfwKeyA, glfwPress, 0, 0);
 	_hub.ReceiveMouseButtonEvent(glfwMouseButtonLeft, glfwPress, 0);

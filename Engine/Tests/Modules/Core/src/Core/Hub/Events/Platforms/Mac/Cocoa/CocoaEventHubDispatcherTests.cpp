@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp>
@@ -59,8 +59,7 @@ public:
 template <typename EventType, typename Channel>
 u32 SubscribeTo(Channel& channel, HubSubscriber<EventType>& subscriber) {
 	return channel.Subscribe(
-		EventDelegate<EventType&>::template FromMethod<HubSubscriber<EventType>, &HubSubscriber<EventType>::OnEvent>(&subscriber)
-	);
+		EventDelegate<EventType&>::template FromMethod<HubSubscriber<EventType>, &HubSubscriber<EventType>::OnEvent>(&subscriber));
 }
 
 /**

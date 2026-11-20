@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-07
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -28,7 +28,7 @@ public:
 	virtual ~I_CameraProjection() = default;
 
 public:
-	[[nodiscard]] static std::unique_ptr<I_CameraProjection>MakeCameraProjection(const CameraProjectionDescriptor& descriptor);
+	[[nodiscard]] static std::unique_ptr<I_CameraProjection> MakeCameraProjection(const CameraProjectionDescriptor& descriptor);
 
 public:
 	virtual void SetViewportSize(u32 width, u32 height) = 0;

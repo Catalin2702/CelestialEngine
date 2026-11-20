@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -21,15 +21,15 @@
 
 
 namespace CE::Events {
-	class AppTickEvent;
-	class KeyPressedEvent;
-	class KeyReleasedEvent;
-	class MouseButtonPressedEvent;
-	class MouseButtonReleasedEvent;
-	class MouseDraggedEvent;
-	class MouseMovedEvent;
-	class MouseWheelScrolledEvent;
-	class WindowResizeEvent;
+class AppTickEvent;
+class KeyPressedEvent;
+class KeyReleasedEvent;
+class MouseButtonPressedEvent;
+class MouseButtonReleasedEvent;
+class MouseDraggedEvent;
+class MouseMovedEvent;
+class MouseWheelScrolledEvent;
+class WindowResizeEvent;
 }
 
 namespace CE::Core {
@@ -71,8 +71,7 @@ public:
 	 */
 	SceneLayer(const CameraDescriptor& cameraDescriptor,
 		const CameraProjectionDescriptor& cameraProjectionDescriptor,
-		const CameraControllerDescriptor& cameraControllerDescriptor
-	);
+		const CameraControllerDescriptor& cameraControllerDescriptor);
 
 	SceneLayer(const SceneLayer&) = delete;
 	SceneLayer(SceneLayer&&) noexcept = default;
@@ -138,11 +137,11 @@ private:
 	void _ForwardToController(Events::I_Event& event) const;
 
 private:
-	UnicastDispatcher<> _OnRender;					///< What the client wants drawn; unbound until SetOnRenderDelegate
+	UnicastDispatcher<> _OnRender;     ///< What the client wants drawn; unbound until SetOnRenderDelegate
 
 	CameraRig _cameraRig;
 
-	f32 _deltaTime = 0.0_f32;						///< Last delta the tick channel reported, in seconds
+	f32 _deltaTime = 0.0_f32;      ///< Last delta the tick channel reported, in seconds
 
 	/// Owning tokens, ordered to match the enum above.
 	std::array<Subscription, _Count> _subscriptions;

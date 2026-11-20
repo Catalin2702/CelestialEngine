@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-19
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -106,7 +106,7 @@ public:
 	[[nodiscard]] const std::string& GetName() const { return _name; }
 
 protected:
-	std::string _name;							///< Name for the layer
+	std::string _name;       ///< Name for the layer
 };
 
 }

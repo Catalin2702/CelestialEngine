@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -35,9 +35,9 @@ inline constexpr u32 MAX_COLOR_ATTACHMENTS = 8;
  *			attachment from main memory into tile memory before the pass runs, the other two do not.
  */
 enum class LoadAction: u8 {
-	Load,		///< Keep what is already there - the only choice when the pass draws on top of an earlier one
-	Clear,		///< Fill with the attachment's clear value
-	DontCare,	///< Contents are undefined; promise that every pixel read is one this pass wrote first
+	Load,  ///< Keep what is already there - the only choice when the pass draws on top of an earlier one
+	Clear,  ///< Fill with the attachment's clear value
+	DontCare, ///< Contents are undefined; promise that every pixel read is one this pass wrote first
 };
 
 /**
@@ -47,8 +47,8 @@ enum class LoadAction: u8 {
  *			entirely, which is what makes a depth buffer nobody reads afterwards nearly free.
  */
 enum class StoreAction: u8 {
-	Store,		///< Write the result back, so a later pass can sample or load it
-	DontCare,	///< Discard it; the attachment was scaffolding for this pass only
+	Store,  ///< Write the result back, so a later pass can sample or load it
+	DontCare, ///< Discard it; the attachment was scaffolding for this pass only
 };
 
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp"
@@ -21,7 +21,7 @@ namespace CE::Core {
 namespace {
 
 /// Downcasts a buffer coming from the API-agnostic overloads; a non-OpenGl buffer is a programming error.
-template<typename Derived, typename Base>
+template <typename Derived, typename Base>
 std::shared_ptr<Derived> AsOpenGlBuffer(std::shared_ptr<Base> buffer) {
 	auto openGlBuffer = std::dynamic_pointer_cast<Derived>(std::move(buffer));
 	assert(openGlBuffer and "OpenGlVertexArray: the buffer is not an OpenGl buffer.");

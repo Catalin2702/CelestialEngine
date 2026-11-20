@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Types/KeyCode/Platforms/Common/Glfw/Glfw.hpp>
@@ -49,9 +49,7 @@ TEST_F(GlfwKeyCodeTest, KeyboardKeyCodeFromGlfw_UnmappedKey_ReturnsUnknown) {
  * @brief Test that the GLFW mapping round trips
  */
 TEST_F(GlfwKeyCodeTest, GlfwMapping_RoundTrips) {
-	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::Z, KeyboardKeyCode::Num5, KeyboardKeyCode::F1,
-			KeyboardKeyCode::Space, KeyboardKeyCode::Enter, KeyboardKeyCode::Escape, KeyboardKeyCode::Left,
-			KeyboardKeyCode::LeftControl, KeyboardKeyCode::RightSuper}) {
+	for (const auto key: {KeyboardKeyCode::A, KeyboardKeyCode::Z, KeyboardKeyCode::Num5, KeyboardKeyCode::F1, KeyboardKeyCode::Space, KeyboardKeyCode::Enter, KeyboardKeyCode::Escape, KeyboardKeyCode::Left, KeyboardKeyCode::LeftControl, KeyboardKeyCode::RightSuper}) {
 		EXPECT_EQ(KeyboardKeyCodeFromGlfw(GlfwKeyCodeFromKeyboard(key)), key) << "Key: " << format_as(key);
 	}
 }
@@ -81,11 +79,9 @@ TEST_F(GlfwKeyCodeTest, MouseButtonKeyCodeFromGlfw_UnmappedButton_ReturnsUnknown
  * @brief Test that the GLFW mapping round trips for the physical buttons
  */
 TEST_F(GlfwKeyCodeTest, GlfwMapping_RoundTripsForPhysicalButtons) {
-	for (const auto button: {MouseButtonCode::Left, MouseButtonCode::Right, MouseButtonCode::Middle,
-			MouseButtonCode::Button4, MouseButtonCode::Button5, MouseButtonCode::Button6,
-			MouseButtonCode::Button7, MouseButtonCode::Button8}) {
+	for (const auto button: {MouseButtonCode::Left, MouseButtonCode::Right, MouseButtonCode::Middle, MouseButtonCode::Button4, MouseButtonCode::Button5, MouseButtonCode::Button6, MouseButtonCode::Button7, MouseButtonCode::Button8}) {
 		EXPECT_EQ(MouseButtonKeyCodeFromGlfw(GlfwKeyCodeFromMouseButton(button)), button)
-			<< "Button: " << format_as(button);
+		    << "Button: " << format_as(button);
 	}
 }
 

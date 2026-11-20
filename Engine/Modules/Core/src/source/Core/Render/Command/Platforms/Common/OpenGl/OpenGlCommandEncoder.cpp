@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
@@ -135,8 +135,7 @@ void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
 		static_cast<GLint>(x),
 		static_cast<GLint>(y),
 		static_cast<GLsizei>(width),
-		static_cast<GLsizei>(height)
-	);
+		static_cast<GLsizei>(height));
 
 	glDepthRangef(minDepth, maxDepth);
 }
@@ -187,8 +186,7 @@ void OpenGlCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstInde
 		// The index buffers are built from u32, so the type is fixed; it becomes encoder state the day u16 is allowed.
 		GL_UNSIGNED_INT,
 		OpenGlBufferOffset(firstIndex * static_cast<u32>(sizeof(u32))),
-		static_cast<GLint>(baseVertex)
-	);
+		static_cast<GLint>(baseVertex));
 }
 
 void OpenGlCommandEncoder::End() {

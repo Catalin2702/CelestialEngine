@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Utility/Utility.hpp>
@@ -36,8 +36,7 @@ protected:
 	void SetUp() override {
 		CE::Tools::Log::Init();
 
-		_tempDirectory = fs::temp_directory_path() / ("CE_FileSystemTests_" + std::to_string(::testing::UnitTest::GetInstance()->random_seed()) + "_" +
-													::testing::UnitTest::GetInstance()->current_test_info()->name());
+		_tempDirectory = fs::temp_directory_path() / ("CE_FileSystemTests_" + std::to_string(::testing::UnitTest::GetInstance()->random_seed()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name());
 		fs::remove_all(_tempDirectory);
 		fs::create_directories(_tempDirectory);
 

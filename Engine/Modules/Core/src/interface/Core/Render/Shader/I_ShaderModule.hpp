@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-09
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -18,7 +18,7 @@
 
 
 namespace CE::Types {
-	enum class ShaderType: u8;
+enum class ShaderType: u8;
 }
 
 namespace CE::Core {
@@ -57,7 +57,7 @@ public:
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
 };
 
-template<Types::GraphicsApi Api>
+template <Types::GraphicsApi Api>
 class I_ShaderModuleBase: public I_ShaderModule {
 public:
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return Api; }

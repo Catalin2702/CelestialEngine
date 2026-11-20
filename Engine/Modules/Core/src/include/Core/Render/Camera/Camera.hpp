@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -52,7 +52,7 @@ public:
 
 	[[nodiscard]] glm::vec3 GetForward() const { return _rotation * CE_WORLD_FORWARD; }
 	[[nodiscard]] glm::vec3 GetRight() const { return _rotation * CE_WORLD_RIGHT; }
-	[[nodiscard]] glm::vec3 GetUp() const { return _rotation * CE_WORLD_UP;}
+	[[nodiscard]] glm::vec3 GetUp() const { return _rotation * CE_WORLD_UP; }
 
 private:
 	std::shared_ptr<I_CameraProjection> _projection;

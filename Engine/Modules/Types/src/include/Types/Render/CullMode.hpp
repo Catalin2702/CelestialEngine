@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -29,8 +29,8 @@ namespace CE::Types {
  *			make "cull the back face of a clockwise mesh" inexpressible.
  */
 enum class FrontFace: u8 {
-	CounterClockwise,	///< the default in OpenGL, Vulkan and Metal
-	Clockwise,			///< the default in DirectX
+	CounterClockwise, ///< the default in OpenGL, Vulkan and Metal
+	Clockwise,   ///< the default in DirectX
 };
 
 /**
@@ -45,9 +45,9 @@ enum class FrontFace: u8 {
  *			know, and Metal simply reads it back out at encode time.
  */
 enum class CullMode: u8 {
-	None,	///< both sides rasterise - what a double-sided material wants
-	Front,	///< discard front-facing triangles
-	Back,	///< discard back-facing triangles - the usual choice for closed meshes
+	None, ///< both sides rasterise - what a double-sided material wants
+	Front, ///< discard front-facing triangles
+	Back, ///< discard back-facing triangles - the usual choice for closed meshes
 };
 
 /**

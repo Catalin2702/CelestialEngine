@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -35,16 +35,16 @@ namespace CE::Types {
  *			which is why they are 0 and 0b111 rather than extra entries bolted on.
  */
 enum class CompareFunc: u8 {
-	Never = 0,							///< 0b000 - the test always fails
-	Less = BIT(0),						///< 0b001 - passes when the fragment is closer
-	Greater = BIT(1),					///< 0b010 - passes when the fragment is farther
-	Equal = BIT(2),						///< 0b100 - passes on an exact match
+	Never = 0,       ///< 0b000 - the test always fails
+	Less = BIT(0),      ///< 0b001 - passes when the fragment is closer
+	Greater = BIT(1),     ///< 0b010 - passes when the fragment is farther
+	Equal = BIT(2),      ///< 0b100 - passes on an exact match
 
-	NotEqual = Less | Greater,			///< 0b011 - passes on anything but an exact match
-	LessEqual = Less | Equal,			///< 0b101 - the usual depth test
-	GreaterEqual = Greater | Equal,		///< 0b110 - the usual depth test under a reversed-Z projection
+	NotEqual = Less | Greater,   ///< 0b011 - passes on anything but an exact match
+	LessEqual = Less | Equal,   ///< 0b101 - the usual depth test
+	GreaterEqual = Greater | Equal,  ///< 0b110 - the usual depth test under a reversed-Z projection
 
-	Always = Less | Greater | Equal,	///< 0b111 - the test always passes (equivalent to no depth test)
+	Always = Less | Greater | Equal, ///< 0b111 - the test always passes (equivalent to no depth test)
 };
 
 constexpr CompareFunc operator & (CompareFunc x, CompareFunc y) {
@@ -61,7 +61,7 @@ constexpr CompareFunc operator ^ (CompareFunc x, CompareFunc y) {
 
 /// Inverts a compare function: the outcomes that used to fail are the ones that now pass. Never becomes Always,
 /// Less becomes GreaterEqual, and so on. The mask keeps the result inside the three meaningful bits.
-constexpr CompareFunc operator ~ (CompareFunc x) {
+constexpr CompareFunc operator ~(CompareFunc x) {
 	return static_cast<CompareFunc>(~static_cast<u8>(x) & static_cast<u8>(CompareFunc::Always));
 }
 

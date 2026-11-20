@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -19,8 +19,8 @@
 #include <Foundation/Foundation.hpp>
 
 namespace MTL {
-	class Device;
-	class Texture;
+class Device;
+class Texture;
 }
 
 /**

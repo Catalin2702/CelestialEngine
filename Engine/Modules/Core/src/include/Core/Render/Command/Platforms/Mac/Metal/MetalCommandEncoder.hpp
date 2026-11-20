@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-08
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -20,11 +20,11 @@
 
 
 namespace MTL {
-	class Buffer;
-	class CommandBuffer;
-	class CommandQueue;
-	class RenderCommandEncoder;
-	class RenderPassDescriptor;
+class Buffer;
+class CommandBuffer;
+class CommandQueue;
+class RenderCommandEncoder;
+class RenderPassDescriptor;
 }
 
 namespace CE::Core {

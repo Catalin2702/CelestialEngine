@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Types/Render/BlendFactor.hpp>
@@ -45,13 +45,20 @@ TEST_F(BlendFactorTest, IsValidDestinationFactor_RejectsOnlySrcAlphaSaturated) {
  */
 TEST_F(BlendFactorTest, IsValidDestinationFactor_AcceptsEveryOtherFactor) {
 	constexpr BlendFactor valid[]{
-		BlendFactor::Zero, BlendFactor::One,
-		BlendFactor::SrcColor, BlendFactor::OneMinusSrcColor,
-		BlendFactor::DstColor, BlendFactor::OneMinusDstColor,
-		BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha,
-		BlendFactor::DstAlpha, BlendFactor::OneMinusDstAlpha,
-		BlendFactor::ConstantColor, BlendFactor::OneMinusConstantColor,
-		BlendFactor::ConstantAlpha, BlendFactor::OneMinusConstantAlpha,
+		BlendFactor::Zero,
+		BlendFactor::One,
+		BlendFactor::SrcColor,
+		BlendFactor::OneMinusSrcColor,
+		BlendFactor::DstColor,
+		BlendFactor::OneMinusDstColor,
+		BlendFactor::SrcAlpha,
+		BlendFactor::OneMinusSrcAlpha,
+		BlendFactor::DstAlpha,
+		BlendFactor::OneMinusDstAlpha,
+		BlendFactor::ConstantColor,
+		BlendFactor::OneMinusConstantColor,
+		BlendFactor::ConstantAlpha,
+		BlendFactor::OneMinusConstantAlpha,
 	};
 
 	for (const auto factor: valid)

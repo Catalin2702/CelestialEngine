@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Types/Types.hpp>
@@ -53,8 +53,7 @@ TEST_F(ShaderTypesTest, Format_NamesTheShaderStage) {
  * @brief Test that the stages common to every API are supported
  */
 TEST_F(ShaderTypesTest, IsShaderTypeSupported_CommonStages_AreSupported) {
-	for (const auto api: {GraphicsApi::OpenGL, GraphicsApi::Metal, GraphicsApi::Vulkan, GraphicsApi::DirectX11,
-			GraphicsApi::DirectX12}) {
+	for (const auto api: {GraphicsApi::OpenGL, GraphicsApi::Metal, GraphicsApi::Vulkan, GraphicsApi::DirectX11, GraphicsApi::DirectX12}) {
 		EXPECT_TRUE(IsShaderTypeSupported(api, ShaderType::Vertex));
 		EXPECT_TRUE(IsShaderTypeSupported(api, ShaderType::Fragment));
 		EXPECT_TRUE(IsShaderTypeSupported(api, ShaderType::Compute));
@@ -102,4 +101,3 @@ TEST_F(ShaderTypesTest, IsShaderTypeSupported_UnknownStage_IsNeverSupported) {
 	EXPECT_FALSE(IsShaderTypeSupported(GraphicsApi::OpenGL, ShaderType::Unknown));
 	EXPECT_FALSE(IsShaderTypeSupported(GraphicsApi::Metal, ShaderType::Unknown));
 }
-

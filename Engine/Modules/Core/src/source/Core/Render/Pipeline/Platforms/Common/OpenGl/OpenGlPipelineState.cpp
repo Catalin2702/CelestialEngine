@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -26,7 +26,6 @@ namespace {
 
 /// Checks one stage of the descriptor and returns the OpenGL shader name to attach.
 u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::ShaderType expectedStage) {
-
 	if (not module) [[unlikely]] {
 		const auto message = std::format("OpenGlPipelineState: the descriptor has no {} shader module.", expectedStage);
 		CE_CORE_ERROR(message);
@@ -79,7 +78,7 @@ void BindConstantsBlocks(const u32 programID) {
 	// GLSL 4.10 has no layout(binding = N) for blocks - that arrives with 4.20, past what macOS offers - so the
 	// program is told from here instead. The names are the ones Common.h gives the same structs: the one convention
 	// the backends share, as with the shader names.
-	constexpr std::array<std::pair<const char*, u32>, 2> blocks {{
+	constexpr std::array<std::pair<const char*, u32>, 2> blocks{{
 		{"CameraConstants", Types::CAMERA_CONSTANTS_SLOT},
 		{"ObjectConstants", Types::OBJECT_CONSTANTS_SLOT},
 	}};
@@ -188,8 +187,7 @@ void OpenGlPipelineState::Apply() const {
 			Types::ToOpenGl(_descriptor.blendState.sourceColor),
 			Types::ToOpenGl(_descriptor.blendState.destinationColor),
 			Types::ToOpenGl(_descriptor.blendState.sourceAlpha),
-			Types::ToOpenGl(_descriptor.blendState.destinationAlpha)
-		);
+			Types::ToOpenGl(_descriptor.blendState.destinationAlpha));
 	}
 	else {
 		glDisable(GL_BLEND);

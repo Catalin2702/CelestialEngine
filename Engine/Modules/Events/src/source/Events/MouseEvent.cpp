@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-20
 //
 
 #include "Events/MouseEvent.hpp"
@@ -14,7 +14,7 @@
 namespace CE::Events {
 
 I_MouseMovedEvent::I_MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
-	I_Event(isMutable), _x(x), _y(y)  {}
+	I_Event(isMutable), _x(x), _y(y) {}
 
 MouseMovedEvent::MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
 	I_MouseMovedEvent(x, y, isMutable) {}
@@ -48,7 +48,7 @@ std::string MouseButtonReleasedEvent::ToString() const {
 }
 
 MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const f32 x, const f32 y, const bool isMutable):
-	I_MouseMovedEvent(x, y, isMutable), _button(button)  {}
+	I_MouseMovedEvent(x, y, isMutable), _button(button) {}
 
 std::string MouseDraggedEvent::ToString() const {
 	return std::format("{0}: {1}, {2} with button {3}", GetName(), _x, _y, _button);

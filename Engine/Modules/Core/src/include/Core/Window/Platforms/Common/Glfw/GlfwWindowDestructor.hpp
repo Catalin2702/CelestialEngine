@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-06
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -33,7 +33,7 @@ struct CE_CORE_API GlfwWindowDestructor {
 	 * @param window Pointer to the GLFW window to destroy
 	 * @details Calls glfwDestroyWindow to properly clean up the window resources
 	 */
-	void operator()(GLFWwindow* window) const;
+	void operator () (GLFWwindow* window) const;
 };
 
 /**

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Buffer/I_Buffer.hpp"
@@ -26,8 +26,7 @@
 namespace CE::Core {
 
 ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain):
-	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain))
-{
+	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain)) {
 	assert(_graphicDevice != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no graphic device.");
 	assert(_swapchain != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no swapchain.");
 	assert(_graphicDevice->GetGraphicApi() == _swapchain->GetGraphicApi() and "ForwardRenderer::ForwardRenderer: The device and the swapchain were created for different graphics APIs.");
@@ -246,7 +245,7 @@ void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
 		.debugName = "SceneColor"
 	};
 
-	const TextureDescriptor depthDescriptor {
+	const TextureDescriptor depthDescriptor{
 		.width = width,
 		.height = height,
 		.format = _sceneDepthFormat,
@@ -323,15 +322,39 @@ void ForwardRenderer::_CreateCompositeResources() {
 	// Clip-space quad, two triangles. The colour column is there only so the layout matches the scene's, which is
 	// what lets the composite shaders share VertexInput and the engine share one vertex descriptor.
 	constexpr std::array vertices{
-		-1.0_f32, -1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
-		 1.0_f32, -1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
-		 1.0_f32,  1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
-		-1.0_f32,  1.0_f32, 0.0_f32,	1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32,
+		-1.0_f32,
+		-1.0_f32,
+		0.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		-1.0_f32,
+		0.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		0.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		-1.0_f32,
+		1.0_f32,
+		0.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
+		1.0_f32,
 	};
 
 	constexpr std::array indices{0_u32, 1_u32, 2_u32, 2_u32, 3_u32, 0_u32};
 
-	const BufferLayout vertexLayout {
+	const BufferLayout vertexLayout{
 		{ShaderDataType::Float3, "inputPosition"},
 		{ShaderDataType::Float4, "inputColor"}
 	};
@@ -342,14 +365,8 @@ void ForwardRenderer::_CreateCompositeResources() {
 	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
 	// The renderer states what it wants drawn and never learns what the backend underneath compiles or loads.
 	const PipelineDescriptor pipelineDescriptor{
-		.vertexShader = _graphicDevice->CreateShaderModule({
-			.stage = ShaderType::Vertex,
-			.name = "CompositeVertex"
-		}),
-		.fragmentShader = _graphicDevice->CreateShaderModule({
-			.stage = ShaderType::Fragment,
-			.name = "CompositeFragment"
-		}),
+		.vertexShader = _graphicDevice->CreateShaderModule({.stage = ShaderType::Vertex, .name = "CompositeVertex"}),
+		.fragmentShader = _graphicDevice->CreateShaderModule({.stage = ShaderType::Fragment, .name = "CompositeFragment"}),
 		.vertexLayout = vertexLayout,
 		.cullMode = CullMode::None,
 		.depthState = {
@@ -359,11 +376,7 @@ void ForwardRenderer::_CreateCompositeResources() {
 		.blendState = {
 			.enabled = false,
 		},
-		.formats = {
-			.colors = {_swapchain->GetColorFormat()},
-			.colorCount = 1,
-			.depth = PixelFormat::None
-		}
+		.formats = {.colors = {_swapchain->GetColorFormat()}, .colorCount = 1, .depth = PixelFormat::None}
 	};
 
 	_compositePipeline = _graphicDevice->CreatePipelineState(pipelineDescriptor);

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Apple/Bridge/ImGui/ImGuiBridge.h>
@@ -120,4 +120,3 @@ TEST_F(ImGuiBridgeTest, Namespace_IsCorrectlyResolved) {
 
 	SUCCEED();
 }
-

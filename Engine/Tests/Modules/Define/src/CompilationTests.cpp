@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 // Include the macros we want to test
@@ -22,7 +22,7 @@ using namespace CE::Types;
 namespace {
 
 // Mock Event Classes for testing
-class TestWindowCloseEvent : public I_Event {
+class TestWindowCloseEvent: public I_Event {
 public:
 	explicit TestWindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
 
@@ -30,7 +30,7 @@ public:
 	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 };
 
-class TestKeyPressedEvent : public I_Event {
+class TestKeyPressedEvent: public I_Event {
 public:
 	explicit TestKeyPressedEvent(const bool isMutable = true): I_Event(isMutable) {}
 
@@ -56,7 +56,7 @@ public:
 	[[nodiscard]] virtual WindowApi GetWindowApi() const = 0;
 };
 
-template<WindowApi Api>
+template <WindowApi Api>
 class TestWindowBase: public TestWindow {
 public:
 	[[nodiscard]] WindowApi GetWindowApi() const override { return _api; }
@@ -164,9 +164,9 @@ TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesStaticMethod) {
 
 	// Verify that it's truly static (callable without instance)
 	static_assert(std::is_same_v<
-		decltype(TestWindowCloseEvent::GetStaticType()),
-		EventType
-	>, "GetStaticType should return EventType");
+					  decltype(TestWindowCloseEvent::GetStaticType()),
+					  EventType>,
+		"GetStaticType should return EventType");
 }
 
 TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesVirtualMethod) {
@@ -197,7 +197,7 @@ TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_SingleCategory) {
 
 	EXPECT_EQ(flags, EventCategory::EventCategoryApplication);
 	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryApplication));
-	EXPECT_FALSE(HasAnyFlags(flags , EventCategory::EventCategoryInput));
+	EXPECT_FALSE(HasAnyFlags(flags, EventCategory::EventCategoryInput));
 }
 
 TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_MultipleCategories) {

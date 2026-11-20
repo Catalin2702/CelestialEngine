@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "TestEventHub.hpp"
@@ -108,8 +108,7 @@ TEST_F(EventHubDispatcherTest, DispatchRenderChangeVSyncEvent_ReachesTheRenderCh
 	ChannelSubscriber<Events::VSyncEvent> subscriber;
 	Hub().GetRenderEventHub().onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromMethod<ChannelSubscriber<Events::VSyncEvent>,
-			&ChannelSubscriber<Events::VSyncEvent>::OnEvent>(&subscriber)
-	);
+			&ChannelSubscriber<Events::VSyncEvent>::OnEvent>(&subscriber));
 
 	Events::VSyncEvent event{true};
 	Hub().DispatchRenderChangeVSyncEvent(event);
@@ -128,12 +127,10 @@ TEST_F(EventHubDispatcherTest, DispatchWindowCloseEvent_ReachesOnlyTheWindowChan
 
 	Hub().GetWindowEventHub().onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<ChannelSubscriber<Events::WindowCloseEvent>,
-			&ChannelSubscriber<Events::WindowCloseEvent>::OnEvent>(&closeSubscriber)
-	);
+			&ChannelSubscriber<Events::WindowCloseEvent>::OnEvent>(&closeSubscriber));
 	Hub().GetWindowEventHub().onResizeMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowResizeEvent&>::FromMethod<ChannelSubscriber<Events::WindowResizeEvent>,
-			&ChannelSubscriber<Events::WindowResizeEvent>::OnEvent>(&resizeSubscriber)
-	);
+			&ChannelSubscriber<Events::WindowResizeEvent>::OnEvent>(&resizeSubscriber));
 
 	Events::WindowCloseEvent event{};
 	Hub().DispatchWindowCloseEvent(event);
@@ -212,12 +209,10 @@ TEST_F(EventHubDispatcherTest, DispatchWindowCursorModeEvent_ReachesTheCursorMod
 
 	Hub().GetWindowEventHub().onCursorModeMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCursorModeEvent&>::FromMethod<ChannelSubscriber<Events::WindowCursorModeEvent>,
-			&ChannelSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&cursorSubscriber)
-	);
+			&ChannelSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&cursorSubscriber));
 	Hub().GetWindowEventHub().onFocusMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowFocusEvent&>::FromMethod<ChannelSubscriber<Events::WindowFocusEvent>,
-			&ChannelSubscriber<Events::WindowFocusEvent>::OnEvent>(&focusSubscriber)
-	);
+			&ChannelSubscriber<Events::WindowFocusEvent>::OnEvent>(&focusSubscriber));
 
 	Events::WindowCursorModeEvent event{CE::Types::CursorMode::Captured};
 	Hub().DispatchWindowCursorModeEvent(event);

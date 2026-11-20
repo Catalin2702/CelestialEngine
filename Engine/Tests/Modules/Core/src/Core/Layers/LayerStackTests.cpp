@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Layers/Layers.hpp>
@@ -26,7 +26,9 @@ namespace {
 /// The names of the stack's layers in iteration order: what every ordering test compares against.
 std::vector<std::string> NamesInOrder(LayerStack& stack) {
 	std::vector<std::string> names;
-	std::ranges::transform(stack, std::back_inserter(names), [](const auto& layer) { return layer->GetName(); });
+	std::ranges::transform(stack, std::back_inserter(names), [](const auto& layer) {
+		return layer->GetName();
+	});
 	return names;
 }
 

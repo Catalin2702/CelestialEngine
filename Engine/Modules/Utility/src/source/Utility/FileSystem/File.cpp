@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Utility/FileSystem/File.hpp"
@@ -18,9 +18,9 @@
 namespace CE::Utility {
 
 File::File(fs::path path, const Types::FileLoadState loadState, const bool autoSave):
-_path(std::move(path)),
-_loadState(loadState),
-_autoSave(autoSave) {
+	_path(std::move(path)),
+	_loadState(loadState),
+	_autoSave(autoSave) {
 	if (loadState == Types::FileLoadState::NotLoaded)
 		Load();
 }

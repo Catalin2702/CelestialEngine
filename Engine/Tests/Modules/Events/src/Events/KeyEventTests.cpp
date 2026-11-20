@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Events/Events.hpp>
@@ -163,7 +163,7 @@ TEST_F(KeyEventTest, KeyTypedEvent_GetEventType_ReturnsCorrectType) {
  * @brief Test that KeyTypedEvent handles a non-ASCII code point
  */
 TEST_F(KeyEventTest, KeyTypedEvent_Constructor_StoresNonAsciiCodePoint) {
-	constexpr KeyCharType codePoint = 0x00E8;	// 'è'
+	constexpr KeyCharType codePoint = 0x00E8; // 'è'
 
 	const KeyTypedEvent event{codePoint};
 

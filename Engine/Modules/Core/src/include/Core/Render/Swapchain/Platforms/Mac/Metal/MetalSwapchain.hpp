@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -20,12 +20,12 @@
 
 
 namespace CA {
-	class MetalDrawable;
-	class MetalLayer;
+class MetalDrawable;
+class MetalLayer;
 }
 
 namespace MTL {
-	class Texture;
+class Texture;
 }
 
 namespace CE::Core {

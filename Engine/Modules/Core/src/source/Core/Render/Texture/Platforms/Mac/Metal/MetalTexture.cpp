@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
@@ -18,8 +18,7 @@
 namespace CE::Core {
 
 MetalTexture::MetalTexture(MTL::Device* nativeDevice, const TextureDescriptor& descriptor):
-	_width(descriptor.width), _height(descriptor.height), _format(descriptor.format), _usage(descriptor.usage)
-{
+	_width(descriptor.width), _height(descriptor.height), _format(descriptor.format), _usage(descriptor.usage) {
 	if (not nativeDevice or _width == 0 or _height == 0) [[unlikely]] {
 		constexpr auto error = "MetalTexture::MetalTexture: A texture needs a device and a non-zero size!";
 		CE_CORE_ERROR(error);

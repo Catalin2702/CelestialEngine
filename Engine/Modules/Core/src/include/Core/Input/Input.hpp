@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-22
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -95,7 +95,8 @@ public:
 	/**
 	 * @brief AreKeysPressed(LeftControl, LeftShift, S), without building the array by hand
 	 */
-	template<std::same_as<Types::KeyboardKeyCode>... Keys> requires (sizeof...(Keys) > 0)
+	template <std::same_as<Types::KeyboardKeyCode>... Keys>
+		requires (sizeof...(Keys) > 0)
 	static bool AreKeysPressed(const Keys... keys) {
 		const std::array<Types::KeyboardKeyCode, sizeof...(Keys)> chord{keys...};
 		return AreKeysPressed(std::span<const Types::KeyboardKeyCode>{chord});
@@ -112,7 +113,8 @@ public:
 	/**
 	 * @brief IsShortcutJustPressed(LeftShift, F1), without building the array by hand
 	 */
-	template <std::same_as<Types::KeyboardKeyCode>... Keys> requires (sizeof...(Keys) > 0)
+	template <std::same_as<Types::KeyboardKeyCode>... Keys>
+		requires (sizeof...(Keys) > 0)
 	static bool IsShortcutJustPressed(const Keys... keys) {
 		const std::array<Types::KeyboardKeyCode, sizeof...(Keys)> chord{keys...};
 		return IsShortcutJustPressed(std::span<const Types::KeyboardKeyCode>{chord});
@@ -256,9 +258,9 @@ private:
 	Input() = default;
 
 private:
-	InputState _state;								///< Event-driven input state, fed by the event hub and read by the queries
+	InputState _state;        ///< Event-driven input state, fed by the event hub and read by the queries
 
-	static Input* _instance;						///< Singleton instance of the Input class
+	static Input* _instance;      ///< Singleton instance of the Input class
 };
 
 }

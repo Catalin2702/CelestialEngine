@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-08-29
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 
 
 namespace CE::Types {
-	enum class ShaderType: u8;
+enum class ShaderType: u8;
 }
 
 namespace CE::Core {

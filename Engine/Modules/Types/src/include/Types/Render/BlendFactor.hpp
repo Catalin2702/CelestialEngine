@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -33,23 +33,23 @@ namespace CE::Types {
  *			per pipeline, in every API that supports it.
  */
 enum class BlendFactor: u8 {
-	Zero,						///< 0 - the term is dropped entirely
-	One,						///< 1 - the term is taken as-is
+	Zero,      ///< 0 - the term is dropped entirely
+	One,      ///< 1 - the term is taken as-is
 
-	SrcColor,					///< the incoming fragment's RGB
-	OneMinusSrcColor,			///< 1 - the incoming fragment's RGB
-	DstColor,					///< the RGB already in the render target
-	OneMinusDstColor,			///< 1 - the RGB already in the render target
+	SrcColor,     ///< the incoming fragment's RGB
+	OneMinusSrcColor,   ///< 1 - the incoming fragment's RGB
+	DstColor,     ///< the RGB already in the render target
+	OneMinusDstColor,   ///< 1 - the RGB already in the render target
 
-	SrcAlpha,					///< the incoming fragment's alpha - the source side of ordinary alpha blending
-	OneMinusSrcAlpha,			///< 1 - the incoming fragment's alpha - the destination side of the same
-	DstAlpha,					///< the alpha already in the render target
-	OneMinusDstAlpha,			///< 1 - the alpha already in the render target
+	SrcAlpha,     ///< the incoming fragment's alpha - the source side of ordinary alpha blending
+	OneMinusSrcAlpha,   ///< 1 - the incoming fragment's alpha - the destination side of the same
+	DstAlpha,     ///< the alpha already in the render target
+	OneMinusDstAlpha,   ///< 1 - the alpha already in the render target
 
-	ConstantColor,				///< the RGB of the blend constant set on the encoder
-	OneMinusConstantColor,		///< 1 - the RGB of the blend constant
-	ConstantAlpha,				///< the alpha of the blend constant
-	OneMinusConstantAlpha,		///< 1 - the alpha of the blend constant
+	ConstantColor,    ///< the RGB of the blend constant set on the encoder
+	OneMinusConstantColor,  ///< 1 - the RGB of the blend constant
+	ConstantAlpha,    ///< the alpha of the blend constant
+	OneMinusConstantAlpha,  ///< 1 - the alpha of the blend constant
 
 	/// min(srcAlpha, 1 - dstAlpha), replicated across RGB and forced to 1 for alpha. Used by order-independent
 	/// transparency schemes; valid as a source factor only, every API rejects it on the destination side.

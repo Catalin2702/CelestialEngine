@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -35,11 +35,11 @@ namespace CE::Core {
 class GlfwWindowEventHandler {
 public:
 	struct GlfwWindowStateEvents {
-		UnicastDispatcher<int, int> onResizeDispatcher;			///< Window size, in screen coordinates
-		UnicastDispatcher<int, int> onFramebufferResizeDispatcher;	///< Drawable size, in backing pixels - what the renderer needs
+		UnicastDispatcher<int, int> onResizeDispatcher;   ///< Window size, in screen coordinates
+		UnicastDispatcher<int, int> onFramebufferResizeDispatcher; ///< Drawable size, in backing pixels - what the renderer needs
 		UnicastDispatcher<> onCloseDispatcher;
-		UnicastDispatcher<int> onFocusDispatcher;	///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
-		UnicastDispatcher<Types::CursorMode> onCursorModeDispatcher;	///< Fired by SetCursorMode once the mode is applied
+		UnicastDispatcher<int> onFocusDispatcher; ///< Fired by the GLFW focus callback with GLFW_TRUE/GLFW_FALSE
+		UnicastDispatcher<Types::CursorMode> onCursorModeDispatcher; ///< Fired by SetCursorMode once the mode is applied
 	};
 
 	struct GlfwKeyboardEvents {
@@ -125,7 +125,8 @@ public:
  */
 class CE_CORE_API GlfwWindow final: public I_WindowBase<Types::WindowApi::GLFW>
 #if CE_RENDER_OPENGL
-	, public I_OpenGlSurface
+	,
+	                                public I_OpenGlSurface
 #endif
 {
 public:
@@ -340,13 +341,13 @@ public:
 	GlfwWindowEventHandler windowEventHandler;
 
 private:
-	GlfwWindowPtr _glfwWindow = nullptr;	///< Smart pointer managing the GLFW window lifetime
+	GlfwWindowPtr _glfwWindow = nullptr; ///< Smart pointer managing the GLFW window lifetime
 
-	u32 _width = 0;								///< Cached window width, in screen coordinates
-	u32 _height = 0;							///< Cached window height, in screen coordinates
+	u32 _width = 0;        ///< Cached window width, in screen coordinates
+	u32 _height = 0;       ///< Cached window height, in screen coordinates
 
-	u32 _frameWidth = 0;						///< Cached framebuffer width, in backing pixels
-	u32 _frameHeight = 0;						///< Cached framebuffer height, in backing pixels
+	u32 _frameWidth = 0;      ///< Cached framebuffer width, in backing pixels
+	u32 _frameHeight = 0;      ///< Cached framebuffer height, in backing pixels
 
 	/// @brief Bitmask of the mouse buttons currently held, indexed by GLFW button code.
 	/// @details GLFW has no native drag event, so a drag is synthesized when the cursor moves while a button is held.

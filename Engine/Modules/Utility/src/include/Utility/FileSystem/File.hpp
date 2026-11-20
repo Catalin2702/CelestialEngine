@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -69,7 +69,7 @@ public:
 	 * @return File& A reference to the current File object after copying
 	 * @details Copies the file path from the provided File object. The content is not copied. The current File will attempt to load the content when accessed.
 	 */
-	File & operator = (const File& other);
+	File& operator = (const File& other);
 
 	/**
 	 * @brief Move assignment operator
@@ -77,7 +77,7 @@ public:
 	 * @return File& A reference to the current File object after moving
 	 * @details Moves the file path and content from the provided File object. After the move, the original File object will be left in a valid but unspecified state.
 	 */
-	File & operator = (File&& other) noexcept;
+	File& operator = (File&& other) noexcept;
 
 public:
 	/**
@@ -233,16 +233,16 @@ public:
 	[[nodiscard]] bool Exists() const;
 
 private:
-	fs::path _path;									///< File path
+	fs::path _path;         ///< File path
 
-	std::vector<u8> _content;					///< File content as a byte array
+	std::vector<u8> _content;     ///< File content as a byte array
 
-	Types::FileLoadState _loadState = Types::FileLoadState::NotLoaded;		///< Load state of the file (e.g., NotLoaded, Loaded, LazyLoading)
-	bool _autoSave = false;							///< Flag indicating whether the file should be automatically saved to disk when modified
+	Types::FileLoadState _loadState = Types::FileLoadState::NotLoaded;  ///< Load state of the file (e.g., NotLoaded, Loaded, LazyLoading)
+	bool _autoSave = false;       ///< Flag indicating whether the file should be automatically saved to disk when modified
 
-	mutable bool _isLoaded = false;					///< Flag indicating whether the file content was successfully loaded
-	mutable bool _isChanged = false;				///< Flag indicating whether the file content has been modified since it was loaded
-	mutable bool _isSaved = false;					///< Flag indicating whether the file content has been saved to disk after modification
+	mutable bool _isLoaded = false;     ///< Flag indicating whether the file content was successfully loaded
+	mutable bool _isChanged = false;    ///< Flag indicating whether the file content has been modified since it was loaded
+	mutable bool _isSaved = false;     ///< Flag indicating whether the file content has been saved to disk after modification
 };
 
 }

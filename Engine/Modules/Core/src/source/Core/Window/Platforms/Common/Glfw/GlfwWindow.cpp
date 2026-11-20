@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
@@ -357,8 +357,7 @@ void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
 		static_cast<int>(windowProps.height),
 		windowProps.title.c_str(),
 		nullptr,
-		nullptr
-	));
+		nullptr));
 
 	if (not _glfwWindow) [[unlikely]] {
 		constexpr auto error = "GlfwWindow::_InitWindow: Failed to create GLFW window!";

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
@@ -24,7 +24,8 @@ int ToInt(BufferBit bit) {
 GlFormat ToOpenGl(const PixelFormat pixelFormat) {
 	switch (pixelFormat) {
 		case PixelFormat::RGBA8Unorm: return {.internalFormat = GL_RGBA8, .format = GL_RGBA, .type = GL_UNSIGNED_BYTE};
-		case PixelFormat::RGBA8UnormSrgb: return {.internalFormat = GL_SRGB8_ALPHA8, .format = GL_RGBA, .type = GL_UNSIGNED_BYTE};
+		case PixelFormat::RGBA8UnormSrgb:
+			return {.internalFormat = GL_SRGB8_ALPHA8, .format = GL_RGBA, .type = GL_UNSIGNED_BYTE};
 
 			// GL has no BGRA internal format: the swizzle is a transfer-time thing, and the storage is RGBA8 either way.
 		case PixelFormat::BGRA8Unorm: return {.internalFormat = GL_RGBA8, .format = GL_BGRA, .type = GL_UNSIGNED_BYTE};

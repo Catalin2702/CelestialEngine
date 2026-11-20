@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include "Tools/Log/Log.hpp"
@@ -123,8 +123,8 @@ void Log::Init() {
 
 	if (not _s_clientLogger) [[likely]] {
 		_s_clientLogger = spdlog::stdout_color_mt("ClientLogger");
-		 if (_s_clientLogger) [[likely]]
-			 _s_clientLogger->set_level(spdlog::level::trace);
+		if (_s_clientLogger) [[likely]]
+			_s_clientLogger->set_level(spdlog::level::trace);
 	}
 #endif
 }

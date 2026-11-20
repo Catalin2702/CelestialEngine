@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -17,7 +17,7 @@
 #include <utility>
 
 namespace CA {
-	class MetalLayer;
+class MetalLayer;
 }
 
 namespace CE::Core {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-08
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -26,15 +26,15 @@
 
 
 namespace CA {
-	class MetalDrawable;
+class MetalDrawable;
 }
 
 namespace MTL {
-	class Buffer;
-	class CommandBuffer;
-	class CommandQueue;
-	class Device;
-	class Texture;
+class Buffer;
+class CommandBuffer;
+class CommandQueue;
+class Device;
+class Texture;
 }
 
 namespace CE::Core {

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-12
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #pragma once
@@ -20,7 +20,7 @@ namespace CE::Utility {
 template <typename R, typename... Args>
 class Delegate {
 public:
-	using Stub = R(*)(void*, Args...);
+	using Stub = R (*)(void*, Args...);
 
 	Delegate() = default;
 
@@ -34,7 +34,7 @@ public:
 	 * @tparam Fn The function to bind; must be invocable with Args and return a type convertible to R
 	 * @return Delegate A delegate that invokes Fn with no bound context
 	 */
-	template<auto Fn>
+	template <auto Fn>
 		requires std::is_invocable_r_v<R, decltype(Fn), Args...>
 	static Delegate FromFunction() {
 		Delegate delegate;
@@ -50,7 +50,7 @@ public:
 	 * @param instance The object the method is invoked on (non-owning; must outlive the delegate)
 	 * @return Delegate A delegate that invokes Method on the instance
 	 */
-	template<typename T, auto Method>
+	template <typename T, auto Method>
 		requires std::is_invocable_r_v<R, decltype(Method), T&, Args...>
 	static Delegate FromMethod(T* instance) {
 		Delegate delegate;
@@ -66,7 +66,7 @@ public:
 	 * @param instance The object the method is invoked on (non-owning; must outlive the delegate)
 	 * @return Delegate A delegate that invokes Method on the instance
 	 */
-	template<typename T, auto Method>
+	template <typename T, auto Method>
 		requires std::is_invocable_r_v<R, decltype(Method), const T&, Args...>
 	static Delegate FromConstMethod(const T* instance) {
 		Delegate delegate;
@@ -88,22 +88,22 @@ public:
 	 * @brief Invokes the bound callable with the given arguments
 	 * @details Undefined behaviour if no callable is bound: check IsValid() first.
 	 */
-	R operator()(Args... args) const { return (*_stub)(_context, args...); }
+	R operator () (Args... args) const { return (*_stub)(_context, args...); }
 
-	bool operator==(const Delegate& other) const { return this->_context == other._context and this->_stub == other._stub; }
+	bool operator == (const Delegate& other) const { return this->_context == other._context and this->_stub == other._stub; }
 
 private:
-	template<auto Fn>
+	template <auto Fn>
 	static R FunctionStub(void*, Args... args) {
 		return Fn(args...);
 	}
 
-	template<typename T, auto Method>
+	template <typename T, auto Method>
 	static R MethodStub(void* context, Args... args) {
 		return (static_cast<T*>(context)->*Method)(args...);
 	}
 
-	template<typename T, auto Method>
+	template <typename T, auto Method>
 	static R ConstMethodStub(void* context, Args... args) {
 		return (static_cast<const T*>(context)->*Method)(args...);
 	}

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-20
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
@@ -36,7 +36,6 @@ static std::string ResolveDefaultLibraryPath() {
 
 MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path):
 	_device(NS::RetainPtr(device)), _path(path.empty() ? ResolveDefaultLibraryPath() : path) {
-
 	_LoadLibrary();
 
 	if (not IsValid()) [[unlikely]] {
@@ -98,7 +97,7 @@ ShaderProgram MetalShaderLibrary::GetShaderProgram(const std::string& vertexName
 }
 
 MTL::Function* MetalShaderLibrary::GetShaderFunction(const std::string& name) const {
-	if (const auto it = _functions.find(name); it != _functions.end()) [[likely]]{
+	if (const auto it = _functions.find(name); it != _functions.end()) [[likely]] {
 		return it->second;
 	}
 	return nullptr;

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-20
 //
 
 #include <Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp>
@@ -85,8 +85,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveKeyEvent_Press_ProducesKeyPressedEvent
 	HubSubscriber<Events::KeyPressedEvent> subscriber;
 	_hub.keyboardEventHub.onPressedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::KeyPressedEvent&>::FromMethod<HubSubscriber<Events::KeyPressedEvent>,
-			&HubSubscriber<Events::KeyPressedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::KeyPressedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveKeyEvent(GLFW_KEY_A, GLFW_PRESS, 0, 0);
 
@@ -102,8 +101,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveKeyEvent_Repeat_ProducesRepeatingKeyPr
 	HubSubscriber<Events::KeyPressedEvent> subscriber;
 	_hub.keyboardEventHub.onPressedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::KeyPressedEvent&>::FromMethod<HubSubscriber<Events::KeyPressedEvent>,
-			&HubSubscriber<Events::KeyPressedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::KeyPressedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveKeyEvent(GLFW_KEY_W, GLFW_REPEAT, 0, 0);
 
@@ -139,8 +137,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveCharEvent_ProducesKeyTypedEvent) {
 	HubSubscriber<Events::KeyTypedEvent> subscriber;
 	_hub.keyboardEventHub.onTypedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::KeyTypedEvent&>::FromMethod<HubSubscriber<Events::KeyTypedEvent>,
-			&HubSubscriber<Events::KeyTypedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::KeyTypedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveCharEvent('z');
 
@@ -159,8 +156,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveMouseButtonEvent_Press_ProducesMouseBu
 	HubSubscriber<Events::MouseButtonPressedEvent> subscriber;
 	_hub.mouseEventHub.onButtonPressedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::MouseButtonPressedEvent&>::FromMethod<HubSubscriber<Events::MouseButtonPressedEvent>,
-			&HubSubscriber<Events::MouseButtonPressedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::MouseButtonPressedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveMouseButtonEvent(GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, 0);
 
@@ -175,8 +171,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveMouseButtonEvent_Release_ProducesMouse
 	HubSubscriber<Events::MouseButtonReleasedEvent> subscriber;
 	_hub.mouseEventHub.onButtonReleasedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::MouseButtonReleasedEvent&>::FromMethod<HubSubscriber<Events::MouseButtonReleasedEvent>,
-			&HubSubscriber<Events::MouseButtonReleasedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::MouseButtonReleasedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveMouseButtonEvent(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
 
@@ -191,8 +186,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveMousePositionEvent_ProducesMouseMovedE
 	HubSubscriber<Events::MouseMovedEvent> subscriber;
 	_hub.mouseEventHub.onMovedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::MouseMovedEvent&>::FromMethod<HubSubscriber<Events::MouseMovedEvent>,
-			&HubSubscriber<Events::MouseMovedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::MouseMovedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveMousePositionEvent(100.5, 200.25);
 
@@ -208,8 +202,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveMouseDraggedEvent_ProducesMouseDragged
 	HubSubscriber<Events::MouseDraggedEvent> subscriber;
 	_hub.mouseEventHub.onDraggedMulticastDispatcher.Subscribe(
 		EventDelegate<Events::MouseDraggedEvent&>::FromMethod<HubSubscriber<Events::MouseDraggedEvent>,
-			&HubSubscriber<Events::MouseDraggedEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::MouseDraggedEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveMouseDraggedEvent(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, 0, 12.0, 34.0);
 
@@ -226,8 +219,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveMouseWheelScrollEvent_ProducesMouseWhe
 	HubSubscriber<Events::MouseWheelScrolledEvent> subscriber;
 	_hub.mouseEventHub.onWheelScrolledMulticastDispatcher.Subscribe(
 		EventDelegate<Events::MouseWheelScrolledEvent&>::FromMethod<HubSubscriber<Events::MouseWheelScrolledEvent>,
-			&HubSubscriber<Events::MouseWheelScrolledEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::MouseWheelScrolledEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveMouseWheelScrollEvent(-1.5, 2.5);
 
@@ -247,8 +239,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowResizeEvent_ProducesWindowResize
 	HubSubscriber<Events::WindowResizeEvent> subscriber;
 	_hub.windowEventHub.onResizeMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowResizeEvent&>::FromMethod<HubSubscriber<Events::WindowResizeEvent>,
-			&HubSubscriber<Events::WindowResizeEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::WindowResizeEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowResizeEvent(1600, 900);
 
@@ -264,8 +255,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowCloseEvent_ProducesWindowCloseEv
 	HubSubscriber<Events::WindowCloseEvent> subscriber;
 	_hub.windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<HubSubscriber<Events::WindowCloseEvent>,
-			&HubSubscriber<Events::WindowCloseEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::WindowCloseEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowCloseEvent();
 
@@ -279,8 +269,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowFocusEvent_TranslatesFocusFlag) 
 	HubSubscriber<Events::WindowFocusEvent> subscriber;
 	_hub.windowEventHub.onFocusMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowFocusEvent&>::FromMethod<HubSubscriber<Events::WindowFocusEvent>,
-			&HubSubscriber<Events::WindowFocusEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::WindowFocusEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowFocusEvent(GLFW_TRUE);
 
@@ -300,8 +289,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowErrorEvent_ProducesImmutableErro
 	HubSubscriber<Events::ErrorEvent> subscriber;
 	_hub.windowEventHub.onErrorMulticastDispatcher.Subscribe(
 		EventDelegate<Events::ErrorEvent&>::FromMethod<HubSubscriber<Events::ErrorEvent>,
-			&HubSubscriber<Events::ErrorEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::ErrorEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowErrorEvent(65543, "GLFW window error");
 
@@ -349,8 +337,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveRenderChangeVSyncEvent_ProducesVSyncEv
 	HubSubscriber<Events::VSyncEvent> subscriber;
 	_hub.renderEventHub.onChangeVSyncDispatcher.Subscribe(
 		EventDelegate<Events::VSyncEvent&>::FromMethod<HubSubscriber<Events::VSyncEvent>,
-			&HubSubscriber<Events::VSyncEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::VSyncEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveRenderChangeVSyncEvent(true);
 
@@ -401,8 +388,7 @@ TEST_F(GlfwEventHubDispatcherTest, Unsubscribe_StopsDeliveringEvents) {
 	HubSubscriber<Events::WindowCloseEvent> subscriber;
 	const auto handle = _hub.windowEventHub.onCloseMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCloseEvent&>::FromMethod<HubSubscriber<Events::WindowCloseEvent>,
-			&HubSubscriber<Events::WindowCloseEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::WindowCloseEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowCloseEvent();
 	_hub.windowEventHub.onCloseMulticastDispatcher.Unsubscribe(handle);
@@ -418,8 +404,7 @@ TEST_F(GlfwEventHubDispatcherTest, ReceiveWindowCursorModeEvent_ProducesTheMatch
 	HubSubscriber<Events::WindowCursorModeEvent> subscriber;
 	_hub.windowEventHub.onCursorModeMulticastDispatcher.Subscribe(
 		EventDelegate<Events::WindowCursorModeEvent&>::FromMethod<HubSubscriber<Events::WindowCursorModeEvent>,
-			&HubSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&subscriber)
-	);
+			&HubSubscriber<Events::WindowCursorModeEvent>::OnEvent>(&subscriber));
 
 	_hub.ReceiveWindowCursorModeEvent(CE::Types::CursorMode::Captured);
 
