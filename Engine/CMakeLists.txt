@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-23
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -33,6 +33,7 @@ endif ()
 add_subdirectory(Vendor/Glm)
 add_subdirectory(Vendor/ImGui)
 add_subdirectory(Vendor/SpdLog)
+add_subdirectory(Vendor/Stb)
 
 # Apple vendor libraries
 if (APPLE)

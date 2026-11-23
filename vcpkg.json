@@ -6,7 +6,8 @@
 	"dependencies": [
 		"glm",
 		"gtest",
-		"spdlog"
+		"spdlog",
+		"stb"
 	],
 	"features": {
 		"glfw": {
@@ -42,6 +43,10 @@
 		{
 			"name": "spdlog",
 			"version": "1.17.0"
+		},
+		{
+			"name": "stb",
+			"version": "2024-07-29#1"
 		}
 	]
 }

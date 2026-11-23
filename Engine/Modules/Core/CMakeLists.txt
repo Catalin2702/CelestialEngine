@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-23
 #
 
 # Backend-specific files are grouped by what they belong to, and each group is compiled only when it is selected:
@@ -163,6 +163,7 @@ set(RENDER_HEADERS
 
 
 	# Texture
+	src/include/Core/Render/Texture/Image.hpp
 	src/include/Core/Render/Texture/Texture.hpp
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
 		src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
@@ -395,6 +396,7 @@ set(RENDER_SOURCES
 
 
 	# Texture
+	src/source/Core/Render/Texture/Image.cpp
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
 		src/source/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
 	>
@@ -493,6 +495,9 @@ target_link_libraries(CE_Core PUBLIC
 
 target_link_libraries(CE_Core PRIVATE
 	CE_Internal
+	# Only Image.cpp includes stb_image.h, and no public header does: PRIVATE keeps it off the include path of every
+	# target that links CE_Core.
+	CE_Vendor_Stb
 )
 
 # Vendor libraries
