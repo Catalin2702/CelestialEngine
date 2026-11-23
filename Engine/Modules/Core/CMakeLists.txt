@@ -13,6 +13,7 @@
 #   $<PLATFORM_ID:Darwin>                                      - the OS itself, whatever the backends (the menu bar)
 # See Engine/cmake/CERenderBackends.cmake.
 
+# region Headers
 set(CORE_HEADERS
 	src/include/Core/Core.hpp
 	src/include/Core/Version.hpp
@@ -21,6 +22,25 @@ set(CORE_HEADERS
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
 	src/include/Core/Application/ApplicationSpecification.hpp
+)
+
+set(FILESYSTEM_HEADERS
+	src/include/Core/FileSystem/FileSystem.hpp
+	src/include/Core/FileSystem/FileSystemError.hpp
+	src/include/Core/FileSystem/VirtualPath.hpp
+)
+
+set(HUB_HEADERS
+	src/include/Core/Hub/Hub.hpp
+
+	# Events
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+	>
+
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
+	src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
+	>
 )
 
 set(INPUT_HEADERS
@@ -47,19 +67,6 @@ set(LAYERS_HEADERS
 
 	# Scene
 	src/include/Core/Layers/Scene/SceneLayer.hpp
-)
-
-set(HUB_HEADERS
-	src/include/Core/Hub/Hub.hpp
-
-	# Events
-	$<$<BOOL:${CE_WINDOW_GLFW}>:
-		src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
-	>
-
-	$<$<BOOL:${CE_WINDOW_COCOA}>:
-		src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
-	>
 )
 
 set(RENDER_HEADERS
@@ -197,13 +204,12 @@ set(WINDOW_HEADERS
 	>
 )
 
+# endregion
+
+# region Interfaces
+
 set(APPLICATION_INTERFACES
 	src/interface/Core/Application/I_ApplicationClient.hpp
-)
-
-set(LAYERS_INTERFACES
-	src/interface/Core/Layers/I_Layer.hpp
-	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
 )
 
 set(HUB_INTERFACES
@@ -216,6 +222,10 @@ set(HUB_INTERFACES
 	src/interface/Core/Hub/Events/I_WindowEventHubDispatcher.hpp
 )
 
+set(LAYERS_INTERFACES
+	src/interface/Core/Layers/I_Layer.hpp
+	src/interface/Core/Layers/ImGui/I_ImGuiLayer.hpp
+)
 
 set(RENDER_INTERFACES
 	# Buffer
@@ -267,12 +277,35 @@ set(WINDOW_INTERFACES
 	src/interface/Core/Window/I_Window.hpp
 )
 
+# endregion
+
+# region Sources
+
 set(CORE_SOURCES
 	src/source/Core/Version.cpp
 )
 
 set(APPLICATION_SOURCES
 	src/source/Core/Application/Application.cpp
+)
+
+set(FILESYSTEM_SOURCES
+	src/source/Core/FileSystem/FileSystem.cpp
+	src/source/Core/FileSystem/VirtualPath.cpp
+)
+
+set(HUB_SOURCES
+	#Events
+	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
+	src/source/Core/Hub/Events/EventHubDispatcherFactory.cpp
+
+	$<$<BOOL:${CE_WINDOW_GLFW}>:
+	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+	>
+
+	$<$<BOOL:${CE_WINDOW_COCOA}>:
+	src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
+	>
 )
 
 set(INPUT_SOURCES
@@ -296,20 +329,6 @@ set(LAYERS_SOURCES
 
 	# Scene
 	src/source/Core/Layers/Scene/SceneLayer.cpp
-)
-
-set(HUB_SOURCES
-	#Events
-	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
-	src/source/Core/Hub/Events/EventHubDispatcherFactory.cpp
-
-	$<$<BOOL:${CE_WINDOW_GLFW}>:
-		src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
-	>
-
-	$<$<BOOL:${CE_WINDOW_COCOA}>:
-		src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
-	>
 )
 
 set(RENDER_SOURCES
@@ -431,12 +450,15 @@ set(WINDOW_SOURCES
 	>
 )
 
+# endregion
+
 set(HEADERS
 	${CORE_HEADERS}
 	${APPLICATION_HEADERS}
+	${FILESYSTEM_HEADERS}
+	${HUB_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
-	${HUB_HEADERS}
 	${RENDER_HEADERS}
 	${RUNLOOP_HEADERS}
 	${WINDOW_HEADERS}
@@ -444,8 +466,8 @@ set(HEADERS
 
 set(INTERFACES
 	${APPLICATION_INTERFACES}
-	${LAYERS_INTERFACES}
 	${HUB_INTERFACES}
+	${LAYERS_INTERFACES}
 	${RENDER_INTERFACES}
 	${RUNLOOP_INTERFACES}
 	${WINDOW_INTERFACES}
@@ -454,9 +476,10 @@ set(INTERFACES
 set(SOURCES
 	${CORE_SOURCES}
 	${APPLICATION_SOURCES}
+	${FILESYSTEM_SOURCES}
+	${HUB_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
-	${HUB_SOURCES}
 	${RENDER_SOURCES}
 	${RUNLOOP_SOURCES}
 	${WINDOW_SOURCES}
