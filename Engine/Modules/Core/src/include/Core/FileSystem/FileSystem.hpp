@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -28,6 +28,9 @@
 
 namespace CE::Core {
 
+/// Read-only: the files the engine ships inside every application (shaders). Contents/Resources/Engine in a bundle.
+inline constexpr std::string_view ENGINE_MOUNT = "engine";
+
 /// Read-only: the files shipped with the application (shaders, textures). Inside the bundle on macOS.
 inline constexpr std::string_view RESOURCES_MOUNT = "resources";
 
@@ -46,7 +49,7 @@ enum class MountAccess: u8 {
 /**
  * @class FileSystem
  * @brief The engine's one way to files: virtual paths, resolved through named mounts
- * @details Every file is named as "<mount>://<relative path>" - "resources://Shaders/OpenGL/CompositeVertex.glsl",
+ * @details Every file is named as "<mount>://<relative path>" - "engine://Shaders/OpenGL/CompositeVertex.glsl",
  *			"config://imgui.ini" - and a mount maps the name to a directory on disk. Where the packaging put things,
  *			which differs between a macOS bundle and a plain folder, is answered once, by Initialize, instead of by
  *			every caller that wants a file. A mount can later point at an archive instead of a directory, and no caller
@@ -64,17 +67,20 @@ public:
 
 public:
 	/**
-	 * @brief Mounts the standard locations, from where the executable is
+	 * @brief Mounts the standard locations, from where the executable is and which application it is
 	 * @param executablePath argv[0]; empty falls back to the working directory
-	 * @details RESOURCES_MOUNT read-only on the directory the packaging puts shipped files in (Contents/Resources in a
-	 *			bundle, Resources/ beside the executable elsewhere), CONFIG_MOUNT read-write on the per-user directory
-	 *			(created if missing). Called once by main(), before the Application: the path is made absolute right
-	 *			away, because GLFW changes the working directory a relative argv[0] would be resolved against.
+	 * @param applicationName The folder the application's user data goes in, CE_APPLICATION_NAME: one path segment
+	 * @details The packaging puts the shipped files in one directory (Contents/Resources in a bundle, Resources/ beside
+	 *			the executable elsewhere), split by owner: ENGINE_MOUNT on its Engine/ folder, RESOURCES_MOUNT on its
+	 *			Content/ folder, both read-only. CONFIG_MOUNT goes read-write on <per-user data directory>/
+	 *			<applicationName>, created if missing, so two applications built on the engine never share settings.
 	 *
-	 *			A location that cannot be mounted is logged and skipped, not fatal: the paths under it then answer
-	 *			UnknownMount, and the caller that needed them reports what it was trying to do.
+	 *			Called once by main(), before the Application: the path is made absolute right away, because GLFW
+	 *			changes the working directory a relative argv[0] would be resolved against. A location that cannot be
+	 *			mounted is logged and skipped, not fatal: the paths under it then answer UnknownMount, and the caller
+	 *			that needed them reports what it was trying to do.
 	 */
-	static void Initialize(std::string_view executablePath);
+	static void Initialize(std::string_view executablePath, std::string_view applicationName);
 
 	/**
 	 * @brief Maps a mount name to a directory, replacing any mount of the same name

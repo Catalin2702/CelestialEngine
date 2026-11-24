@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
 #include "Core/FileSystem/FileSystem.hpp"
@@ -147,6 +147,119 @@ std::expected<Container, FileSystemError> ReadWhole(const std::string_view virtu
 
 #pragma endregion
 
+#pragma region StandardMounts
+
+// The shipped files, one folder per owner. ce_configure_application puts them there: the two names are a contract with
+// it, not a choice this file can make alone.
+constexpr auto EngineFolderName = "Engine";
+constexpr auto ContentFolderName = "Content";
+
+// Reads an environment variable, returning an empty path when it is unset or empty, so the caller can fall through to
+// the next candidate instead of building a path rooted at nothing.
+fs::path EnvironmentPath(const char* name) {
+	// Only read during startup, before anything could call setenv concurrently
+	const char* value = std::getenv(name); // NOLINT(concurrency-mt-unsafe)
+	if (value == nullptr or *value == '\0')
+		return {};
+	return {value};
+}
+
+/**
+ * @brief Where the packaging puts the files shipped with the application
+ * @details A bundle keeps its executable in Contents/MacOS and its read-only files in Contents/Resources, so the two are
+ *			siblings rather than nested; everywhere else the resources sit beside the executable. Normalised so the ".."
+ *			is resolved here and never reaches a log line.
+ */
+fs::path ResolvePackageDirectory(const fs::path& executableDirectory) {
+#if CE_PLATFORM_MACOS
+	return (executableDirectory / ".." / "Resources").lexically_normal();
+#else
+	return (executableDirectory / "Resources").lexically_normal();
+#endif
+}
+
+/**
+ * @brief The platform's per-user application data directory; empty when there is none
+ * @details `~/Library/Application Support` on macOS, `%APPDATA%` on Windows, `$XDG_CONFIG_HOME` (or `~/.config`) on
+ *			Linux. Deliberately outside the bundle: writing into `Contents/` breaks the code signature, and the bundle is
+ *			often read-only anyway.
+ */
+fs::path ResolveUserDataDirectory() {
+#if CE_PLATFORM_MACOS
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+		return home / "Library" / "Application Support";
+	return {};
+#elif CE_PLATFORM_WINDOWS
+	if (auto appData = EnvironmentPath("APPDATA"); not appData.empty())
+		return appData;
+	return EnvironmentPath("USERPROFILE");
+#elif CE_PLATFORM_LINUX
+	if (auto configHome = EnvironmentPath("XDG_CONFIG_HOME"); not configHome.empty())
+		return configHome;
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+		return home / ".config";
+	return {};
+#else
+	#error "ResolveUserDataDirectory: Unsupported platform!";
+#endif
+}
+
+/// One folder name, so it cannot climb out of the user data directory or land in a subfolder: not empty, not "." or
+/// "..", and none of the separators any of the platforms uses.
+bool IsValidFolderName(const std::string_view name) {
+	return not name.empty() and name != "." and name != ".." and name.find_first_of("/\\:") == std::string_view::npos;
+}
+
+#pragma endregion
+
+}
+
+void FileSystem::Initialize(const std::string_view executablePath, const std::string_view applicationName) {
+	// Absolute now, against the working directory as it is at startup: GLFW chdirs into Contents/Resources on macOS,
+	// and a relative argv[0] resolved after that would point somewhere else entirely.
+	std::error_code errorCode;
+	const auto executableDirectory = executablePath.empty() ? fs::current_path(errorCode) : fs::absolute(fs::path(executablePath), errorCode).parent_path();
+	if (errorCode) [[unlikely]] {
+		CE_CORE_ERROR("FileSystem::Initialize: Cannot locate the executable from '{}' ({}); no standard mount is set up.", executablePath, errorCode.message());
+		return;
+	}
+
+	// Two read-only mounts on two sibling folders, so the engine's files and the application's never share a name: an
+	// application cannot replace an engine shader by shipping a file at the same path, and neither has to know what
+	// the other ships.
+	const auto packageDirectory = ResolvePackageDirectory(executableDirectory);
+
+	// Braces are load-bearing: the CE_CORE_* macros expand to two statements, so a braceless if would log every time.
+	if (const auto mounted = Mount(ENGINE_MOUNT, packageDirectory / EngineFolderName, MountAccess::ReadOnly); not mounted) [[unlikely]] {
+		CE_CORE_WARN("FileSystem::Initialize: No engine directory for '{}://' ({}).", ENGINE_MOUNT, mounted.error());
+	}
+
+	// An application without content of its own is legitimate (a tool, the first steps of a game): a note, not a warning.
+	if (const auto mounted = Mount(RESOURCES_MOUNT, packageDirectory / ContentFolderName, MountAccess::ReadOnly); not mounted) {
+		CE_CORE_INFO(std::format("FileSystem::Initialize: No content directory for '{}://' ({}).", RESOURCES_MOUNT, mounted.error()));
+	}
+
+	// The name becomes a folder under the user's data directory: checked first, so a bad one cannot point the only
+	// writable mount outside the folder that belongs to this application.
+	if (not IsValidFolderName(applicationName)) [[unlikely]] {
+		CE_CORE_ERROR("FileSystem::Initialize: '{}' cannot name a folder: '{}://' is not mounted.", applicationName, CONFIG_MOUNT);
+		return;
+	}
+
+	// No usable home: beside the executable rather than at the root of the drive. It is not writable in every
+	// deployment, but it keeps the mount on a real directory instead of "/<application>".
+	auto userDataDirectory = ResolveUserDataDirectory();
+	if (userDataDirectory.empty()) [[unlikely]] {
+		CE_CORE_WARN("FileSystem::Initialize: No per-user data directory found, falling back to the executable's directory.");
+		userDataDirectory = executableDirectory;
+	}
+
+	// Created before it is mounted: Mount only accepts a directory that exists, and on a first run this one does not.
+	const auto configDirectory = userDataDirectory / applicationName;
+	fs::create_directories(configDirectory, errorCode);
+	if (const auto mounted = Mount(CONFIG_MOUNT, configDirectory, MountAccess::ReadWrite); not mounted) [[unlikely]] {
+		CE_CORE_ERROR("FileSystem::Initialize: Cannot mount '{}://' on {} ({}).", CONFIG_MOUNT, configDirectory.string(), mounted.error());
+	}
 }
 
 std::expected<void, FileSystemError> FileSystem::Mount(const std::string_view name, const std::filesystem::path& directory, MountAccess access) {
@@ -211,6 +324,57 @@ std::expected<std::vector<std::byte>, FileSystemError> FileSystem::ReadBytes(con
 
 std::expected<std::string, FileSystemError> FileSystem::ReadText(const std::string_view virtualPath) {
 	return ReadWhole<std::string>(virtualPath);
+}
+
+std::expected<void, FileSystemError> FileSystem::WriteBytes(const std::string_view virtualPath, const std::span<const std::byte> bytes) {
+	const auto resolved = Resolve(virtualPath);
+	if (not resolved) [[unlikely]]
+		return std::unexpected(resolved.error());
+
+	if (resolved->access != MountAccess::ReadWrite) [[unlikely]]
+		return std::unexpected(FileSystemError::ReadOnly);
+
+	const auto& path = resolved->native;
+
+	// Checked by its outcome, not by the error_code: some standard libraries report "already exists" as a failure.
+	std::error_code errorCode;
+	fs::create_directories(path.parent_path(), errorCode);
+	if (not fs::is_directory(path.parent_path())) [[unlikely]]
+		return std::unexpected(FromErrorCode(errorCode, FileSystemError::WriteFailed));
+
+	// Written beside the target, then renamed over it. A rename inside one directory replaces the file in one step, so
+	// a crash or a full disk halfway through leaves the old file or the new one - never a truncated mix, which is how a
+	// settings file usually gets lost.
+	auto temporary = path;
+	temporary += ".tmp";
+
+	{
+		std::ofstream stream{temporary, std::ios::binary | std::ios::trunc};
+		if (not stream) [[unlikely]]
+			return std::unexpected(FileSystemError::WriteFailed);
+
+		stream.write(reinterpret_cast<const char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
+
+		// close() flushes, and a flush that fails sets the failbit: checked after it, not after write().
+		stream.close();
+		if (not stream) [[unlikely]] {
+			fs::remove(temporary, errorCode);
+			return std::unexpected(FileSystemError::WriteFailed);
+		}
+	}
+
+	fs::rename(temporary, path, errorCode);
+	if (errorCode) [[unlikely]] {
+		const auto renameError = FromErrorCode(errorCode, FileSystemError::WriteFailed);
+		fs::remove(temporary, errorCode);
+		return std::unexpected(renameError);
+	}
+
+	return {};
+}
+
+std::expected<void, FileSystemError> FileSystem::WriteText(const std::string_view virtualPath, const std::string_view text) {
+	return WriteBytes(virtualPath, std::as_bytes(std::span(text.data(), text.size())));
 }
 
 }
