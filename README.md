@@ -2,16 +2,17 @@
 
 **CelestialEngine** è un game engine 3D amatoriale sviluppato in **C++23**, progettato per esplorare architetture di rendering moderne e sistemi di scripting ad alte prestazioni.
 
-## 🔖 Version: 0.2.0
+## 🔖 Version: 0.2.1
 
 ## 🚀 Key Features
 * **Modern C++ Core:** Gestione della memoria tramite smart pointers e custom allocators.
+* **Virtual File System (`CE_IO`):** percorsi `engine://`, `resources://` (sola lettura, file distribuiti con l'app) e `config://`, `cache://` (lettura/scrittura, per applicazione); errori tramite `std::expected`, scritture atomiche.
 
 ## 🛠 Tech Stack
 * **Language:** C++23
 * **Graphics API:** OpenGL, Metal
 * **Build System:** CMake.
-* **Third Party:** metal-cpp, spdlog, glfw3, glad
+* **Third Party:** metal-cpp, spdlog, glfw3, glad, glm, Dear ImGui, stb, GoogleTest
 
 ## 📂 Project Structure
 ```text
@@ -22,7 +23,7 @@
 ├── Engine/
 │   ├── cmake/              # Build machinery: CE_Config, output layout, ce_configure_application, backend selection
 │   │   └── templates/      # Default Info.plist and entitlements of every application
-│   ├── Modules/            # Core, Define, Events, Native, Tools, Types, Utility
+│   ├── Modules/            # Core, Define, Events, IO, Native, Tools, Types, Utility
 │   ├── Shaders/            # Metal and GLSL shaders, compiled per selected backend
 │   ├── src/
 │   │   ├── include/        # CelestialEngine.hpp, the header an application includes
@@ -30,6 +31,6 @@
 │   ├── Tests/              # GoogleTest suites, one per module (CE_BUILD_TESTS)
 │   ├── Vendor/             # CMake wrappers of the third-party libraries
 │   └── Submodules/         # ImGui, metal-cpp
-├── Scripts/                # Build-all, run-all, static analysis, Xcode project
+├── Scripts/                # Build-all, static analysis, Xcode project, maintenance (bump_updated_dates.sh)
 └── .exclude/               # Everything generated, git-ignored: build/<preset> (outputs in Out/<config>), tmp/
 ```
