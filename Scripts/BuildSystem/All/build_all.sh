@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 # Script to build (and optionally test) every toolchain x configuration combination.
@@ -14,7 +14,7 @@
 # The build presets in CMakePresets.json deliberately carry no "configuration" field:
 # every generator is multi-config, so the configuration is chosen at build time (by the
 # IDE, or by --config here). One configure per toolchain then feeds all three
-# configurations, and the artifacts land in .exclude/Binaries/<CE_TOOLCHAIN_NAME>/<Config>/ so
+# configurations, and the artifacts land in .exclude/build/<toolchain>/Out/<Config>/ so
 # nothing overwrites anything else.
 
 # Colors for output

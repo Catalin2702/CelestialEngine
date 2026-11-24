@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -114,8 +114,6 @@ target_include_directories(CE_Vendor_ImGui SYSTEM PUBLIC
 # CE_APPLE_FRAMEWORK_MODULE_NAMES.
 ce_set_module_library_output(CE_Vendor_ImGui)
 ce_configure_module_library_rpath(CE_Vendor_ImGui)
-
-ce_copy_to_last(CE_Vendor_ImGui)
 
 
 # The GLFW backend is a static sidecar rather than part of the dylib above, for the reason given at

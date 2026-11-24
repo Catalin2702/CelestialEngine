@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
+#include "IO/FileSystem/FileSystem.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -18,24 +19,32 @@
 
 namespace CE::Core {
 
-// Relative fallback, resolved against the current working directory. Only used
-// when the app is not running from a bundle (e.g. some test harnesses).
-constexpr auto relativeLibraryPath = "../Resources/Shaders/Metal/Main.metallib";
+namespace {
 
-// Resolves the shader library to an absolute path based on the app bundle's
-// Resources directory, so loading is independent of the current working
-// directory (fixes launches from IDEs/debuggers such as CLion and Xcode).
-static std::string ResolveDefaultLibraryPath() {
-	if (auto* const bundle = NS::Bundle::mainBundle()) [[likely]] {
-		if (auto* const resourcePath = bundle->resourcePath()) [[likely]] {
-			return std::string(resourcePath->utf8String()) + "/Shaders/Metal/Main.metallib";
-		}
+/// The library the build links every .metal file into (Engine/Shaders), in the engine's own read-only mount.
+constexpr auto DefaultLibraryPath = "engine://Shaders/Metal/Main.metallib";
+
+/**
+ * @brief Resolves the bundled library to the native path Metal's loader opens itself
+ * @details Through the file system, like every other shipped file, rather than through NSBundle: the mount already
+ *			knows where the packaging put the engine's files, and it was made absolute at startup, so launching from an IDE
+ *			or a debugger with another working directory changes nothing. An unresolvable path comes back empty rather
+ *			than guessed at: _LoadLibrary then fails and reports it, which is the message worth reading.
+ */
+std::string ResolveDefaultMetalLibraryPath() {
+	const auto path = IO::FileSystem::ToNativePath(DefaultLibraryPath);
+	if (not path) [[unlikely]] {
+		CE_CORE_ERROR("ResolveDefaultMetalLibraryPath: Cannot resolve '{}' ({})", DefaultLibraryPath, path.error());
+		return {};
 	}
-	return relativeLibraryPath;
+
+	return path->string();
+}
+
 }
 
 MetalShaderLibrary::MetalShaderLibrary(MTL::Device* device, const std::string& path):
-	_device(NS::RetainPtr(device)), _path(path.empty() ? ResolveDefaultLibraryPath() : path) {
+	_device(NS::RetainPtr(device)), _path(path.empty() ? ResolveDefaultMetalLibraryPath() : path) {
 	_LoadLibrary();
 
 	if (not IsValid()) [[unlikely]] {

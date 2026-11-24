@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -32,7 +32,7 @@
 #endif
 
 /**
- * @def CE_CORE_API / CE_EVENTS_API / CE_TOOLS_API / CE_TYPES_API / CE_UTILITY_API / CE_APPLE_API
+ * @def CE_CORE_API / CE_EVENTS_API / CE_IO_API / CE_TOOLS_API / CE_TYPES_API / CE_UTILITY_API / CE_APPLE_API
  * @brief Per-module export/import macros
  * @details Each shared-library module defines its own CE_<MODULE>_EXPORTS (PRIVATE compile
  *			definition) only while building that module. Every other module, which only ever
@@ -50,6 +50,12 @@
 	#define CE_EVENTS_API CE_API_EXPORT
 #else
 	#define CE_EVENTS_API CE_API_IMPORT
+#endif
+
+#ifdef CE_IO_EXPORTS
+	#define CE_IO_API CE_API_EXPORT
+#else
+	#define CE_IO_API CE_API_IMPORT
 #endif
 
 #ifdef CE_TOOLS_EXPORTS

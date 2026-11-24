@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
 #include "Core/Render/Shader/Shader.hpp"
+#include "IO/FileSystem/FileSystem.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Render/Render.hpp"
 #include "Utility/Utility.hpp"
@@ -24,20 +25,20 @@ namespace CE::Core {
 
 namespace {
 
-/// Where the GLSL shipped with the application is unpacked to, under whichever directory the packaging put it in.
-constexpr auto ShadersSubdirectory = "Shaders/OpenGL";
+/// Where the GLSL the engine ships lives: the engine's own read-only mount, never the application's.
+constexpr auto ShadersSubdirectory = "engine://Shaders/OpenGL";
 
 /// GLSL has one entry point and it is spelled this way, so the name never varies from module to module.
 constexpr auto GlslEntryPoint = "main";
 
 /**
- * @brief Resolves the engine's name for a shader into the GLSL file that holds it
+ * @brief Resolves the engine's name for a shader into the virtual path of the GLSL file that holds it
  * @details The whole convention: one file per name, next to its siblings, with the extension the language uses. It
  *			lives here because it is the OpenGL answer to "where is this shader" - the caller states a name and knows
- *			nothing of files.
+ *			nothing of files, and this function knows nothing of where the packaging put them.
  */
 std::string ResolveSourcePath(const std::string_view name) {
-	return (Utility::FileSystem::GetResourcesDirectory() / ShadersSubdirectory / std::format("{}.glsl", name)).string();
+	return std::format("{}/{}.glsl", ShadersSubdirectory, name);
 }
 
 }
@@ -59,17 +60,23 @@ OpenGlShaderModule::OpenGlShaderModule(const ShaderModuleDescriptor& descriptor)
 		throw std::runtime_error(message);
 	}
 
-	// Throws on its own, having logged the path, when the file is not where the packaging should have put it - which
-	// is the same class of failure as a missing artifact on a backend that compiles ahead of time.
-	const auto source = Utility::FileSystem::StLoad(ResolveSourcePath(name)).GetContentString();
+	// A missing file is the same class of failure as a missing artifact on a backend that compiles ahead of time: the
+	// packaging is broken, and a module that cannot be built is reported the way this constructor reports everything.
+	const auto path = ResolveSourcePath(name);
+	const auto source = IO::FileSystem::ReadText(path);
+	if (not source) [[unlikely]] {
+		const auto error = std::format("OpenGlShaderModule::OpenGlShaderModule: Cannot read the GLSL of module '{}' from '{}' ({})", name, path, source.error());
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
 
-	if (source.empty()) [[unlikely]] {
+	if (source->empty()) [[unlikely]] {
 		const auto message = std::format("OpenGlShaderModule: the GLSL file of module '{}' is empty.", name);
 		CE_CORE_ERROR(message);
 		throw std::runtime_error(message);
 	}
 
-	_shaderId = OpenGlShaderCompiler::Compile(source.c_str(), descriptor.stage);
+	_shaderId = OpenGlShaderCompiler::Compile(source->c_str(), descriptor.stage);
 }
 
 OpenGlShaderModule::OpenGlShaderModule(OpenGlShaderModule&& other) noexcept:

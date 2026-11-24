@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/FileSystem
+// Module: CelestialEngine/Engine/Modules/IO/FileSystem
 // File: FileSystem.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
@@ -7,7 +7,7 @@
 // Updated: 2026-11-24
 //
 
-#include "Core/FileSystem/FileSystem.hpp"
+#include "IO/FileSystem/FileSystem.hpp"
 #include "Define/Config.hpp"
 #include "Tools/Log/Log.hpp"
 
@@ -22,7 +22,7 @@
 #include <utility>
 
 
-namespace CE::Core {
+namespace CE::IO {
 
 namespace fs = std::filesystem;
 
@@ -204,10 +204,48 @@ fs::path ResolveUserDataDirectory() {
 #endif
 }
 
+/**
+ * @brief The platform's per-user cache directory; empty when there is none
+ * @details `~/Library/Caches` on macOS, `%LOCALAPPDATA%` on Windows, `$XDG_CACHE_HOME` (or `~/.cache`) on Linux: the
+ *			places backups skip and the system may empty when it runs short of space - which is exactly the contract of
+ *			a cache, and the reason it is not a subfolder of the user data directory.
+ */
+fs::path ResolveCacheDirectory() {
+#if CE_PLATFORM_MACOS
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+		return home / "Library" / "Caches";
+	return {};
+#elif CE_PLATFORM_WINDOWS
+	return EnvironmentPath("LOCALAPPDATA");
+#elif CE_PLATFORM_LINUX
+	if (auto cacheHome = EnvironmentPath("XDG_CACHE_HOME"); not cacheHome.empty())
+		return cacheHome;
+	if (const auto home = EnvironmentPath("HOME"); not home.empty())
+		return home / ".cache";
+	return {};
+#else
+	#error "ResolveCacheDirectory: Unsupported platform!";
+#endif
+}
+
 /// One folder name, so it cannot climb out of the user data directory or land in a subfolder: not empty, not "." or
 /// "..", and none of the separators any of the platforms uses.
 bool IsValidFolderName(const std::string_view name) {
 	return not name.empty() and name != "." and name != ".." and name.find_first_of("/\\:") == std::string_view::npos;
+}
+
+/**
+ * @brief Mounts <base>/<applicationName> read-write under a name, creating it first
+ * @details Shared by the two per-user mounts. A failure is logged and the mount skipped, as for the packaged ones.
+ */
+void MountUserFolder(const std::string_view name, const fs::path& base, const std::string_view applicationName) {
+	// Created before it is mounted: Mount only accepts a directory that exists, and on a first run this one does not.
+	const auto directory = base / applicationName;
+	std::error_code errorCode;
+	fs::create_directories(directory, errorCode);
+	if (const auto mounted = FileSystem::Mount(name, directory, MountAccess::ReadWrite); not mounted) [[unlikely]] {
+		CE_CORE_ERROR("MountUserFolder: Cannot mount '{}://' on {} ({})!", name, directory.string(), mounted.error());
+	}
 }
 
 #pragma endregion
@@ -217,10 +255,10 @@ bool IsValidFolderName(const std::string_view name) {
 void FileSystem::Initialize(const std::string_view executablePath, const std::string_view applicationName) {
 	// Absolute now, against the working directory as it is at startup: GLFW chdirs into Contents/Resources on macOS,
 	// and a relative argv[0] resolved after that would point somewhere else entirely.
-	std::error_code errorCode;
-	const auto executableDirectory = executablePath.empty() ? fs::current_path(errorCode) : fs::absolute(fs::path(executablePath), errorCode).parent_path();
-	if (errorCode) [[unlikely]] {
-		CE_CORE_ERROR("FileSystem::Initialize: Cannot locate the executable from '{}' ({}); no standard mount is set up.", executablePath, errorCode.message());
+	std::error_code error;
+	const auto executableDirectory = executablePath.empty() ? fs::current_path(error) : fs::absolute(fs::path(executablePath), error).parent_path();
+	if (error) [[unlikely]] {
+		CE_CORE_ERROR("FileSystem::Initialize: Cannot locate the executable from '{}' ({}); no standard mount is set up.", executablePath, error.message());
 		return;
 	}
 
@@ -236,13 +274,13 @@ void FileSystem::Initialize(const std::string_view executablePath, const std::st
 
 	// An application without content of its own is legitimate (a tool, the first steps of a game): a note, not a warning.
 	if (const auto mounted = Mount(RESOURCES_MOUNT, packageDirectory / ContentFolderName, MountAccess::ReadOnly); not mounted) {
-		CE_CORE_INFO(std::format("FileSystem::Initialize: No content directory for '{}://' ({}).", RESOURCES_MOUNT, mounted.error()));
+		CE_CORE_INFO("FileSystem::Initialize: No content directory for '{}://' ({}).", RESOURCES_MOUNT, mounted.error());
 	}
 
-	// The name becomes a folder under the user's data directory: checked first, so a bad one cannot point the only
-	// writable mount outside the folder that belongs to this application.
+	// The name becomes a folder under the user's data and cache directories: checked first, so a bad one cannot point
+	// the writable mounts outside the folders that belong to this application.
 	if (not IsValidFolderName(applicationName)) [[unlikely]] {
-		CE_CORE_ERROR("FileSystem::Initialize: '{}' cannot name a folder: '{}://' is not mounted.", applicationName, CONFIG_MOUNT);
+		CE_CORE_ERROR("FileSystem::Initialize: '{}' cannot name a folder; '{}://' and '{}://' are not mounted.", applicationName, CONFIG_MOUNT, CACHE_MOUNT);
 		return;
 	}
 
@@ -254,12 +292,19 @@ void FileSystem::Initialize(const std::string_view executablePath, const std::st
 		userDataDirectory = executableDirectory;
 	}
 
-	// Created before it is mounted: Mount only accepts a directory that exists, and on a first run this one does not.
-	const auto configDirectory = userDataDirectory / applicationName;
-	fs::create_directories(configDirectory, errorCode);
-	if (const auto mounted = Mount(CONFIG_MOUNT, configDirectory, MountAccess::ReadWrite); not mounted) [[unlikely]] {
-		CE_CORE_ERROR("FileSystem::Initialize: Cannot mount '{}://' on {} ({}).", CONFIG_MOUNT, configDirectory.string(), mounted.error());
+	MountUserFolder(CONFIG_MOUNT, userDataDirectory, applicationName);
+
+	// No cache directory: the temporary one, which has the same contract - the system may empty it - and a cache only
+	// has to outlive the run that wrote it to be worth something.
+	auto cacheDirectory = ResolveCacheDirectory();
+	if (cacheDirectory.empty()) [[unlikely]]
+		cacheDirectory = fs::temp_directory_path(error);
+	if (cacheDirectory.empty()) [[unlikely]] {
+		CE_CORE_WARN("FileSystem::Initialize: No cache directory found; '{}://' is not mounted.", CACHE_MOUNT);
+		return;
 	}
+
+	MountUserFolder(CACHE_MOUNT, cacheDirectory, applicationName);
 }
 
 std::expected<void, FileSystemError> FileSystem::Mount(const std::string_view name, const std::filesystem::path& directory, MountAccess access) {

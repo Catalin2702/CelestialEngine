@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 enable_testing()
@@ -47,22 +47,17 @@ target_link_libraries(CE_TestsNative PRIVATE
 
 add_test(NAME NativeTests
 	COMMAND CE_TestsNative
-	WORKING_DIRECTORY ${CE_BINARIES_DIR}
+	WORKING_DIRECTORY $<TARGET_FILE_DIR:CE_TestsNative>
 )
 
 set_tests_properties(NativeTests PROPERTIES
 	LABELS "Engine;Native"
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module libraries:
+# Builds into Out/<config>/Tests/, and finds the module libraries:
 # Windows via delay-load bootstrap, Linux via RPATH into ../DLL/, macOS via its own sibling copies
 # (see Engine/cmake/CEApplication.cmake / CelestialEngineMacros.cmake for details)
 ce_set_output_subdirectory(CE_TestsNative Tests)
-ce_stage_to_binaries(CE_TestsNative Tests)
 ce_enable_dll_bootstrap(CE_TestsNative)
 ce_set_dll_search_rpath(CE_TestsNative "../DLL")
 ce_embed_apple_modules_beside(CE_TestsNative Tests)
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_TestsNative)
-

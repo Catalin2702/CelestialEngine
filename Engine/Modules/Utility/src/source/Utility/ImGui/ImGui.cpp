@@ -4,12 +4,10 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-28
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include "Utility/ImGui/ImGui.hpp"
-
-#include "Utility/FileSystem/FileSystem.hpp"
 
 #if CE_WINDOW_GLFW
 #include <GLFW/glfw3.h>
@@ -19,12 +17,12 @@
 
 namespace CE::Utility {
 
-void SetImGuiIniFile(ImGuiIO& io, const char* fileName) {
+void SetImGuiIniFile(ImGuiIO& io, const std::filesystem::path& iniPath) {
 	// Never reassigned once initialised: ImGui keeps the raw pointer, so a second call with a
 	// different name must not move the storage out from under a live context
-	static const std::string iniFilePath = (FileSystem::GetConfigDirectory() / fileName).string();
+	static const std::string iniFilePath = iniPath.string();
 
-	io.IniFilename = iniFilePath.c_str();
+	io.IniFilename = iniFilePath.empty() ? nullptr : iniFilePath.c_str();
 }
 
 // Only with a GLFW window (CE_WINDOW_GLFW, derived from CE_RENDER_BACKENDS).

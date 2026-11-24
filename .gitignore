@@ -1,5 +1,5 @@
 # --- Generated, local-only ---
-# Build trees (.exclude/build/<preset>), delivered artifacts (.exclude/Binaries), scratch files: one folder for all.
+# Build trees (.exclude/build/<preset>), scratch files: one folder for all.
 /.exclude/
 
 # --- Binaries ---
@@ -57,3 +57,4 @@ graphify-out
 .claude/
 # --- Docs (local only) ---
 docs/roadmap/Renderer.md
+docs/roadmap/Distribution.md

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 /**
@@ -29,8 +29,6 @@
 #define CE_TYPES_TYPES_HPP
 
 #include "Types/Build/Build.hpp"
-
-#include "Types/FileSystem/File.hpp"
 
 #include "Types/KeyCode/KeyCode.hpp"
 

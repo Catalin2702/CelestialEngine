@@ -1,25 +1,25 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/FileSystem
+// Module: CelestialEngine/Engine/Modules/IO/FileSystem
 // File: VirtualPath.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
 #pragma once
 
-#ifndef CE_CORE_FILESYSTEM_VIRTUALPATH_HPP
-#define CE_CORE_FILESYSTEM_VIRTUALPATH_HPP
+#ifndef CE_IO_FILESYSTEM_VIRTUALPATH_HPP
+#define CE_IO_FILESYSTEM_VIRTUALPATH_HPP
 
-#include "Core/FileSystem/FileSystemError.hpp"
+#include "FileSystemError.hpp"
 #include "Define/DynamicLinker.hpp"
 
 #include <expected>
 #include <string_view>
 
 
-namespace CE::Core {
+namespace CE::IO {
 
 /**
  * @struct VirtualPath
@@ -31,7 +31,7 @@ namespace CE::Core {
  *			The relative part always uses '/', on every platform, and can never leave its mount: an absolute path, a
  *			drive letter, a backslash or a ".." segment is refused here, before any operating-system path sees it.
  */
-struct CE_CORE_API VirtualPath {
+struct CE_IO_API VirtualPath {
 	std::string_view mount;
 	std::string_view relative;
 
@@ -53,4 +53,4 @@ struct CE_CORE_API VirtualPath {
 
 }
 
-#endif //CE_CORE_FILESYSTEM_VIRTUALPATH_HPP
+#endif //CE_IO_FILESYSTEM_VIRTUALPATH_HPP

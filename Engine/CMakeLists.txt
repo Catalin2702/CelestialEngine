@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-23
+# Updated: 2026-11-24
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -17,8 +17,10 @@ project(CE_Engine LANGUAGES CXX VERSION 0.1.3)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
-	src/include/EntryPoint.hpp
 )
+
+# Not a header and not part of CE_Engine: src/source/EntryPoint.cpp (main) is compiled into each application by
+# ce_configure_application, see CEApplication.cmake.
 
 # Vendor libraries. The backend-specific ones are added only when their backend is compiled in (CE_RENDER_BACKENDS), so
 # a build without OpenGL does not even look for glad, and one without a GLFW window does not look for GLFW.
@@ -44,6 +46,7 @@ endif ()
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
+add_subdirectory(Modules/IO)
 add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
@@ -68,6 +71,7 @@ target_link_libraries(CE_Engine INTERFACE
 	CE_Core
 	CE_Define
 	CE_Events
+	CE_IO
 	CE_Native
 	CE_Tools
 	CE_Types
@@ -89,9 +93,8 @@ target_include_directories(CE_Engine INTERFACE
 	src/include
 )
 
-# The engine's tests live with it (Engine/Tests) and come last, once every module target they link exists. Building them
-# is what makes CMake create Binaries/<toolchain>/<config>/Tests/ - at GENERATE time, so the folder shows up (empty) even
-# in a build that only ever compiles an application. Turn them off to configure without them:
+# The engine's tests live with it (Engine/Tests) and come last, once every module target they link exists. They build
+# into <build>/Out/<config>/Tests/. Turn them off to configure without them:
 #   cmake --preset config-preset-clang -DCE_BUILD_TESTS=OFF
 # A cache variable read at configure time, so flipping it needs a re-configure.
 option(CE_BUILD_TESTS "Build the engine's test executables" ON)

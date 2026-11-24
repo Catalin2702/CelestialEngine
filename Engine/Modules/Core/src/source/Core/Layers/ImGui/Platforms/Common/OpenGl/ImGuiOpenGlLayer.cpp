@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
 
 #include "Core/Core.hpp"
 #include "Events/Events.hpp"
+#include "IO/FileSystem/FileSystem.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/ImGui/ImGui.hpp"
@@ -116,7 +117,11 @@ void ImGuiOpenGlLayer::_Init() {
 		ImGui::StyleColorsDark();
 
 		ImGuiIO& io = ImGui::GetIO();
-		Utility::SetImGuiIniFile(io);
+
+		// The layout is the user's, so it lives in the writable per-user mount. Without that mount the path is empty
+		// and saving is turned off, rather than ImGui writing next to the executable.
+		Utility::SetImGuiIniFile(io, IO::FileSystem::ToNativePath("config://imgui.ini").value_or(std::filesystem::path{}));
+
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

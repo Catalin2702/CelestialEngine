@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-23
+# Updated: 2026-11-24
 #
 
 # Backend-specific files are grouped by what they belong to, and each group is compiled only when it is selected:
@@ -22,12 +22,6 @@ set(CORE_HEADERS
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
 	src/include/Core/Application/ApplicationSpecification.hpp
-)
-
-set(FILESYSTEM_HEADERS
-	src/include/Core/FileSystem/FileSystem.hpp
-	src/include/Core/FileSystem/FileSystemError.hpp
-	src/include/Core/FileSystem/VirtualPath.hpp
 )
 
 set(HUB_HEADERS
@@ -289,11 +283,6 @@ set(APPLICATION_SOURCES
 	src/source/Core/Application/Application.cpp
 )
 
-set(FILESYSTEM_SOURCES
-	src/source/Core/FileSystem/FileSystem.cpp
-	src/source/Core/FileSystem/VirtualPath.cpp
-)
-
 set(HUB_SOURCES
 	#Events
 	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
@@ -455,7 +444,6 @@ set(WINDOW_SOURCES
 set(HEADERS
 	${CORE_HEADERS}
 	${APPLICATION_HEADERS}
-	${FILESYSTEM_HEADERS}
 	${HUB_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
@@ -476,7 +464,6 @@ set(INTERFACES
 set(SOURCES
 	${CORE_SOURCES}
 	${APPLICATION_SOURCES}
-	${FILESYSTEM_SOURCES}
 	${HUB_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
@@ -497,8 +484,8 @@ set_target_properties(CE_Core PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables: DLL/ on Windows and Linux, and on
-# macOS out of Binaries/ entirely, into the build tree (see ce_set_module_library_output)
+# Keeps Out/<config>/ down to just executables: the library goes to its DLL/ subfolder on Windows and Linux, and to
+# <build>/Modules/<config>/ on macOS (see ce_set_module_library_output)
 ce_set_module_library_output(CE_Core)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
@@ -510,6 +497,7 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
+	CE_IO
 	CE_Native
 	CE_Tools
 	CE_Types
@@ -548,6 +536,3 @@ target_compile_definitions(CE_Core PRIVATE
 	# GetEngineVersion (Core/Version.hpp). Core has no project() of its own, so this is Engine/CMakeLists.txt's version.
 	CE_ENGINE_VERSION="${PROJECT_VERSION}"
 )
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_Core)

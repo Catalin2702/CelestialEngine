@@ -1,19 +1,19 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/FileSystem
+// Module: CelestialEngine/Engine/Modules/IO/FileSystem
 // File: VirtualPath.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
-#include "Core/FileSystem/VirtualPath.hpp"
+#include "IO/FileSystem/VirtualPath.hpp"
 
 #include <algorithm>
 #include <ranges>
 
 
-namespace CE::Core {
+namespace CE::IO {
 
 namespace {
 

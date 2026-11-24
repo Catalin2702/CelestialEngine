@@ -4,20 +4,20 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-24
 //
 
 /**
  * @file Utility.hpp
  * @brief Umbrella header for the Utility module
- * @details One include for the Utility module: command line, config, delegates and dispatchers, file system, string
- *			manipulation, ranges and time.
+ * @details One include for the Utility module: command line, config, delegates and dispatchers, string manipulation,
+ *			ranges and time. The file system has a module of its own (IO/IO.hpp).
  *
  *			Utility/ImGui/ImGui.hpp is left out on purpose: it includes imgui.h, and this header is pulled into almost
  *			every file of the engine. The few files that convert ImGui keys include it directly.
  *
- *			No folder here needs an umbrella of its own: each holds a single header, or - Delegate and FileSystem -
- *			already has one named after the folder that is the main header of the two.
+ *			No folder here needs an umbrella of its own: each holds a single header, or - Delegate - already has one
+ *			named after the folder that is the main header of the two.
  */
 
 #pragma once
@@ -32,9 +32,6 @@
 
 #include "Utility/Delegate/Delegate.hpp"
 #include "Utility/Delegate/Dispatcher.hpp"
-
-#include "Utility/FileSystem/File.hpp"
-#include "Utility/FileSystem/FileSystem.hpp"
 
 #include "Utility/Manipulation/String.hpp"
 

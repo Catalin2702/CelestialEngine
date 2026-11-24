@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-24
 #
 
 set(CORE_SOURCES
@@ -86,21 +86,17 @@ target_link_libraries(CE_TestsCore PRIVATE
 
 add_test(NAME CoreTests
 	COMMAND CE_TestsCore
-	WORKING_DIRECTORY ${CE_BINARIES_DIR}
+	WORKING_DIRECTORY $<TARGET_FILE_DIR:CE_TestsCore>
 )
 
 set_tests_properties(CoreTests PROPERTIES
 	LABELS "Engine;Core"
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module libraries:
+# Builds into Out/<config>/Tests/, and finds the module libraries:
 # Windows via delay-load bootstrap, Linux via RPATH into ../DLL/, macOS via its own sibling copies
 # (see Engine/cmake/CEApplication.cmake / CelestialEngineMacros.cmake for details)
 ce_set_output_subdirectory(CE_TestsCore Tests)
-ce_stage_to_binaries(CE_TestsCore Tests)
 ce_enable_dll_bootstrap(CE_TestsCore)
 ce_set_dll_search_rpath(CE_TestsCore "../DLL")
 ce_embed_apple_modules_beside(CE_TestsCore Tests)
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_TestsCore)

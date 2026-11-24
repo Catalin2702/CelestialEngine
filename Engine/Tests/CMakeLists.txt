@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -23,6 +23,7 @@ enable_testing()
 add_subdirectory(Modules/Core)
 add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
+add_subdirectory(Modules/IO)
 add_subdirectory(Modules/Native)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)

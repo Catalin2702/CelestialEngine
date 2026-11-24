@@ -4,17 +4,15 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
-// The sandbox's entry point. EntryPoint.hpp defines main(), so it is included here and nowhere else: every other
-// file of the application includes CelestialEngine.hpp alone.
+// The sandbox's client: what CE::CreateApplicationClient returns. main() is the engine's (EntryPoint.cpp, added to
+// this executable by ce_configure_application), so nothing here defines or includes it.
 
 #include "SandboxLayer.hpp"
 
 #include <CelestialEngine.hpp>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <EntryPoint.hpp>
 
 #include <memory>
 

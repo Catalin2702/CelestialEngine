@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-04-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 # Script to create an XCode project for the Celestial Engine
@@ -15,7 +15,7 @@
 # the Xcode generator, so configuring it *is* generating the .xcodeproj. Keeping the
 # generation in the preset (instead of a hand-written cmake command) means the IDE, this
 # script and Scripts/BuildSystem/All/build_all.sh all share one definition of the Xcode
-# build - including CE_TOOLCHAIN_NAME, which decides the Binaries/ output subfolder.
+# build.
 
 # Colors for output
 RED='\033[0;31m'

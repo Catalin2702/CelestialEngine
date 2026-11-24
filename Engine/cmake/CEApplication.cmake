@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-24
 #
 
 # ce_configure_application(<target>
@@ -14,6 +14,7 @@
 #     [ASSET_CATALOG <dir.xcassets>]     compiled with actool; must hold an "AppIcon" set (default: none)
 #     [INFO_PLIST <template.plist.in>]   default: templates/Info.plist.in next to this file
 #     [ENTITLEMENTS <file.plist>]        default: templates/Entitlements.plist next to this file
+#     [NO_ENTRY_POINT]                   the application defines its own main(); EntryPoint.cpp is not added
 # )
 #
 # Turns an executable the application already created into one built on the engine. The application keeps the plain
@@ -27,13 +28,18 @@
 #   ce_configure_application(MyGame OUTPUT_NAME "My Game" ...)
 #
 #   - links CE_Engine (and CE_Config);
+#   - adds the engine's main() (Engine/src/source/EntryPoint.cpp) to the executable's sources, unless NO_ENTRY_POINT:
+#     the application only defines CE::CreateApplicationClient();
 #   - macOS: makes the target a MACOSX_BUNDLE - a self-contained .app with Info.plist (two variants, Dist without the
 #     Metal tooling keys), asset catalog, embedded module dylibs in Contents/Frameworks, ad-hoc signature with the
 #     entitlements;
 #   - bundles the shaders of every compiled-in backend (CE_RENDER_BACKENDS): as bundle resources on macOS, copied into
-#     Resources/Shaders/<API>/ next to the executable elsewhere;
+#     Resources/Engine/Shaders/<API>/ next to the executable elsewhere - Resources/Engine is the engine's, mounted as
+#     engine://, and Resources/Content the application's, mounted as resources:// (IO::FileSystem::Initialize);
+#   - defines CE_APPLICATION_NAME (the OUTPUT_NAME) for the executable's sources: EntryPoint.cpp hands it to the file
+#     system, which keeps this application's user data (config://) in a folder of that name;
 #   - Windows/Linux: DLL/ search path for the module libraries;
-#   - delivery to Binaries/<toolchain>/<config>/ and, with CE_COPY_LAST, to Binaries/Last/.
+#   - the result stays where it is built, <build>/Out/<config>/ (no copy elsewhere; distribution is a separate step).
 #
 # Relative paths are taken from the calling CMakeLists.txt's directory. Requires CelestialEngineMacros.cmake (which
 # includes this file) and the engine targets to exist.
@@ -42,7 +48,7 @@ set(CE_APPLICATION_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/templates")
 
 function(ce_configure_application target)
 	cmake_parse_arguments(PARSE_ARGV 1 ARG
-		""
+		"NO_ENTRY_POINT"
 		"OUTPUT_NAME;BUNDLE_NAME;BUNDLE_ID;ASSET_CATALOG;INFO_PLIST;ENTITLEMENTS"
 		""
 	)
@@ -103,7 +109,7 @@ function(ce_configure_application target)
 		# build dependencies of the application, so editing a shader re-copies it into the bundle without a relink.
 		set_source_files_properties(${CE_METAL_SHADERS_LIB_PATH} PROPERTIES
 			GENERATED TRUE
-			MACOSX_PACKAGE_LOCATION "Resources/Shaders/Metal"
+			MACOSX_PACKAGE_LOCATION "Resources/Engine/Shaders/Metal"
 		)
 
 		list(APPEND _ce_shader_resources ${CE_METAL_SHADERS_LIB_PATH})
@@ -114,7 +120,7 @@ function(ce_configure_application target)
 		# GLSL is loaded and compiled at runtime, so the .glsl files are bundled as-is.
 		if (APPLE)
 			set_source_files_properties(${CE_OPENGL_SHADERS_SOURCES} PROPERTIES
-				MACOSX_PACKAGE_LOCATION "Resources/Shaders/OpenGL"
+				MACOSX_PACKAGE_LOCATION "Resources/Engine/Shaders/OpenGL"
 			)
 		endif ()
 
@@ -136,9 +142,8 @@ function(ce_configure_application target)
 	add_dependencies(${target} ${_ce_shader_targets})
 
 	# Treating the shaders as link dependencies forces the application to relink when they change, which is what
-	# re-runs the POST_BUILD steps below (code signing, the non-Apple copy into Resources/, the copy to Binaries/Last).
-	# Without it the freshly built shaders would land in the bundle but never reach Binaries/Last, and the ad-hoc
-	# signature would still seal the previous ones.
+	# re-runs the POST_BUILD steps below (code signing, the non-Apple copy into Resources/). Without it the freshly
+	# built shaders would land in the bundle while the ad-hoc signature still sealed the previous ones.
 	set_property(TARGET ${target} APPEND PROPERTY
 		LINK_DEPENDS ${_ce_shader_resources}
 	)
@@ -147,13 +152,13 @@ function(ce_configure_application target)
 		# A plain executable has no bundle to carry its resources, so they are copied next to it, mirroring the macOS
 		# bundle's Resources/Shaders/<API> layout (see the platform-specific relative path chosen in FileSystem).
 		add_custom_command(TARGET ${target} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${target}>/Resources/Shaders"
+			COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${target}>/Resources/Engine/Shaders"
 			COMMENT "Creating Resources/Shaders"
 		)
 
 		if (CE_RENDER_OPENGL)
 			add_custom_command(TARGET ${target} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${target}>/Resources/Shaders/OpenGL"
+				COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${target}>/Resources/Engine/Shaders/OpenGL"
 				COMMENT "Creating Resources/Shaders/OpenGL"
 			)
 
@@ -161,8 +166,8 @@ function(ce_configure_application target)
 				add_custom_command(TARGET ${target} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_if_different
 						"${_ce_shader_file}"
-						"$<TARGET_FILE_DIR:${target}>/Resources/Shaders/OpenGL/"
-					COMMENT "Copying ${_ce_shader_file} to Resources/Shaders/OpenGL"
+						"$<TARGET_FILE_DIR:${target}>/Resources/Engine/Shaders/OpenGL/"
+					COMMENT "Copying ${_ce_shader_file} to Resources/Engine/Shaders/OpenGL"
 				)
 			endforeach ()
 		endif ()
@@ -172,6 +177,26 @@ function(ce_configure_application target)
 		LINKER_LANGUAGE CXX
 		OUTPUT_NAME "${ARG_OUTPUT_NAME}"
 	)
+
+	# The application's name as the file system needs it: the folder its user data goes in (config://). PRIVATE, so it
+	# reaches the executable's own sources - EntryPoint.cpp among them - and never the engine libraries, which serve
+	# every application at once. It ends up as a folder name, so it must stay one path segment.
+	if (ARG_OUTPUT_NAME MATCHES "[/\\:]")
+		message(FATAL_ERROR "ce_configure_application(${target}): OUTPUT_NAME '${ARG_OUTPUT_NAME}' cannot contain '/', '\\' or ':'")
+	endif ()
+
+	target_compile_definitions(${target} PRIVATE
+		CE_APPLICATION_NAME="${ARG_OUTPUT_NAME}"
+	)
+
+	# main() belongs in the executable - macOS takes the entry point from the main binary only, never from a dylib - so
+	# it is compiled here, as one of the application's own sources, and not into an engine library. That also hands it
+	# this application's CE_APPLICATION_NAME, which a library compiled once for every application could not have.
+	if (NOT ARG_NO_ENTRY_POINT)
+		target_sources(${target} PRIVATE
+			"${CE_ENGINE_ROOT_DIR}/src/source/EntryPoint.cpp"
+		)
+	endif ()
 
 	# Windows: delay-load the module DLLs and register DLL/ as their search directory.
 	ce_enable_dll_bootstrap(${target})
@@ -284,24 +309,4 @@ function(ce_configure_application target)
 		CE_Config
 		CE_Engine
 	)
-
-	# Deliver the finished artifact to Binaries/<toolchain>/<config>/. Registered LAST on purpose: it is a POST_BUILD
-	# copy, and POST_BUILD steps run in registration order, so everything that fills the bundle (Info.plist, asset
-	# catalog, embedded frameworks) and finally signs it has already run.
-	ce_stage_to_binaries(${target})
-
-	if (NOT APPLE)
-		# The bundle carries its Resources/ along; a plain executable does not, so the folder the POST_BUILD steps above
-		# filled in the build tree is staged alongside the executable.
-		add_custom_command(TARGET ${target} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				"$<TARGET_FILE_DIR:${target}>/Resources"
-				"${CE_BINARIES_DIR}/Resources"
-			COMMENT "Staging Resources to ${CE_BINARIES_DIR}"
-			VERBATIM
-		)
-	endif ()
-
-	# Copy to Binaries/Last folder (no-op unless CE_COPY_LAST is enabled)
-	ce_copy_to_last(${target})
 endfunction()

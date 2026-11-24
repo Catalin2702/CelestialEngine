@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-24
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -45,7 +45,7 @@ project(CelestialEngine LANGUAGES CXX VERSION 0.1.3)
 
 enable_testing()
 
-# The engine's build machinery - CE_Config, the Binaries/ layout, the module helpers, ce_configure_application - included here,
+# The engine's build machinery - CE_Config, the output layout, the module helpers, ce_configure_application - included here,
 # at the top, so that both the engine and the applications next to it see the same variables.
 include("${CMAKE_CURRENT_LIST_DIR}/Engine/cmake/CelestialEngineMacros.cmake")
 

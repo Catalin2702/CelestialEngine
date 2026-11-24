@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-13
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 enable_testing()
@@ -69,21 +69,17 @@ target_link_libraries(CE_TestsTypes PRIVATE
 
 add_test(NAME TypesTests
 	COMMAND CE_TestsTypes
-	WORKING_DIRECTORY ${CE_BINARIES_DIR}
+	WORKING_DIRECTORY $<TARGET_FILE_DIR:CE_TestsTypes>
 )
 
 set_tests_properties(TypesTests PROPERTIES
 	LABELS "Engine;Types"
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables, and finds the module libraries:
+# Builds into Out/<config>/Tests/, and finds the module libraries:
 # Windows via delay-load bootstrap, Linux via RPATH into ../DLL/, macOS via its own sibling copies
 # (see Engine/cmake/CEApplication.cmake / CelestialEngineMacros.cmake for details)
 ce_set_output_subdirectory(CE_TestsTypes Tests)
-ce_stage_to_binaries(CE_TestsTypes Tests)
 ce_enable_dll_bootstrap(CE_TestsTypes)
 ce_set_dll_search_rpath(CE_TestsTypes "../DLL")
 ce_embed_apple_modules_beside(CE_TestsTypes Tests)
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_TestsTypes)

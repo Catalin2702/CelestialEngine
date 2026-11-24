@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 # Decides which graphics backends - and, from them, which window backends - are compiled into the engine.
@@ -33,9 +33,8 @@
 # CE_Config turns the same values into 0/1 compile definitions (see CelestialEngineMacros.cmake), so C++ reads the
 # selection through the same names with #if or `if constexpr`.
 #
-# It is a cache variable read at configure time, so changing it needs a re-configure. A restricted selection still
-# delivers to Binaries/<toolchain>/<config>, overwriting what an All build put there: keep such builds in their own
-# build directory (a CMakeUserPresets.json preset with its own binaryDir and CE_TOOLCHAIN_NAME).
+# It is a cache variable read at configure time, so changing it needs a re-configure. Keep a restricted selection in a
+# build directory of its own (a CMakeUserPresets.json preset with its own binaryDir), or it reconfigures the All build.
 
 set(CE_RENDER_BACKENDS "All" CACHE STRING
 	"Graphics backends to compile in: All, Native, or a list of OpenGL, Metal, Vulkan, DirectX11, DirectX12 - the first one is the runtime default")

@@ -4,10 +4,10 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-24
 #
 
-# The engine's build entry point: CE_Config and CE_Internal, the output layout (Binaries/, Out/, Modules/), the module
+# The engine's build entry point: CE_Config and CE_Internal, the output layout (Out/, Modules/), the module
 # helpers below and, through CEApplication.cmake, ce_configure_application. Include it ONCE, from the top-level CMakeLists.txt
 # after project() and before add_subdirectory() of the engine and of the applications, so its variables reach both:
 #
@@ -19,8 +19,8 @@
 #
 # Engine/CMakeLists.txt includes it too, for a project that only adds the engine directory - the include guard makes
 # that second inclusion free. Paths inside the engine are taken from CE_ENGINE_ROOT_DIR, never from CMAKE_SOURCE_DIR,
-# which is the top-level project's directory: the engine need not be the repository it is built from. Binaries/ and
-# the build outputs, on the other hand, deliberately follow the top-level project.
+# which is the top-level project's directory: the engine need not be the repository it is built from. The build
+# outputs, on the other hand, deliberately follow the top-level project (CMAKE_BINARY_DIR).
 include_guard(GLOBAL)
 
 # Where the engine lives, whoever includes it. Cached (internal) so sibling directories of the engine see them too.
@@ -41,40 +41,14 @@ set(CMAKE_CXX_STANDARD 23)
 # launching) relinked every module again. Turning the scan off removes the dyndep step altogether.
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-# Binaries/ subfolder keeping one toolchain's artifacts from overwriting another's. Set by
-# every configure preset; falling back to the compiler ID means a bare "cmake -B ..." still
-# lands somewhere sane instead of in "Binaries//<Config>".
-if(NOT CE_TOOLCHAIN_NAME)
-	set(CE_TOOLCHAIN_NAME "${CMAKE_CXX_COMPILER_ID}" CACHE STRING "Binaries/ subfolder identifying this toolchain")
-endif()
-
-# Where the artifacts are DELIVERED. Nothing is ever built straight into it: CMake creates a
-# target's output directory (and, for a MACOSX_BUNDLE, the whole Contents/ skeleton with its
-# Info.plist) at GENERATE time, so pointing any target here would make Binaries/<toolchain>/<Config>
-# spring into existence - empty Tests/ folder, hollow CelestialEngine.app and all - for all three
-# configurations of every profile an IDE loads, without a single file being compiled. Everything is
-# built inside the build tree instead and copied here by ce_stage_to_binaries() as a POST_BUILD
-# step, so a folder under Binaries/ only ever appears once something was actually built into it.
-#
-# Binaries/ sits in the top-level project's .exclude/ folder, next to the build trees (.exclude/build/<preset>), so
-# everything generated stays out of the source tree in one place. CE_BINARIES_ROOT moves it elsewhere.
-set(CE_BINARIES_ROOT "${CMAKE_SOURCE_DIR}/.exclude/Binaries" CACHE PATH "Where the built artifacts are delivered (<root>/<toolchain>/<config>/)")
-set(CE_BINARIES_DIR "${CE_BINARIES_ROOT}/${CE_TOOLCHAIN_NAME}/$<CONFIG>")
-set(CE_LAST_BUILD_DIR "${CE_BINARIES_ROOT}/Last")
-
-# The build-tree counterpart of CE_BINARIES_DIR: the real output directory of every executable and
-# shared library, mirroring the same <subfolder> layout.
+# Where every executable is built: <build>/Out/<config>/[<subfolder>]. Each toolchain (and each restricted backend
+# selection) has a build tree of its own (.exclude/build/<preset>), so this is already one folder per toolchain and per
+# configuration: nothing is copied anywhere else after the build. Shipping a build to another machine is a separate,
+# explicit step (see docs/roadmap/Distribution.md), not a side effect of compiling.
 set(CE_BUILD_OUTPUT_DIR "${CMAKE_BINARY_DIR}/Out/$<CONFIG>")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}")
-
-# Declared as an option() so it shows up in the CMake settings UI / ccmake with a defined
-# default, instead of being an undeclared variable that is only ever truthy by accident.
-# Enable it per profile with -DCE_COPY_LAST=ON or a preset cacheVariable: it is read at
-# configure time (it decides whether the POST_BUILD copies are generated at all), so
-# flipping it needs a re-configure, not just a rebuild.
-option(CE_COPY_LAST "Copy build artifacts to Binaries/Last" OFF)
 
 set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
 
@@ -193,64 +167,14 @@ if (NOT TARGET CE_Internal)
 	)
 endif ()
 
-# Copies a target to the Binaries/Last folder, if CE_COPY_LAST is enabled
-# Usage: ce_copy_to_last(target_name)
-#
-# A function rather than a macro: the CE_COPY_LAST guard lives here so the ~16 call sites
-# do not have to repeat it, and only a function can bail out with return() (in a macro
-# return() would exit the *calling* CMakeLists.txt, skipping whatever follows the call).
-# The own scope is a bonus - TARGET_TYPE and IS_BUNDLE no longer leak into the caller.
-function(ce_copy_to_last TARGET_NAME)
-	if (NOT CE_COPY_LAST)
-		return()
-	endif ()
-
-	# Create the Binaries/Last directory if it doesn't exist
-	file(MAKE_DIRECTORY "${CE_LAST_BUILD_DIR}")
-
-	# Get the target type
-	get_target_property(TARGET_TYPE ${TARGET_NAME} TYPE)
-
-	# For executables and libraries
-	if(TARGET_TYPE STREQUAL "EXECUTABLE" OR
-	   TARGET_TYPE STREQUAL "SHARED_LIBRARY" OR
-	   TARGET_TYPE STREQUAL "MODULE_LIBRARY")
-
-		# For macOS bundles (like CelestialEngine.app)
-		get_target_property(IS_BUNDLE ${TARGET_NAME} MACOSX_BUNDLE)
-		if(IS_BUNDLE)
-			# Copy the entire bundle, under its REAL name ($<TARGET_BUNDLE_DIR_NAME>, i.e.
-			# CelestialEngine.app - the target's OUTPUT_NAME) rather than "${TARGET_NAME}.app":
-			# calling it CE_App.app here produced a bundle whose executable was still named
-			# CelestialEngine, and whatever runs it (Scripts/Run/run_all.sh) then looked for the
-			# wrong path.
-			add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove_directory
-					"${CE_LAST_BUILD_DIR}/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>"
-				COMMAND ${CMAKE_COMMAND} -E copy_directory
-					"$<TARGET_BUNDLE_DIR:${TARGET_NAME}>"
-					"${CE_LAST_BUILD_DIR}/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>"
-				COMMENT "Copying $<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}> to Binaries/Last"
-			)
-		else()
-			# Copy the executable or library file
-			add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different
-					"$<TARGET_FILE:${TARGET_NAME}>"
-					"${CE_LAST_BUILD_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
-				COMMENT "Copying ${TARGET_NAME} to Binaries/Last"
-			)
-		endif()
-	endif()
-endfunction()
-
 # Base names of the engine's own SHARED library modules (no extension): the set every
 # executable delay-loads on Windows (see ce_enable_dll_bootstrap) and whose runtime artifact
-# (.dll / .so / .dylib) is redirected into the DLL/ subfolder below, so
-# Binaries/<toolchain>/<config>/ only ever holds executables.
+# (.dll / .so) is redirected into the DLL/ subfolder below, so Out/<config>/ only holds
+# executables.
 set(CE_MODULE_DLL_NAMES
 	CE_Core
 	CE_Events
+	CE_IO
 	CE_Tools
 	CE_Types
 	CE_Utility
@@ -274,9 +198,8 @@ else ()
 endif ()
 
 # Redirects TARGET_NAME's runtime artifact into <build>/Out/<config>/<SUBDIR> instead of the flat
-# default, so e.g. every test executable can be pointed at "Tests" and, once staged, ends up in
-# Binaries/<toolchain>/<config>/Tests/ rather than beside CelestialEngine.app. Pair it with
-# ce_stage_to_binaries(TARGET_NAME SUBDIR) using the SAME subfolder.
+# default, so e.g. every test executable lands in Out/<config>/Tests/ rather than beside
+# CelestialEngine.app. Pass the SAME subfolder to ce_embed_apple_modules_beside.
 # Usage: ce_set_output_subdirectory(target_name subdir)
 function(ce_set_output_subdirectory TARGET_NAME SUBDIR)
 	set_target_properties(${TARGET_NAME} PROPERTIES
@@ -285,82 +208,15 @@ function(ce_set_output_subdirectory TARGET_NAME SUBDIR)
 	)
 endfunction()
 
-# Copies TARGET_NAME's build-tree artifact into Binaries/<toolchain>/<config>[/SUBDIR] after it is
-# built - the ONLY way anything gets into Binaries/, see CE_BINARIES_DIR above for why nothing is
-# built there directly. Handles both plain files and macOS .app bundles (copied whole, under their
-# real bundle name).
+# Decides where a CE module SHARED library is built.
 #
-# Registration order matters: this must be called AFTER any other POST_BUILD step that modifies the
-# artifact (code signing, resource copies), since POST_BUILD commands run in the order they were
-# added - staging first would ship a half-finished bundle.
-# Usage: ce_stage_to_binaries(target_name [subdir])
-function(ce_stage_to_binaries TARGET_NAME)
-	set(DEST "${CE_BINARIES_DIR}")
-	if (ARGC GREATER 1 AND NOT "${ARGV1}" STREQUAL "")
-		set(DEST "${CE_BINARIES_DIR}/${ARGV1}")
-	endif ()
-
-	get_target_property(IS_BUNDLE ${TARGET_NAME} MACOSX_BUNDLE)
-	get_target_property(TARGET_TYPE ${TARGET_NAME} TYPE)
-
-	# The staged file is declared as a BYPRODUCT so the generator knows this build step produces it:
-	# deleting it (or the whole Binaries/ tree) by hand makes the step dirty again and the next
-	# build re-stages it, instead of silently leaving a hole because nothing needed relinking. The
-	# name has to be spelled out here rather than taken from $<TARGET_FILE_NAME:...>, since
-	# BYPRODUCTS generator expressions are evaluated without a target context. That is also why
-	# shared libraries get no byproduct: their real file name carries the VERSION suffix
-	# (libCE_Core.0.1.3.dylib), which is not reconstructible from the target properties alone.
-	get_target_property(STAGED_NAME ${TARGET_NAME} OUTPUT_NAME)
-	if (NOT STAGED_NAME)
-		set(STAGED_NAME "${TARGET_NAME}")
-	endif ()
-
-	set(BYPRODUCT "")
-	if (TARGET_TYPE STREQUAL "EXECUTABLE")
-		if (IS_BUNDLE)
-			set(BYPRODUCT "${DEST}/${STAGED_NAME}.app/Contents/MacOS/${STAGED_NAME}")
-		else ()
-			set(BYPRODUCT "${DEST}/${STAGED_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
-		endif ()
-	endif ()
-
-	if (IS_BUNDLE)
-		# copy_directory alone would leave behind files deleted since the last build (a stale
-		# shader, a renamed resource), so the previous copy is removed first.
-		add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E rm -rf
-				"${DEST}/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>"
-			COMMAND ${CMAKE_COMMAND} -E copy_directory
-				"$<TARGET_BUNDLE_DIR:${TARGET_NAME}>"
-				"${DEST}/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>"
-			BYPRODUCTS ${BYPRODUCT}
-			COMMENT "Staging $<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}> to ${DEST}"
-			VERBATIM
-		)
-	else ()
-		add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory "${DEST}"
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				"$<TARGET_FILE:${TARGET_NAME}>"
-				"${DEST}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
-			BYPRODUCTS ${BYPRODUCT}
-			COMMENT "Staging $<TARGET_FILE_NAME:${TARGET_NAME}> to ${DEST}"
-			VERBATIM
-		)
-	endif ()
-endfunction()
-
-# Decides where a CE module SHARED library is built, and whether it is staged to Binaries/ at all.
+# Windows/Linux: into <build>/Out/<config>/DLL/, the shared folder every executable beside it (or in
+# Tests/) is taught to search (ce_enable_dll_bootstrap / ce_set_dll_search_rpath).
 #
-# Windows/Linux: built into <build>/Out/<config>/DLL/ and staged to
-# Binaries/<toolchain>/<config>/DLL/, the shared folder every executable there is taught to search
-# (ce_enable_dll_bootstrap / ce_set_dll_search_rpath).
-#
-# macOS: built into <build>/Modules/<config>/ and NOT staged. Nothing on macOS loads them from a
-# shared folder - CelestialEngine.app embeds its own copies into Contents/Frameworks
-# (ce_bundle_apple_frameworks) and each Tests/ executable gets its own copies beside it
-# (ce_embed_apple_modules_beside) - so a copy under Binaries/ would be pure clutter: that is exactly
-# why libCE_*.dylib used to pile up next to CelestialEngine.app.
+# macOS: into <build>/Modules/<config>/. Nothing on macOS loads them from a shared folder -
+# CelestialEngine.app embeds its own copies into Contents/Frameworks (ce_bundle_apple_frameworks) and
+# each Tests/ executable gets its own copies beside it (ce_embed_apple_modules_beside) - so keeping
+# them out of Out/ stops libCE_*.dylib piling up next to CelestialEngine.app.
 # Usage: ce_set_module_library_output(target_name)
 function(ce_set_module_library_output TARGET_NAME)
 	if (APPLE)
@@ -371,7 +227,6 @@ function(ce_set_module_library_output TARGET_NAME)
 		)
 	else ()
 		ce_set_output_subdirectory(${TARGET_NAME} DLL)
-		ce_stage_to_binaries(${TARGET_NAME} DLL)
 	endif ()
 endfunction()
 
@@ -442,7 +297,7 @@ endfunction()
 # outputs is always out of date, so every build - including the one an IDE runs before launching a
 # test or the app - re-copied and re-signed all seven libraries even when nothing had changed. The
 # stamp lives in the build tree, not in DEST_DIR, so deleting a copied library by hand is NOT
-# noticed (same limitation as ce_stage_to_binaries for versioned libraries); a clean build fixes it.
+# noticed; a clean build fixes it.
 # Usage: ce_apple_modules_copy_target("<dest dir>" OUT_VAR)
 function(ce_apple_modules_copy_target DEST_DIR OUT_TARGET)
 	# One copy target per destination folder, shared by every executable built into it. The name is
@@ -479,13 +334,11 @@ function(ce_apple_modules_copy_target DEST_DIR OUT_TARGET)
 endfunction()
 
 # On macOS, puts a copy of every module library beside TARGET_NAME - a plain (non-bundle)
-# executable, such as one of the Tests/ binaries - in BOTH places it exists: its build-tree output
-# folder (where CTest runs it from) and the staged Binaries/<toolchain>/<config>/<SUBDIR>/ copy.
-# The module libraries are not built under Binaries/ at all on macOS (see
-# ce_set_module_library_output), and there is no shared folder to point an RPATH at, so each
-# executable's own folder has to hold them.
+# executable, such as one of the Tests/ binaries - in its output folder. The module libraries are
+# built into <build>/Modules/<config>/ on macOS (see ce_set_module_library_output), and there is no
+# shared folder to point an RPATH at, so each executable's own folder has to hold them.
 #
-# SUBDIR must be the same subfolder passed to ce_set_output_subdirectory / ce_stage_to_binaries.
+# SUBDIR must be the same subfolder passed to ce_set_output_subdirectory.
 # No-op elsewhere - Windows and Linux use ce_enable_dll_bootstrap / ce_set_dll_search_rpath against
 # the shared DLL/ folder instead.
 # Usage: ce_embed_apple_modules_beside(target_name [subdir])
@@ -501,16 +354,13 @@ function(ce_embed_apple_modules_beside TARGET_NAME)
 
 	if (SUBDIR STREQUAL "")
 		set(BUILD_DIR "${CE_BUILD_OUTPUT_DIR}")
-		set(STAGED_DIR "${CE_BINARIES_DIR}")
 	else ()
 		set(BUILD_DIR "${CE_BUILD_OUTPUT_DIR}/${SUBDIR}")
-		set(STAGED_DIR "${CE_BINARIES_DIR}/${SUBDIR}")
 	endif ()
 
 	ce_apple_modules_copy_target("${BUILD_DIR}" BUILD_COPY_TARGET)
-	ce_apple_modules_copy_target("${STAGED_DIR}" STAGED_COPY_TARGET)
 
-	add_dependencies(${TARGET_NAME} ${BUILD_COPY_TARGET} ${STAGED_COPY_TARGET})
+	add_dependencies(${TARGET_NAME} ${BUILD_COPY_TARGET})
 endfunction()
 
 # On Windows, marks every CE_MODULE_DLL_NAMES import as delay-loaded on TARGET_NAME and compiles

@@ -4,12 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include <Utility/CMD/CommandLine.hpp>
 #include <Utility/Config/Config.hpp>
-#include <Utility/FileSystem/FileSystem.hpp>
 
 #include <Tools/Tools.hpp>
 #include <Types/Window/WindowProps.hpp>
@@ -26,24 +25,17 @@ namespace {
 
 /**
  * @brief Test fixture for InitFromCommandLine
- * @details Config and the FileSystem root are process-wide: each test starts from a known value of both and puts the
- *			root back afterwards, so the other suites of this executable see what they expect.
+ * @details Config is process-wide: each test starts from a known value of it, so the order the tests run in does not
+ *			matter.
  */
 class CommandLineTest: public ::testing::Test {
 protected:
 	void SetUp() override {
 		Log::Init();
-		_previousRoot = FileSystem::GetRootDirectory();
 		Config::SetWindowProps(WindowProps{"Before", 640, 480, false, 0, GetDefaultGraphicsApi(), GetDefaultWindowApi(GetDefaultGraphicsApi())});
 	}
 
-	void TearDown() override {
-		FileSystem::SetRootDirectory(_previousRoot);
-		Log::Shutdown();
-	}
-
-private:
-	fs::path _previousRoot;
+	void TearDown() override { Log::Shutdown(); }
 };
 
 }
@@ -61,17 +53,6 @@ TEST_F(CommandLineTest, InitFromCommandLine_ValidArguments_StoresWindowPropsInCo
 	EXPECT_EQ(props.width, 800);
 	EXPECT_EQ(props.height, 600);
 	EXPECT_EQ(props.graphicsApi, GetDefaultGraphicsApi());
-}
-
-/**
- * @brief Test that the FileSystem root becomes the directory of argv[0]
- */
-TEST_F(CommandLineTest, InitFromCommandLine_ExecutablePath_SetsRootToItsDirectory) {
-	const char* argv[] = {"/opt/celestial/bin/program"};
-
-	InitFromCommandLine(1, argv);
-
-	EXPECT_EQ(FileSystem::GetRootDirectory(), fs::path("/opt/celestial/bin"));
 }
 
 /**

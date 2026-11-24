@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -25,11 +25,12 @@ namespace CE::Utility {
  *		   the graphics/window APIs asked for (ValidateWindowProps). Nothing is stored in that case.
  * @details In order:
  *			1. parses the window options (ParseWindowArgs) and checks this build can open that window
- *			   (ValidateWindowProps) - so a backend missing from CE_RENDER_BACKENDS is reported here, with the list of
- *			   what is available, rather than by a factory later on;
- *			2. stores them in Config, where the rest of the engine reads them (Config::GetWindowProps);
- *			3. sets the FileSystem root to the executable's directory, from argv[0].
- *			Called once by main() (EntryPoint.hpp), after the logger is up and before the Application is constructed.
+ *				(ValidateWindowProps) - so a backend missing from CE_RENDER_BACKENDS is reported here, with the list of
+ *				what is available, rather than by a factory later on;
+ *			2. stores them in Config, where the rest of the engine reads them (Config::GetWindowProps).
+ *				The file system is not set up here: it needs the application's name, which only main() has
+ *				(CE_APPLICATION_NAME), so main() initialises it right after this call (IO::FileSystem::Initialize).
+ *			Called once by main() (EntryPoint.cpp), after the logger is up and before the Application is constructed.
  */
 CE_UTILITY_API void InitFromCommandLine(int argc, const char* argv[]);
 

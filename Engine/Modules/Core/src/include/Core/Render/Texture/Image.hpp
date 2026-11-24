@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -16,8 +16,8 @@
 #include "Types/Types.hpp"
 
 #include <cstddef>
-#include <filesystem>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 
@@ -39,13 +39,13 @@ struct CE_CORE_API Image {
 
 	/**
 	 * @brief Decodes a PNG, JPEG, TGA or BMP file into RGBA8 texels
-	 * @param path The file to read, usually under FileSystem::GetResourcesDirectory()
+	 * @param path Virtual path of the file, e.g. "resources://Textures/Logo.png"
 	 * @return std::optional<Image> The decoded image, or nothing when the file is missing or is not an image
 	 * @details Always four channels, whatever the file stores: the engine has no three-channel format (see
 	 *			PixelFormat), and one format for every image keeps the upload path free of conversions. A failure is
 	 *			logged here, with the decoder's own reason, and is not fatal: the caller decides what to draw instead.
 	 */
-	[[nodiscard]] static std::optional<Image> Load(const std::filesystem::path& path);
+	[[nodiscard]] static std::optional<Image> Load(std::string_view path);
 };
 
 }

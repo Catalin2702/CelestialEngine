@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -116,6 +116,3 @@ target_include_directories(CE_Apple PUBLIC
 # @loader_path RPATH so it finds its sibling module libraries wherever it ends up.
 ce_set_module_library_output(CE_Apple)
 ce_configure_module_library_rpath(CE_Apple)
-
-# Link the platform-specific modules
-ce_copy_to_last(CE_Apple)

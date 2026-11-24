@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-24
 #
 
 set(HEADERS
@@ -40,7 +40,3 @@ target_link_libraries(CE_Define INTERFACE
 target_include_directories(CE_Define INTERFACE
 	src/include
 )
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_Define)
-

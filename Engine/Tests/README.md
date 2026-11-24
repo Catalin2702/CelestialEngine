@@ -14,10 +14,11 @@ Engine/Tests/
     ├── Core/       # Test per CE_Core (Input, Layers, Hub)
     ├── Define/     # Test per CE_Define (macro compilation tests)
     ├── Events/     # Test per CE_Events
+    ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (bridge ImGui, dispatcher AppKit/MetalKit)
     ├── Tools/      # Test per CE_Tools (logging)
     ├── Types/      # Test per CE_Types (key code, render, window, build)
-    └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, FileSystem, ImGui, String, Time)
+    └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, ImGui, String, Time)
 ```
 
 ## Eseguire i Test
@@ -67,10 +68,10 @@ ctest --rerun-failed --output-on-failure
 
 ### Un singolo caso di test
 
-Gli eseguibili sono copiati in `Binaries/Last/` e accettano i filtri di GoogleTest:
+Gli eseguibili stanno nella cartella di build, in `Out/<config>/Tests/`, e accettano i filtri di GoogleTest:
 
 ```bash
-./Binaries/Last/CE_TestsCore --gtest_filter='InputTest.*'
+./.exclude/build/clang/Out/Debug/Tests/CE_TestsCore --gtest_filter='InputTest.*'
 ```
 
 ## Eseguibili e Label
@@ -80,6 +81,7 @@ Gli eseguibili sono copiati in `Binaries/Last/` e accettano i filtri di GoogleTe
 | `CE_TestsCore`     | `CoreTests`   | `Engine;Core`      |
 | `CE_TestsDefine`   | `DefineTests` | `Engine;Define`    |
 | `CE_TestsEvents`   | `EventsTests` | `Engine;Events`    |
+| `CE_TestsIO`       | `IOTests`     | `Engine;IO`        |
 | `CE_TestsNative`   | `NativeTests` | `Engine;Native`    |
 | `CE_TestsTools`    | `ToolsTests`  | `Engine;Tools`     |
 | `CE_TestsTypes`    | `TypesTests`  | `Engine;Types`     |
@@ -95,6 +97,8 @@ girare anche senza display. Questo determina cosa è coperto:
 - **Native**: il bridge ImGui e i dispatcher AppKit/MetalKit, verificati sull'inoltro dei callback nativi (i
   puntatori `NS::Event` / `MTK::View` non vengono mai dereferenziati dai dispatcher, quindi bastano indirizzi finti).
 - **Events / Types / Define / Tools / Utility**: interamente coperti, non dipendono dalla piattaforma.
+- **IO**: `VirtualPath` senza disco, `FileSystem` su una cartella temporanea montata per ogni test. `Initialize` non
+  viene chiamato: monterebbe le cartelle vere dell'utente (`~/Library/Application Support`, `~/Library/Caches`).
 
 Non sono coperti da test automatici i componenti che richiedono una finestra o una GPU reale: `GlfwWindow`,
 `CocoaWindow`, `Application`, le piattaforme (`GlfwPlatform`, `CocoaPlatform`), i device e le swapchain
@@ -125,14 +129,18 @@ target_link_libraries(CE_TestsMyModule PRIVATE
 
 add_test(NAME MyModuleTests
 	COMMAND CE_TestsMyModule
-	WORKING_DIRECTORY ${CE_BINARIES_DIR}
+	WORKING_DIRECTORY $<TARGET_FILE_DIR:CE_TestsMyModule>
 )
 
 set_tests_properties(MyModuleTests PROPERTIES
 	LABELS "Engine;MyModule"
 )
 
-ce_copy_to_last(CE_TestsMyModule)
+# Out/<config>/Tests/, and the module libraries found on every platform
+ce_set_output_subdirectory(CE_TestsMyModule Tests)
+ce_enable_dll_bootstrap(CE_TestsMyModule)
+ce_set_dll_search_rpath(CE_TestsMyModule "../DLL")
+ce_embed_apple_modules_beside(CE_TestsMyModule Tests)
 ```
 
 4. Aggiungi la subdirectory in `Engine/Tests/CMakeLists.txt`: `add_subdirectory(Modules/MyModule)`.

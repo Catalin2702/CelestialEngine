@@ -1,5 +1,5 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/FileSystem
+// Module: CelestialEngine/Engine/Modules/IO/FileSystem
 // File: FileSystem.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
@@ -9,11 +9,11 @@
 
 #pragma once
 
-#ifndef CE_CORE_FILESYSTEM_FILESYSTEM_HPP
-#define CE_CORE_FILESYSTEM_FILESYSTEM_HPP
+#ifndef CE_IO_FILESYSTEM_FILESYSTEM_HPP
+#define CE_IO_FILESYSTEM_FILESYSTEM_HPP
 
-#include "Core/FileSystem/FileSystemError.hpp"
-#include "Core/FileSystem/VirtualPath.hpp"
+#include "FileSystemError.hpp"
+#include "VirtualPath.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
 
@@ -26,7 +26,7 @@
 #include <vector>
 
 
-namespace CE::Core {
+namespace CE::IO {
 
 /// Read-only: the files the engine ships inside every application (shaders). Contents/Resources/Engine in a bundle.
 inline constexpr std::string_view ENGINE_MOUNT = "engine";
@@ -36,6 +36,11 @@ inline constexpr std::string_view RESOURCES_MOUNT = "resources";
 
 /// Read-write: what the running engine keeps for the user (settings, the ImGui layout). Outside the bundle.
 inline constexpr std::string_view CONFIG_MOUNT = "config";
+
+/// Read-write: what the application can rebuild at any time (pipeline caches, shaders compiled for this GPU), one folder
+/// per application. Outside the bundle, skipped by backups, and the system may empty it: nothing here may be the only
+/// copy of anything.
+inline constexpr std::string_view CACHE_MOUNT = "cache";
 
 /**
  * @enum MountAccess
@@ -61,7 +66,7 @@ enum class MountAccess: u8 {
  *			The mount table is shared and guarded: mounting takes it exclusively, every resolution shares it. Reads
  *			and writes themselves take no lock, so two threads touching the same file is the callers' business.
  */
-class CE_CORE_API FileSystem {
+class CE_IO_API FileSystem {
 public:
 	FileSystem() = delete;
 
@@ -72,13 +77,17 @@ public:
 	 * @param applicationName The folder the application's user data goes in, CE_APPLICATION_NAME: one path segment
 	 * @details The packaging puts the shipped files in one directory (Contents/Resources in a bundle, Resources/ beside
 	 *			the executable elsewhere), split by owner: ENGINE_MOUNT on its Engine/ folder, RESOURCES_MOUNT on its
-	 *			Content/ folder, both read-only. CONFIG_MOUNT goes read-write on <per-user data directory>/
-	 *			<applicationName>, created if missing, so two applications built on the engine never share settings.
+	 *			Content/ folder, both read-only. CONFIG_MOUNT and CACHE_MOUNT go read-write on <applicationName> under
+	 *			the platform's per-user data and cache directories, created if missing, so two applications built on the
+	 *			engine never share settings or caches.
 	 *
 	 *			Called once by main(), before the Application: the path is made absolute right away, because GLFW
 	 *			changes the working directory a relative argv[0] would be resolved against. A location that cannot be
 	 *			mounted is logged and skipped, not fatal: the paths under it then answer UnknownMount, and the caller
 	 *			that needed them reports what it was trying to do.
+	 *
+	 *			Only an engine application calls it. A command-line tool linking CE_IO - a shader compiler, an asset
+	 *			converter - has no bundle and no user data: it mounts the directories it works on with Mount instead.
 	 */
 	static void Initialize(std::string_view executablePath, std::string_view applicationName);
 
@@ -146,4 +155,4 @@ public:
 
 }
 
-#endif //CE_CORE_FILESYSTEM_FILESYSTEM_HPP
+#endif //CE_IO_FILESYSTEM_FILESYSTEM_HPP

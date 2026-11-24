@@ -1,23 +1,23 @@
 //
-// Module: CelestialEngine/Engine/Modules/Core/FileSystem
+// Module: CelestialEngine/Engine/Modules/IO/FileSystem
 // File: FileSystemError.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-23
+// Updated: 2026-11-24
 //
 
 #pragma once
 
-#ifndef CE_CORE_FILESYSTEM_FILESYSTEMERROR_HPP
-#define CE_CORE_FILESYSTEM_FILESYSTEMERROR_HPP
+#ifndef CE_IO_FILESYSTEM_FILESYSTEMERROR_HPP
+#define CE_IO_FILESYSTEM_FILESYSTEMERROR_HPP
 
 #include "Types/Var/Vars.hpp"
 
 #include <format>
 #include <string_view>
 
-namespace CE::Core {
+namespace CE::IO {
 
 /**
  * @enum FileSystemError
@@ -63,10 +63,10 @@ constexpr std::string_view format_as(const FileSystemError error) {
 }
 
 template <>
-struct std::formatter<CE::Core::FileSystemError>: std::formatter<std::string_view> {
-	auto format(const CE::Core::FileSystemError value, std::format_context& ctx) const {
+struct std::formatter<CE::IO::FileSystemError>: std::formatter<std::string_view> {
+	auto format(const CE::IO::FileSystemError value, std::format_context& ctx) const {
 		return std::formatter<std::string_view>::format(format_as(value), ctx);
 	}
 };
 
-#endif //CE_CORE_FILESYSTEM_FILESYSTEMERROR_HPP
+#endif //CE_IO_FILESYSTEM_FILESYSTEMERROR_HPP

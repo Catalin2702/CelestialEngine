@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-03
+# Updated: 2026-11-24
 #
 
 set(HEADERS
@@ -18,10 +18,6 @@ set(HEADERS
 	# Delegate
 	src/include/Utility/Delegate/Delegate.hpp
 	src/include/Utility/Delegate/Dispatcher.hpp
-
-	# FileSystem
-	src/include/Utility/FileSystem/FileSystem.hpp
-	src/include/Utility/FileSystem/File.hpp
 
 	# ImGui
 	src/include/Utility/ImGui/ImGui.hpp
@@ -50,10 +46,6 @@ set(SOURCES
 	# Delegate
 	src/source/Utility/Delegate/Dispatcher.cpp
 
-	# FileSystem
-	src/source/Utility/FileSystem/FileSystem.cpp
-	src/source/Utility/FileSystem/File.cpp
-
 	# ImGui
 	src/source/Utility/ImGui/ImGui.cpp
 
@@ -75,8 +67,8 @@ set_target_properties(CE_Utility PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
-# Keeps Binaries/<toolchain>/<config>/ down to just executables: DLL/ on Windows and Linux, and on
-# macOS out of Binaries/ entirely, into the build tree (see ce_set_module_library_output)
+# Keeps Out/<config>/ down to just executables: the library goes to its DLL/ subfolder on Windows and Linux, and to
+# <build>/Modules/<config>/ on macOS (see ce_set_module_library_output)
 ce_set_module_library_output(CE_Utility)
 
 # Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
@@ -103,6 +95,3 @@ target_link_libraries(CE_Utility PRIVATE
 target_compile_definitions(CE_Utility PRIVATE
 	CE_UTILITY_EXPORTS
 )
-
-# Copy to Binaries/Last folder
-ce_copy_to_last(CE_Utility)

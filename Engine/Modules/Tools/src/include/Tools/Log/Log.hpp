@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -79,7 +79,7 @@ public:
 	 * @details Deliberately out-of-line (defined in Log.cpp) instead of the usual
 	 *			CE_CORE_* macros: those expand to a call into spdlog's templated,
 	 *			header-only formatting API, which gets compiled straight into whichever
-	 *			translation unit uses them - including EntryPoint.hpp's main(), which is
+	 *			translation unit uses them - including EntryPoint.cpp's main(), which is
 	 *			compiled directly into the client executable. That pulls a direct (non
 	 *			delay-loadable) import of spdlog/fmt's own DLL into the executable itself.
 	 *			Routing through this plain, compiled function keeps that call inside
