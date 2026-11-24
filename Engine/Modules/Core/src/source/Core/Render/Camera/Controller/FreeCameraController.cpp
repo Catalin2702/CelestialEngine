@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Camera/Controller/FreeCameraController.hpp"
@@ -12,8 +12,7 @@
 #include "Core/Input/Input.hpp"
 #include "Types/Types.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include "Types/Math/Glm.hpp"
 
 
 namespace CE::Core {

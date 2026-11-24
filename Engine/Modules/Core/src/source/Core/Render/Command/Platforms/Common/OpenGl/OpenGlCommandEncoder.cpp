@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Core/Render/Command/Viewport.hpp"
 #include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
@@ -168,7 +169,7 @@ void OpenGlCommandEncoder::SetFragmentConstants(const u32 slot, const std::span<
 	assert(not _ended and "OpenGlCommandEncoder::SetFragmentConstants: The pass has already been ended!");
 	assert(slot < Types::MAX_CONSTANT_SLOTS and "OpenGlCommandEncoder::SetFragmentConstants: The slot is past the last constant slot!");
 
-	_UploadConstants(Types::OPENGL_FRAGMENT_CONSTANTS_FIRST_BINDING + slot, data);
+	_UploadConstants(OPENGL_FRAGMENT_CONSTANTS_FIRST_BINDING + slot, data);
 }
 
 void OpenGlCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstIndex, const u32 baseVertex) {
@@ -181,7 +182,7 @@ void OpenGlCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstInde
 		return;
 
 	glDrawElementsBaseVertex(
-		Types::ToOpenGl(_topology),
+		ToOpenGl(_topology),
 		static_cast<GLsizei>(indexCount),
 		// The index buffers are built from u32, so the type is fixed; it becomes encoder state the day u16 is allowed.
 		GL_UNSIGNED_INT,

@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
+#include "Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -28,8 +29,8 @@ MetalTexture::MetalTexture(MTL::Device* nativeDevice, const TextureDescriptor& d
 	const auto textureDescriptor = NS::TransferPtr(MTL::TextureDescriptor::alloc()->init());
 	textureDescriptor->setWidth(_width);
 	textureDescriptor->setHeight(_height);
-	textureDescriptor->setPixelFormat(Types::ToMetal(_format));
-	textureDescriptor->setUsage(Types::ToMetal(_usage));
+	textureDescriptor->setPixelFormat(ToMetal(_format));
+	textureDescriptor->setUsage(ToMetal(_usage));
 	textureDescriptor->setTextureType(MTL::TextureType2D);
 	textureDescriptor->setMipmapLevelCount(1);
 	textureDescriptor->setStorageMode(MTL::StorageModePrivate);

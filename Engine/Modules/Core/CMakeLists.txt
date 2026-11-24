@@ -30,10 +30,12 @@ set(HUB_HEADERS
 	# Events
 	$<$<BOOL:${CE_WINDOW_GLFW}>:
 	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp
+	src/include/Core/Hub/Events/Platforms/Common/Glfw/GlfwKeyCode.hpp
 	>
 
 	$<$<BOOL:${CE_WINDOW_COCOA}>:
 	src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp
+	src/include/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaKeyCode.hpp
 	>
 )
 
@@ -91,6 +93,14 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Camera/Projection/OrthographicCameraProjection.hpp
 	src/include/Core/Render/Camera/Projection/Projection.hpp
 
+
+	# Conversion: engine render types to each backend's own (temporary home, until the RHI is a module)
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp
+	>
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/include/Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp
+	>
 
 	# Command
 	src/include/Core/Render/Command/Command.hpp
@@ -290,10 +300,12 @@ set(HUB_SOURCES
 
 	$<$<BOOL:${CE_WINDOW_GLFW}>:
 	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.cpp
+	src/source/Core/Hub/Events/Platforms/Common/Glfw/GlfwKeyCode.cpp
 	>
 
 	$<$<BOOL:${CE_WINDOW_COCOA}>:
 	src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.cpp
+	src/source/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaKeyCode.cpp
 	>
 )
 
@@ -343,6 +355,14 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Camera/Projection/CameraProjectionFactory.cpp
 	src/source/Core/Render/Camera/Projection/OrthographicCameraProjection.cpp
 
+
+	# Conversion
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.cpp
+	>
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/source/Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.cpp
+	>
 
 	# Command
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
@@ -517,12 +537,25 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Vendor_SpdLog
 )
 
-# GLFW and its ImGui backend exist only when a GLFW window is compiled in (CE_WINDOW_GLFW, derived from
-# CE_RENDER_BACKENDS); glad comes along with CE_Types whenever OpenGL is.
+# Each backend's third parties exist only when the backend is compiled in (CE_RENDER_BACKENDS): GLFW and its ImGui
+# backend with a GLFW window, glad with OpenGL, metal-cpp with Metal. Core links them itself - Types, which used to
+# carry them for its conversion tables, knows no backend any more.
 if (CE_WINDOW_GLFW)
 	target_link_libraries(CE_Core PUBLIC
 		CE_Vendor_Glfw
 		CE_Vendor_ImGui_Glfw
+	)
+endif ()
+
+if (CE_RENDER_OPENGL)
+	target_link_libraries(CE_Core PUBLIC
+		CE_Vendor_Glad
+	)
+endif ()
+
+if (CE_RENDER_METAL)
+	target_link_libraries(CE_Core PUBLIC
+		CE_Vendor_MetalCpp
 	)
 endif ()
 

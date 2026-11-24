@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+#include "Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
 #include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
@@ -186,7 +187,7 @@ bool MetalSwapchain::IsVSyncEnabled() const {
 }
 
 Types::PixelFormat MetalSwapchain::GetColorFormat() const {
-	return Types::FromMetal(_nativeLayer->pixelFormat());
+	return FromMetal(_nativeLayer->pixelFormat());
 }
 
 u32 MetalSwapchain::GetBufferCount() const {

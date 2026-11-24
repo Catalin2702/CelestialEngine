@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-05-07
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Tools/Tools.hpp"
-#include "Types/Render/Platforms/Common/OpenGl/OpenGl.hpp"
 
 #include <glad/glad.h>
 
@@ -19,7 +19,7 @@
 namespace CE::Core {
 
 u32 OpenGlShaderCompiler::Compile(const char* shader, const Types::ShaderType type) {
-	const u32 shaderId = glCreateShader(Types::ToOpenGlShaderType(type));
+	const u32 shaderId = glCreateShader(ToOpenGlShaderType(type));
 
 	glShaderSource(shaderId, 1, &shader, nullptr);
 

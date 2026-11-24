@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -12,9 +12,8 @@
 #ifndef CE_TYPES_VAR_VARS_HPP
 #define CE_TYPES_VAR_VARS_HPP
 
-#include "Types/Var/Glm.hpp"
-
-#include <glm/glm.hpp>
+// Integer and floating point aliases, their literals and the float comparisons. Deliberately free of glm: the math
+// types live in Types/Math/Glm.hpp, so a file that only wants u8 does not parse glm.
 
 #include <algorithm>
 #include <concepts>
@@ -54,10 +53,6 @@ constexpr auto operator ""_f32 (const f128 x) { return static_cast<f32>(x); }
 constexpr auto operator ""_f64 (const f128 x) { return static_cast<f64>(x); }
 
 constexpr auto operator ""_f128 (const f128 x) { return static_cast<f128>(x); }
-
-constexpr glm::vec3 CE_WORLD_RIGHT{1.0_f32, 0.0_f32, 0.0_f32};
-constexpr glm::vec3 CE_WORLD_UP{0.0_f32, 1.0_f32, 0.0_f32};
-constexpr glm::vec3 CE_WORLD_FORWARD{0.0_f32, 0.0_f32, -1.0_f32};
 
 /**
  * @brief Default tolerance for the float comparisons below, per floating point type

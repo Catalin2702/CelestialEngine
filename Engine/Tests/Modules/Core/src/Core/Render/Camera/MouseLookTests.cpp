@@ -4,15 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-01
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include <Core/Render/Camera/Controller/MouseLook.hpp>
 
 #include <gtest/gtest.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include "Types/Math/Glm.hpp"
 
 
 namespace {

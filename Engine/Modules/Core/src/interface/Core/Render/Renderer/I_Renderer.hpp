@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-08
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -14,7 +14,7 @@
 
 #include "Types/Types.hpp"
 
-#include <glm/glm.hpp>
+#include "Types/Math/Glm.hpp"
 
 #include <memory>
 

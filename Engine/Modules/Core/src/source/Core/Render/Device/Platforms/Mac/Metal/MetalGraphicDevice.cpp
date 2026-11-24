@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
+#include "Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
 #include "Core/Render/Command/Command.hpp"
 #include "Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
@@ -136,8 +137,8 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 
 	auto* const colorAttachment_0 = passDescriptor->colorAttachments()->object(0);
 	colorAttachment_0->setTexture(nativeColorTexture);
-	colorAttachment_0->setLoadAction(Types::ToMetal(loadAction_0));
-	colorAttachment_0->setStoreAction(Types::ToMetal(storeAction_0));
+	colorAttachment_0->setLoadAction(ToMetal(loadAction_0));
+	colorAttachment_0->setStoreAction(ToMetal(storeAction_0));
 	colorAttachment_0->setClearColor(MTL::ClearColor::Make(clearColor_0.r, clearColor_0.g, clearColor_0.b, clearColor_0.a));
 
 	// The extra attachments a G-buffer would use are reachable now, and the loop is the only part of this that had to
@@ -154,8 +155,8 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 		const auto& extraClear = clearColor_i;
 		auto* const attachment = passDescriptor->colorAttachments()->object(i);
 		attachment->setTexture(static_cast<const MetalTexture*>(target_i)->GetTexture());
-		attachment->setLoadAction(Types::ToMetal(loadAction_i));
-		attachment->setStoreAction(Types::ToMetal(storeAction_i));
+		attachment->setLoadAction(ToMetal(loadAction_i));
+		attachment->setStoreAction(ToMetal(storeAction_i));
 		attachment->setClearColor(MTL::ClearColor::Make(extraClear.r, extraClear.g, extraClear.b, extraClear.a));
 	}
 
@@ -166,8 +167,8 @@ std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const Rend
 
 		auto* const depthAttachment = passDescriptor->depthAttachment();
 		depthAttachment->setTexture(static_cast<const MetalTexture*>(descriptor.depth.target)->GetTexture());
-		depthAttachment->setLoadAction(Types::ToMetal(descriptor.depth.loadAction));
-		depthAttachment->setStoreAction(Types::ToMetal(descriptor.depth.storeAction));
+		depthAttachment->setLoadAction(ToMetal(descriptor.depth.loadAction));
+		depthAttachment->setStoreAction(ToMetal(descriptor.depth.storeAction));
 		depthAttachment->setClearDepth(descriptor.depth.clearDepth);
 	}
 

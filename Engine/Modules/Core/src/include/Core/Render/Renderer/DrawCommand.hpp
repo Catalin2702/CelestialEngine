@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
 
-#include <glm/glm.hpp>
+#include "Types/Math/Glm.hpp"
 
 
 namespace CE::Core {

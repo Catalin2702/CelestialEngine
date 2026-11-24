@@ -20,7 +20,7 @@
  *			`CE_CORE_INFO("{}", value)`, which then fails with a wall of fmt template errors - hence both, delegating
  *			to one switch so they can never disagree.
  *
- *			Flag enums (BufferBit, EventCategory) return an owning std::string naming the set, e.g. "Color|Depth".
+ *			Flag enums (EventCategory) return an owning std::string naming the set, e.g. "Color|Depth".
  */
 
 #pragma once

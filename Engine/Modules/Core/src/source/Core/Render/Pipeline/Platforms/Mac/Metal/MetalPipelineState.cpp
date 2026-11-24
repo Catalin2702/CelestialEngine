@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp"
+#include "Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
 #include "Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Types.hpp"
@@ -58,13 +59,13 @@ MTL::Function* ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const
  * @details This is where Metal's "format lives in the pipeline" model is paid for, and it is the better half of the
  *			trade: the layout is validated once at creation instead of being replayed as glVertexAttribPointer calls
  *			on every draw. Attribute i in the layout becomes attribute i in the shader ([[attribute(i)]]), all fed
- *			from one interleaved buffer at Types::METAL_VERTEX_BUFFER_INDEX.
+ *			from one interleaved buffer at METAL_VERTEX_BUFFER_INDEX.
  */
 NS::SharedPtr<MTL::VertexDescriptor> MakeVertexDescriptor(const BufferLayout& layout) {
 	auto vertexDescriptor = NS::TransferPtr(MTL::VertexDescriptor::alloc()->init());
 
 	for (const auto [index, element]: Utility::Enumerate(layout)) {
-		const auto format = Types::ToMetal(element.type);
+		const auto format = ToMetal(element.type);
 
 		if (format == MTL::VertexFormatInvalid) [[unlikely]] {
 			const auto error = std::format("MakeVertexDescriptor: Vertex attribute '{}' has no single Metal vertex format!", element.name);
@@ -75,12 +76,12 @@ NS::SharedPtr<MTL::VertexDescriptor> MakeVertexDescriptor(const BufferLayout& la
 		auto* const attribute = vertexDescriptor->attributes()->object(index);
 		attribute->setFormat(format);
 		attribute->setOffset(element.offset);
-		attribute->setBufferIndex(Types::METAL_VERTEX_BUFFER_INDEX);
+		attribute->setBufferIndex(METAL_VERTEX_BUFFER_INDEX);
 	}
 
 	// One interleaved buffer, advanced once per vertex. Per-instance data would be a second layout with
 	// VertexStepFunctionPerInstance, which is what instancing will add here.
-	auto* const bufferLayout = vertexDescriptor->layouts()->object(Types::METAL_VERTEX_BUFFER_INDEX);
+	auto* const bufferLayout = vertexDescriptor->layouts()->object(METAL_VERTEX_BUFFER_INDEX);
 	bufferLayout->setStride(layout.GetStride());
 	bufferLayout->setStepFunction(MTL::VertexStepFunctionPerVertex);
 	bufferLayout->setStepRate(1);
@@ -90,7 +91,7 @@ NS::SharedPtr<MTL::VertexDescriptor> MakeVertexDescriptor(const BufferLayout& la
 
 /// Fills in one colour attachment: its format, and the blend equation that writes into it.
 void ConfigureColorAttachment(MTL::RenderPipelineColorAttachmentDescriptor* attachmentDescriptor, const Types::PixelFormat pixelFormat, const BlendState& blendState) {
-	attachmentDescriptor->setPixelFormat(Types::ToMetal(pixelFormat));
+	attachmentDescriptor->setPixelFormat(ToMetal(pixelFormat));
 
 	if (not blendState.enabled) {
 		attachmentDescriptor->setBlendingEnabled(false);
@@ -99,11 +100,11 @@ void ConfigureColorAttachment(MTL::RenderPipelineColorAttachmentDescriptor* atta
 
 	attachmentDescriptor->setBlendingEnabled(true);
 
-	attachmentDescriptor->setSourceRGBBlendFactor(Types::ToMetal(blendState.sourceColor));
-	attachmentDescriptor->setDestinationRGBBlendFactor(Types::ToMetal(blendState.destinationColor));
+	attachmentDescriptor->setSourceRGBBlendFactor(ToMetal(blendState.sourceColor));
+	attachmentDescriptor->setDestinationRGBBlendFactor(ToMetal(blendState.destinationColor));
 
-	attachmentDescriptor->setSourceAlphaBlendFactor(Types::ToMetal(blendState.sourceAlpha));
-	attachmentDescriptor->setDestinationAlphaBlendFactor(Types::ToMetal(blendState.destinationAlpha));
+	attachmentDescriptor->setSourceAlphaBlendFactor(ToMetal(blendState.sourceAlpha));
+	attachmentDescriptor->setDestinationAlphaBlendFactor(ToMetal(blendState.destinationAlpha));
 
 	attachmentDescriptor->setRgbBlendOperation(MTL::BlendOperationAdd);
 	attachmentDescriptor->setAlphaBlendOperation(MTL::BlendOperationAdd);
@@ -136,7 +137,7 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 
 	// Pipeline state on Metal and DirectX 12, a draw-call argument on OpenGL: both halves come out of the same
 	// topology, and PrimitiveTopology exists precisely so the descriptor does not have to choose.
-	pipelineDescriptor->setInputPrimitiveTopology(Types::ToMetalTopologyClass(_descriptor.topology));
+	pipelineDescriptor->setInputPrimitiveTopology(ToMetalTopologyClass(_descriptor.topology));
 
 	const auto& [colors, colorCount, depth] = _descriptor.formats;
 
@@ -151,10 +152,10 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 	}
 
 	if (_descriptor.depthState.testEnabled or _descriptor.depthState.writeEnabled) {
-		pipelineDescriptor->setDepthAttachmentPixelFormat(Types::ToMetal(depth));
+		pipelineDescriptor->setDepthAttachmentPixelFormat(ToMetal(depth));
 
 		if (Types::HasStencil(depth)) {
-			pipelineDescriptor->setStencilAttachmentPixelFormat(Types::ToMetal(depth));
+			pipelineDescriptor->setStencilAttachmentPixelFormat(ToMetal(depth));
 		}
 	}
 
@@ -169,7 +170,7 @@ MetalPipelineState::MetalPipelineState(MTL::Device* nativeDevice, PipelineDescri
 	// The depth state is its own object in Metal, and it is built unconditionally: a pipeline with no depth test
 	// still needs one that says so, otherwise the encoder keeps whatever the previous draw left set.
 	const auto depthDescriptor = NS::TransferPtr(MTL::DepthStencilDescriptor::alloc()->init());
-	depthDescriptor->setDepthCompareFunction(_descriptor.depthState.testEnabled ? Types::ToMetal(_descriptor.depthState.compareFunc) : MTL::CompareFunctionAlways);
+	depthDescriptor->setDepthCompareFunction(_descriptor.depthState.testEnabled ? ToMetal(_descriptor.depthState.compareFunc) : MTL::CompareFunctionAlways);
 	depthDescriptor->setDepthWriteEnabled(_descriptor.depthState.writeEnabled);
 
 	_nativeDepthStencilState = NS::TransferPtr(nativeDevice->newDepthStencilState(depthDescriptor.get()));

@@ -7,27 +7,28 @@
 # Updated: 2026-11-24
 #
 
-set(HEADERS
-	# Build
+# region Headers
+
+set(BASE_HEADERS
+	src/include/Types/Types.hpp
+)
+
+set(BUILD_HEADERS
 	src/include/Types/Build/Build.hpp
+)
 
-
-	# KeyCode
+set(KEYCODE_HEADERS
 	src/include/Types/KeyCode/KeyboardKeyCode.hpp
 	src/include/Types/KeyCode/KeyCode.hpp
 	src/include/Types/KeyCode/MouseButtonCode.hpp
+)
 
-	# Per-window-backend code conversions, compiled only with their window (CE_WINDOW_*, from CE_RENDER_BACKENDS)
-	$<$<BOOL:${CE_WINDOW_GLFW}>:
-		src/include/Types/KeyCode/Platforms/Common/Glfw/Glfw.hpp
-	>
+# glm: Math/Glm.hpp is the only header that includes it
+set(MATH_HEADERS
+	src/include/Types/Math/Glm.hpp
+)
 
-	$<$<BOOL:${CE_WINDOW_COCOA}>:
-		src/include/Types/KeyCode/Platforms/Mac/Cocoa/Cocoa.hpp
-	>
-
-
-	# Render
+set(RENDER_HEADERS
 	src/include/Types/Render/AttachmentAction.hpp
 	src/include/Types/Render/BlendFactor.hpp
 	src/include/Types/Render/Camera.hpp
@@ -41,68 +42,59 @@ set(HEADERS
 	src/include/Types/Render/ShaderConstants.hpp
 	src/include/Types/Render/ShaderDataType.hpp
 	src/include/Types/Render/TextureUsage.hpp
+)
 
-	# Per-backend conversion tables, compiled only with their backend (CE_RENDER_BACKENDS)
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Types/Render/Platforms/Common/OpenGl/OpenGl.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Types/Render/Platforms/Mac/Metal/Metal.hpp
-	>
-
-
-	# Var
-	src/include/Types/Var/Glm.hpp
+set(VAR_HEADERS
 	src/include/Types/Var/Vars.hpp
+)
 
-
-	# Window
+set(WINDOW_HEADERS
 	src/include/Types/Window/CursorMode.hpp
 	src/include/Types/Window/Window.hpp
 	src/include/Types/Window/WindowProps.hpp
-
-
-	# Main
-	src/include/Types/Types.hpp
 )
 
-set(SOURCES
-	# Build
+# endregion
+
+# region Sources
+
+set(BUILD_SOURCES
 	src/source/Types/Build/Build.cpp
+)
 
-
-	# KeyCode
+set(KEYCODE_SOURCES
 	src/source/Types/KeyCode/KeyboardKeyCode.cpp
-	src/source/Types/KeyCode/MouseButtonCode.cpp
+)
 
-	$<$<BOOL:${CE_WINDOW_GLFW}>:
-		src/source/Types/KeyCode/Platforms/Common/Glfw/Glfw.cpp
-	>
-
-	$<$<BOOL:${CE_WINDOW_COCOA}>:
-		src/source/Types/KeyCode/Platforms/Mac/Cocoa/Cocoa.cpp
-	>
-
-
-	# Render
+set(RENDER_SOURCES
 	src/source/Types/Render/BlendFactor.cpp
 	src/source/Types/Render/GraphicsApi.cpp
 	src/source/Types/Render/PixelFormat.cpp
 	src/source/Types/Render/PrimitiveTopology.cpp
 	src/source/Types/Render/Shader.cpp
+)
 
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Types/Render/Platforms/Common/OpenGl/OpenGl.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Types/Render/Platforms/Mac/Metal/Metal.cpp
-	>
-
-
-	# Window
+set(WINDOW_SOURCES
 	src/source/Types/Window/WindowProps.cpp
+)
+
+# endregion
+
+set(HEADERS
+	${BASE_HEADERS}
+	${BUILD_HEADERS}
+	${KEYCODE_HEADERS}
+	${MATH_HEADERS}
+	${RENDER_HEADERS}
+	${VAR_HEADERS}
+	${WINDOW_HEADERS}
+)
+
+set(SOURCES
+	${BUILD_SOURCES}
+	${KEYCODE_SOURCES}
+	${RENDER_SOURCES}
+	${WINDOW_SOURCES}
 )
 
 add_library(CE_Types SHARED
@@ -124,37 +116,19 @@ ce_set_module_library_output(CE_Types)
 # CelestialEngine.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Types)
 
-# Modules
+# Types is the engine's vocabulary - integers, enums, WindowProps, the glm math types - and nothing else: it knows no
+# window library, no graphics API and no ImGui, so anything (IO, Tools, a command-line tool) can depend on it without
+# pulling them in. Conversions to a backend's own types live with that backend (Core, later the RHI module).
+# glm comes from here only (see ce_restrict_link in Engine/Vendor/Glm/CMakeLists.txt).
 target_link_libraries(CE_Types PUBLIC
 	CE_Config
 	CE_Define
 	CE_Vendor_Glm
-	CE_Vendor_ImGui
 )
 
 target_link_libraries(CE_Types PRIVATE
 	CE_Internal
 )
-
-# Backend-specific third parties: glad for the OpenGL conversions, GLFW for the GLFW key and button codes, metal-cpp
-# for the Metal conversions. Each one only exists when its backend is compiled in.
-if (CE_RENDER_OPENGL)
-	target_link_libraries(CE_Types PUBLIC
-		CE_Vendor_Glad
-	)
-endif ()
-
-if (CE_WINDOW_GLFW)
-	target_link_libraries(CE_Types PUBLIC
-		CE_Vendor_Glfw
-	)
-endif ()
-
-if (CE_RENDER_METAL)
-	target_link_libraries(CE_Types PUBLIC
-		CE_Vendor_MetalCpp
-	)
-endif ()
 
 target_include_directories(CE_Types PUBLIC
 	src/include

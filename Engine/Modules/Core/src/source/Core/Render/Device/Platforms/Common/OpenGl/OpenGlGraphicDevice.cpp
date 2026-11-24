@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "Core/Render/Command/Command.hpp"
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -25,7 +26,7 @@ namespace {
 
 /// Applies the pass' load actions, which in OpenGL amounts to one glClear with the bits the Clear actions ask for.
 void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
-	auto clearMask = Types::BufferBit::None;
+	auto clearMask = BufferBit::None;
 	bool clears = false;
 
 	// Only attachment 0 is reachable while every target is the default framebuffer; several attachments would need
@@ -34,7 +35,7 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 		const auto& color = descriptor.colors[0].clearColor;
 		glClearColor(color.r, color.g, color.b, color.a);
 
-		clearMask = Types::BufferBit::Color;
+		clearMask = BufferBit::Color;
 		clears = true;
 	}
 
@@ -43,7 +44,7 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 		glClearStencil(static_cast<GLint>(descriptor.depth.clearStencil));
 
 		// The stencil bit is harmless when the framebuffer has no stencil buffer: GL ignores bits it cannot honour.
-		clearMask = clearMask | Types::BufferBit::Depth | Types::BufferBit::Stencil;
+		clearMask = clearMask | BufferBit::Depth | BufferBit::Stencil;
 		clears = true;
 	}
 
@@ -58,7 +59,7 @@ void ApplyLoadActions(const RenderPassDescriptor& descriptor) {
 	glStencilMask(0xFF);
 	glDisable(GL_SCISSOR_TEST);
 
-	glClear(static_cast<GLbitfield>(Types::ToInt(clearMask)));
+	glClear(static_cast<GLbitfield>(ToInt(clearMask)));
 }
 
 }

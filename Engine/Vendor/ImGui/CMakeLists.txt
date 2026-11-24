@@ -140,3 +140,7 @@ if (CE_WINDOW_GLFW)
 		CE_Vendor_ImGui
 	)
 endif ()
+
+# ImGui belongs to the layers that draw or feed the UI: Utility (the helpers), Core (the ImGui layers), CE_Apple (the
+# Metal/OSX backend bridge) and the GLFW backend below. Anything else gets it through them, or does not need it.
+ce_restrict_link(CE_Vendor_ImGui ALLOWED CE_Utility CE_Core CE_Apple CE_Vendor_ImGui_Glfw)

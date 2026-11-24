@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Render.hpp"
+#include "Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
 #include "Tools/Tools.hpp"
 
 #include <Metal/Metal.hpp>
@@ -57,7 +58,7 @@ void MetalCommandEncoder::DrawIndexed(const u32 indexCount, const u32 firstIndex
 		return;
 
 	_nativeCommandEncoder->drawIndexedPrimitives(
-		Types::ToMetalPrimitiveType(_topology),
+		ToMetalPrimitiveType(_topology),
 		indexCount,
 		MTL::IndexTypeUInt32,
 		_nativeIndexBuffer,
@@ -115,7 +116,7 @@ void MetalCommandEncoder::SetVertexBuffer(const I_VertexBuffer& vertexBuffer) {
 	const auto& metalVertexBuffer = static_cast<const MetalVertexBuffer&>(vertexBuffer);
 
 	// No attribute setup to replay: the pipeline's vertex descriptor already says how to read this slot.
-	_nativeCommandEncoder->setVertexBuffer(metalVertexBuffer.GetBuffer(), 0, Types::METAL_VERTEX_BUFFER_INDEX);
+	_nativeCommandEncoder->setVertexBuffer(metalVertexBuffer.GetBuffer(), 0, METAL_VERTEX_BUFFER_INDEX);
 }
 
 void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
@@ -141,7 +142,7 @@ void MetalCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& te
 
 void MetalCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
 	assert(not _ended and "MetalCommandEncoder::SetVertexConstants: The pass has already been ended!");
-	assert(slot != Types::METAL_VERTEX_BUFFER_INDEX and "MetalCommandEncoder::SetVertexConstants: The slot is the one the geometry is bound to!");
+	assert(slot != METAL_VERTEX_BUFFER_INDEX and "MetalCommandEncoder::SetVertexConstants: The slot is the one the geometry is bound to!");
 
 	// Copied into this frame's slice and bound by offset. The GPU reads the bytes as they are now: a later call - the
 	// next draw's transform, or the next frame - writes somewhere else in the ring, never over these.

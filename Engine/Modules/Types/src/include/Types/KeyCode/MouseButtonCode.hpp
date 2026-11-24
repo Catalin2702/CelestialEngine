@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -59,17 +59,6 @@ inline int ToInt(const MouseButtonCode buttonCode) { return static_cast<int>(but
  *			It can be useful in contexts where mouse button codes are expected as unsigned integers, such as certain input handling systems or when interfacing with APIs that use unsigned types for button codes.
  */
 inline unsigned int ToUInt(const MouseButtonCode buttonCode) { return static_cast<unsigned int>(buttonCode); }
-
-/**
- * @brief Converts a MouseButton enum value to an ImGuiKey
- * @param buttonCode The MouseButton enum value to convert
- * @return ImGuiKey The corresponding ImGuiKey for the given MouseButton, or ImGuiKey_None if no mapping exists
- * @details This function maps MouseButton enum values to the corresponding ImGuiKey values used by ImGui for input handling.
- *			This allows for seamless integration with ImGui's input system when using the engine's MouseButton definitions.
- *			The function uses a switch statement to match known MouseButton enum values to their ImGuiKey equivalents.
- *			If the provided buttonCode does not match any known MouseButton value, it returns ImGuiKey_None to indicate that there is no valid mapping for that button.
- */
-CE_TYPES_API int ImGuiKeyFromMouseButton(MouseButtonCode buttonCode);
 
 /**
  * @brief Names a MouseButtonCode, for fmt/spdlog and - through the formatter below - for std::format

@@ -27,10 +27,12 @@ set(MAINHUB_SOURCES
 	# One per compiled-in window backend (CE_RENDER_BACKENDS)
 	$<$<BOOL:${CE_WINDOW_GLFW}>:
 		src/Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcherTests.cpp
+		src/Core/Hub/Events/Platforms/Common/Glfw/GlfwKeyCodeTests.cpp
 	>
 
 	$<$<BOOL:${CE_WINDOW_COCOA}>:
 		src/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcherTests.cpp
+		src/Core/Hub/Events/Platforms/Mac/Cocoa/CocoaKeyCodeTests.cpp
 	>
 )
 
@@ -45,6 +47,11 @@ set(RENDER_SOURCES
 	# Command
 	src/Core/Render/Command/RenderPassDescriptorTests.cpp
 	src/Core/Render/Command/ViewportTests.cpp
+
+	# Conversion, tested only where its backend is compiled (CE_RENDER_BACKENDS)
+	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversionTests.cpp
+	>
 
 	# Pipeline
 	src/Core/Render/Pipeline/PipelineDescriptorTests.cpp

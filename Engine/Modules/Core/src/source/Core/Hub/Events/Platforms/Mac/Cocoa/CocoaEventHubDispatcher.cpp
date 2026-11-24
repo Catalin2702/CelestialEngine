@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
+#include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaKeyCode.hpp"
 #include "Types/KeyCode/KeyCode.hpp"
 
 #include <AppKit/AppKit.hpp>
@@ -80,7 +81,7 @@ void CocoaEventHubDispatcher::ReceiveKeyDownEvent(const NS::Event* event) {
 
 	// AppKit marks an auto-repeated keyDown instead of sending a distinct event, which is how GLFW's GLFW_REPEAT
 	// maps onto it: without this a held key repeats on the OpenGL backend and does not on the Metal one.
-	Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode()), event->isARepeat() ? 1 : 0};
+	Events::KeyPressedEvent keyPressedEvent{KeyboardKeyCodeFromCocoa(event->keyCode()), event->isARepeat() ? 1 : 0};
 	DispatchKeyPressedEvent(keyPressedEvent);
 
 	if (const auto* characters = event->characters(); characters and characters->length() > 0) [[likely]] {
@@ -94,7 +95,7 @@ void CocoaEventHubDispatcher::ReceiveKeyUpEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	Events::KeyReleasedEvent keyReleasedEvent{Types::KeyboardKeyCodeFromCocoa(event->keyCode())};
+	Events::KeyReleasedEvent keyReleasedEvent{KeyboardKeyCodeFromCocoa(event->keyCode())};
 	DispatchKeyReleasedEvent(keyReleasedEvent);
 }
 
@@ -120,7 +121,7 @@ void CocoaEventHubDispatcher::ReceiveFlagsChangedEvent(const NS::Event* event) {
 	if (not event) [[unlikely]]
 		return;
 
-	const auto keyCode = Types::KeyboardKeyCodeFromCocoa(event->keyCode());
+	const auto keyCode = KeyboardKeyCodeFromCocoa(event->keyCode());
 	const auto deviceMask = DeviceMaskForModifierKey(keyCode);
 	if (deviceMask == 0) [[unlikely]]
 		return; // Not a modifier we track (e.g. CapsLock, Fn)
@@ -139,7 +140,7 @@ void CocoaEventHubDispatcher::ReceiveMouseButtonDownEvent(const NS::Event* event
 	if (not event) [[unlikely]]
 		return;
 
-	Events::MouseButtonPressedEvent mouseButtonPressedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
+	Events::MouseButtonPressedEvent mouseButtonPressedEvent{MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
 	DispatchMouseButtonPressedEvent(mouseButtonPressedEvent);
 }
 
@@ -147,7 +148,7 @@ void CocoaEventHubDispatcher::ReceiveMouseButtonUpEvent(const NS::Event* event) 
 	if (not event) [[unlikely]]
 		return;
 
-	Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
+	Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{MouseButtonKeyCodeFromCocoa(event->buttonNumber())};
 	DispatchMouseButtonReleasedEvent(mouseButtonReleasedEvent);
 }
 
@@ -156,7 +157,7 @@ void CocoaEventHubDispatcher::ReceiveMouseDraggedEvent(const NS::Event* event) {
 		return;
 
 	const auto [x, y] = _GetMousePosition(event);
-	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromCocoa(event->buttonNumber()), x, y};
+	Events::MouseDraggedEvent mouseDraggedEvent{MouseButtonKeyCodeFromCocoa(event->buttonNumber()), x, y};
 	DispatchMouseDraggedEvent(mouseDraggedEvent);
 }
 

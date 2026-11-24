@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Application/Application.hpp"
@@ -23,7 +23,7 @@
 	#include "Apple/MetalCpp/Foundation/NsAutoreleasePool.hpp"
 #endif
 
-#include <glm/glm.hpp>
+#include "Types/Math/Glm.hpp"
 
 #include <algorithm>
 #include <array>

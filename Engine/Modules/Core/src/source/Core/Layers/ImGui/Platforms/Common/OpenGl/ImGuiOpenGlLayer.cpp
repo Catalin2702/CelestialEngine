@@ -205,7 +205,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 	if (Input::IsCursorCaptured())
 		return;
 
-	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -213,7 +213,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 }
 
 void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = Types::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -221,7 +221,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& 
 }
 
 void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
@@ -229,7 +229,7 @@ void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 }
 
 void ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const auto key = Types::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 

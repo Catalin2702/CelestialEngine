@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
 #include "Tools/Tools.hpp"
 
@@ -163,7 +164,7 @@ void OpenGlPipelineState::Apply() const {
 
 	if (_descriptor.depthState.testEnabled) {
 		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(Types::ToOpenGl(_descriptor.depthState.compareFunc));
+		glDepthFunc(ToOpenGl(_descriptor.depthState.compareFunc));
 	}
 	else {
 		glDisable(GL_DEPTH_TEST);
@@ -176,18 +177,18 @@ void OpenGlPipelineState::Apply() const {
 	}
 	else {
 		glEnable(GL_CULL_FACE);
-		glCullFace(Types::ToOpenGl(_descriptor.cullMode));
+		glCullFace(ToOpenGl(_descriptor.cullMode));
 	}
 	// Winding decides which side is "front", so it matters to the depth/stencil sides even with culling off.
-	glFrontFace(Types::ToOpenGl(_descriptor.frontFace));
+	glFrontFace(ToOpenGl(_descriptor.frontFace));
 
 	if (_descriptor.blendState.enabled) {
 		glEnable(GL_BLEND);
 		glBlendFuncSeparate(
-			Types::ToOpenGl(_descriptor.blendState.sourceColor),
-			Types::ToOpenGl(_descriptor.blendState.destinationColor),
-			Types::ToOpenGl(_descriptor.blendState.sourceAlpha),
-			Types::ToOpenGl(_descriptor.blendState.destinationAlpha));
+			ToOpenGl(_descriptor.blendState.sourceColor),
+			ToOpenGl(_descriptor.blendState.destinationColor),
+			ToOpenGl(_descriptor.blendState.sourceAlpha),
+			ToOpenGl(_descriptor.blendState.destinationAlpha));
 	}
 	else {
 		glDisable(GL_BLEND);

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 
-#include <glm/glm.hpp>
+#include "Types/Math/Glm.hpp"
 
 #include <array>
 

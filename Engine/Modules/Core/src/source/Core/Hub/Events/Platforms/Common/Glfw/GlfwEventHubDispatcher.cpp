@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-07-14
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 
+#include "Core/Hub/Events/Platforms/Common/Glfw/GlfwKeyCode.hpp"
 #include "Types/KeyCode/KeyCode.hpp"
 
 #include <GLFW/glfw3.h>
@@ -38,17 +39,17 @@ void GlfwEventHubDispatcher::ReceiveAppErrorEvent(const int errorCode, const cha
 void GlfwEventHubDispatcher::ReceiveKeyEvent(const int key, const int action, const int, const int) {
 	switch (action) {
 		case GLFW_PRESS: {
-			Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromGlfw(key), 0};
+			Events::KeyPressedEvent keyPressedEvent{KeyboardKeyCodeFromGlfw(key), 0};
 			DispatchKeyPressedEvent(keyPressedEvent);
 			break;
 		}
 		case GLFW_RELEASE: {
-			Events::KeyReleasedEvent keyReleasedEvent{Types::KeyboardKeyCodeFromGlfw(key)};
+			Events::KeyReleasedEvent keyReleasedEvent{KeyboardKeyCodeFromGlfw(key)};
 			DispatchKeyReleasedEvent(keyReleasedEvent);
 			break;
 		}
 		case GLFW_REPEAT: {
-			Events::KeyPressedEvent keyPressedEvent{Types::KeyboardKeyCodeFromGlfw(key), 1};
+			Events::KeyPressedEvent keyPressedEvent{KeyboardKeyCodeFromGlfw(key), 1};
 			DispatchKeyPressedEvent(keyPressedEvent);
 		}
 		default:
@@ -64,12 +65,12 @@ void GlfwEventHubDispatcher::ReceiveCharEvent(const unsigned int codepoint) {
 void GlfwEventHubDispatcher::ReceiveMouseButtonEvent(const int button, const int action, const int) {
 	switch (action) {
 		case GLFW_PRESS: {
-			Events::MouseButtonPressedEvent mouseButtonPressedEvent{Types::MouseButtonKeyCodeFromGlfw(button)};
+			Events::MouseButtonPressedEvent mouseButtonPressedEvent{MouseButtonKeyCodeFromGlfw(button)};
 			DispatchMouseButtonPressedEvent(mouseButtonPressedEvent);
 			break;
 		}
 		case GLFW_RELEASE: {
-			Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{Types::MouseButtonKeyCodeFromGlfw(button)};
+			Events::MouseButtonReleasedEvent mouseButtonReleasedEvent{MouseButtonKeyCodeFromGlfw(button)};
 			DispatchMouseButtonReleasedEvent(mouseButtonReleasedEvent);
 			break;
 		}
@@ -84,7 +85,7 @@ void GlfwEventHubDispatcher::ReceiveMousePositionEvent(const f64 xPos, const f64
 }
 
 void GlfwEventHubDispatcher::ReceiveMouseDraggedEvent(const int button, const int, const int, const f64 xPos, const f64 yPos) {
-	Events::MouseDraggedEvent mouseDraggedEvent{Types::MouseButtonKeyCodeFromGlfw(button), static_cast<f32>(xPos), static_cast<f32>(yPos)};
+	Events::MouseDraggedEvent mouseDraggedEvent{MouseButtonKeyCodeFromGlfw(button), static_cast<f32>(xPos), static_cast<f32>(yPos)};
 	DispatchMouseDraggedEvent(mouseDraggedEvent);
 }
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-29
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -13,6 +13,7 @@
 #define CE_CORE_RENDER_DEVICE_OPENGLGRAPHICDEVICE_HPP
 
 #include "Core/Render/Device/I_GraphicDevice.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Define/DynamicLinker.hpp"
 
 #include <array>
@@ -41,7 +42,7 @@ public:
 	[[nodiscard]] Types::ClipConvention GetClipConvention() const override { return Types::ClipConvention::NegativeOneToOne; }
 
 private:
-	std::array<u32, Types::OPENGL_UNIFORM_BUFFER_BINDINGS> _uniformBuffers{};
+	std::array<u32, OPENGL_UNIFORM_BUFFER_BINDINGS> _uniformBuffers{};
 
 	u32 _frameBuffer = 0;
 };

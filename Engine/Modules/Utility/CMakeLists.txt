@@ -92,6 +92,17 @@ target_link_libraries(CE_Utility PRIVATE
 	CE_Internal
 )
 
+# The ImGui helpers (Utility/ImGui): ImGui itself in the public header, GLFW only in ImGui.cpp (GlfwKeyToImGuiKey).
+target_link_libraries(CE_Utility PUBLIC
+	CE_Vendor_ImGui
+)
+
+if (CE_WINDOW_GLFW)
+	target_link_libraries(CE_Utility PRIVATE
+		CE_Vendor_Glfw
+	)
+endif ()
+
 target_compile_definitions(CE_Utility PRIVATE
 	CE_UTILITY_EXPORTS
 )

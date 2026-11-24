@@ -11,14 +11,14 @@ percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 ```
 Engine/Tests/
 └── Modules/
-    ├── Core/       # Test per CE_Core (Input, Layers, Hub)
+    ├── Core/       # Test per CE_Core (Input, Layers, Hub e codici tasto GLFW/Cocoa, Render e conversioni OpenGL)
     ├── Define/     # Test per CE_Define (macro compilation tests)
     ├── Events/     # Test per CE_Events
     ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (bridge ImGui, dispatcher AppKit/MetalKit)
     ├── Tools/      # Test per CE_Tools (logging)
-    ├── Types/      # Test per CE_Types (key code, render, window, build)
-    └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, ImGui, String, Time)
+    ├── Types/      # Test per CE_Types (key code, render, window, build) - niente conversioni verso i backend
+    └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, ImGui e conversioni dei tasti verso ImGui, String, Time)
 ```
 
 ## Eseguire i Test

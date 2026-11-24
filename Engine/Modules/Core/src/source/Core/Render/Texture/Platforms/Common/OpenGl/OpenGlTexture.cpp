@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
+#include "Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Tools/Tools.hpp"
 
 #include <glad/glad.h>
@@ -20,7 +21,7 @@ namespace CE::Core {
 
 OpenGlTexture::OpenGlTexture(const TextureDescriptor& descriptor):
 	_width(descriptor.width), _height(descriptor.height), _format(descriptor.format), _usage(descriptor.usage) {
-	const auto [internalFormat, format, type] = Types::ToOpenGl(_format);
+	const auto [internalFormat, format, type] = ToOpenGl(_format);
 	if (internalFormat == 0 or _width == 0 or _height == 0) [[unlikely]] {
 		constexpr auto error = "OpenGlTexture::OpenGlTexture: Unsupported format, or a zero-sized texture!";
 		CE_CORE_ERROR(error);

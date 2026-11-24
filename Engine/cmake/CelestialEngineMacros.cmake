@@ -167,6 +167,79 @@ if (NOT TARGET CE_Internal)
 	)
 endif ()
 
+# Restricts who may link LIBRARY directly: only the targets listed after ALLOWED. Everybody else has to reach it through
+# one of them, transitively. Used where linking a library through the "wrong" door is a bug that no compiler reports:
+# glm must arrive through CE_Types, which carries its configuration (GLM_FORCE_*, see Engine/Vendor/Glm), and ImGui only
+# belongs to the modules that draw or feed the UI. LIBRARY may be any name that can appear in a link list, an imported
+# target (glm::glm) included.
+#
+# The check itself runs once, deferred to the end of the top-level CMakeLists.txt, when every target exists: it reads the
+# LINK_LIBRARIES and INTERFACE_LINK_LIBRARIES of every target of the project and fails the configure step, naming the
+# offending target and the allowed ones. A target the restricted library is transitively reachable through is fine -
+# only the direct link is checked.
+# Usage: ce_restrict_link(<library> ALLOWED <target>...)
+function(ce_restrict_link LIBRARY)
+	cmake_parse_arguments(PARSE_ARGV 1 ARG "" "" "ALLOWED")
+	if (ARG_UNPARSED_ARGUMENTS OR NOT ARG_ALLOWED)
+		message(FATAL_ERROR "ce_restrict_link(${LIBRARY}): usage is ce_restrict_link(<library> ALLOWED <target>...)")
+	endif ()
+
+	set_property(GLOBAL APPEND PROPERTY CE_RESTRICTED_LINKS "${LIBRARY}")
+	set_property(GLOBAL PROPERTY "CE_RESTRICTED_LINK_ALLOWED_${LIBRARY}" ${ARG_ALLOWED})
+
+	get_property(_scheduled GLOBAL PROPERTY CE_RESTRICTED_LINKS_CHECK_SCHEDULED)
+	if (NOT _scheduled)
+		set_property(GLOBAL PROPERTY CE_RESTRICTED_LINKS_CHECK_SCHEDULED TRUE)
+		cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL _ce_check_restricted_links)
+	endif ()
+endfunction()
+
+# Collects every buildsystem target defined in DIRECTORY and below.
+function(_ce_collect_targets DIRECTORY OUT_VAR)
+	get_property(_targets DIRECTORY "${DIRECTORY}" PROPERTY BUILDSYSTEM_TARGETS)
+	get_property(_subdirectories DIRECTORY "${DIRECTORY}" PROPERTY SUBDIRECTORIES)
+	foreach (_subdirectory IN LISTS _subdirectories)
+		_ce_collect_targets("${_subdirectory}" _nested)
+		list(APPEND _targets ${_nested})
+	endforeach ()
+	set(${OUT_VAR} ${_targets} PARENT_SCOPE)
+endfunction()
+
+function(_ce_check_restricted_links)
+	get_property(_libraries GLOBAL PROPERTY CE_RESTRICTED_LINKS)
+	_ce_collect_targets("${CMAKE_SOURCE_DIR}" _targets)
+
+	set(_violations "")
+	foreach (_library IN LISTS _libraries)
+		get_property(_allowed GLOBAL PROPERTY "CE_RESTRICTED_LINK_ALLOWED_${_library}")
+		# The name as a whole link item: delimited by the start or end of the list, a ';', or the '>' / ':' of a
+		# generator expression around it ($<$<BOOL:...>:name>), so CE_Vendor_ImGui does not match CE_Vendor_ImGui_Glfw.
+		string(REGEX REPLACE "([][+.*()^$?|\\\\])" "\\\\\\1" _escaped "${_library}")
+		set(_pattern "(^|[;:>])${_escaped}($|[;>])")
+
+		foreach (_target IN LISTS _targets)
+			if (_target IN_LIST _allowed OR _target STREQUAL _library)
+				continue()
+			endif ()
+
+			get_target_property(_link ${_target} LINK_LIBRARIES)
+			get_target_property(_interface ${_target} INTERFACE_LINK_LIBRARIES)
+			foreach (_list IN ITEMS "${_link}" "${_interface}")
+				if (_list MATCHES "${_pattern}")
+					string(JOIN ", " _allowed_text ${_allowed})
+					list(APPEND _violations "  ${_target} links ${_library} directly, but only ${_allowed_text} may: link one of them instead")
+					break()
+				endif ()
+			endforeach ()
+		endforeach ()
+	endforeach ()
+
+	if (_violations)
+		list(JOIN _violations "\n" _report)
+		message(FATAL_ERROR "Restricted links (ce_restrict_link):\n${_report}")
+	endif ()
+endfunction()
+
 # Base names of the engine's own SHARED library modules (no extension): the set every
 # executable delay-loads on Windows (see ce_enable_dll_bootstrap) and whose runtime artifact
 # (.dll / .so) is redirected into the DLL/ subfolder below, so Out/<config>/ only holds

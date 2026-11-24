@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-08
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -17,8 +17,6 @@
 
 #include <format>
 #include <string>
-
-enum ImGuiKey: int;
 
 namespace CE::Types {
 
@@ -138,17 +136,6 @@ inline unsigned int ToUInt(KeyboardKeyCode key) { return static_cast<unsigned in
  *			that touches input includes this header.
  */
 CE_TYPES_API std::string_view format_as(KeyboardKeyCode key);
-
-/**
- * @brief Converts a KeyCode enum value to an ImGuiKey
- * @param keycode The KeyCode enum value to convert
- * @return ImGuiKey The corresponding ImGuiKey for the given KeyCode, or ImGuiKey_None if no mapping exists
- * @details Maps KeyCode enum values to the corresponding ImGuiKey values used by ImGui for input handling.
- *			This allows for seamless integration with ImGui's input system when using the engine's KeyCode definitions.
- *			The function uses a switch statement to match known KeyCode enum values to their ImGuiKey equivalents.
- *			If the provided keycode does not match any known KeyCode value, it returns ImGuiKey_None to indicate that there is no valid mapping for that key.
- */
-CE_TYPES_API ImGuiKey ImGuiKeyFromKeyboard(KeyboardKeyCode keycode);
 
 }
 

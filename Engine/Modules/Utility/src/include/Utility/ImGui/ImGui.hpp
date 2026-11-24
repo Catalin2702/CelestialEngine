@@ -14,6 +14,8 @@
 
 #include "Define/Config.hpp"
 #include "Define/DynamicLinker.hpp"
+#include "Types/KeyCode/KeyboardKeyCode.hpp"
+#include "Types/KeyCode/MouseButtonCode.hpp"
 
 #include <imgui.h>
 
@@ -22,6 +24,23 @@
 
 
 namespace CE::Utility {
+
+/**
+ * @brief Converts an engine key code to the ImGuiKey ImGui expects
+ * @param keycode The engine key code
+ * @return ImGuiKey The matching ImGuiKey, or ImGuiKey_None when ImGui has no such key
+ * @details Lives with the rest of the ImGui glue rather than in Types: the key enum belongs to the engine, the mapping to
+ *			ImGui, and Types must not depend on ImGui. On macOS Control and Command (Super) are swapped, the way ImGui
+ *			expects them there.
+ */
+CE_UTILITY_API ImGuiKey ImGuiKeyFromKeyboard(Types::KeyboardKeyCode keycode);
+
+/**
+ * @brief Converts an engine mouse button to ImGui's mouse button index (ImGuiMouseButton)
+ * @param buttonCode The engine mouse button
+ * @return int 0 left, 1 right, 2 middle (the wheel axes fold onto it); 5 when ImGui has no such button
+ */
+CE_UTILITY_API int ImGuiKeyFromMouseButton(Types::MouseButtonCode buttonCode);
 
 #if CE_WINDOW_GLFW
 /**
