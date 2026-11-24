@@ -15,7 +15,7 @@
 
 #if CE_RENDER_METAL
 	#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
-	#include "Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+	#include "RHI/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
 #endif
 
 // The pool is the platform's, not Metal's: AppKit autoreleases on every macOS frame, GLFW's NSWindow included.
@@ -353,7 +353,7 @@ void Application::_InitRenderer() {
 	// such notion. That is why this is asked of the surface rather than of the window: the ones that need it are
 	// exactly the ones that offer it, so the question answers itself.
 #if CE_RENDER_OPENGL
-	if (auto* const surface = dynamic_cast<I_OpenGlSurface*>(_window.get()))
+	if (auto* const surface = dynamic_cast<RHI::I_OpenGlSurface*>(_window.get()))
 		surface->MakeContextCurrent();
 #endif
 
@@ -441,7 +441,7 @@ void Application::_ApplyPresentPacing([[maybe_unused]] const bool vsync) const {
 	if (_renderer->GetGraphicApi() != Types::GraphicsApi::Metal)
 		return;
 
-	auto& swapchain = static_cast<MetalSwapchain&>(_renderer->GetSwapchain());
+	auto& swapchain = static_cast<RHI::MetalSwapchain&>(_renderer->GetSwapchain());
 
 	// With VSync on the acquire already blocks until the display is ready, so holding frames back on top of that
 	// would only be a second pacer. Uncapped is a choice too: asking for no limit is asking to present the moment the

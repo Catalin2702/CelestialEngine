@@ -48,6 +48,7 @@ add_subdirectory(Modules/Define)
 add_subdirectory(Modules/Events)
 add_subdirectory(Modules/IO)
 add_subdirectory(Modules/Native)
+add_subdirectory(Modules/RHI)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
@@ -73,6 +74,7 @@ target_link_libraries(CE_Engine INTERFACE
 	CE_Events
 	CE_IO
 	CE_Native
+	CE_RHI
 	CE_Tools
 	CE_Types
 )

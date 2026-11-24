@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 
 #include "Apple/MetalCpp/MetalCpp.hpp"
-#include "Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp"
+#include "RHI/Surface/Mac/Metal/I_MetalSurface.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Types/Window/WindowProps.hpp"
 
@@ -57,7 +57,7 @@ class CocoaEventHubDispatcher;
  *			Manages a native macOS window and Metal resources for graphics.
  *			This class is designed for applications that want to use Metal on macOS without relying on GLFW, providing a more native experience.
  */
-class CE_CORE_API CocoaWindow final: public I_WindowBase<Types::WindowApi::Cocoa>, public I_MetalSurface {
+class CE_CORE_API CocoaWindow final: public I_WindowBase<Types::WindowApi::Cocoa>, public RHI::I_MetalSurface {
 public:
 	/**
 	 * @brief Constructor

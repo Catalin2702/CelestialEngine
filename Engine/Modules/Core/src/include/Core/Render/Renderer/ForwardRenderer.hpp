@@ -15,24 +15,20 @@
 #include "Core/Render/Renderer/I_Renderer.hpp"
 #include "Core/Render/Renderer/RenderStats.hpp"
 #include "Define/DynamicLinker.hpp"
-
+#include "RHI/Swapchain/I_Swapchain.hpp"
 #include "Types/Math/Glm.hpp"
 
 #include <memory>
 
-#include "Core/Render/Swapchain/I_Swapchain.hpp"
-
+namespace CE::RHI {
+class I_CommandEncoder;
+class I_IndexBuffer;
+class I_PipelineState;
+class I_Texture;
+class I_VertexBuffer;
+}
 
 namespace CE::Core {
-
-class I_CommandEncoder;
-
-class I_VertexBuffer;
-class I_IndexBuffer;
-
-class I_PipelineState;
-
-class I_Texture;
 
 /**
  * @class ForwardRenderer
@@ -47,7 +43,7 @@ class I_Texture;
  */
 class CE_CORE_API ForwardRenderer final: public I_Renderer {
 public:
-	ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain);
+	ForwardRenderer(std::unique_ptr<RHI::I_GraphicDevice> graphicDevice, std::unique_ptr<RHI::I_Swapchain> swapchain);
 
 	ForwardRenderer(const ForwardRenderer&) = delete;
 	ForwardRenderer(ForwardRenderer&&) noexcept = delete;
@@ -63,7 +59,7 @@ public:
 	void EndFrame() override;
 
 	void BeginPass() override;
-	void BeginPass(const RenderPassDescriptor& descriptor) override;
+	void BeginPass(const RHI::RenderPassDescriptor& descriptor) override;
 	void EndPass() override;
 
 	void Submit(const DrawCommand& command) override;
@@ -78,11 +74,11 @@ public:
 	void SetCameraData(const Types::CameraData& cameraData) override;
 
 public:
-	[[nodiscard]] const I_GraphicDevice& GetGraphicDevice() const override { return *_graphicDevice; }
-	[[nodiscard]] I_GraphicDevice& GetGraphicDevice() override { return *_graphicDevice; }
+	[[nodiscard]] const RHI::I_GraphicDevice& GetGraphicDevice() const override { return *_graphicDevice; }
+	[[nodiscard]] RHI::I_GraphicDevice& GetGraphicDevice() override { return *_graphicDevice; }
 
-	[[nodiscard]] const I_Swapchain& GetSwapchain() const override { return *_swapchain; }
-	[[nodiscard]] I_Swapchain& GetSwapchain() override { return *_swapchain; }
+	[[nodiscard]] const RHI::I_Swapchain& GetSwapchain() const override { return *_swapchain; }
+	[[nodiscard]] RHI::I_Swapchain& GetSwapchain() override { return *_swapchain; }
 
 	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return _swapchain->GetGraphicApi(); }
 
@@ -94,7 +90,7 @@ public:
 	 * @details Not the back buffer: nothing draws into the drawable except the composite pass this renderer runs at
 	 *			EndFrame. Anything that wants to add to the frame - the ImGui overlay does - opens its pass on this.
 	 */
-	[[nodiscard]] const I_Texture* GetSceneColorTarget() const override { return _sceneColor.get(); }
+	[[nodiscard]] const RHI::I_Texture* GetSceneColorTarget() const override { return _sceneColor.get(); }
 
 	/**
 	 * @brief Gets the colour format a pipeline drawing into the scene must declare
@@ -111,7 +107,7 @@ private:
 	 * @details The whole of BeginPass except the statistics. It exists so the composite - a pass the application
 	 *			never asked for - can be encoded without appearing in the numbers the application is shown.
 	 */
-	void _OpenPass(const RenderPassDescriptor& descriptor);
+	void _OpenPass(const RHI::RenderPassDescriptor& descriptor);
 
 	/**
 	 * @brief Creates the scene colour and depth textures, or replaces them when the size changed
@@ -140,11 +136,11 @@ private:
 	void _CreateCompositeResources();
 
 private:
-	std::unique_ptr<I_GraphicDevice> _graphicDevice;
-	std::unique_ptr<I_Swapchain> _swapchain;
+	std::unique_ptr<RHI::I_GraphicDevice> _graphicDevice;
+	std::unique_ptr<RHI::I_Swapchain> _swapchain;
 
 	/// The open pass, or null when none is. Its lifetime *is* the pass: destroying it ends the pass on every backend.
-	std::unique_ptr<I_CommandEncoder> _commandEncoder;
+	std::unique_ptr<RHI::I_CommandEncoder> _commandEncoder;
 
 	glm::vec4 _clearColor = {0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32};
 
@@ -156,8 +152,8 @@ private:
 	RenderStats _stats; ///< Published: what the last completed frame cost
 	RenderStats _frameStats; ///< Accumulating: what the frame in flight has cost so far
 
-	std::shared_ptr<I_Texture> _sceneColor;
-	std::shared_ptr<I_Texture> _sceneDepth;
+	std::shared_ptr<RHI::I_Texture> _sceneColor;
+	std::shared_ptr<RHI::I_Texture> _sceneDepth;
 
 	/// Fixed at construction so a pipeline can be built before the first frame sizes the target.
 	Types::PixelFormat _sceneColorFormat = Types::PixelFormat::None;
@@ -165,9 +161,9 @@ private:
 
 	bool _inFrame = false;
 
-	std::shared_ptr<I_PipelineState> _compositePipeline;
-	std::shared_ptr<I_VertexBuffer> _compositeVertexBuffer;
-	std::shared_ptr<I_IndexBuffer> _compositeIndexBuffer;
+	std::shared_ptr<RHI::I_PipelineState> _compositePipeline;
+	std::shared_ptr<RHI::I_VertexBuffer> _compositeVertexBuffer;
+	std::shared_ptr<RHI::I_IndexBuffer> _compositeIndexBuffer;
 };
 
 }

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -37,11 +37,14 @@ namespace CE::Events {
 class MouseDraggedEvent;
 }
 
+namespace CE::RHI {
+class MetalGraphicDevice;
+class MetalSwapchain;
+}
+
 namespace CE::Core {
 
 class CocoaEventHubDispatcher;
-class MetalGraphicDevice;
-class MetalSwapchain;
 
 class CE_CORE_API ImGuiMetalLayer final: public I_ImGuiLayer {
 	enum EventHubSubscription: u8 {
@@ -164,8 +167,8 @@ private:
 	/// The two halves of what used to be MetalContext: the device the ImGui backend allocates its font atlas and its
 	/// buffers on, and the swapchain that owns this frame's drawable. Borrowed - the renderer owns both, and it
 	/// outlives every layer.
-	MetalGraphicDevice* _graphicDevice = nullptr;
-	MetalSwapchain* _swapchain = nullptr;
+	RHI::MetalGraphicDevice* _graphicDevice = nullptr;
+	RHI::MetalSwapchain* _swapchain = nullptr;
 
 	std::optional<std::reference_wrapper<const CocoaWindow>> _window; ///< Cached Cocoa window for the display size
 	MetalFrameContext _frameContext;    ///< Cached frame context for the current frame

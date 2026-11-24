@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -35,9 +35,9 @@ public:
 private:
 	CE::Core::I_Renderer& _renderer;
 
-	std::shared_ptr<CE::Core::I_PipelineState> _pipeline;
-	std::shared_ptr<CE::Core::I_VertexBuffer> _vertexBuffer;
-	std::shared_ptr<CE::Core::I_IndexBuffer> _indexBuffer;
+	std::shared_ptr<CE::RHI::I_PipelineState> _pipeline;
+	std::shared_ptr<CE::RHI::I_VertexBuffer> _vertexBuffer;
+	std::shared_ptr<CE::RHI::I_IndexBuffer> _indexBuffer;
 };
 
 }

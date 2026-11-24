@@ -68,17 +68,6 @@ set(LAYERS_HEADERS
 set(RENDER_HEADERS
 	src/include/Core/Render/Render.hpp
 
-	# Buffer
-	src/include/Core/Render/Buffer/Buffer.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp
-		src/include/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp
-	>
-
 
 	# Camera
 	src/include/Core/Render/Camera/Camera.hpp
@@ -94,49 +83,6 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Camera/Projection/Projection.hpp
 
 
-	# Conversion: engine render types to each backend's own (temporary home, until the RHI is a module)
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp
-	>
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.hpp
-	>
-
-	# Command
-	src/include/Core/Render/Command/Command.hpp
-	src/include/Core/Render/Command/RenderPassDescriptor.hpp
-	src/include/Core/Render/Command/Viewport.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp
-	>
-
-
-	# Device
-	src/include/Core/Render/Device/Device.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp
-	>
-
-	# Pipeline
-	src/include/Core/Render/Pipeline/Pipeline.hpp
-	src/include/Core/Render/Pipeline/PipelineDescriptor.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.hpp
-	>
-
-
 	# Renderer
 	src/include/Core/Render/Renderer/DrawCommand.hpp
 	src/include/Core/Render/Renderer/ForwardRenderer.hpp
@@ -144,45 +90,8 @@ set(RENDER_HEADERS
 	src/include/Core/Render/Renderer/RenderStats.hpp
 
 
-	# Shader
-	src/include/Core/Render/Shader/Shader.hpp
-	src/include/Core/Render/Shader/ShaderModuleDescriptor.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.hpp
-		src/include/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp
-		src/include/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.hpp
-	>
-
-
-	# Surface
-	src/include/Core/Render/Surface/Surface.hpp
-
-
-	# Swapchain
-	src/include/Core/Render/Swapchain/Swapchain.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp
-	>
-
-
 	# Texture
 	src/include/Core/Render/Texture/Image.hpp
-	src/include/Core/Render/Texture/Texture.hpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/include/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.hpp
-	>
 )
 
 set(RUNLOOP_HEADERS
@@ -232,44 +141,13 @@ set(LAYERS_INTERFACES
 )
 
 set(RENDER_INTERFACES
-	# Buffer
-	src/interface/Core/Render/Buffer/I_Buffer.hpp
-	src/interface/Core/Render/Buffer/I_VertexArray.hpp
-
 	# Camera
 	src/interface/Core/Render/Camera/Controller/I_CameraController.hpp
 	src/interface/Core/Render/Camera/Projection/I_CameraProjection.hpp
 
-	# Command
-	src/interface/Core/Render/Command/I_CommandEncoder.hpp
-
-
-	# Device
-	src/interface/Core/Render/Device/I_GraphicDevice.hpp
-
-	# Pipeline
-	src/interface/Core/Render/Pipeline/I_PipelineState.hpp
 
 	# Renderer
 	src/interface/Core/Render/Renderer/I_Renderer.hpp
-
-	# Shader
-	src/interface/Core/Render/Shader/I_ShaderModule.hpp
-
-	# Surface
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/interface/Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/interface/Core/Render/Surface/Mac/Metal/I_MetalSurface.hpp
-	>
-
-	# Swapchain
-	src/interface/Core/Render/Swapchain/I_Swapchain.hpp
-
-	# Texture
-	src/interface/Core/Render/Texture/I_Texture.hpp
 )
 
 set(RUNLOOP_INTERFACES
@@ -333,18 +211,6 @@ set(LAYERS_SOURCES
 )
 
 set(RENDER_SOURCES
-	# Buffer
-	src/source/Core/Render/Buffer/Buffer.cpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.cpp
-		src/source/Core/Render/Buffer/Platforms/Common/OpenGl/OpenGlVertexArray.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Buffer/Platforms/Mac/Metal/MetalBuffer.cpp
-	>
-
-
 	# Camera
 	src/source/Core/Render/Camera/Camera.cpp
 	src/source/Core/Render/Camera/CameraRig.cpp
@@ -356,82 +222,13 @@ set(RENDER_SOURCES
 	src/source/Core/Render/Camera/Projection/OrthographicCameraProjection.cpp
 
 
-	# Conversion
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversion.cpp
-	>
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Conversion/Platforms/Mac/Metal/MetalConversion.cpp
-	>
-
-	# Command
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Command/Platforms/Mac/Metal/MetalCommandEncoder.cpp
-	>
-
-
-	# Device
-	src/source/Core/Render/Device/GraphicDeviceFactory.cpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Device/Platforms/Mac/Metal/MetalGraphicDevice.cpp
-	>
-
-
-	# Pipeline
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Pipeline/Platforms/Mac/Metal/MetalPipelineState.cpp
-	>
-
-
 	# Renderer
 	src/source/Core/Render/Renderer/RendererFactory.cpp
 	src/source/Core/Render/Renderer/ForwardRenderer.cpp
 
 
-	# Shader
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderCompiler.cpp
-		src/source/Core/Render/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderLibrary.cpp
-		src/source/Core/Render/Shader/Platforms/Mac/Metal/MetalShaderModule.cpp
-	>
-
-
-	# Swapchain
-	src/source/Core/Render/Swapchain/SwapchainFactory.cpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Swapchain/Platforms/Common/OpenGl/OpenGlSwapchain.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Swapchain/Platforms/Mac/Metal/MetalSwapchain.cpp
-	>
-
-
 	# Texture
 	src/source/Core/Render/Texture/Image.cpp
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/source/Core/Render/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
-	>
-
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Core/Render/Texture/Platforms/Mac/Metal/MetalTexture.cpp
-	>
 )
 
 set(RUNLOOP_SOURCES
@@ -519,6 +316,7 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Events
 	CE_IO
 	CE_Native
+	CE_RHI
 	CE_Tools
 	CE_Types
 	CE_Utility

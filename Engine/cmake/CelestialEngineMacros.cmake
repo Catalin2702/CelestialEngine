@@ -248,6 +248,7 @@ set(CE_MODULE_DLL_NAMES
 	CE_Core
 	CE_Events
 	CE_IO
+	CE_RHI
 	CE_Tools
 	CE_Types
 	CE_Utility

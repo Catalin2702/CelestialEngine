@@ -6,6 +6,7 @@
 
 ## 🚀 Key Features
 * **Modern C++ Core:** Gestione della memoria tramite smart pointers e custom allocators.
+* **RHI (`CE_RHI`):** modulo a sé con device, buffer, pipeline, shader e swapchain per OpenGL e Metal; il renderer in `CE_Core` lo usa solo tramite interfacce, e le finestre gli offrono una `RHI::I_Surface`.
 * **Virtual File System (`CE_IO`):** percorsi `engine://`, `resources://` (sola lettura, file distribuiti con l'app) e `config://`, `cache://` (lettura/scrittura, per applicazione); errori tramite `std::expected`, scritture atomiche.
 
 ## 🛠 Tech Stack
@@ -23,7 +24,7 @@
 ├── Engine/
 │   ├── cmake/              # Build machinery: CE_Config, output layout, ce_configure_application, backend selection
 │   │   └── templates/      # Default Info.plist and entitlements of every application
-│   ├── Modules/            # Core, Define, Events, IO, Native, Tools, Types, Utility
+│   ├── Modules/            # Core, Define, Events, IO, Native, RHI, Tools, Types, Utility
 │   ├── Shaders/            # Metal and GLSL shaders, compiled per selected backend
 │   ├── src/
 │   │   ├── include/        # CelestialEngine.hpp, the header an application includes

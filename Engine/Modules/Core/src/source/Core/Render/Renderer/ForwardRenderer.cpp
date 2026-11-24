@@ -4,18 +4,18 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
-#include "Core/Render/Buffer/I_Buffer.hpp"
-#include "Core/Render/Command/Command.hpp"
-#include "Core/Render/Device/I_GraphicDevice.hpp"
-#include "Core/Render/Pipeline/PipelineDescriptor.hpp"
+#include "RHI/Buffer/I_Buffer.hpp"
+#include "RHI/Command/Command.hpp"
+#include "RHI/Device/I_GraphicDevice.hpp"
+#include "RHI/Pipeline/PipelineDescriptor.hpp"
 #include "Core/Render/Renderer/ForwardRenderer.hpp"
 #include "Core/Render/Renderer/DrawCommand.hpp"
-#include "Core/Render/Shader/ShaderModuleDescriptor.hpp"
-#include "Core/Render/Swapchain/I_Swapchain.hpp"
-#include "Core/Render/Texture/I_Texture.hpp"
+#include "RHI/Shader/ShaderModuleDescriptor.hpp"
+#include "RHI/Swapchain/I_Swapchain.hpp"
+#include "RHI/Texture/I_Texture.hpp"
 #include "Tools/Tools.hpp"
 
 #include <cassert>
@@ -25,7 +25,7 @@
 
 namespace CE::Core {
 
-ForwardRenderer::ForwardRenderer(std::unique_ptr<I_GraphicDevice> graphicDevice, std::unique_ptr<I_Swapchain> swapchain):
+ForwardRenderer::ForwardRenderer(std::unique_ptr<RHI::I_GraphicDevice> graphicDevice, std::unique_ptr<RHI::I_Swapchain> swapchain):
 	_graphicDevice(std::move(graphicDevice)), _swapchain(std::move(swapchain)) {
 	assert(_graphicDevice != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no graphic device.");
 	assert(_swapchain != nullptr and "ForwardRenderer::ForwardRenderer: The renderer was given no swapchain.");
@@ -106,7 +106,7 @@ void ForwardRenderer::BeginPass() {
 	// Backing pixels, which is what a render area and a viewport are measured in - not the window's screen coordinates.
 	const auto [width, height] = _swapchain->GetSize();
 
-	RenderPassDescriptor descriptor{};
+	RHI::RenderPassDescriptor descriptor{};
 	descriptor.width = width;
 	descriptor.height = height;
 
@@ -124,7 +124,7 @@ void ForwardRenderer::BeginPass() {
 	BeginPass(descriptor);
 }
 
-void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
+void ForwardRenderer::BeginPass(const RHI::RenderPassDescriptor& descriptor) {
 	_OpenPass(descriptor);
 
 	if (not _commandEncoder) [[unlikely]]
@@ -141,7 +141,7 @@ void ForwardRenderer::BeginPass(const RenderPassDescriptor& descriptor) {
 	_commandEncoder->SetVertexConstants(Types::CAMERA_CONSTANTS_SLOT, std::as_bytes(std::span{&camera, 1}));
 }
 
-void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
+void ForwardRenderer::_OpenPass(const RHI::RenderPassDescriptor& descriptor) {
 	assert(_inFrame and "ForwardRenderer::_OpenPass: A pass outside a frame draws into a target nobody will present.");
 	if (not _inFrame) [[unlikely]]
 		return;
@@ -158,7 +158,7 @@ void ForwardRenderer::_OpenPass(const RenderPassDescriptor& descriptor) {
 
 	// The whole render area, stated top-left, which is the one convention a viewport is ever written in. Turning it
 	// into whatever the backend measures from is the encoder's own business, and it needs nothing from here to do it.
-	_commandEncoder->SetViewport(Viewport{
+	_commandEncoder->SetViewport(RHI::Viewport{
 		.x = 0.0_f32,
 		.y = 0.0_f32,
 		.width = static_cast<f32>(descriptor.width),
@@ -237,7 +237,7 @@ void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
 	if (_sceneColor and _sceneColor->GetWidth() == width and _sceneColor->GetHeight() == height)
 		return;
 
-	const TextureDescriptor colorDescriptor{
+	const RHI::TextureDescriptor colorDescriptor{
 		.width = width,
 		.height = height,
 		.format = _sceneColorFormat,
@@ -245,7 +245,7 @@ void ForwardRenderer::_EnsureSceneTarget(const u32 width, const u32 height) {
 		.debugName = "SceneColor"
 	};
 
-	const TextureDescriptor depthDescriptor{
+	const RHI::TextureDescriptor depthDescriptor{
 		.width = width,
 		.height = height,
 		.format = _sceneDepthFormat,
@@ -277,7 +277,7 @@ void ForwardRenderer::_Composite() {
 	// frame is open - so by this point all three are guaranteed.
 	const auto [width, height] = _swapchain->GetSize();
 
-	RenderPassDescriptor descriptor{};
+	RHI::RenderPassDescriptor descriptor{};
 	descriptor.width = width;
 	descriptor.height = height;
 
@@ -354,7 +354,7 @@ void ForwardRenderer::_CreateCompositeResources() {
 
 	constexpr std::array indices{0_u32, 1_u32, 2_u32, 2_u32, 3_u32, 0_u32};
 
-	const BufferLayout vertexLayout{
+	const RHI::BufferLayout vertexLayout{
 		{ShaderDataType::Float3, "inputPosition"},
 		{ShaderDataType::Float4, "inputColor"}
 	};
@@ -364,7 +364,7 @@ void ForwardRenderer::_CreateCompositeResources() {
 
 	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
 	// The renderer states what it wants drawn and never learns what the backend underneath compiles or loads.
-	const PipelineDescriptor pipelineDescriptor{
+	const RHI::PipelineDescriptor pipelineDescriptor{
 		.vertexShader = _graphicDevice->CreateShaderModule({.stage = ShaderType::Vertex, .name = "CompositeVertex"}),
 		.fragmentShader = _graphicDevice->CreateShaderModule({.stage = ShaderType::Fragment, .name = "CompositeFragment"}),
 		.vertexLayout = vertexLayout,

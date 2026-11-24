@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include <Core/Render/Render.hpp>
+#include <RHI/RHI.hpp>
 #include <Tools/Tools.hpp>
 #include <Types/Render/ShaderConstants.hpp>
 
@@ -24,22 +25,22 @@
 #include <vector>
 
 using namespace CE;
-using Core::BufferLayout;
 using Core::DrawCommand;
 using Core::ForwardRenderer;
-using Core::I_CommandEncoder;
-using Core::I_GraphicDevice;
-using Core::I_IndexBuffer;
-using Core::I_PipelineState;
-using Core::I_ShaderModule;
-using Core::I_Swapchain;
-using Core::I_Texture;
-using Core::I_VertexBuffer;
-using Core::PipelineDescriptor;
-using Core::RenderPassDescriptor;
-using Core::ShaderModuleDescriptor;
-using Core::TextureDescriptor;
-using Core::Viewport;
+using RHI::BufferLayout;
+using RHI::I_CommandEncoder;
+using RHI::I_GraphicDevice;
+using RHI::I_IndexBuffer;
+using RHI::I_PipelineState;
+using RHI::I_ShaderModule;
+using RHI::I_Swapchain;
+using RHI::I_Texture;
+using RHI::I_VertexBuffer;
+using RHI::PipelineDescriptor;
+using RHI::RenderPassDescriptor;
+using RHI::ShaderModuleDescriptor;
+using RHI::TextureDescriptor;
+using RHI::Viewport;
 
 namespace {
 

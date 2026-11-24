@@ -13,6 +13,9 @@
 #include "Core/Core.hpp"
 #include "Events/Events.hpp"
 #include "IO/FileSystem/FileSystem.hpp"
+#include "RHI/Device/Platforms/Mac/Metal/MetalGraphicDevice.hpp"
+#include "RHI/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
+#include "RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Types/Build/Build.hpp"
 #include "Utility/Config/Config.hpp"
 #include "Utility/ImGui/ImGui.hpp"
@@ -101,7 +104,7 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 		return;
 	}
 
-	_frameContext.sceneTexture = static_cast<const MetalTexture*>(sceneColor)->GetTexture();
+	_frameContext.sceneTexture = static_cast<const RHI::MetalTexture*>(sceneColor)->GetTexture();
 
 	// The frame's buffer, shared with the renderer's passes rather than one of our own: the overlay is another pass of
 	// the same frame, and Metal only orders a pass that loads against a pass that wrote within one command buffer.
@@ -177,8 +180,8 @@ void ImGuiMetalLayer::_Init() {
 			throw std::runtime_error(error);
 		}
 
-		_graphicDevice = &static_cast<MetalGraphicDevice&>(renderer.GetGraphicDevice());
-		_swapchain = &static_cast<MetalSwapchain&>(renderer.GetSwapchain());
+		_graphicDevice = &static_cast<RHI::MetalGraphicDevice&>(renderer.GetGraphicDevice());
+		_swapchain = &static_cast<RHI::MetalSwapchain&>(renderer.GetSwapchain());
 
 		// The backend builds its font atlas and its buffer pool on this device, and never touches the engine's RHI -
 		// which is why ImGui needs no I_Texture and no 16-bit index buffer to run here.

@@ -1,0 +1,36 @@
+//
+// Module: CelestialEngine/Engine/Modules/RHI/Texture
+// File: Texture.hpp
+// Created by: Catalin Chirosca
+// Created: 2026-11-02
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-24
+//
+
+/**
+ * @file Texture.hpp
+ * @brief Umbrella header for the Texture part of the Core renderer
+ * @details One include for everything a texture is made of: its interface and the per-backend textures. Backend-
+ *			specific headers come along too, each only where its backend is compiled in - CE_RENDER_* for the
+ *			graphics ones, CE_WINDOW_* for the window ones, both chosen by CE_RENDER_BACKENDS - the same split
+ *			Types/Render/Render.hpp makes.
+ */
+
+#pragma once
+
+#ifndef CE_RHI_TEXTURE_TEXTURE_HPP
+#define CE_RHI_TEXTURE_TEXTURE_HPP
+
+#include "Define/Config.hpp"
+
+#include "RHI/Texture/I_Texture.hpp"
+
+#if CE_RENDER_OPENGL
+#include "RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
+#endif
+
+#if CE_RENDER_METAL
+#include "RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
+#endif
+
+#endif //CE_RHI_TEXTURE_TEXTURE_HPP

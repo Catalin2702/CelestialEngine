@@ -12,7 +12,7 @@
  * @brief Umbrella header for the Render sub-module of Types
  * @details Pulls in every rendering type the module defines, so a translation unit that needs several of them
  *			names one header instead of eight. Backend conversions are not here: they live with the backend
- *			that uses them (Core/Render/Conversion for now).
+ *			that uses them (RHI/Conversion).
  */
 
 #pragma once

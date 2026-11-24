@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #include "SandboxLayer.hpp"
@@ -120,7 +120,7 @@ void SandboxLayer::OnAttach() {
 	// Named, because it is needed twice: the buffer uses it to compute its stride, and the pipeline needs it to build
 	// its vertex descriptor. Backends that bake that descriptor into the compiled pipeline draw nothing without it,
 	// while those that read the layout at bind time never miss it - so leaving it off is a bug that hides on some.
-	const CE::Core::BufferLayout vertexLayout{
+	const CE::RHI::BufferLayout vertexLayout{
 		{CE::Types::ShaderDataType::Float3, "inputPosition"},
 		{CE::Types::ShaderDataType::Float4, "inputColor"}
 	};
@@ -129,7 +129,7 @@ void SandboxLayer::OnAttach() {
 	_indexBuffer = graphicDevice.CreateIndexBuffer(indices);
 
 	// Named, not described: which artifact these two names stand for, and where it lives, is the device's to work out.
-	CE::Core::PipelineDescriptor pipelineDescriptor{};
+	CE::RHI::PipelineDescriptor pipelineDescriptor{};
 	pipelineDescriptor.vertexLayout = vertexLayout;
 	pipelineDescriptor.vertexShader = graphicDevice.CreateShaderModule({.stage = CE::Types::ShaderType::Vertex, .name = "Vertex"});
 	pipelineDescriptor.fragmentShader = graphicDevice.CreateShaderModule({.stage = CE::Types::ShaderType::Fragment, .name = "Fragment"});

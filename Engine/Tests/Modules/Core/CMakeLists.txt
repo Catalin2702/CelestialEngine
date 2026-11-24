@@ -37,24 +37,9 @@ set(MAINHUB_SOURCES
 )
 
 set(RENDER_SOURCES
-	# Buffer
-	src/Core/Render/Buffer/BufferLayoutTests.cpp
-
 	# Camera
 	src/Core/Render/Camera/FreeCameraControllerTests.cpp
 	src/Core/Render/Camera/MouseLookTests.cpp
-
-	# Command
-	src/Core/Render/Command/RenderPassDescriptorTests.cpp
-	src/Core/Render/Command/ViewportTests.cpp
-
-	# Conversion, tested only where its backend is compiled (CE_RENDER_BACKENDS)
-	$<$<BOOL:${CE_RENDER_OPENGL}>:
-		src/Core/Render/Conversion/Platforms/Common/OpenGl/OpenGlConversionTests.cpp
-	>
-
-	# Pipeline
-	src/Core/Render/Pipeline/PipelineDescriptorTests.cpp
 
 	# Renderer
 	src/Core/Render/Renderer/ForwardRendererTests.cpp

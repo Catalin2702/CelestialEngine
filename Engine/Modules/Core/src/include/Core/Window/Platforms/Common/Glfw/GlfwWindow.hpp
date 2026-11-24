@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-24
 //
 
 #pragma once
@@ -20,7 +20,7 @@
 #include "Utility/Delegate/Dispatcher.hpp"
 
 #if CE_RENDER_OPENGL
-#include "Core/Render/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
+#include "RHI/Surface/Common/OpenGl/I_OpenGlSurface.hpp"
 #endif
 
 #include <source_location>
@@ -125,8 +125,7 @@ public:
  */
 class CE_CORE_API GlfwWindow final: public I_WindowBase<Types::WindowApi::GLFW>
 #if CE_RENDER_OPENGL
-	,
-	                                public I_OpenGlSurface
+	, public RHI::I_OpenGlSurface
 #endif
 {
 public:

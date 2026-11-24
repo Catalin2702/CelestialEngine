@@ -18,16 +18,18 @@
 
 #include <memory>
 
-
-namespace CE::Core {
-
+namespace CE::RHI {
 class I_GraphicDevice;
 class I_Swapchain;
 class I_Texture;
+struct RenderPassDescriptor;
+}
+
+namespace CE::Core {
+
 class I_Window;
 
 struct DrawCommand;
-struct RenderPassDescriptor;
 struct RenderStats;
 
 class I_Renderer {
@@ -71,7 +73,7 @@ public:
 	 * @details Only one pass is open at a time: opening a second ends the first, because a tile-based backend cannot
 	 *			interleave two encoders on one command buffer.
 	 */
-	virtual void BeginPass(const RenderPassDescriptor& descriptor) = 0;
+	virtual void BeginPass(const RHI::RenderPassDescriptor& descriptor) = 0;
 
 	/**
 	 * @brief Closes the open pass
@@ -118,11 +120,11 @@ public:
 	virtual void SetCameraData(const Types::CameraData& cameraData) = 0;
 
 public:
-	[[nodiscard]] virtual const I_GraphicDevice& GetGraphicDevice() const = 0;
-	[[nodiscard]] virtual I_GraphicDevice& GetGraphicDevice() = 0;
+	[[nodiscard]] virtual const RHI::I_GraphicDevice& GetGraphicDevice() const = 0;
+	[[nodiscard]] virtual RHI::I_GraphicDevice& GetGraphicDevice() = 0;
 
-	[[nodiscard]] virtual const I_Swapchain& GetSwapchain() const = 0;
-	[[nodiscard]] virtual I_Swapchain& GetSwapchain() = 0;
+	[[nodiscard]] virtual const RHI::I_Swapchain& GetSwapchain() const = 0;
+	[[nodiscard]] virtual RHI::I_Swapchain& GetSwapchain() = 0;
 
 	/**
 	 * @brief Gets what the last completed frame cost
@@ -133,7 +135,7 @@ public:
 
 	[[nodiscard]] virtual Types::GraphicsApi GetGraphicApi() const = 0;
 
-	[[nodiscard]] virtual const I_Texture* GetSceneColorTarget() const = 0;
+	[[nodiscard]] virtual const RHI::I_Texture* GetSceneColorTarget() const = 0;
 
 	[[nodiscard]] virtual Types::PixelFormat GetSceneColorFormat() const = 0;
 

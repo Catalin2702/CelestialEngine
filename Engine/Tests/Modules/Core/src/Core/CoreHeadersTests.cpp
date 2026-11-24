@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-24
 //
 
 // Every umbrella of Core, on its own and together: each one has to compile with nothing included before it, and none
@@ -12,20 +12,13 @@
 #include <Core/Hub/Hub.hpp>
 #include <Core/Layers/ImGui/ImGui.hpp>
 #include <Core/Layers/Layers.hpp>
-#include <Core/Render/Buffer/Buffer.hpp>
 #include <Core/Render/Camera/Controller/Controller.hpp>
 #include <Core/Render/Camera/Projection/Projection.hpp>
-#include <Core/Render/Command/Command.hpp>
-#include <Core/Render/Device/Device.hpp>
-#include <Core/Render/Pipeline/Pipeline.hpp>
 #include <Core/Render/Render.hpp>
 #include <Core/Render/Renderer/Renderer.hpp>
-#include <Core/Render/Shader/Shader.hpp>
-#include <Core/Render/Surface/Surface.hpp>
-#include <Core/Render/Swapchain/Swapchain.hpp>
-#include <Core/Render/Texture/Texture.hpp>
 #include <Core/RunLoop/RunLoop.hpp>
 #include <Core/Window/Window.hpp>
+#include <RHI/Surface/I_Surface.hpp>
 
 #include <Core/Core.hpp>
 
@@ -57,14 +50,21 @@ TEST(CoreHeadersTest, Umbrellas_ExposeEverySubModule) {
 	EXPECT_TRUE(std::is_class_v<CE::Core::CocoaWindow>);
 	EXPECT_TRUE(std::is_class_v<CE::Core::CocoaEventHubDispatcher>);
 #endif
+}
 
-#if CE_RENDER_OPENGL
-	EXPECT_TRUE(std::is_class_v<CE::Core::OpenGlGraphicDevice>);
-	EXPECT_TRUE(std::is_class_v<CE::Core::OpenGlSwapchain>);
+/**
+ * @brief Test that every window a renderer can draw into is an RHI surface
+ * @details I_Renderer::MakeRenderer asks the window for its RHI::I_Surface; a window that is not one would only be
+ *			found out at runtime, when the renderer is created.
+ */
+TEST(CoreHeadersTest, Windows_AreRhiSurfaces) {
+#if CE_WINDOW_GLFW
+	EXPECT_TRUE((std::is_base_of_v<CE::RHI::I_Surface, CE::Core::GlfwWindow>));
 #endif
 
-#if CE_RENDER_METAL
-	EXPECT_TRUE(std::is_class_v<CE::Core::MetalGraphicDevice>);
-	EXPECT_TRUE(std::is_class_v<CE::Core::MetalSwapchain>);
+#if CE_WINDOW_COCOA
+	EXPECT_TRUE((std::is_base_of_v<CE::RHI::I_Surface, CE::Core::CocoaWindow>));
 #endif
+
+	SUCCEED();
 }

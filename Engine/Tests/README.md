@@ -11,11 +11,12 @@ percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 ```
 Engine/Tests/
 └── Modules/
-    ├── Core/       # Test per CE_Core (Input, Layers, Hub e codici tasto GLFW/Cocoa, Render e conversioni OpenGL)
+    ├── Core/       # Test per CE_Core (Input, Layers, Hub e codici tasto GLFW/Cocoa, camera, ForwardRenderer con un RHI finto)
     ├── Define/     # Test per CE_Define (macro compilation tests)
     ├── Events/     # Test per CE_Events
     ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (bridge ImGui, dispatcher AppKit/MetalKit)
+    ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL)
     ├── Tools/      # Test per CE_Tools (logging)
     ├── Types/      # Test per CE_Types (key code, render, window, build) - niente conversioni verso i backend
     └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, ImGui e conversioni dei tasti verso ImGui, String, Time)
@@ -49,6 +50,7 @@ ctest -C Debug -L Core --output-on-failure     # Solo test Core
 ctest -C Debug -L Define --output-on-failure   # Solo test Define
 ctest -C Debug -L Events --output-on-failure   # Solo test Events
 ctest -C Debug -L Native --output-on-failure   # Solo test Native
+ctest -C Debug -L RHI --output-on-failure      # Solo test RHI
 ctest -C Debug -L Tools --output-on-failure    # Solo test Tools
 ctest -C Debug -L Types --output-on-failure    # Solo test Types
 ctest -C Debug -L Utility --output-on-failure  # Solo test Utility
@@ -83,6 +85,7 @@ Gli eseguibili stanno nella cartella di build, in `Out/<config>/Tests/`, e accet
 | `CE_TestsEvents`   | `EventsTests` | `Engine;Events`    |
 | `CE_TestsIO`       | `IOTests`     | `Engine;IO`        |
 | `CE_TestsNative`   | `NativeTests` | `Engine;Native`    |
+| `CE_TestsRHI`      | `RHITests`    | `Engine;RHI`       |
 | `CE_TestsTools`    | `ToolsTests`  | `Engine;Tools`     |
 | `CE_TestsTypes`    | `TypesTests`  | `Engine;Types`     |
 | `CE_TestsUtility`  | `UtilityTests`| `Engine;Utility`   |
@@ -93,7 +96,11 @@ I test sono **headless**: nessuno di essi apre una finestra, inizializza GLFW o 
 girare anche senza display. Questo determina cosa è coperto:
 
 - **Core**: lo stato dell'input (guidato dagli eventi dell'hub, non dal polling del sistema operativo), lo stack
-  dei layer e la traduzione degli eventi degli hub (`GlfwEventHubDispatcher`, `CocoaEventHubDispatcher`).
+  dei layer, la traduzione degli eventi degli hub (`GlfwEventHubDispatcher`, `CocoaEventHubDispatcher`), il
+  `ForwardRenderer` su device e swapchain finti, e che le finestre siano superfici dell'RHI (`RHI::I_Surface`).
+- **RHI**: le parti che non toccano la GPU - `BufferLayout`, descrittori di pass e pipeline, `Viewport`, conversioni
+  verso OpenGL - e che ogni umbrella dell'RHI compili da solo, senza header di Core. `CE_TestsRHI` linka `CE_RHI` e
+  non `CE_Core`: se l'RHI tornasse a dipendere da Core, il test non linkerebbe più.
 - **Native**: il bridge ImGui e i dispatcher AppKit/MetalKit, verificati sull'inoltro dei callback nativi (i
   puntatori `NS::Event` / `MTK::View` non vengono mai dereferenziati dai dispatcher, quindi bastano indirizzi finti).
 - **Events / Types / Define / Tools / Utility**: interamente coperti, non dipendono dalla piattaforma.

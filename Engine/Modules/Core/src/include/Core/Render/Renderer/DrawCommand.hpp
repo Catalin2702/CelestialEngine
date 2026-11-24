@@ -17,12 +17,14 @@
 
 #include "Types/Math/Glm.hpp"
 
-
-namespace CE::Core {
-
+namespace CE::RHI {
 class I_IndexBuffer;
 class I_PipelineState;
 class I_VertexBuffer;
+}
+
+namespace CE::Core {
+
 
 /**
  * @struct DrawCommand
@@ -38,13 +40,13 @@ class I_VertexBuffer;
  */
 struct CE_CORE_API DrawCommand {
 	/// The compiled state to draw with. Its render target formats have to match the pass' attachments.
-	const I_PipelineState* pipelineState = nullptr;
+	const RHI::I_PipelineState* pipelineState = nullptr;
 
 	/// The vertices. Its layout must agree with the pipeline's vertexLayout.
-	const I_VertexBuffer* vertexBuffer = nullptr;
+	const RHI::I_VertexBuffer* vertexBuffer = nullptr;
 
 	/// The indices to read. Non-indexed drawing needs a second command type, once a backend needs one.
-	const I_IndexBuffer* indexBuffer = nullptr;
+	const RHI::I_IndexBuffer* indexBuffer = nullptr;
 
 	/// How many indices to read. 0 means "all of them, from firstIndex on", which is what a whole-mesh draw wants.
 	u32 indexCount = 0;
