@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 4.1)
 # Added by Engine/CMakeLists.txt when CE_BUILD_TESTS is on, so the engine macros (CelestialEngineMacros.cmake) and
 # every module target already exist here. The tests belong to the engine: they move with it, and a project that
 # includes the engine gets them - or turns them off - through that one option.
-project(CE_Tests LANGUAGES CXX VERSION 0.2.1)
+project(CE_Tests LANGUAGES CXX VERSION 0.2.2)
 
 include("${CE_ENGINE_CMAKE_DIR}/CETestMacros.cmake")
 

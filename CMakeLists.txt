@@ -41,7 +41,7 @@ endif()
 # inside project(), and the selection decides which optional ones (glad, GLFW) it has to install at all.
 include("${CMAKE_CURRENT_LIST_DIR}/Engine/cmake/CERenderBackends.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.2.1)
+project(CelestialEngine LANGUAGES CXX VERSION 0.2.2)
 
 enable_testing()
 

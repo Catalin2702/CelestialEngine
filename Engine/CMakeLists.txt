@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 4.1)
 # included here too for a project that only adds this directory. The include guard makes the second inclusion free.
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/CelestialEngineMacros.cmake")
 
-project(CE_Engine LANGUAGES CXX VERSION 0.2.1)
+project(CE_Engine LANGUAGES CXX VERSION 0.2.2)
 
 set(HEADERS
 	src/include/CelestialEngine.hpp
