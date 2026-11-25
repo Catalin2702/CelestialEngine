@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #include "SandboxLayer.hpp"
@@ -17,6 +17,16 @@ SandboxLayer::SandboxLayer(CE::Core::I_Renderer& renderer):
 }
 
 void SandboxLayer::OnAttach() {
+	using namespace CE::IO;
+	// The application's own files are read through resources://, the Content folder ce_configure_application shipped
+	// (CONTENT in this directory's CMakeLists.txt).
+	if (const auto welcome = FileSystem::ReadText(VirtualPath::Compose(Mount::Resources, "Welcome.txt"))) {
+		CE_INFO("SandboxLayer::OnAttach: {}", *welcome);
+	}
+	else {
+		CE_WARN("SandboxLayer::OnAttach: Cannot read resources://Welcome.txt ({})", welcome.error());
+	}
+
 	auto& graphicDevice = _renderer.GetGraphicDevice();
 
 	constexpr std::array vertices{
