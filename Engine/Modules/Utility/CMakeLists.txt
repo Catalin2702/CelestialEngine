@@ -4,23 +4,13 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-21
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(HEADERS
-	# CMD
-	src/include/Utility/CMD/CommandLine.hpp
-	src/include/Utility/CMD/Window.hpp
-
-	# Config
-	src/include/Utility/Config/Config.hpp
-
 	# Delegate
 	src/include/Utility/Delegate/Delegate.hpp
 	src/include/Utility/Delegate/Dispatcher.hpp
-
-	# ImGui
-	src/include/Utility/ImGui/ImGui.hpp
 
 	# Manipulation
 	src/include/Utility/Manipulation/String.hpp
@@ -36,18 +26,8 @@ set(HEADERS
 )
 
 set(SOURCES
-	# CMD
-	src/source/Utility/CMD/CommandLine.cpp
-	src/source/Utility/CMD/Window.cpp
-
-	# Config
-	src/source/Utility/Config/Config.cpp
-
 	# Delegate
 	src/source/Utility/Delegate/Dispatcher.cpp
-
-	# ImGui
-	src/source/Utility/ImGui/ImGui.cpp
 
 	# Manipulation
 	src/source/Utility/Manipulation/String.cpp
@@ -75,7 +55,9 @@ ce_set_module_library_output(CE_Utility)
 # CelestialEngine.app/Contents/Frameworks)
 ce_configure_module_library_rpath(CE_Utility)
 
-# Modules
+# Generic helpers only - delegates and dispatchers, ranges, strings, time - so anything can link it, a command-line tool
+# included: no window, no graphics API, no ImGui. What only an application needs (the command line options, Config, the
+# ImGui glue) lives in Core.
 target_link_libraries(CE_Utility PUBLIC
 	CE_Config
 	CE_Define
@@ -91,17 +73,6 @@ target_include_directories(CE_Utility PUBLIC
 target_link_libraries(CE_Utility PRIVATE
 	CE_Internal
 )
-
-# The ImGui helpers (Utility/ImGui): ImGui itself in the public header, GLFW only in ImGui.cpp (GlfwKeyToImGuiKey).
-target_link_libraries(CE_Utility PUBLIC
-	CE_Vendor_ImGui
-)
-
-if (CE_WINDOW_GLFW)
-	target_link_libraries(CE_Utility PRIVATE
-		CE_Vendor_Glfw
-	)
-endif ()
 
 target_compile_definitions(CE_Utility PRIVATE
 	CE_UTILITY_EXPORTS

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-10-31
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -18,7 +18,7 @@
 // CE_Vendor_Glm - never with a #define in a header - and only CE_Types may link it (ce_restrict_link in
 // Engine/Vendor/Glm/CMakeLists.txt): every other target gets glm, and the same configuration, through CE_Types.
 // CE_GLM_CONFIGURED comes with that configuration, so a file that reached glm some other way stops here.
-#if !defined(CE_GLM_CONFIGURED)
+#ifndef CE_GLM_CONFIGURED
 	#error "glm must be reached through CE_Types: link CE_Types, not glm or CE_Vendor_Glm (see Engine/Vendor/Glm/CMakeLists.txt)"
 #endif
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -12,6 +12,7 @@
 #ifndef CE_EVENTS_MOUSEEVENT_HPP
 #define CE_EVENTS_MOUSEEVENT_HPP
 
+#include "Events/EventMacros.hpp"
 #include "Events/I_Event.hpp"
 
 #include "Define/Define.hpp"

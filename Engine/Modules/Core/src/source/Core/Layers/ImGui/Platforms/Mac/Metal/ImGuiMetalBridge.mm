@@ -1,13 +1,13 @@
 //
-// Module: CelestialEngine/Engine/Modules/Native/Platforms/Apple/Metal/Bridge/ImGui
-// File: ImGuiBridge.mm
+// Module: CelestialEngine/Engine/Modules/Core/Layers/ImGui/Platforms/Mac/Metal
+// File: ImGuiMetalBridge.mm
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-18
+// Updated: 2026-11-25
 //
 
-#include "Apple/Bridge/ImGui/ImGuiBridge.h"
+#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridge.h"
 
 #import <AppKit/AppKit.h>
 #import <Metal/Metal.h>
@@ -16,7 +16,7 @@
 #import <imgui_impl_osx.h>
 
 
-namespace CE::Native {
+namespace CE::Core {
 
 void ImGuiMetalInit(void* device) {
 	ImGui_ImplMetal_Init(static_cast<id<MTLDevice>>(device));

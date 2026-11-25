@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -141,6 +141,6 @@ if (CE_WINDOW_GLFW)
 	)
 endif ()
 
-# ImGui belongs to the layers that draw or feed the UI: Utility (the helpers), Core (the ImGui layers), CE_Apple (the
-# Metal/OSX backend bridge) and the GLFW backend below. Anything else gets it through them, or does not need it.
-ce_restrict_link(CE_Vendor_ImGui ALLOWED CE_Utility CE_Core CE_Apple CE_Vendor_ImGui_Glfw)
+# ImGui belongs to Core - the ImGui layers, their helpers and the Metal/OSX backend bridge - and to the GLFW backend
+# below. Anything else gets it through Core, or does not need it: Utility, CE_Apple and the RHI stay free of it.
+ce_restrict_link(CE_Vendor_ImGui ALLOWED CE_Core CE_Vendor_ImGui_Glfw)

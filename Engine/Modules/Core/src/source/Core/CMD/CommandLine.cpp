@@ -1,21 +1,21 @@
 //
-// Module: CelestialEngine/Engine/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Modules/Core/CMD
 // File: CommandLine.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
-#include "Utility/CMD/CommandLine.hpp"
+#include "Core/CMD/CommandLine.hpp"
 
-#include "Utility/CMD/Window.hpp"
-#include "Utility/Config/Config.hpp"
+#include "Core/CMD/Window.hpp"
+#include "Core/Config/Config.hpp"
 
 #include <utility>
 
 
-namespace CE::Utility {
+namespace CE::Core {
 
 void InitFromCommandLine(const int argc, const char* argv[]) {
 	// Validated before it is stored: Config never holds a window this build cannot open.

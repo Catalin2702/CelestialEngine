@@ -4,13 +4,22 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(CORE_SOURCES
 	src/Core/CoreHeadersTests.cpp
 	src/Core/VersionTests.cpp
 )
+set(CMD_SOURCES
+	src/Core/CMD/CommandLineTests.cpp
+	src/Core/CMD/WindowCMDTests.cpp
+)
+
+set(CONFIG_SOURCES
+	src/Core/Config/ConfigTests.cpp
+)
+
 set(INPUT_SOURCES
 	src/Core/Input/InputTests.cpp
 	src/Core/Input/KeyShortcutTests.cpp
@@ -19,6 +28,12 @@ set(INPUT_SOURCES
 set(LAYERS_SOURCES
 	src/Core/Layers/LayerStackTests.cpp
 	src/Core/Layers/LayerTests.cpp
+
+	# ImGui
+	src/Core/Layers/ImGui/ImGuiKeyTests.cpp
+	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridgeTests.cpp
+	>
 )
 
 set(MAINHUB_SOURCES
@@ -48,6 +63,8 @@ set(RENDER_SOURCES
 
 add_executable(CE_TestsCore
 	${CORE_SOURCES}
+	${CMD_SOURCES}
+	${CONFIG_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
 	${MAINHUB_SOURCES}
@@ -75,6 +92,14 @@ target_link_libraries(CE_TestsCore PRIVATE
 target_link_libraries(CE_TestsCore PRIVATE
 	GTest::gtest_main
 )
+
+# The GLFW hub tests use GLFW's key and action constants. CE_Core links GLFW privately, so the test brings its own
+# headers; only macros are used, so no GLFW code is pulled into the executable.
+if (CE_WINDOW_GLFW)
+	target_link_libraries(CE_TestsCore PRIVATE
+		CE_Vendor_Glfw
+	)
+endif ()
 
 add_test(NAME CoreTests
 	COMMAND CE_TestsCore

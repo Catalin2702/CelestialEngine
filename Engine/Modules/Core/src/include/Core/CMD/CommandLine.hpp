@@ -1,21 +1,21 @@
 //
-// Module: CelestialEngine/Engine/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Modules/Core/CMD
 // File: CommandLine.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
 
-#ifndef CE_UTILITY_CMD_COMMANDLINE_HPP
-#define CE_UTILITY_CMD_COMMANDLINE_HPP
+#ifndef CE_CORE_CMD_COMMANDLINE_HPP
+#define CE_CORE_CMD_COMMANDLINE_HPP
 
 #include "Define/DynamicLinker.hpp"
 
 
-namespace CE::Utility {
+namespace CE::Core {
 
 /**
  * @brief Sets up the process-wide state that comes from the command line, before anything else is built
@@ -32,8 +32,8 @@ namespace CE::Utility {
  *				(CE_APPLICATION_NAME), so main() initialises it right after this call (IO::FileSystem::Initialize).
  *			Called once by main() (EntryPoint.cpp), after the logger is up and before the Application is constructed.
  */
-CE_UTILITY_API void InitFromCommandLine(int argc, const char* argv[]);
+CE_CORE_API void InitFromCommandLine(int argc, const char* argv[]);
 
 }
 
-#endif //CE_UTILITY_CMD_COMMANDLINE_HPP
+#endif //CE_CORE_CMD_COMMANDLINE_HPP

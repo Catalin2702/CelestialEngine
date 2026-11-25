@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 // The sandbox's client: what CE::CreateApplicationClient returns. main() is the engine's (EntryPoint.cpp, added to
@@ -44,7 +44,7 @@ public:
 
 private:
 	static void _PushCamera(Core::Application& application) {
-		const auto& windowProps = Utility::Config::GetWindowProps();
+		const auto windowProps = Core::Config::GetWindowProps();
 
 		constexpr Core::CameraDescriptor cameraDescriptor{
 			.position = {0.0_f32, 0.0_f32, 5.0_f32},

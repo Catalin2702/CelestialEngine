@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 // The main() of every engine application. Not part of any engine library: ce_configure_application adds this file to
@@ -93,7 +93,7 @@ int main(const int argc, const char* argv[]) {
 #endif
 		// Window options into Config - validated first, so a backend this build lacks (CE_RENDER_BACKENDS) is reported
 		// here with the list of what is available - and the FileSystem root from argv[0].
-		CE::Utility::InitFromCommandLine(argc, argv);
+		CE::Core::InitFromCommandLine(argc, argv);
 
 		// The standard mounts, located from argv[0]: before the Application, whose renderer loads its shaders through
 		// them, and before GLFW, which changes the working directory a relative argv[0] is resolved against. The name

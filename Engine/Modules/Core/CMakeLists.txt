@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 # Backend-specific files are grouped by what they belong to, and each group is compiled only when it is selected:
@@ -22,6 +22,15 @@ set(CORE_HEADERS
 set(APPLICATION_HEADERS
 	src/include/Core/Application/Application.hpp
 	src/include/Core/Application/ApplicationSpecification.hpp
+)
+
+set(CMD_HEADERS
+	src/include/Core/CMD/CommandLine.hpp
+	src/include/Core/CMD/Window.hpp
+)
+
+set(CONFIG_HEADERS
+	src/include/Core/Config/Config.hpp
 )
 
 set(HUB_HEADERS
@@ -52,11 +61,13 @@ set(LAYERS_HEADERS
 
 	# ImGui
 	src/include/Core/Layers/ImGui/ImGui.hpp
+	src/include/Core/Layers/ImGui/ImGuiHelpers.hpp
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
 		src/include/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp
 	>
 
 	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridge.h
 		src/include/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp
 	>
 
@@ -171,6 +182,15 @@ set(APPLICATION_SOURCES
 	src/source/Core/Application/Application.cpp
 )
 
+set(CMD_SOURCES
+	src/source/Core/CMD/CommandLine.cpp
+	src/source/Core/CMD/Window.cpp
+)
+
+set(CONFIG_SOURCES
+	src/source/Core/Config/Config.cpp
+)
+
 set(HUB_SOURCES
 	#Events
 	src/source/Core/Hub/Events/I_EventHubDispatcher.cpp
@@ -197,11 +217,13 @@ set(LAYERS_SOURCES
 
 
 	# ImGui
+	src/source/Core/Layers/ImGui/ImGuiHelpers.cpp
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
 		src/source/Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.cpp
 	>
 
 	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/source/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridge.mm
 		src/source/Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.cpp
 	>
 
@@ -261,6 +283,8 @@ set(WINDOW_SOURCES
 set(HEADERS
 	${CORE_HEADERS}
 	${APPLICATION_HEADERS}
+	${CMD_HEADERS}
+	${CONFIG_HEADERS}
 	${HUB_HEADERS}
 	${INPUT_HEADERS}
 	${LAYERS_HEADERS}
@@ -281,6 +305,8 @@ set(INTERFACES
 set(SOURCES
 	${CORE_SOURCES}
 	${APPLICATION_SOURCES}
+	${CMD_SOURCES}
+	${CONFIG_SOURCES}
 	${HUB_SOURCES}
 	${INPUT_SOURCES}
 	${LAYERS_SOURCES}
@@ -338,15 +364,18 @@ target_link_libraries(CE_Core PUBLIC
 # Each backend's third parties exist only when the backend is compiled in (CE_RENDER_BACKENDS): GLFW and its ImGui
 # backend with a GLFW window, glad with OpenGL, metal-cpp with Metal. Core links them itself - Types, which used to
 # carry them for its conversion tables, knows no backend any more.
+# GLFW, its ImGui backend and glad are PRIVATE: only Core's .cpp files include them (GlfwWindow, the GLFW event hub,
+# ImGuiOpenGlLayer), never a public header. They are static libraries, so linking them PUBLIC copied GLFW into every
+# executable that linked CE_Core as well - two copies of GLFW's global state in one process.
 if (CE_WINDOW_GLFW)
-	target_link_libraries(CE_Core PUBLIC
+	target_link_libraries(CE_Core PRIVATE
 		CE_Vendor_Glfw
 		CE_Vendor_ImGui_Glfw
 	)
 endif ()
 
 if (CE_RENDER_OPENGL)
-	target_link_libraries(CE_Core PUBLIC
+	target_link_libraries(CE_Core PRIVATE
 		CE_Vendor_Glad
 	)
 endif ()

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #include "Core/Layers/ImGui/Platforms/Common/OpenGl/ImGuiOpenGlLayer.hpp"
@@ -13,8 +13,8 @@
 #include "Events/Events.hpp"
 #include "IO/FileSystem/FileSystem.hpp"
 #include "Types/Build/Build.hpp"
-#include "Utility/Config/Config.hpp"
-#include "Utility/ImGui/ImGui.hpp"
+#include "Core/Config/Config.hpp"
+#include "Core/Layers/ImGui/ImGuiHelpers.hpp"
 
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <glad/glad.h>
@@ -41,17 +41,17 @@ void ImGuiOpenGlLayer::OnRender() const {
 	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
-	const auto& windowProps = Utility::Config::GetWindowProps();
+	const auto windowProps = Core::Config::GetWindowProps();
 
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	Utility::ImguiText("W-API: {}", windowProps.windowApi);
-	Utility::ImguiText("G-API: {}", windowProps.graphicsApi);
-	Utility::ImguiText("Build: {}", Types::GetCurrentBuildTypeString().c_str());
-	Utility::ImguiText("FPS: {:.1f}", ImGui::GetIO().Framerate);
-	Utility::ImguiText("Delta: {:.5f} s", _deltaTime);
+	Core::ImguiText("W-API: {}", windowProps.windowApi);
+	Core::ImguiText("G-API: {}", windowProps.graphicsApi);
+	Core::ImguiText("Build: {}", Types::GetCurrentBuildTypeString().c_str());
+	Core::ImguiText("FPS: {:.1f}", ImGui::GetIO().Framerate);
+	Core::ImguiText("Delta: {:.5f} s", _deltaTime);
 	ImGui::End();
 
 	static bool show = true;
@@ -120,7 +120,7 @@ void ImGuiOpenGlLayer::_Init() {
 
 		// The layout is the user's, so it lives in the writable per-user mount. Without that mount the path is empty
 		// and saving is turned off, rather than ImGui writing next to the executable.
-		Utility::SetImGuiIniFile(io, IO::FileSystem::ToNativePath("config://imgui.ini").value_or(std::filesystem::path{}));
+		Core::SetImGuiIniFile(io, IO::FileSystem::ToNativePath("config://imgui.ini").value_or(std::filesystem::path{}));
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -205,7 +205,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 	if (Input::IsCursorCaptured())
 		return;
 
-	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Core::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -213,7 +213,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& ev
 }
 
 void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Core::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -221,7 +221,7 @@ void ImGuiOpenGlLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& 
 }
 
 void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Core::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
@@ -229,7 +229,7 @@ void ImGuiOpenGlLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 }
 
 void ImGuiOpenGlLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Core::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 

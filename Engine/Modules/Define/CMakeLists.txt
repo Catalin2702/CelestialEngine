@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-17
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(HEADERS
@@ -12,11 +12,9 @@ set(HEADERS
 	src/include/Define/Config.hpp
 	src/include/Define/CoreLog.hpp
 	src/include/Define/DynamicLinker.hpp
-	src/include/Define/Event.hpp
 	src/include/Define/Log.hpp
 	src/include/Define/LogDetail.hpp
 	src/include/Define/Types.hpp
-	src/include/Define/Render.hpp
 
 	# Main
 	src/include/Define/Define.hpp

@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(HEADERS
 	src/include/Events/ApplicationEvent.hpp
+	src/include/Events/EventMacros.hpp
 	src/include/Events/Events.hpp
 	src/include/Events/GenericEvent.hpp
 	src/include/Events/KeyEvent.hpp

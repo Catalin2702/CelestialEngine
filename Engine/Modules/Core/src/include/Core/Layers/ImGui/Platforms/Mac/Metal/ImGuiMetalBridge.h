@@ -1,18 +1,18 @@
 //
-// Module: CelestialEngine/Engine/Modules/Native/Platforms/Apple/Bridge/ImGui
-// File: ImGuiBridge.h
+// Module: CelestialEngine/Engine/Modules/Core/Layers/ImGui/Platforms/Mac/Metal
+// File: ImGuiMetalBridge.h
 // Created by: Catalin Chirosca
 // Created: 2026-02-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-07-14
+// Updated: 2026-11-25
 //
 
 #pragma once
 
-#ifndef CE_NATIVE_APPLE_BRIDGE_IMGUIBRIDGE_H
-#define CE_NATIVE_APPLE_BRIDGE_IMGUIBRIDGE_H
+#ifndef CE_CORE_LAYERS_IMGUI_IMGUIMETALBRIDGE_H
+#define CE_CORE_LAYERS_IMGUI_IMGUIMETALBRIDGE_H
 
-namespace CE::Native {
+namespace CE::Core {
 
 /**
  * @brief Initializes the ImGui Metal backend
@@ -50,4 +50,4 @@ void ImGuiMetalRenderDrawData(void* drawData, void* commandBuffer, void* renderE
 
 }
 
-#endif //CE_NATIVE_APPLE_METAL_BRIDGE_IMGUIBRIDGE_H
+#endif //CE_CORE_LAYERS_IMGUI_IMGUIMETALBRIDGE_H

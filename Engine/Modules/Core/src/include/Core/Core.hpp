@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-25
 //
 
 /**
@@ -13,7 +13,9 @@
  * @details One include for the whole of Core, through the umbrella of each sub-module.
  *
  *			Application and Input have no umbrella of their own: Application/Application.hpp is the only header there,
- *			and Input/Input.hpp already includes the input state and KeyShortcut.
+ *			and Input/Input.hpp already includes the input state and KeyShortcut. CMD and Config are listed directly too.
+ *			Layers/ImGui/ImGuiHelpers.hpp is left out on purpose: it includes imgui.h, and this header reaches every
+ *			client. The ImGui layers include it directly.
  */
 
 #pragma once
@@ -24,6 +26,11 @@
 #include "Core/Application/Application.hpp"
 #include "Core/Application/ApplicationSpecification.hpp"
 #include "Core/Application/I_ApplicationClient.hpp"
+
+#include "Core/CMD/CommandLine.hpp"
+#include "Core/CMD/Window.hpp"
+
+#include "Core/Config/Config.hpp"
 
 #include "Core/Hub/Hub.hpp"
 

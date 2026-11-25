@@ -1,16 +1,23 @@
 //
-// Module: CelestialEngine/Engine/Modules/Define
-// File: Event.hpp
+// Module: CelestialEngine/Engine/Modules/Events
+// File: EventMacros.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
+
+/**
+ * @file EventMacros.hpp
+ * @brief The macros every concrete event is declared with
+ * @details They name Events::EventType and EventCategory, so they belong to Events: in Define, which links only
+ *			CE_Config, they compiled only by accident of include order.
+ */
 
 #pragma once
 
-#ifndef CE_DEFINE_EVENT_HPP
-#define CE_DEFINE_EVENT_HPP
+#ifndef CE_EVENTS_EVENTMACROS_HPP
+#define CE_EVENTS_EVENTMACROS_HPP
 
 /**
  * @def EVENT_CLASS_TYPE(type)
@@ -48,4 +55,4 @@
 #define EVENT_CLASS_CATEGORY(category) \
 	virtual EventCategory GetCategoryFlags() const override { return category; }
 
-#endif //CE_DEFINE_EVENT_HPP
+#endif //CE_EVENTS_EVENTMACROS_HPP

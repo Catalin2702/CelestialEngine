@@ -1,13 +1,13 @@
 //
-// Module: CelestialEngine/Engine/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Modules/Core/CMD
 // File: Window.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
-#include "Utility/CMD/Window.hpp"
+#include "Core/CMD/Window.hpp"
 
 #include "Tools/Tools.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace CE::Utility {
+namespace CE::Core {
 
 namespace {
 
@@ -42,7 +42,7 @@ unsigned int ParseUnsigned(const std::string& arg, const char* value, const std:
 }
 
 Types::GraphicsApi ParseGraphicsApi(const char* value) {
-	const std::string apiArg = ToLowerCase(value);
+	const std::string apiArg = Utility::ToLowerCase(value);
 	if (apiArg == "opengl")
 		return Types::GraphicsApi::OpenGL;
 	if (apiArg == "metal")
@@ -61,7 +61,7 @@ Types::GraphicsApi ParseGraphicsApi(const char* value) {
 
 /// Parses -wa. `graphicsApi` is what an unknown value falls back to the pairing of.
 Types::WindowApi ParseWindowApi(const char* value, const Types::GraphicsApi graphicsApi) {
-	const std::string apiArg = ToLowerCase(value);
+	const std::string apiArg = Utility::ToLowerCase(value);
 	if (apiArg == "glfw")
 		return Types::WindowApi::GLFW;
 	if (apiArg == "win32")
@@ -119,7 +119,7 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 
 	// Start from 1 to skip executable path
 	for (int i = 1; i < argc; ++i) {
-		const std::string arg = ToLowerCase(argv[i]);
+		const std::string arg = Utility::ToLowerCase(argv[i]);
 		// Every supported option takes a value, so an option in last position is as unsupported as an unknown one.
 		const bool hasValue = i + 1 < argc;
 
@@ -133,7 +133,7 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 			height = ParseUnsigned(arg, argv[++i], "height");
 		}
 		else if ((arg == "--vsync" or arg == "-v") and hasValue) {
-			const std::string vsyncArg = ToLowerCase(argv[++i]);
+			const std::string vsyncArg = Utility::ToLowerCase(argv[++i]);
 			VSync = (vsyncArg == "true" or vsyncArg == "1");
 		}
 		else if ((arg == "--refresh" or arg == "-r") and hasValue) {

@@ -1,14 +1,14 @@
 //
-// Module: CelestialEngine/Engine/Tests/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Tests/Modules/Core/CMD
 // File: CommandLineTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
-#include <Utility/CMD/CommandLine.hpp>
-#include <Utility/Config/Config.hpp>
+#include <Core/CMD/CommandLine.hpp>
+#include <Core/Config/Config.hpp>
 
 #include <Tools/Tools.hpp>
 #include <Types/Window/WindowProps.hpp>
@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 
-using namespace CE::Utility;
+using namespace CE::Core;
 using namespace CE::Tools;
 using namespace CE::Types;
 

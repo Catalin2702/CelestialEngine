@@ -11,15 +11,16 @@ percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 ```
 Engine/Tests/
 └── Modules/
-    ├── Core/       # Test per CE_Core (Input, Layers, Hub e codici tasto GLFW/Cocoa, camera, ForwardRenderer con un RHI finto)
-    ├── Define/     # Test per CE_Define (macro compilation tests)
-    ├── Events/     # Test per CE_Events
+    ├── Core/       # Test per CE_Core (CMD, Config, Input, Layers e helper ImGui, bridge ImGui-Metal, Hub e codici tasto GLFW/Cocoa,
+    │               #   camera, ForwardRenderer con un RHI finto)
+    ├── Define/     # Test per CE_Define (BIT, BIND_FN_*)
+    ├── Events/     # Test per CE_Events (eventi e macro EVENT_CLASS_*)
     ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
-    ├── Native/     # Test per CE_Native (bridge ImGui, dispatcher AppKit/MetalKit)
+    ├── Native/     # Test per CE_Native (dispatcher AppKit/MetalKit)
     ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL)
     ├── Tools/      # Test per CE_Tools (logging)
     ├── Types/      # Test per CE_Types (key code, render, window, build) - niente conversioni verso i backend
-    └── Utility/    # Test per CE_Utility (CMD, Config, Delegate, ImGui e conversioni dei tasti verso ImGui, String, Time)
+    └── Utility/    # Test per CE_Utility (Delegate, Dispatcher, String, Time; che l'umbrella non porti dentro ImGui o Core)
 ```
 
 ## Eseguire i Test
@@ -95,13 +96,14 @@ Gli eseguibili stanno nella cartella di build, in `Out/<config>/Tests/`, e accet
 I test sono **headless**: nessuno di essi apre una finestra, inizializza GLFW o crea un device Metal, così possono
 girare anche senza display. Questo determina cosa è coperto:
 
-- **Core**: lo stato dell'input (guidato dagli eventi dell'hub, non dal polling del sistema operativo), lo stack
-  dei layer, la traduzione degli eventi degli hub (`GlfwEventHubDispatcher`, `CocoaEventHubDispatcher`), il
+- **Core**: il parsing della riga di comando e `Config`, lo stato dell'input (guidato dagli eventi dell'hub, non
+  dal polling del sistema operativo), lo stack dei layer, la conversione dei tasti verso ImGui e il bridge verso il
+  backend Metal di ImGui (solo che le funzioni esistano e linkino), la traduzione degli eventi degli hub (`GlfwEventHubDispatcher`, `CocoaEventHubDispatcher`), il
   `ForwardRenderer` su device e swapchain finti, e che le finestre siano superfici dell'RHI (`RHI::I_Surface`).
 - **RHI**: le parti che non toccano la GPU - `BufferLayout`, descrittori di pass e pipeline, `Viewport`, conversioni
   verso OpenGL - e che ogni umbrella dell'RHI compili da solo, senza header di Core. `CE_TestsRHI` linka `CE_RHI` e
   non `CE_Core`: se l'RHI tornasse a dipendere da Core, il test non linkerebbe più.
-- **Native**: il bridge ImGui e i dispatcher AppKit/MetalKit, verificati sull'inoltro dei callback nativi (i
+- **Native**: i dispatcher AppKit/MetalKit, verificati sull'inoltro dei callback nativi (i
   puntatori `NS::Event` / `MTK::View` non vengono mai dereferenziati dai dispatcher, quindi bastano indirizzi finti).
 - **Events / Types / Define / Tools / Utility**: interamente coperti, non dipendono dalla piattaforma.
 - **IO**: `VirtualPath` senza disco, `FileSystem` su una cartella temporanea montata per ogni test. `Initialize` non

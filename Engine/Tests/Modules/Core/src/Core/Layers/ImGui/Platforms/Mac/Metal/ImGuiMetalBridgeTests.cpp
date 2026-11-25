@@ -1,17 +1,17 @@
 //
-// Module: CelestialEngine/Engine/Tests/Modules/Native/Apple/Bridge/ImGui
-// File: ImGuiBridgeTests.cpp
+// Module: CelestialEngine/Engine/Tests/Modules/Core/Layers/ImGui/Platforms/Mac/Metal
+// File: ImGuiMetalBridgeTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
-#include <Apple/Bridge/ImGui/ImGuiBridge.h>
+#include <Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridge.h>
 
 #include <gtest/gtest.h>
 
-using namespace CE::Native;
+using namespace CE::Core;
 
 namespace {
 
@@ -113,10 +113,10 @@ TEST_F(ImGuiBridgeTest, AllFunctions_HaveUniqueAddresses) {
  */
 TEST_F(ImGuiBridgeTest, Namespace_IsCorrectlyResolved) {
 	// If this compiles, the namespace is correctly resolved
-	using CE::Native::ImGuiMetalInit;
-	using CE::Native::ImGuiMetalShutdown;
-	using CE::Native::ImGuiMetalNewFrame;
-	using CE::Native::ImGuiMetalRenderDrawData;
+	using CE::Core::ImGuiMetalInit;
+	using CE::Core::ImGuiMetalShutdown;
+	using CE::Core::ImGuiMetalNewFrame;
+	using CE::Core::ImGuiMetalRenderDrawData;
 
 	SUCCEED();
 }

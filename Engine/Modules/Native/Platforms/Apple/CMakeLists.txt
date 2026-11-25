@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -13,15 +13,9 @@ set(APPLE_HEADERS
 	src/include/Apple/Apple.hpp
 )
 
-# The ImGui bridge drives ImGui's Metal and OSX backends, so it exists only with Metal (CE_RENDER_BACKENDS). The rest of
-# CE_Apple is the platform layer - AppKit, Foundation, the menu bar's plumbing - and is built whatever the backends.
-set(BRIDGE_HEADERS
-	# ImGui
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/include/Apple/Bridge/ImGui/ImGuiBridge.h
-	>
-)
-
+# CE_Apple is the platform layer - AppKit, Foundation, MetalKit, QuartzCore through metal-cpp, and metal-cpp's own
+# implementation - built whatever the backends. It knows no ImGui: the bridge to ImGui's Metal backend lives in Core,
+# beside the layer that uses it, so the RHI (which links CE_Apple for metal-cpp) does not drag ImGui along.
 set(METALCPP_HEADERS
 	src/include/Apple/MetalCpp/MetalCpp.hpp
 
@@ -38,13 +32,6 @@ set(METALCPP_HEADERS
 
 	# QuartzCore
 	src/include/Apple/MetalCpp/QuartzCore/CaMetalDisplayLinkDelegate.hpp
-)
-
-set(BRIDGE_SOURCES
-	# ImGui
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/source/Apple/Bridge/ImGui/ImGuiBridge.mm
-	>
 )
 
 set(METALCPP_SOURCES
@@ -65,12 +52,10 @@ set(METALCPP_SOURCES
 
 set(HEADERS
 	${APPLE_HEADERS}
-	${BRIDGE_HEADERS}
 	${METALCPP_HEADERS}
 )
 
 set(SOURCES
-	${BRIDGE_SOURCES}
 	${METALCPP_SOURCES}
 )
 
@@ -98,7 +83,6 @@ target_link_libraries(CE_Apple PRIVATE
 
 # Vendor libraries
 target_link_libraries(CE_Apple PUBLIC
-	CE_Vendor_ImGui
 	CE_Vendor_MetalCpp
 )
 

@@ -4,11 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(SOURCES
 	src/Events/ApplicationEventTests.cpp
+	src/Events/EventMacrosTests.cpp
 	src/Events/EventTests.cpp
 	src/Events/GenericEventTests.cpp
 	src/Events/KeyEventTests.cpp

@@ -4,12 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-10-30
+// Updated: 2026-11-25
 //
 
 #include "Core/Window/Platforms/Mac/MacMenuBar.hpp"
 
 #include "Core/Application/Application.hpp"
+#include "Core/Config/Config.hpp"
 #include "Core/Window/I_Window.hpp"
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
@@ -61,11 +62,14 @@ void OnToggleVSync(void*, SEL, const NS::Object*) {
 	// Written back to the configuration as well as applied, because the configuration is what the run loop's pacing
 	// and the next window are built from - applying it to the renderer alone would leave the two disagreeing until
 	// something else wrote the flag.
-	auto windowProps = Utility::Config::GetWindowProps();
-	windowProps.VSync = not windowProps.VSync;
-	Utility::Config::SetWindowProps(windowProps);
+	// Read and flipped under one lock (UpdateWindowProps): a Get followed by a Set could lose a write made in between.
+	bool vSync = false;
+	Core::Config::UpdateWindowProps([&vSync](Types::WindowProps& windowProps) {
+		windowProps.VSync = not windowProps.VSync;
+		vSync = windowProps.VSync;
+	});
 
-	Application::Get().SetVSync(windowProps.VSync);
+	Application::Get().SetVSync(vSync);
 }
 
 /**

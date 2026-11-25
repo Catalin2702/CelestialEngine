@@ -1,18 +1,18 @@
 //
-// Module: CelestialEngine/Engine/Tests/Modules/Utility/ImGui
+// Module: CelestialEngine/Engine/Tests/Modules/Core/Layers/ImGui
 // File: ImGuiKeyTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-11-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
-#include <Utility/ImGui/ImGui.hpp>
+#include <Core/Layers/ImGui/ImGuiHelpers.hpp>
 
 #include <gtest/gtest.h>
 
 using namespace CE::Types;
-using namespace CE::Utility;
+using namespace CE::Core;
 
 namespace {
 

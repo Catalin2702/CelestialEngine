@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 enable_testing()
@@ -17,11 +17,6 @@ set(SOURCES
 		src/Apple/MetalCpp/AppKit/NsViewEventDispatcherTests.cpp
 		src/Apple/MetalCpp/AppKit/NsWindowEventDispatcherTests.cpp
 		src/Apple/MetalCpp/MetalKit/MtkViewDelegateTests.cpp
-	>
-
-	# The bridge only exists with Metal (CE_RENDER_BACKENDS)
-	$<$<BOOL:${CE_RENDER_METAL}>:
-		src/Apple/Bridge/ImGui/ImGuiBridgeTests.cpp
 	>
 )
 

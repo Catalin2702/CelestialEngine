@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #include "Core/Application/Application.hpp"
 
+#include "Core/Config/Config.hpp"
 #include "Core/Core.hpp"
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
@@ -36,7 +37,8 @@ namespace CE::Core {
 
 namespace {
 
-const Types::WindowProps& Props() { return Utility::Config::GetWindowProps(); }
+// A copy each time (Config hands out no references, see Config.hpp); called a handful of times outside the frame loop.
+Types::WindowProps Props() { return Config::GetWindowProps(); }
 
 }
 

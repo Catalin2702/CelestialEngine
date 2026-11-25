@@ -1,13 +1,13 @@
 //
-// Module: CelestialEngine/Engine/Tests/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Tests/Modules/Core/CMD
 // File: WindowCMDTests.cpp
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
-#include <Utility/CMD/Window.hpp>
+#include <Core/CMD/Window.hpp>
 
 #include <Tools/Tools.hpp>
 #include <Types/Window/WindowProps.hpp>
@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 
-using namespace CE::Utility;
+using namespace CE::Core;
 using namespace CE::Tools;
 using namespace CE::Types;
 

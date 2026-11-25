@@ -1,22 +1,22 @@
 //
-// Module: CelestialEngine/Engine/Modules/Utility/CMD
+// Module: CelestialEngine/Engine/Modules/Core/CMD
 // File: Window.hpp
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-03
+// Updated: 2026-11-25
 //
 
 #pragma once
 
-#ifndef CE_UTILITY_CMD_WINDOW_HPP
-#define CE_UTILITY_CMD_WINDOW_HPP
+#ifndef CE_CORE_CMD_WINDOW_HPP
+#define CE_CORE_CMD_WINDOW_HPP
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Window/WindowProps.hpp"
 
 
-namespace CE::Utility {
+namespace CE::Core {
 
 /**
  * @brief Parses the window options out of the command-line arguments
@@ -39,7 +39,7 @@ namespace CE::Utility {
  *			by ValidateWindowProps. Nothing is stored either - InitFromCommandLine (CMD/CommandLine.hpp) is what parses,
  *			validates and hands the result to Config, which is where the rest of the engine reads it from.
  */
-[[nodiscard]] CE_UTILITY_API Types::WindowProps ParseWindowArgs(int argc, const char* argv[]);
+[[nodiscard]] CE_CORE_API Types::WindowProps ParseWindowArgs(int argc, const char* argv[]);
 
 /**
  * @brief Checks that the engine can actually open the window the properties describe
@@ -49,8 +49,8 @@ namespace CE::Utility {
  * @details Run once at startup by InitFromCommandLine, before anything is built from the properties: the factories would fail too, but later,
  *			one at a time, and without the list of what the build does offer.
  */
-CE_UTILITY_API void ValidateWindowProps(const Types::WindowProps& windowProps);
+CE_CORE_API void ValidateWindowProps(const Types::WindowProps& windowProps);
 
 }
 
-#endif //CE_UTILITY_CMD_WINDOW_HPP
+#endif //CE_CORE_CMD_WINDOW_HPP

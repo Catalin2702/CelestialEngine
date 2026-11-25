@@ -4,12 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalLayer.hpp"
 
-#include "Apple/Bridge/ImGui/ImGuiBridge.h"
+#include "Core/Layers/ImGui/Platforms/Mac/Metal/ImGuiMetalBridge.h"
 #include "Core/Core.hpp"
 #include "Events/Events.hpp"
 #include "IO/FileSystem/FileSystem.hpp"
@@ -17,8 +17,8 @@
 #include "RHI/Swapchain/Platforms/Mac/Metal/MetalSwapchain.hpp"
 #include "RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Types/Build/Build.hpp"
-#include "Utility/Config/Config.hpp"
-#include "Utility/ImGui/ImGui.hpp"
+#include "Core/Config/Config.hpp"
+#include "Core/Layers/ImGui/ImGuiHelpers.hpp"
 
 #include <Metal/Metal.hpp>
 
@@ -43,17 +43,17 @@ void ImGuiMetalLayer::OnRender() const {
 	if (not _currentFrameStarted) [[unlikely]]
 		return;
 
-	const auto& windowProps = Utility::Config::GetWindowProps();
+	const auto windowProps = Core::Config::GetWindowProps();
 
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Test Window");
-	Utility::ImguiText("W-API: {}", windowProps.windowApi);
-	Utility::ImguiText("G-API: {}", windowProps.graphicsApi);
-	Utility::ImguiText("Build: {}", Types::GetCurrentBuildTypeString().c_str());
-	Utility::ImguiText("FPS: {:.1f}", ImGui::GetIO().Framerate);
-	Utility::ImguiText("Delta: {:.5f} s", _deltaTime);
+	Core::ImguiText("W-API: {}", windowProps.windowApi);
+	Core::ImguiText("G-API: {}", windowProps.graphicsApi);
+	Core::ImguiText("Build: {}", Types::GetCurrentBuildTypeString().c_str());
+	Core::ImguiText("FPS: {:.1f}", ImGui::GetIO().Framerate);
+	Core::ImguiText("Delta: {:.5f} s", _deltaTime);
 	ImGui::End();
 
 	static bool show = true;
@@ -121,7 +121,7 @@ void ImGuiMetalLayer::Begin(const f32 deltaTime) {
 
 	_frameContext.renderCommandEncoder = _frameContext.commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 
-	Native::ImGuiMetalNewFrame(renderPassDescriptor.get());
+	ImGuiMetalNewFrame(renderPassDescriptor.get());
 
 	ImGui::GetIO().DeltaTime = _deltaTime > 0.0f ? _deltaTime : 1.0f / 60.0f;
 
@@ -134,7 +134,7 @@ void ImGuiMetalLayer::End() {
 		return;
 
 	ImGui::Render();
-	Native::ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
+	ImGuiMetalRenderDrawData(ImGui::GetDrawData(), _frameContext.commandBuffer, _frameContext.renderCommandEncoder);
 
 	_frameContext.renderCommandEncoder->endEncoding();
 
@@ -155,7 +155,7 @@ void ImGuiMetalLayer::_Init() {
 
 		// The layout is the user's, so it lives in the writable per-user mount. Without that mount the path is empty
 		// and saving is turned off, rather than ImGui writing next to the executable.
-		Utility::SetImGuiIniFile(io, IO::FileSystem::ToNativePath("config://imgui.ini").value_or(std::filesystem::path{}));
+		Core::SetImGuiIniFile(io, IO::FileSystem::ToNativePath("config://imgui.ini").value_or(std::filesystem::path{}));
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -185,7 +185,7 @@ void ImGuiMetalLayer::_Init() {
 
 		// The backend builds its font atlas and its buffer pool on this device, and never touches the engine's RHI -
 		// which is why ImGui needs no I_Texture and no 16-bit index buffer to run here.
-		Native::ImGuiMetalInit(_graphicDevice->GetDevice());
+		ImGuiMetalInit(_graphicDevice->GetDevice());
 
 		const auto [width, height] = _window->get().GetFrameSize();
 		const auto scale = _window->get().GetContentScale();
@@ -211,7 +211,7 @@ void ImGuiMetalLayer::_Shutdown() {
 		return;
 	_initialized = false;
 
-	Native::ImGuiMetalShutdown();
+	ImGuiMetalShutdown();
 	ImGui::DestroyContext();
 }
 
@@ -247,7 +247,7 @@ void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& eve
 	if (Input::IsCursorCaptured())
 		return;
 
-	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Core::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -255,7 +255,7 @@ void ImGuiMetalLayer::_OnMouseButtonPressed(Events::MouseButtonPressedEvent& eve
 }
 
 void ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& event) const {
-	const auto button = Utility::ImGuiKeyFromMouseButton(event.GetMouseButton());
+	const auto button = Core::ImGuiKeyFromMouseButton(event.GetMouseButton());
 	if (button >= ImGuiMouseButton_COUNT) [[unlikely]]
 		return;
 
@@ -263,7 +263,7 @@ void ImGuiMetalLayer::_OnMouseButtonReleased(Events::MouseButtonReleasedEvent& e
 }
 
 void ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
-	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Core::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 
@@ -271,7 +271,7 @@ void ImGuiMetalLayer::_OnKeyPressed(Events::KeyPressedEvent& event) const {
 }
 
 void ImGuiMetalLayer::_OnKeyReleased(Events::KeyReleasedEvent& event) const {
-	const auto key = Utility::ImGuiKeyFromKeyboard(event.GetKeyCode());
+	const auto key = Core::ImGuiKeyFromKeyboard(event.GetKeyCode());
 	if (key == ImGuiKey_None) [[unlikely]]
 		return;
 

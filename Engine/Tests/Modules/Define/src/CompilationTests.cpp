@@ -4,69 +4,17 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
 // Include the macros we want to test
 #include <Define/Define.hpp>
-#include <Events/Events.hpp>
-#include <Types/Types.hpp>
 
 #include <functional>
 #include <type_traits>
 #include <gtest/gtest.h>
 
-using namespace CE::Events;
-using namespace CE::Types;
-
 namespace {
-
-// Mock Event Classes for testing
-class TestWindowCloseEvent: public I_Event {
-public:
-	explicit TestWindowCloseEvent(const bool isMutable = true): I_Event(isMutable) {}
-
-	EVENT_CLASS_TYPE(WindowClose)
-	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
-};
-
-class TestKeyPressedEvent: public I_Event {
-public:
-	explicit TestKeyPressedEvent(const bool isMutable = true): I_Event(isMutable) {}
-
-	EVENT_CLASS_TYPE(KeyPressed)
-	EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput)
-};
-
-// Mock render/window classes exercising the API identification macros
-class TestRenderContext {
-public:
-	virtual ~TestRenderContext() = default;
-	[[nodiscard]] virtual CE::Types::GraphicsApi GetGraphicsApi() const = 0;
-};
-
-class TestOpenGlContext final: public TestRenderContext {
-public:
-	RENDER_API_TYPE(OpenGL)
-};
-
-class TestWindow {
-public:
-	virtual ~TestWindow() = default;
-	[[nodiscard]] virtual WindowApi GetWindowApi() const = 0;
-};
-
-template <WindowApi Api>
-class TestWindowBase: public TestWindow {
-public:
-	[[nodiscard]] WindowApi GetWindowApi() const override { return _api; }
-
-private:
-	static constexpr WindowApi _api = Api;
-};
-
-class TestGlfwWindow final: public TestWindowBase<WindowApi::GLFW> {
-};
 
 // Mock class for testing BIND_FN macros
 class TestCallbackClass {
@@ -154,67 +102,6 @@ TEST(DefineCompilationTests, BIT_Macro_BitwiseOperations) {
 }
 
 // ============================================================================
-// EVENT_CLASS_TYPE Macro Compilation Tests
-// ============================================================================
-
-TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesStaticMethod) {
-	// Verify that GetStaticType() is callable and returns correct type
-	const auto staticType = TestWindowCloseEvent::GetStaticType();
-	EXPECT_EQ(staticType, EventType::WindowClose);
-
-	// Verify that it's truly static (callable without instance)
-	static_assert(std::is_same_v<
-					  decltype(TestWindowCloseEvent::GetStaticType()),
-					  EventType>,
-		"GetStaticType should return EventType");
-}
-
-TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesVirtualMethod) {
-	// Verify that GetEventType() is virtual and returns correct value
-	const TestWindowCloseEvent event;
-	EXPECT_EQ(event.GetEventType(), EventType::WindowClose);
-
-	// Verify polymorphic behavior
-	const auto* const basePtr = &event;
-	EXPECT_EQ(basePtr->GetEventType(), EventType::WindowClose);
-}
-
-TEST(DefineCompilationTests, EVENT_CLASS_TYPE_Macro_GeneratesGetName) {
-	const TestWindowCloseEvent event;
-	EXPECT_STREQ(event.GetName(), "WindowClose");
-
-	const TestKeyPressedEvent keyEvent;
-	EXPECT_STREQ(keyEvent.GetName(), "KeyPressed");
-}
-
-// ============================================================================
-// EVENT_CLASS_CATEGORY Macro Compilation Tests
-// ============================================================================
-
-TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_SingleCategory) {
-	const TestWindowCloseEvent event;
-	const auto flags = event.GetCategoryFlags();
-
-	EXPECT_EQ(flags, EventCategory::EventCategoryApplication);
-	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryApplication));
-	EXPECT_FALSE(HasAnyFlags(flags, EventCategory::EventCategoryInput));
-}
-
-TEST(DefineCompilationTests, EVENT_CLASS_CATEGORY_Macro_MultipleCategories) {
-	const TestKeyPressedEvent event;
-	const auto flags = event.GetCategoryFlags();
-
-	// Should have both Keyboard and Input categories
-	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryKeyboard));
-	EXPECT_TRUE(HasAnyFlags(flags, EventCategory::EventCategoryInput));
-	EXPECT_FALSE(HasAnyFlags(flags, EventCategory::EventCategoryApplication));
-
-	// Verify exact flags value
-	constexpr auto expectedFlags = EventCategory::EventCategoryKeyboard | EventCategory::EventCategoryInput;
-	EXPECT_EQ(flags, expectedFlags);
-}
-
-// ============================================================================
 // BIND_FN_NO_PARAMS Macro Compilation Tests
 // ============================================================================
 
@@ -282,30 +169,6 @@ TEST(DefineCompilationTests, BIND_FN_ONE_PARAM_Macro_WorksWithStdFunction) {
 }
 
 // ============================================================================
-// Type Trait Tests - Advanced Compile-Time Verification
-// ============================================================================
-
-TEST(DefineCompilationTests, TypeTraits_EventClassHasRequiredMethods) {
-	// Verify that EVENT_CLASS_TYPE macro generates expected method signatures
-
-	// Check for GetStaticType
-	static_assert(std::is_invocable_r_v<EventType, decltype(&TestWindowCloseEvent::GetStaticType)>,
-		"GetStaticType should be callable and return EventType");
-
-	// Check for GetEventType
-	static_assert(std::is_invocable_r_v<EventType, decltype(&TestWindowCloseEvent::GetEventType), TestWindowCloseEvent>,
-		"GetEventType should be callable on instance and return EventType");
-
-	// Check for GetName
-	static_assert(std::is_invocable_r_v<const char*, decltype(&TestWindowCloseEvent::GetName), TestWindowCloseEvent>,
-		"GetName should be callable on instance and return const char*");
-
-	// Check for GetCategoryFlags
-	static_assert(std::is_invocable_r_v<EventCategory, decltype(&TestWindowCloseEvent::GetCategoryFlags), TestWindowCloseEvent>,
-		"GetCategoryFlags should be callable on instance and return int");
-}
-
-// ============================================================================
 // Negative Compilation Tests (via static_assert)
 // ============================================================================
 
@@ -318,34 +181,6 @@ TEST(DefineCompilationTests, TypeTraits_VerifyConstexprContext) {
 	constexpr auto flags = compute_flags();
 	static_assert(flags == (1 | 8 | 32), "Should be usable in constexpr context");
 	EXPECT_EQ(flags, 41);
-}
-
-// ============================================================================
-// RENDER_API_TYPE / WINDOW_API_TYPE Macro Compilation Tests
-// ============================================================================
-
-TEST(DefineCompilationTests, RENDER_API_TYPE_Macro_GeneratesStaticAndVirtualMethods) {
-	using CE::Types::GraphicsApi;
-
-	EXPECT_EQ(TestOpenGlContext::GetStaticType(), GraphicsApi::OpenGL);
-
-	const TestOpenGlContext context;
-	EXPECT_EQ(context.GetGraphicsApi(), GraphicsApi::OpenGL);
-
-	// The override must be reachable through the base class
-	const TestRenderContext* basePtr = &context;
-	EXPECT_EQ(basePtr->GetGraphicsApi(), GraphicsApi::OpenGL);
-}
-
-TEST(DefineCompilationTests, WINDOW_API_TYPE_Macro_GeneratesStaticAndVirtualMethods) {
-	using CE::Types::WindowApi;
-
-	const TestGlfwWindow window;
-	EXPECT_EQ(window.GetWindowApi(), WindowApi::GLFW);
-
-	// The override must be reachable through the base class
-	const TestWindow* basePtr = &window;
-	EXPECT_EQ(basePtr->GetWindowApi(), WindowApi::GLFW);
 }
 
 // ============================================================================

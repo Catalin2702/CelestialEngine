@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
 #include "Core/Window/Platforms/Mac/Cocoa/CocoaWindow.hpp"
 
+#include "Core/Config/Config.hpp"
 #include "Core/Hub/Events/Platforms/Mac/Cocoa/CocoaEventHubDispatcher.hpp"
 #include "Tools/Tools.hpp"
 #include "Utility/Utility.hpp"
@@ -237,7 +238,7 @@ void CocoaWindow::_CreateView() {
 		throw std::runtime_error(error);
 	}
 
-	const auto& windowProps = Utility::Config::GetWindowProps();
+	const auto windowProps = Core::Config::GetWindowProps();
 	const CGRect frame = {
 		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}
@@ -384,7 +385,7 @@ void CocoaWindow::ToggleFullScreen() {
 }
 
 void CocoaWindow::_InitWindow() {
-	const auto& windowProps = Utility::Config::GetWindowProps();
+	const auto windowProps = Core::Config::GetWindowProps();
 	const CGRect frame = {
 		.origin = {.x = static_cast<CGFloat>(0), .y = static_cast<CGFloat>(0)},
 		.size = {.width = static_cast<CGFloat>(windowProps.width), .height = static_cast<CGFloat>(windowProps.height)}

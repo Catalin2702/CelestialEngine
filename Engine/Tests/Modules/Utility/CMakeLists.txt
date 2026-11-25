@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-29
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 enable_testing()
@@ -12,19 +12,10 @@ enable_testing()
 set(SOURCES
 	src/UtilityHeadersTests.cpp
 
-	src/CMD/CommandLineTests.cpp
-	src/CMD/WindowCMDTests.cpp
-	src/Config/ConfigTests.cpp
 	src/Delegate/DelegateTests.cpp
 	src/Delegate/DispatcherTests.cpp
-	src/ImGui/ImGuiKeyTests.cpp
 	src/Manipulation/StringManipulationTests.cpp
 	src/Time/ChronometerTests.cpp
-
-	# The GLFW key mappings, compiled with a GLFW window (CE_WINDOW_GLFW)
-	$<$<BOOL:${CE_WINDOW_GLFW}>:
-		src/ImGui/ImGuiTests.cpp
-	>
 )
 
 add_executable(CE_TestsUtility
@@ -34,13 +25,6 @@ add_executable(CE_TestsUtility
 set_target_properties(CE_TestsUtility PROPERTIES
 	LINKER_LANGUAGE CXX
 )
-
-# ImGuiTests.cpp includes GLFW for the key constants; CE_Utility links it privately, so the test brings its own.
-if (CE_WINDOW_GLFW)
-	target_link_libraries(CE_TestsUtility PRIVATE
-		CE_Vendor_Glfw
-	)
-endif ()
 
 # Modules
 target_link_libraries(CE_TestsUtility PRIVATE

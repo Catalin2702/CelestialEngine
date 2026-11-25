@@ -4,11 +4,12 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-17
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
 #include "Core/Window/Platforms/Common/Glfw/GlfwWindow.hpp"
 
+#include "Core/Config/Config.hpp"
 #include "Core/Hub/Events/Platforms/Common/Glfw/GlfwEventHubDispatcher.hpp"
 #include "Tools/Tools.hpp"
 #include "Types/Window/WindowProps.hpp"
@@ -348,7 +349,7 @@ u32 GlfwWindow::GetRefreshRate() const {
 }
 
 void GlfwWindow::_InitWindow(const GlfwPlatform& platform) {
-	const auto& windowProps = Utility::Config::GetWindowProps();
+	const auto windowProps = Core::Config::GetWindowProps();
 
 	platform.ApplyWindowHints(windowProps.graphicsApi);
 
