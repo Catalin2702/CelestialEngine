@@ -13,13 +13,13 @@ Engine/Tests/
 └── Modules/
     ├── Core/       # Test per CE_Core (CMD, Config, Input, Layers e helper ImGui, bridge ImGui-Metal, Hub e codici tasto GLFW/Cocoa,
     │               #   camera, ForwardRenderer con un RHI finto)
-    ├── Define/     # Test per CE_Define (BIT, BIND_FN_*)
+    ├── Define/     # Test per CE_Define (BIND_FN_*)
     ├── Events/     # Test per CE_Events (eventi e macro EVENT_CLASS_*)
     ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (dispatcher AppKit/MetalKit)
     ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL)
     ├── Tools/      # Test per CE_Tools (logging)
-    ├── Types/      # Test per CE_Types (key code, render, window, build) - niente conversioni verso i backend
+    ├── Types/      # Test per CE_Types (BIT, key code, render, window, build) - niente conversioni verso i backend
     └── Utility/    # Test per CE_Utility (Delegate, Dispatcher, String, Time; che l'umbrella non porti dentro ImGui o Core)
 ```
 

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-16
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 set(HEADERS
@@ -57,25 +57,8 @@ target_link_libraries(CE_Tools PRIVATE
 	CE_Internal
 )
 
-# The name of the Dist log: its folder and its file (<user log dir>/<name>/<name>.log, see Tools/Log/Log.cpp). Taken from
-# the top-level project() - CMAKE_PROJECT_NAME is the project of the CMakeLists.txt that drives the whole build, so it
-# is "CelestialEngine" here and becomes the game's or the editor's name once one of them includes the engine with
-# add_subdirectory(). CE_LOG_NAME overrides it; empty, the default, means "use the top-level project name".
-set(CE_LOG_NAME "" CACHE STRING "Name of the Dist log folder and file; empty uses the top-level project name (CMAKE_PROJECT_NAME)")
-
-if (CE_LOG_NAME)
-	set(CE_RESOLVED_LOG_NAME "${CE_LOG_NAME}")
-else ()
-	set(CE_RESOLVED_LOG_NAME "${CMAKE_PROJECT_NAME}")
-endif ()
-
-# It becomes a path component and a C string literal, so separators and quotes are refused here rather than producing a
-# log in an unexpected folder, or a compile error far from the cause.
-if (CE_RESOLVED_LOG_NAME STREQUAL "" OR CE_RESOLVED_LOG_NAME MATCHES "[/\\\\\":]")
-	message(FATAL_ERROR "Log name '${CE_RESOLVED_LOG_NAME}' is not usable as a folder and file name (set CE_LOG_NAME to override it).")
-endif ()
-
+# The Dist log's name is not set here: CE_Tools is built once for every executable of the build, so the name comes at run
+# time from each application's main() (Log::Init(CE_APPLICATION_NAME), see Tools/Log/Log.hpp).
 target_compile_definitions(CE_Tools PRIVATE
 	CE_TOOLS_EXPORTS
-	CE_LOG_NAME="${CE_RESOLVED_LOG_NAME}"
 )

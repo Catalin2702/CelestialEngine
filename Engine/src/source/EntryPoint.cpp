@@ -84,7 +84,9 @@ void Report(const char* message) noexcept {
 int main(const int argc, const char* argv[]) {
 	int code = 0;
 
-	CE::Tools::Log::Init();
+	// Named after this executable (CE_APPLICATION_NAME, from ce_configure_application), like its config:// and cache://
+	// folders: in Dist the critical log goes to <user log dir>/<application>/<application>.log.
+	CE::Tools::Log::Init(CE_APPLICATION_NAME);
 	std::set_terminate(&_OnTerminate);
 
 	try {

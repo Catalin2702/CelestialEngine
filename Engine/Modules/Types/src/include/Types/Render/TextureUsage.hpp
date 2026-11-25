@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-05
 // Updated by: Catalin Chirosca
-// Updated: 2026-09-05
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -12,7 +12,6 @@
 #ifndef CE_CORE_TYPES_RENDER_TEXTUREUSAGE_HPP
 #define CE_CORE_TYPES_RENDER_TEXTUREUSAGE_HPP
 
-#include "Define/Types.hpp"
 #include "Types/Var/Vars.hpp"
 
 #include <format>

@@ -71,9 +71,11 @@ set_target_properties(CE_Apple PROPERTIES
 	SOVERSION ${PROJECT_VERSION}
 )
 
+# Define for the export macros its headers use, Utility for the Dispatcher its delegates expose. No Tools: nothing in
+# CE_Apple logs.
 target_link_libraries(CE_Apple PUBLIC
 	CE_Config
-	CE_Tools
+	CE_Define
 	CE_Utility
 )
 

@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -77,6 +77,7 @@ target_link_libraries(CE_Engine INTERFACE
 	CE_RHI
 	CE_Tools
 	CE_Types
+	CE_Utility
 )
 
 # Platform specific modules

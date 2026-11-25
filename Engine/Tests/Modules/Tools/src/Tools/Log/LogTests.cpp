@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-02
+// Updated: 2026-11-25
 //
 
 #include <Tools/Tools.hpp>
@@ -43,6 +43,36 @@ TEST_F(LogTest, Init_CallInitMultipleTimes_NoErrors) {
 		Log::Init();
 		Log::Init();
 	});
+	Log::Shutdown();
+}
+
+/**
+ * @brief Test that a name unusable as a folder is not an error, only no log file
+ * @details In Dist the name picks the log file; an empty one (the tests' default) or one with a separator only means no
+ *			file, never an exception - Init runs before main's try block. Only unusable names on purpose: a usable one
+ *			would create a real folder under ~/Library/Logs when the Dist tests run. The usable path is exercised by the
+ *			application itself (EntryPoint.cpp).
+ */
+TEST_F(LogTest, Init_WithUnusableApplicationName_NoErrors) {
+	for (const auto* name: {"", ".", "..", "bad/name", "bad\\name", "bad:name", "bad\"name"}) {
+		EXPECT_NO_THROW(Log::Init(name)) << "name: " << name;
+		EXPECT_TRUE(Log::GetCoreLogger()) << "name: " << name;
+		EXPECT_TRUE(Log::GetClientLogger()) << "name: " << name;
+		Log::Shutdown();
+	}
+}
+
+/**
+ * @brief Test that a second Init, with or without a name, keeps the loggers the first one made
+ */
+TEST_F(LogTest, Init_SecondCallWithOtherName_KeepsFirstLoggers) {
+	Log::Init("first/unusable");
+	const auto* const core = Log::GetCoreLogger().get();
+
+	Log::Init("second:unusable");
+	Log::Init();
+
+	EXPECT_EQ(Log::GetCoreLogger().get(), core);
 	Log::Shutdown();
 }
 

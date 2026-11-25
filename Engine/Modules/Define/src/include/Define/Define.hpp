@@ -11,8 +11,9 @@
  * @file Define.hpp
  * @brief Umbrella header for the Define module
  * @details One include for the macros every module may use: export macros, platform and build configuration,
- *			binding, bits and logging. A macro that names a type of a higher module lives in that module instead
- *			(EVENT_CLASS_TYPE in Events/EventMacros.hpp), since Define links nothing but CE_Config.
+ *			binding and logging. A macro that names a type of a higher module lives in that module instead
+ *			(EVENT_CLASS_TYPE in Events/EventMacros.hpp), since Define links nothing but CE_Config. BIT is in
+ *			Types/Var/Vars.hpp, next to the integer aliases.
  */
 
 #pragma once
@@ -24,6 +25,5 @@
 #include "Define/Config.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Define/Log.hpp"
-#include "Define/Types.hpp"
 
 #endif //CE_DEFINE_DEFINE_HPP

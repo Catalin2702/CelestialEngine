@@ -44,11 +44,11 @@ Types::WindowProps Config::GetWindowProps() {
 	return windowProps;
 }
 
-void Config::SetWindowProps(Types::WindowProps windowProps) {
-	auto& [mutex, _windowProps] = Store();
+void Config::SetWindowProps(Types::WindowProps newWindowProps) {
+	auto& [mutex, windowProps] = Store();
 	const std::unique_lock lock{mutex};
 	// Moved, not copied: the only work done under the lock is swapping the title's storage.
-	_windowProps = std::move(windowProps);
+	windowProps = std::move(newWindowProps);
 }
 
 void Config::_UpdateWindowProps(void (*invoke)(void*, Types::WindowProps&), void* callable) {

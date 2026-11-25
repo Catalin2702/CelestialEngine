@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -19,6 +19,17 @@
 #include <concepts>
 #include <cstdint>
 #include <type_traits>
+
+/**
+ * @def BIT(x)
+ * @brief Creates a bit mask by shifting 1 left by x positions
+ * @param x The bit position (0-based)
+ * @details BIT(0) = 1, BIT(1) = 2, BIT(2) = 4. Used for flag enums (event categories, graphics/window APIs, texture
+ *			usages). A macro rather than a constexpr function because it appears in enumerator initialisers of every
+ *			underlying type, where it takes the type of the expression it sits in. It lives with the integer aliases it
+ *			is used next to; it used to be Define/Types.hpp, a name easily mistaken for this module.
+ */
+#define BIT(x) (1 << (x))
 
 using u8 = uint8_t;
 using i8 = int8_t;

@@ -340,7 +340,6 @@ target_link_libraries(CE_Core PUBLIC
 	CE_Config
 	CE_Define
 	CE_Events
-	CE_IO
 	CE_Native
 	CE_RHI
 	CE_Tools
@@ -350,15 +349,19 @@ target_link_libraries(CE_Core PUBLIC
 
 target_link_libraries(CE_Core PRIVATE
 	CE_Internal
+	# No public header of Core includes IO (main() and the ImGui layers use it from .cpp files); clients that want the
+	# file system get it from CE_Engine.
+	CE_IO
 	# Only Image.cpp includes stb_image.h, and no public header does: PRIVATE keeps it off the include path of every
 	# target that links CE_Core.
 	CE_Vendor_Stb
 )
 
 # Vendor libraries
+# ImGui is public: Core/Layers/ImGui/ImGuiHelpers.hpp includes imgui.h. spdlog is not linked here: Core never names it,
+# and the logging macros bring it through CE_Tools.
 target_link_libraries(CE_Core PUBLIC
 	CE_Vendor_ImGui
-	CE_Vendor_SpdLog
 )
 
 # Each backend's third parties exist only when the backend is compiled in (CE_RENDER_BACKENDS): GLFW and its ImGui

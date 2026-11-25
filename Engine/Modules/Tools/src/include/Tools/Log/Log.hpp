@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/Define.hpp"
 
 #include <memory>
+#include <string_view>
 #include <spdlog/spdlog.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <spdlog/fmt/ostr.h>
@@ -33,6 +34,7 @@ class CE_TOOLS_API Log {
 public:
 	/**
 	 * @brief Initializes the logging system
+	 * @param applicationName Names the Dist log's folder and file; empty (the default, and what tests pass) means no file
 	 * @details Creates and configures both core and client loggers with appropriate
 	 *			formatting patterns and output sinks. Must be called before using any
 	 *			logging macros (CE_CORE_*, CE_*).
@@ -43,12 +45,18 @@ public:
 	 *			- macOS:   ~/Library/Logs/<name>/<name>.log
 	 *			- Windows: %LOCALAPPDATA%/<name>/Logs/<name>.log
 	 *			- Linux:   $XDG_STATE_HOME/<name>/<name>.log (default ~/.local/state)
-	 *			<name> is fixed at build time: the top-level CMake project's name (CelestialEngine in this repository,
-	 *			the game's once it includes the engine), or CE_LOG_NAME when set - see Tools/CMakeLists.txt.
+	 *			<name> is the application's: main() passes CE_APPLICATION_NAME, the OUTPUT_NAME given to
+	 *			ce_configure_application - the same name IO::FileSystem uses for config:// and cache://, so each
+	 *			application built on the engine keeps its own log. It is chosen at run time rather than baked into
+	 *			CE_Tools, which is built once for every executable of the build.
+	 *			Without a name - the test executables - Dist logs to stderr only, so running the tests never appends to
+	 *			an application's log. A name that cannot be a folder name (empty, ".", "..", or containing / \ : ")
+	 *			is treated the same way.
 	 *			Every critical message is flushed at once - it is usually the last thing the process says. A file that
 	 *			cannot be opened costs only the file sink: stderr still works and Init never throws.
+	 *			Calling it again while the loggers exist does nothing: the first name wins.
 	 */
-	static void Init();
+	static void Init(std::string_view applicationName = {});
 
 	/**
 	 * @brief Terminates the logging system

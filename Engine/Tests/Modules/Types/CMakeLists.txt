@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-08-13
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 enable_testing()
@@ -25,6 +25,10 @@ set(RENDER_SOURCES
 	src/Types/Render/ShaderTests.cpp
 )
 
+set(VAR_SOURCES
+	src/Types/Var/VarsTests.cpp
+)
+
 set(WINDOW_SOURCES
 	src/Types/Window/CursorModeTests.cpp
 	src/Types/Window/WindowPropsTests.cpp
@@ -34,6 +38,7 @@ add_executable(CE_TestsTypes
 	${BUILD_SOURCES}
 	${KEYCODE_SOURCES}
 	${RENDER_SOURCES}
+	${VAR_SOURCES}
 	${WINDOW_SOURCES}
 )
 

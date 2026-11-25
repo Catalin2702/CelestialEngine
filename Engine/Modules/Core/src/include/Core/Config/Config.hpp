@@ -64,9 +64,9 @@ public:
 public:
 	/**
 	 * @brief Replaces the stored window properties
-	 * @param windowProps The new window configuration, moved in under the lock
+	 * @param newWindowProps The new window configuration, moved in under the lock
 	 */
-	static void SetWindowProps(Types::WindowProps windowProps);
+	static void SetWindowProps(Types::WindowProps newWindowProps);
 
 	/**
 	 * @brief Changes the stored window properties in place, reading and writing them under one exclusive lock

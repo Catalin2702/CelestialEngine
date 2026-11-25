@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-16
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-20
+// Updated: 2026-11-25
 //
 
 #include "Tools/Log/Log.hpp"
@@ -16,17 +16,14 @@
 	#include <cstdlib>
 	#include <filesystem>
 	#include <optional>
+	#include <string>
 	#include <vector>
 #else
 	#include <spdlog/sinks/stdout_color_sinks.h>
 #endif
 
 #include <cassert>
-
-// The Dist log's folder and file name: the top-level project's name, or CE_LOG_NAME when set (Tools/CMakeLists.txt).
-#ifndef CE_LOG_NAME
-	#error "CE_LOG_NAME is not defined - it is set on CE_Tools by Engine/Modules/Tools/CMakeLists.txt."
-#endif
+#include <string_view>
 
 
 namespace CE::Tools {
@@ -46,35 +43,46 @@ std::optional<std::filesystem::path> EnvPath(const char* name) {
 	return std::filesystem::path(value);
 }
 
+/// Whether a name can be one folder and one file name: not empty, not "." or "..", none of / \ : ".
+/// The same rule ce_configure_application applies to OUTPUT_NAME at configure time, checked again here because Init
+/// takes any string.
+bool IsUsableLogName(const std::string_view name) {
+	return not name.empty() and name != "." and name != ".." and name.find_first_of("/\\:\"") == std::string_view::npos;
+}
+
 /// Where a Dist build keeps its log: the per-user log folder each OS expects. Nothing when no home can be found.
-std::optional<std::filesystem::path> DistLogDirectory() {
+std::optional<std::filesystem::path> DistLogDirectory(const std::string_view name) {
 #if CE_PLATFORM_MACOS
 	if (const auto home = EnvPath("HOME"))
-		return *home / "Library" / "Logs" / CE_LOG_NAME;
+		return *home / "Library" / "Logs" / name;
 #elif CE_PLATFORM_WINDOWS
 	if (const auto localAppData = EnvPath("LOCALAPPDATA"))
-		return *localAppData / CE_LOG_NAME / "Logs";
+		return *localAppData / name / "Logs";
 #else
 	if (const auto state = EnvPath("XDG_STATE_HOME"))
-		return *state / CE_LOG_NAME;
+		return *state / name;
 	if (const auto home = EnvPath("HOME"))
-		return *home / ".local" / "state" / CE_LOG_NAME;
+		return *home / ".local" / "state" / name;
 #endif
 	return std::nullopt;
 }
 
-/// The sinks both Dist loggers share: stderr always, the log file whenever it can be opened.
-std::vector<spdlog::sink_ptr> MakeDistSinks() {
+/// The sinks both Dist loggers share: stderr always, the application's log file whenever it has a usable name and the
+/// file can be opened.
+std::vector<spdlog::sink_ptr> MakeDistSinks(const std::string_view applicationName) {
 	std::vector<spdlog::sink_ptr> sinks;
 	sinks.push_back(std::make_shared<spdlog::sinks::stderr_sink_mt>());
 
 	// Init runs before main's try block and must not throw: a log file that cannot be created is a lost convenience,
 	// not a reason to stop the application, so the failure only costs this one sink.
+	if (not IsUsableLogName(applicationName))
+		return sinks;
+
 	try {
-		if (const auto directory = DistLogDirectory()) {
+		if (const auto directory = DistLogDirectory(applicationName)) {
 			std::filesystem::create_directories(*directory);
 			sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-				(*directory / (CE_LOG_NAME ".log")).string(), /*truncate*/ false));
+				(*directory / (std::string(applicationName) + ".log")).string(), /*truncate*/ false));
 		}
 	}
 	catch (...) { // NOLINT(bugprone-empty-catch) - stderr is still there, and there is nowhere else to report to
@@ -101,12 +109,12 @@ std::shared_ptr<spdlog::logger> MakeDistLogger(const char* name, const std::vect
 }
 #endif
 
-void Log::Init() {
+void Log::Init(const std::string_view applicationName) {
 #if CE_DIST
 	if (_s_coreLogger and _s_clientLogger) [[unlikely]]
 		return;
 
-	const auto sinks = MakeDistSinks();
+	const auto sinks = MakeDistSinks(applicationName);
 
 	if (not _s_coreLogger) [[likely]]
 		_s_coreLogger = MakeDistLogger("CoreLogger", sinks);
@@ -114,6 +122,8 @@ void Log::Init() {
 	if (not _s_clientLogger) [[likely]]
 		_s_clientLogger = MakeDistLogger("ClientLogger", sinks);
 #else
+	// Debug and Release log to the console only: there is no file, so no name to use.
+	static_cast<void>(applicationName);
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 	if (not _s_coreLogger) [[likely]] {
 		_s_coreLogger = spdlog::stdout_color_mt("CoreLogger");

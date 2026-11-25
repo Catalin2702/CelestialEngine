@@ -14,7 +14,6 @@ set(HEADERS
 	src/include/Define/DynamicLinker.hpp
 	src/include/Define/Log.hpp
 	src/include/Define/LogDetail.hpp
-	src/include/Define/Types.hpp
 
 	# Main
 	src/include/Define/Define.hpp
