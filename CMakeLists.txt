@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -41,7 +41,7 @@ endif()
 # inside project(), and the selection decides which optional ones (glad, GLFW) it has to install at all.
 include("${CMAKE_CURRENT_LIST_DIR}/Engine/cmake/CERenderBackends.cmake")
 
-project(CelestialEngine LANGUAGES CXX VERSION 0.2.4)
+project(CelestialEngine LANGUAGES CXX VERSION 0.2.5)
 
 enable_testing()
 

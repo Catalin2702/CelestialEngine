@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 4.1)
 # Added by Engine/CMakeLists.txt when CE_BUILD_TESTS is on, so the engine macros (CelestialEngineMacros.cmake) and
 # every module target already exist here. The tests belong to the engine: they move with it, and a project that
 # includes the engine gets them - or turns them off - through that one option.
-project(CE_Tests LANGUAGES CXX VERSION 0.2.4)
+project(CE_Tests LANGUAGES CXX VERSION 0.2.5)
 
 include("${CE_ENGINE_CMAKE_DIR}/CETestMacros.cmake")
 

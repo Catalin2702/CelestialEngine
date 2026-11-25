@@ -4,12 +4,12 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 cmake_minimum_required(VERSION 4.1)
 
-project(CE_Sandbox LANGUAGES CXX VERSION 0.2.4)
+project(CE_Sandbox LANGUAGES CXX VERSION 0.2.5)
 
 # The engine's test bed: a plain executable with its sources and include directories, then ce_configure_application
 # (Engine/cmake/CEApplication.cmake) for everything an engine executable needs - shaders, bundle, Info.plist, embedded
