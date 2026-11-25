@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-25
 #
 
 # ce_configure_application(<target>
@@ -14,6 +14,7 @@
 #     [ASSET_CATALOG <dir.xcassets>]     compiled with actool; must hold an "AppIcon" set (default: none)
 #     [INFO_PLIST <template.plist.in>]   default: templates/Info.plist.in next to this file
 #     [ENTITLEMENTS <file.plist>]        default: templates/Entitlements.plist next to this file
+#     [CONTENT <dir>]                    the application's own files, shipped in Resources/Content (resources://)
 #     [NO_ENTRY_POINT]                   the application defines its own main(); EntryPoint.cpp is not added
 # )
 #
@@ -36,6 +37,9 @@
 #   - bundles the shaders of every compiled-in backend (CE_RENDER_BACKENDS): as bundle resources on macOS, copied into
 #     Resources/Engine/Shaders/<API>/ next to the executable elsewhere - Resources/Engine is the engine's, mounted as
 #     engine://, and Resources/Content the application's, mounted as resources:// (IO::FileSystem::Initialize);
+#   - CONTENT: copies every file of <dir> (subfolders kept, hidden files such as .DS_Store skipped) into
+#     Resources/Content, which FileSystem mounts as resources:// - bundle resources on macOS, a copy next to the
+#     executable elsewhere;
 #   - defines CE_APPLICATION_NAME (the OUTPUT_NAME) for the executable's sources: EntryPoint.cpp hands it to the file
 #     system, which keeps this application's user data (config://) in a folder of that name;
 #   - Windows/Linux: DLL/ search path for the module libraries;
@@ -46,10 +50,40 @@
 
 set(CE_APPLICATION_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/templates")
 
+# ce_collect_application_content(<dir> <out_var>)
+#
+# Lists the files of an application's content folder, as paths relative to it, sorted. Hidden files and folders -
+# any path component starting with '.' - are left out: .DS_Store, which Finder drops into every folder it opens, would
+# otherwise be shipped and sealed into the signed bundle. A function of its own so the rule can be tested without
+# configuring an application (Engine/Tests/CMake).
+function(ce_collect_application_content dir out_var)
+	# LIST_DIRECTORIES false: only files, the folders are recreated from their paths. CONFIGURE_DEPENDS: a file added to
+	# or removed from the folder re-runs the configure step at the next build, so the list never goes stale. It only
+	# exists while configuring a project - a script run with cmake -P (the test of this function) has no build to
+	# re-run - so it is left out there.
+	set(_ce_glob_options LIST_DIRECTORIES false RELATIVE "${dir}")
+	if (NOT CMAKE_SCRIPT_MODE_FILE)
+		list(APPEND _ce_glob_options CONFIGURE_DEPENDS)
+	endif ()
+
+	file(GLOB_RECURSE _ce_content_files ${_ce_glob_options} "${dir}/*")
+
+	set(_ce_kept "")
+
+	foreach (_ce_file IN LISTS _ce_content_files)
+		if (NOT _ce_file MATCHES "(^|/)\\.")
+			list(APPEND _ce_kept "${_ce_file}")
+		endif ()
+	endforeach ()
+
+	list(SORT _ce_kept)
+	set(${out_var} "${_ce_kept}" PARENT_SCOPE)
+endfunction()
+
 function(ce_configure_application target)
 	cmake_parse_arguments(PARSE_ARGV 1 ARG
 		"NO_ENTRY_POINT"
-		"OUTPUT_NAME;BUNDLE_NAME;BUNDLE_ID;ASSET_CATALOG;INFO_PLIST;ENTITLEMENTS"
+		"OUTPUT_NAME;BUNDLE_NAME;BUNDLE_ID;ASSET_CATALOG;INFO_PLIST;ENTITLEMENTS;CONTENT"
 		""
 	)
 
@@ -92,11 +126,20 @@ function(ce_configure_application target)
 		set(ARG_ENTITLEMENTS "${CE_APPLICATION_TEMPLATES_DIR}/Entitlements.plist")
 	endif ()
 
-	foreach (_ce_path_arg IN ITEMS ASSET_CATALOG INFO_PLIST ENTITLEMENTS)
+	foreach (_ce_path_arg IN ITEMS ASSET_CATALOG INFO_PLIST ENTITLEMENTS CONTENT)
 		if (ARG_${_ce_path_arg})
 			get_filename_component(ARG_${_ce_path_arg} "${ARG_${_ce_path_arg}}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 		endif ()
 	endforeach ()
+
+	# The application's content: listed now, while the relative paths are known, and installed below with the shaders.
+	set(_ce_content_files "")
+	if (ARG_CONTENT)
+		if (NOT IS_DIRECTORY "${ARG_CONTENT}")
+			message(FATAL_ERROR "ce_configure_application(${target}): CONTENT '${ARG_CONTENT}' is not a directory")
+		endif ()
+		ce_collect_application_content("${ARG_CONTENT}" _ce_content_files)
+	endif ()
 
 	# The shaders of every compiled-in graphics backend (CE_RENDER_BACKENDS), and the targets that produce them. Selected
 	# by the CE_RENDER_* switches rather than by whether the variables are set: those are cache variables, and a
@@ -134,9 +177,28 @@ function(ce_configure_application target)
 		set_target_properties(${target} PROPERTIES
 			MACOSX_BUNDLE TRUE
 		)
+
 		target_sources(${target} PRIVATE
 			${_ce_shader_resources}
 		)
+
+		# Each content file becomes a bundle resource at its own subfolder of Resources/Content. HEADER_FILE_ONLY so a
+		# .c or .metal among them is shipped as data, never compiled as one of the application's sources.
+		foreach (_ce_file IN LISTS _ce_content_files)
+			get_filename_component(_ce_subdir "${_ce_files}" DIRECTORY)
+			set(_ce_location "Resources/Content")
+			if (_ce_subdir)
+				string(APPEND _ce_location "${_ce_subdir}")
+			endif ()
+
+			set_source_files_properties("${ARG_CONTENT}/${_ce_file}" PROPERTIES
+				MACOSX_PACKAGE_LOCATION "${_ce_location}"
+				HEADER_FILE_ONLY TRUE
+			)
+			target_sources(${target} PRIVATE
+				"${ARG_CONTENT}/${_ce_file}"
+			)
+		endforeach ()
 	endif ()
 
 	add_dependencies(${target} ${_ce_shader_targets})
@@ -147,6 +209,13 @@ function(ce_configure_application target)
 	set_property(TARGET ${target} APPEND PROPERTY
 		LINK_DEPENDS ${_ce_shader_resources}
 	)
+
+	# Same for the content: an edited file must reach the bundle and be sealed by a new signature.
+	foreach (_ce_file IN LISTS _ce_content_files)
+		set_property(TARGET ${target} APPEND PROPERTY
+			LINK_DEPENDS "${ARG_CONTENT}/${_ce_file}"
+		)
+	endforeach ()
 
 	if (NOT APPLE)
 		# A plain executable has no bundle to carry its resources, so they are copied next to it, mirroring the macOS
@@ -171,6 +240,16 @@ function(ce_configure_application target)
 				)
 			endforeach ()
 		endif ()
+
+		# The content mirrors the bundle's Resources/Content, subfolders included.
+		foreach (_ce_file IN LISTS _ce_content_files)
+			add_custom_command(TARGET ${target} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					"${ARG_CONTENT}/${_ce_file}"
+					"$<TARGET_FILE_DIR:${target}>/Resources/Content/${_ce_file}"
+				COMMENT "Copying ${_ce_file} to Resources/Content"
+			)
+		endforeach ()
 	endif ()
 
 	set_target_properties(${target} PROPERTIES

@@ -33,4 +33,5 @@ ce_configure_application(CE_Sandbox
 	BUNDLE_NAME "Celestial Engine"
 	BUNDLE_ID "com.celestialengine.app"
 	ASSET_CATALOG "Resources/Assets.xcassets"
+	CONTENT "Content"
 )
