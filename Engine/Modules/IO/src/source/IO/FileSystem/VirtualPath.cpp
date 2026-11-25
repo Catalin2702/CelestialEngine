@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #include "IO/FileSystem/VirtualPath.hpp"
+#include "IO/FileSystem/FileSystem.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -61,6 +62,10 @@ std::expected<VirtualPath, FileSystemError> VirtualPath::Parse(std::string_view 
 		.mount = mount,
 		.relative = relative
 	};
+}
+
+std::string VirtualPath::Compose(const Mount mount, const std::string_view path) {
+	return std::format("{}://{}", mount, path);
 }
 
 }

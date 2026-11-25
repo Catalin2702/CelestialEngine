@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -19,6 +19,7 @@
 
 #include <cstddef>
 #include <expected>
+#include <format>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -28,19 +29,41 @@
 
 namespace CE::IO {
 
+enum class Mount: u8 {
+	None,
+	Engine,
+	Resources,
+	Config,
+	Cache,
+	Unknown,
+};
+
+constexpr std::string_view format_as(const Mount mount) {
+	switch (mount) {
+		case Mount::None: return "";
+		case Mount::Engine: return "engine";
+		case Mount::Resources: return "resources";
+		case Mount::Config: return "config";
+		case Mount::Cache: return "cache";
+		case Mount::Unknown:
+		default:
+			return "Unknown";
+	}
+}
+
 /// Read-only: the files the engine ships inside every application (shaders). Contents/Resources/Engine in a bundle.
-inline constexpr std::string_view ENGINE_MOUNT = "engine";
+inline constexpr std::string_view ENGINE_MOUNT = format_as(Mount::Engine);
 
 /// Read-only: the files shipped with the application (shaders, textures). Inside the bundle on macOS.
-inline constexpr std::string_view RESOURCES_MOUNT = "resources";
+inline constexpr std::string_view RESOURCES_MOUNT = format_as(Mount::Resources);
 
 /// Read-write: what the running engine keeps for the user (settings, the ImGui layout). Outside the bundle.
-inline constexpr std::string_view CONFIG_MOUNT = "config";
+inline constexpr std::string_view CONFIG_MOUNT = format_as(Mount::Config);
 
 /// Read-write: what the application can rebuild at any time (pipeline caches, shaders compiled for this GPU), one folder
 /// per application. Outside the bundle, skipped by backups, and the system may empty it: nothing here may be the only
 /// copy of anything.
-inline constexpr std::string_view CACHE_MOUNT = "cache";
+inline constexpr std::string_view CACHE_MOUNT = format_as(Mount::Cache);
 
 /**
  * @enum MountAccess
@@ -154,5 +177,12 @@ public:
 };
 
 }
+
+template <>
+struct std::formatter<CE::IO::Mount>: std::formatter<std::string_view> {
+	auto format(const CE::IO::Mount value, std::format_context& ctx) const {
+		return std::formatter<std::string_view>::format(format_as(value), ctx);
+	}
+};
 
 #endif //CE_IO_FILESYSTEM_FILESYSTEM_HPP

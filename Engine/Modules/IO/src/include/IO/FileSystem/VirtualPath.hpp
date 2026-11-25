@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-25
 //
 
 #pragma once
@@ -14,12 +14,15 @@
 
 #include "FileSystemError.hpp"
 #include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
 
 #include <expected>
 #include <string_view>
 
 
 namespace CE::IO {
+
+enum class Mount: u8;
 
 /**
  * @struct VirtualPath
@@ -49,6 +52,8 @@ struct CE_IO_API VirtualPath {
 	 *		   no "://", the mount name is not valid (see IsValidMountName), or the relative part would leave the mount
 	 */
 	[[nodiscard]] static std::expected<VirtualPath, FileSystemError> Parse(std::string_view path);
+
+	[[nodiscard]] static std::string Compose(Mount mount, std::string_view path);
 };
 
 }
