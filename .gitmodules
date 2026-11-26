@@ -1,8 +1,8 @@
 [submodule "Engine/Submodules/MetalCpp"]
-	path = Engine/Submodules/MetalCpp
+	path = Engine/ThirdParty/MetalCpp/metal-cpp
 	url = https://github.com/Catalin2702/metal-cpp
 	branch = main
 [submodule "Engine/Submodules/ImGui"]
-	path = Engine/Submodules/ImGui
+	path = Engine/ThirdParty/ImGui/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking

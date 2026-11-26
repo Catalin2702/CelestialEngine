@@ -1,0 +1,36 @@
+#
+# Module: CelestialEngine/Engine/ThirdParty/MetalCpp
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-07-02
+# Updated by: Catalin Chirosca
+# Updated: 2026-11-26
+#
+
+cmake_minimum_required(VERSION 4.1)
+
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/metal-cpp metal-cpp)
+
+add_library(CE_Vendor_MetalCpp INTERFACE)
+
+set_target_properties(CE_Vendor_MetalCpp PROPERTIES
+	LINKER_LANGUAGE CXX
+)
+
+# Modules
+target_link_libraries(CE_Vendor_MetalCpp INTERFACE
+	CE_Config
+	METAL_CPP
+)
+
+# SYSTEM, like ImGui: the engine must not inherit diagnostics from headers it does not own. The
+# upstream METAL_CPP target adds the same directory as a plain -I, so it is marked SYSTEM too -
+# otherwise clang-tidy keeps reporting the analyzer's false positive in NS::SharedPtr (release()
+# on a null object, which is a legal no-op message to nil) every time the engine uses TransferPtr.
+set_target_properties(METAL_CPP PROPERTIES
+	SYSTEM TRUE
+)
+
+target_include_directories(CE_Vendor_MetalCpp SYSTEM INTERFACE
+	${CMAKE_CURRENT_LIST_DIR}/metal-cpp
+)

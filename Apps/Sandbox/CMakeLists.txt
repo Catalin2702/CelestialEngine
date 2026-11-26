@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 4.1)
 project(CE_Sandbox LANGUAGES CXX VERSION 0.3.0)
 
 # The engine's test bed: a plain executable with its sources and include directories, then ce_configure_application
-# (Engine/cmake/CEApplication.cmake) for everything an engine executable needs - shaders, bundle, Info.plist, embedded
+# (Engine/CMake/CEApplication.cmake) for everything an engine executable needs - shaders, bundle, Info.plist, embedded
 # frameworks, signing. An editor or a game is another directory under Apps/ shaped like this one.
 #
 # The output keeps the engine's name, so the bundle is still <build>/Out/<config>/CelestialEngine.app and the

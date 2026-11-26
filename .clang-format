@@ -4,9 +4,9 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-20
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-20
+# Updated: 2026-11-26
 # Comment: CelestialEngine code style (clang-format 23).
-#   Derived from the code as it is written, not from a preset: run over Engine/Modules, Engine/Tests and Apps it touches
+#   Derived from the code as it is written, not from a preset: run over Engine/Source, Engine/Tests and Apps it touches
 #   about 2% of the lines. What it still changes are the places clang-format cannot express - hand-aligned tables
 #   (vertex arrays, enums packed several per line, `case` lists), several statements in a one-line function body,
 #   trailing `///<` comments aligned with tabs. Wrap a table in `// clang-format off` / `// clang-format on` to keep it.

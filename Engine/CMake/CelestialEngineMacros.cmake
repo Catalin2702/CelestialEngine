@@ -1,0 +1,505 @@
+#
+# Module: CelestialEngine/Engine/CMake
+# File: CelestialEngineMacros.cmake
+# Created by: Catalin Chirosca
+# Created: 2026-02-15
+# Updated by: Catalin Chirosca
+# Updated: 2026-11-26
+#
+
+# The engine's build entry point: CE_Config and CE_Internal, the output layout (Out/, Modules/), the module
+# helpers below and, through CEApplication.cmake, ce_configure_application. Include it ONCE, from the top-level CMakeLists.txt
+# after project() and before add_subdirectory() of the engine and of the applications, so its variables reach both:
+#
+#   include(<engine>/CMake/CERenderBackends.cmake)      # before project(), see that file
+#   project(MyGame LANGUAGES CXX)
+#   include(<engine>/CMake/CelestialEngineMacros.cmake)
+#   add_subdirectory(<engine>)
+#   add_subdirectory(<my application>)                  # add_executable() + ce_configure_application()
+#
+# Engine/CMakeLists.txt includes it too, for a project that only adds the engine directory - the include guard makes
+# that second inclusion free. Paths inside the engine are taken from CE_ENGINE_ROOT_DIR, never from CMAKE_SOURCE_DIR,
+# which is the top-level project's directory: the engine need not be the repository it is built from. The build
+# outputs, on the other hand, deliberately follow the top-level project (CMAKE_BINARY_DIR).
+include_guard(GLOBAL)
+
+# Where the engine lives, whoever includes it. Cached (internal) so sibling directories of the engine see them too.
+get_filename_component(_ce_engine_root "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+set(CE_ENGINE_ROOT_DIR "${_ce_engine_root}" CACHE INTERNAL "CelestialEngine's Engine/ directory")
+set(CE_ENGINE_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "CelestialEngine's Engine/CMake/ directory")
+
+if(NOT CMAKE_C_COMPILER)
+	set(CMAKE_C_COMPILER "" CACHE STRING "No C compiler needed" FORCE)
+endif()
+
+set(CMAKE_CXX_STANDARD 23)
+
+# The project uses no C++20 modules, but with C++ >= 20 CMake scans every source for them by default
+# (a clang-scan-deps step per file plus a ninja dyndep file per target). When those dyndep files are
+# regenerated, ninja only discovers mid-build that the objects are dirty: a full build linked the
+# libraries BEFORE recompiling their objects, so the very next build (the one an IDE runs before
+# launching) relinked every module again. Turning the scan off removes the dyndep step altogether.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
+# Where every executable is built: <build>/Out/<config>/[<subfolder>]. Each toolchain (and each restricted backend
+# selection) has a build tree of its own (.exclude/build/<preset>), so this is already one folder per toolchain and per
+# configuration: nothing is copied anywhere else after the build. Shipping a build to another machine is a separate,
+# explicit step (see docs/roadmap/Distribution.md), not a side effect of compiling.
+set(CE_BUILD_OUTPUT_DIR "${CMAKE_BINARY_DIR}/Out/$<CONFIG>")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}")
+
+set(CMAKE_MAP_IMPORTED_CONFIG_DIST Release "")
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
+# The backend selection should already be resolved: the top-level CMakeLists.txt includes CERenderBackends.cmake before
+# project(), because that is the only point where it can still tell vcpkg which optional dependencies to install. A
+# project that skipped it gets the selection resolved here instead - the build works, but vcpkg has already installed
+# whatever its manifest lists, glad and GLFW included.
+if (NOT DEFINED CE_RENDER_DEFAULT_BACKEND)
+	message(WARNING "CE_RENDER_BACKENDS was not resolved before project(): resolving it now, too late to select the vcpkg features. Include ${CMAKE_CURRENT_LIST_DIR}/CERenderBackends.cmake before project() in the top-level CMakeLists.txt.")
+	include("${CMAKE_CURRENT_LIST_DIR}/CERenderBackends.cmake")
+endif ()
+
+if (NOT TARGET CE_Config)
+	add_library(CE_Config INTERFACE)
+
+	target_compile_definitions(CE_Config INTERFACE
+		CE_DEBUG=$<CONFIG:Debug>
+		CE_RELEASE=$<CONFIG:Release>
+		CE_DIST=$<CONFIG:Dist>
+
+		CE_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
+		CE_PLATFORM_MACOS=$<PLATFORM_ID:Darwin>
+		CE_PLATFORM_LINUX=$<PLATFORM_ID:Linux>
+
+		# Graphics and window backends compiled in, 0 or 1 like the platform macros above (see CERenderBackends.cmake).
+		# On the INTERFACE, not private to the engine: the public umbrella headers include a backend's headers only when
+		# it exists, so every consumer has to agree with the engine on which ones do.
+		CE_RENDER_OPENGL=$<BOOL:${CE_RENDER_OPENGL}>
+		CE_RENDER_METAL=$<BOOL:${CE_RENDER_METAL}>
+		CE_RENDER_VULKAN=$<BOOL:${CE_RENDER_VULKAN}>
+		CE_RENDER_DIRECTX11=$<BOOL:${CE_RENDER_DIRECTX11}>
+		CE_RENDER_DIRECTX12=$<BOOL:${CE_RENDER_DIRECTX12}>
+
+		# A bare GraphicsApi enumerator name (OpenGL, Metal, ...), spliced in as Types::GraphicsApi::CE_RENDER_DEFAULT_API.
+		CE_RENDER_DEFAULT_API=${CE_RENDER_DEFAULT_BACKEND}
+
+		CE_WINDOW_GLFW=$<BOOL:${CE_WINDOW_GLFW}>
+		CE_WINDOW_COCOA=$<BOOL:${CE_WINDOW_COCOA}>
+
+		$<$<CONFIG:Debug>:DEBUG>
+		$<$<CONFIG:Release>:NDEBUG>
+		$<$<CONFIG:Dist>:NDEBUG>
+	)
+
+	target_compile_features(CE_Config INTERFACE
+		cxx_std_23
+	)
+
+	target_compile_options(CE_Config INTERFACE
+		# Match both Homebrew LLVM (ID "Clang") and the Xcode toolchain (ID "AppleClang"): with only "Clang" the Apple
+		# toolchain got NO optimization flags at all, leaving the custom Dist config (whose CMAKE_CXX_FLAGS_DIST default
+		# is empty, unlike Release) at -O0.
+		$<$<AND:$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:
+			$<$<CONFIG:Debug>:
+				-O0
+				-g
+				-Wall
+				-Wextra
+				-Werror
+			>
+			$<$<CONFIG:Release>:
+				-O2
+			>
+			$<$<CONFIG:Dist>:
+				-O3
+			>
+			-march=native
+		>
+
+		$<$<OR:$<CXX_COMPILER_ID:MSVC>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:
+			$<$<CONFIG:Debug>:
+				/MDd
+				/Od
+				/Zi
+				/W4
+				/WX
+			>
+			$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:
+				/MD
+				/O2
+			>
+
+			/permissive-
+			/utf-8
+			/wd4251
+		>
+	)
+
+	target_link_options(CE_Config INTERFACE
+		$<$<PLATFORM_ID:Windows>:
+			$<$<CONFIG:Debug>:
+				/DEFAULTLIB:msvcrtd
+				/DEFAULTLIB:vcruntimed
+				/DEFAULTLIB:ucrtd
+			>
+			$<$<OR:$<CONFIG:Release>,$<CONFIG:Dist>>:
+				/DEFAULTLIB:msvcrt
+				/DEFAULTLIB:vcruntime
+				/DEFAULTLIB:ucrt
+			>
+			/VERBOSE
+		>
+	)
+endif ()
+
+# Marks a translation unit as part of the engine itself. Linked PRIVATE by every engine module and by the tests - never
+# by CE_Config, which reaches the client too. What it unlocks today is the CE_CORE_* logging macros (Define/CoreLog.hpp):
+# the core logger is the engine's voice, and a client writing to it would make the two indistinguishable in the output.
+if (NOT TARGET CE_Internal)
+	add_library(CE_Internal INTERFACE)
+
+	target_compile_definitions(CE_Internal INTERFACE
+		CE_ENGINE_INTERNAL=1
+	)
+endif ()
+
+# Restricts who may link LIBRARY directly: only the targets listed after ALLOWED. Everybody else has to reach it through
+# one of them, transitively. Used where linking a library through the "wrong" door is a bug that no compiler reports:
+# glm must arrive through CE_Types, which carries its configuration (GLM_FORCE_*, see Engine/ThirdParty/Glm), and ImGui only
+# belongs to the modules that draw or feed the UI. LIBRARY may be any name that can appear in a link list, an imported
+# target (glm::glm) included.
+#
+# The check itself runs once, deferred to the end of the top-level CMakeLists.txt, when every target exists: it reads the
+# LINK_LIBRARIES and INTERFACE_LINK_LIBRARIES of every target of the project and fails the configure step, naming the
+# offending target and the allowed ones. A target the restricted library is transitively reachable through is fine -
+# only the direct link is checked.
+# Usage: ce_restrict_link(<library> ALLOWED <target>...)
+function(ce_restrict_link LIBRARY)
+	cmake_parse_arguments(PARSE_ARGV 1 ARG "" "" "ALLOWED")
+	if (ARG_UNPARSED_ARGUMENTS OR NOT ARG_ALLOWED)
+		message(FATAL_ERROR "ce_restrict_link(${LIBRARY}): usage is ce_restrict_link(<library> ALLOWED <target>...)")
+	endif ()
+
+	set_property(GLOBAL APPEND PROPERTY CE_RESTRICTED_LINKS "${LIBRARY}")
+	set_property(GLOBAL PROPERTY "CE_RESTRICTED_LINK_ALLOWED_${LIBRARY}" ${ARG_ALLOWED})
+
+	get_property(_scheduled GLOBAL PROPERTY CE_RESTRICTED_LINKS_CHECK_SCHEDULED)
+	if (NOT _scheduled)
+		set_property(GLOBAL PROPERTY CE_RESTRICTED_LINKS_CHECK_SCHEDULED TRUE)
+		cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL _ce_check_restricted_links)
+	endif ()
+endfunction()
+
+# Collects every buildsystem target defined in DIRECTORY and below.
+function(_ce_collect_targets DIRECTORY OUT_VAR)
+	get_property(_targets DIRECTORY "${DIRECTORY}" PROPERTY BUILDSYSTEM_TARGETS)
+	get_property(_subdirectories DIRECTORY "${DIRECTORY}" PROPERTY SUBDIRECTORIES)
+	foreach (_subdirectory IN LISTS _subdirectories)
+		_ce_collect_targets("${_subdirectory}" _nested)
+		list(APPEND _targets ${_nested})
+	endforeach ()
+	set(${OUT_VAR} ${_targets} PARENT_SCOPE)
+endfunction()
+
+function(_ce_check_restricted_links)
+	get_property(_libraries GLOBAL PROPERTY CE_RESTRICTED_LINKS)
+	_ce_collect_targets("${CMAKE_SOURCE_DIR}" _targets)
+
+	set(_violations "")
+	foreach (_library IN LISTS _libraries)
+		get_property(_allowed GLOBAL PROPERTY "CE_RESTRICTED_LINK_ALLOWED_${_library}")
+		# The name as a whole link item: delimited by the start or end of the list, a ';', or the '>' / ':' of a
+		# generator expression around it ($<$<BOOL:...>:name>), so CE_Vendor_ImGui does not match CE_Vendor_ImGui_Glfw.
+		string(REGEX REPLACE "([][+.*()^$?|\\\\])" "\\\\\\1" _escaped "${_library}")
+		set(_pattern "(^|[;:>])${_escaped}($|[;>])")
+
+		foreach (_target IN LISTS _targets)
+			if (_target IN_LIST _allowed OR _target STREQUAL _library)
+				continue()
+			endif ()
+
+			get_target_property(_link ${_target} LINK_LIBRARIES)
+			get_target_property(_interface ${_target} INTERFACE_LINK_LIBRARIES)
+			foreach (_list IN ITEMS "${_link}" "${_interface}")
+				if (_list MATCHES "${_pattern}")
+					string(JOIN ", " _allowed_text ${_allowed})
+					list(APPEND _violations "  ${_target} links ${_library} directly, but only ${_allowed_text} may: link one of them instead")
+					break()
+				endif ()
+			endforeach ()
+		endforeach ()
+	endforeach ()
+
+	if (_violations)
+		list(JOIN _violations "\n" _report)
+		message(FATAL_ERROR "Restricted links (ce_restrict_link):\n${_report}")
+	endif ()
+endfunction()
+
+# Base names of the engine's own SHARED library modules (no extension): the set every
+# executable delay-loads on Windows (see ce_enable_dll_bootstrap) and whose runtime artifact
+# (.dll / .so) is redirected into the DLL/ subfolder below, so Out/<config>/ only holds
+# executables.
+set(CE_MODULE_DLL_NAMES
+	CE_Core
+	CE_Events
+	CE_IO
+	CE_RHI
+	CE_Tools
+	CE_Types
+	CE_Utility
+)
+
+# macOS also builds CE_Apple (the Cocoa/Metal native bridge, Source/Runtime/Native/Platforms/Apple) as
+# its own SHARED library. It is embedded into CelestialEngine.app/Contents/Frameworks alongside the others
+# (see ce_bundle_apple_frameworks) but kept out of CE_MODULE_DLL_NAMES itself, since that list also
+# drives ce_enable_dll_bootstrap's /DELAYLOAD flags on Windows, where CE_Apple does not exist.
+#
+# CE_Vendor_ImGui is here for a different reason: ImGui keeps its context in a single global
+# (GImGui), and both CE_Core and CE_Apple call into it. As a static archive it was linked into both
+# dylibs, giving the process two contexts - the backend in CE_Apple would then look up its data in a
+# context CE_Core never draws into. Built SHARED there is exactly one, by construction rather than
+# by link order. It is likewise kept out of CE_MODULE_DLL_NAMES: it is not a delay-loadable CE
+# module.
+if (APPLE)
+	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES} CE_Apple CE_Vendor_ImGui)
+else ()
+	set(CE_APPLE_FRAMEWORK_MODULE_NAMES ${CE_MODULE_DLL_NAMES})
+endif ()
+
+# Redirects TARGET_NAME's runtime artifact into <build>/Out/<config>/<SUBDIR> instead of the flat
+# default, so e.g. every test executable lands in Out/<config>/Tests/ rather than beside
+# CelestialEngine.app. Pass the SAME subfolder to ce_embed_apple_modules_beside.
+# Usage: ce_set_output_subdirectory(target_name subdir)
+function(ce_set_output_subdirectory TARGET_NAME SUBDIR)
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}/${SUBDIR}"
+		LIBRARY_OUTPUT_DIRECTORY "${CE_BUILD_OUTPUT_DIR}/${SUBDIR}"
+	)
+endfunction()
+
+# Decides where a CE module SHARED library is built.
+#
+# Windows/Linux: into <build>/Out/<config>/DLL/, the shared folder every executable beside it (or in
+# Tests/) is taught to search (ce_enable_dll_bootstrap / ce_set_dll_search_rpath).
+#
+# macOS: into <build>/Modules/<config>/. Nothing on macOS loads them from a shared folder -
+# CelestialEngine.app embeds its own copies into Contents/Frameworks (ce_bundle_apple_frameworks) and
+# each Tests/ executable gets its own copies beside it (ce_embed_apple_modules_beside) - so keeping
+# them out of Out/ stops libCE_*.dylib piling up next to CelestialEngine.app.
+# Usage: ce_set_module_library_output(target_name)
+function(ce_set_module_library_output TARGET_NAME)
+	if (APPLE)
+		set_target_properties(${TARGET_NAME} PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Modules/$<CONFIG>"
+			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Modules/$<CONFIG>"
+			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Modules/$<CONFIG>"
+		)
+	else ()
+		ce_set_output_subdirectory(${TARGET_NAME} DLL)
+	endif ()
+endfunction()
+
+# Gives a CE module SHARED library (Core, Events, Tools, Types, Utility, and on macOS also
+# Apple) its own "look in my own directory" RPATH, so once every module library ends up sitting
+# flat in the same folder - DLL/ in the build tree and on Linux, or CelestialEngine.app/Contents/Frameworks
+# on macOS (see ce_bundle_apple_frameworks) - it resolves its dependencies on sibling module
+# libraries as-is, without needing install_name_tool/patchelf rewriting after the fact. On macOS
+# this also sets INSTALL_NAME_DIR so the library's own identity is @rpath-relative (portable)
+# instead of an absolute build-tree path. No-op on Windows, which resolves inter-module DLL
+# dependencies via ce_enable_dll_bootstrap instead.
+# Usage: ce_configure_module_library_rpath(target_name)
+function(ce_configure_module_library_rpath TARGET_NAME)
+	if (WIN32)
+		return()
+	endif ()
+
+	if (APPLE)
+		set_target_properties(${TARGET_NAME} PROPERTIES
+			INSTALL_NAME_DIR "@rpath"
+			BUILD_RPATH "@loader_path"
+			INSTALL_RPATH "@loader_path"
+		)
+	else ()
+		set_target_properties(${TARGET_NAME} PROPERTIES
+			BUILD_RPATH "$ORIGIN"
+			INSTALL_RPATH "$ORIGIN"
+		)
+	endif ()
+endfunction()
+
+# Embeds an $ORIGIN-relative RPATH into TARGET_NAME - a plain (non-bundle) Linux executable, such
+# as one of the Tests/*.exe or the application itself - so the dynamic loader finds the module libraries in
+# RELATIVE_PATH without needing LD_LIBRARY_PATH set. Linux-only: Windows uses
+# ce_enable_dll_bootstrap, and macOS uses ce_bundle_apple_frameworks (the applications, which embed its own
+# copies into the .app bundle so it stays portable if moved) or ce_embed_apple_modules_beside
+# (plain executables, e.g. Tests/*.exe) instead - neither needs a shared DLL/ folder to exist at
+# all, which this RPATH-to-an-external-folder approach would otherwise force into being built
+# even when only the application (no tests) is being built.
+# Usage: ce_set_dll_search_rpath(target_name relative_path_to_dll_dir)  e.g. "DLL" or "../DLL"
+function(ce_set_dll_search_rpath TARGET_NAME RELATIVE_PATH)
+	if (NOT (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+		return()
+	endif ()
+
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		BUILD_RPATH "$ORIGIN/${RELATIVE_PATH}"
+		INSTALL_RPATH "$ORIGIN/${RELATIVE_PATH}"
+	)
+endfunction()
+
+# On macOS, makes sure every CE_APPLE_FRAMEWORK_MODULE_NAMES library is copied (and ad-hoc
+# re-signed, same reasoning as ce_bundle_apple_frameworks) into DEST_DIR. Each copied library
+# resolves its own sibling dependencies via its own @loader_path RPATH (see
+# ce_configure_module_library_rpath), so once they are all sitting flat in one folder an executable
+# there needs no further help finding them.
+#
+# The work is done by ONE shared custom target per destination folder, which callers then depend
+# on, instead of POST_BUILD steps on each executable: all seven test executables share the same
+# folder, so per-target POST_BUILD steps had them copying and codesigning the SAME seven .dylib
+# files concurrently under a parallel build - one job replacing a file while another was signing
+# it, which failed the build with "object file format unrecognized, invalid, or unsuitable" or
+# "No such file or directory". A single target does the work once, serialised. Returns the target's
+# name in OUT_TARGET.
+#
+# Each library is copied by its own add_custom_command with a stamp file as OUTPUT and the library
+# as DEPENDS, rather than as a POST_BUILD step of the custom target: a custom target with no
+# outputs is always out of date, so every build - including the one an IDE runs before launching a
+# test or the app - re-copied and re-signed all seven libraries even when nothing had changed. The
+# stamp lives in the build tree, not in DEST_DIR, so deleting a copied library by hand is NOT
+# noticed; a clean build fixes it.
+# Usage: ce_apple_modules_copy_target("<dest dir>" OUT_VAR)
+function(ce_apple_modules_copy_target DEST_DIR OUT_TARGET)
+	# One copy target per destination folder, shared by every executable built into it. The name is
+	# derived from the (possibly $<CONFIG>-dependent) path so two different folders cannot collide.
+	string(MAKE_C_IDENTIFIER "${DEST_DIR}" DEST_ID)
+	set(COPY_TARGET "CE_AppleModules_${DEST_ID}")
+
+	if (NOT TARGET ${COPY_TARGET})
+		set(STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/CE_AppleModules/$<CONFIG>/${DEST_ID}")
+		set(STAMPS "")
+
+		foreach (MODULE_LIB ${CE_APPLE_FRAMEWORK_MODULE_NAMES})
+			set(STAMP "${STAMP_DIR}/${MODULE_LIB}.stamp")
+			add_custom_command(
+				OUTPUT "${STAMP}"
+				COMMAND ${CMAKE_COMMAND} -E make_directory "${DEST_DIR}" "${STAMP_DIR}"
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					"$<TARGET_FILE:${MODULE_LIB}>"
+					"${DEST_DIR}/"
+				COMMAND codesign --force --sign -
+					"${DEST_DIR}/$<TARGET_FILE_NAME:${MODULE_LIB}>"
+				COMMAND ${CMAKE_COMMAND} -E touch "${STAMP}"
+				DEPENDS ${MODULE_LIB}
+				COMMENT "Embedding and signing $<TARGET_FILE_NAME:${MODULE_LIB}> in ${DEST_DIR}"
+				VERBATIM
+			)
+			list(APPEND STAMPS "${STAMP}")
+		endforeach ()
+
+		add_custom_target(${COPY_TARGET} DEPENDS ${STAMPS})
+	endif ()
+
+	set(${OUT_TARGET} "${COPY_TARGET}" PARENT_SCOPE)
+endfunction()
+
+# On macOS, puts a copy of every module library beside TARGET_NAME - a plain (non-bundle)
+# executable, such as one of the Tests/ binaries - in its output folder. The module libraries are
+# built into <build>/Modules/<config>/ on macOS (see ce_set_module_library_output), and there is no
+# shared folder to point an RPATH at, so each executable's own folder has to hold them.
+#
+# SUBDIR must be the same subfolder passed to ce_set_output_subdirectory.
+# No-op elsewhere - Windows and Linux use ce_enable_dll_bootstrap / ce_set_dll_search_rpath against
+# the shared DLL/ folder instead.
+# Usage: ce_embed_apple_modules_beside(target_name [subdir])
+function(ce_embed_apple_modules_beside TARGET_NAME)
+	if (NOT APPLE)
+		return()
+	endif ()
+
+	set(SUBDIR "")
+	if (ARGC GREATER 1)
+		set(SUBDIR "${ARGV1}")
+	endif ()
+
+	if (SUBDIR STREQUAL "")
+		set(BUILD_DIR "${CE_BUILD_OUTPUT_DIR}")
+	else ()
+		set(BUILD_DIR "${CE_BUILD_OUTPUT_DIR}/${SUBDIR}")
+	endif ()
+
+	ce_apple_modules_copy_target("${BUILD_DIR}" BUILD_COPY_TARGET)
+
+	add_dependencies(${TARGET_NAME} ${BUILD_COPY_TARGET})
+endfunction()
+
+# On Windows, marks every CE_MODULE_DLL_NAMES import as delay-loaded on TARGET_NAME and compiles
+# in the bootstrap translation unit that registers the DLL/ subfolder as an additional search
+# directory (via AddDllDirectory) before those imports are first touched. Needed because the
+# module DLLs live in DLL/ instead of next to the executable, and unlike Linux/macOS's RPATH, the
+# Windows loader has no notion of "look in this subfolder relative to me" - it only searches the
+# executable's own directory, system directories and PATH. No-op elsewhere.
+# Usage: ce_enable_dll_bootstrap(target_name)
+function(ce_enable_dll_bootstrap TARGET_NAME)
+	if (NOT WIN32)
+		return()
+	endif ()
+
+	target_sources(${TARGET_NAME} PRIVATE
+		"${CE_ENGINE_ROOT_DIR}/Source/Runtime/Native/Platforms/Windows/src/source/Windows/DllSearchBootstrap.cpp"
+	)
+
+	target_link_options(${TARGET_NAME} PRIVATE
+		/DEFAULTLIB:delayimp
+	)
+
+	foreach (MODULE_DLL ${CE_MODULE_DLL_NAMES})
+		target_link_options(${TARGET_NAME} PRIVATE
+			/DELAYLOAD:${MODULE_DLL}.dll
+		)
+	endforeach ()
+endfunction()
+
+# On macOS, embeds every CE_APPLE_FRAMEWORK_MODULE_NAMES library into TARGET_NAME's own
+# Contents/Frameworks/ - the standard, portable way to ship a self-contained .app bundle - and
+# points the bundle executable's RPATH at @executable_path/../Frameworks so it resolves them
+# there. Each embedded library resolves ITS OWN sibling dependencies the same way, via its own
+# @loader_path RPATH set by ce_configure_module_library_rpath, so no install_name_tool rewriting
+# is needed after the copy. Each copied library is also re-signed ad-hoc on the spot: signing
+# nested content up front and letting the OUTER app signing step (see CEApplication.cmake) run
+# last, without --deep, is Apple's documented order for bundles with embedded code - --deep
+# resigns nested items in an unspecified order and does not reliably produce a valid seal, which
+# is what made Gatekeeper flag the bundle as "damaged" when a plain --deep sign ran after this
+# copy. Requires TARGET_NAME to be a MACOSX_BUNDLE executable. No-op elsewhere - Windows/Linux use
+# ce_enable_dll_bootstrap / ce_set_dll_search_rpath instead, pointing at a shared DLL/ folder
+# rather than duplicating the module libraries into the bundle.
+# Usage: ce_bundle_apple_frameworks(target_name)
+function(ce_bundle_apple_frameworks TARGET_NAME)
+	if (NOT APPLE)
+		return()
+	endif ()
+
+	set_target_properties(${TARGET_NAME} PROPERTIES
+		BUILD_RPATH "@executable_path/../Frameworks"
+		INSTALL_RPATH "@executable_path/../Frameworks"
+	)
+
+	foreach (MODULE_LIB ${CE_APPLE_FRAMEWORK_MODULE_NAMES})
+		add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_BUNDLE_CONTENT_DIR:${TARGET_NAME}>/Frameworks"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				"$<TARGET_FILE:${MODULE_LIB}>"
+				"$<TARGET_BUNDLE_CONTENT_DIR:${TARGET_NAME}>/Frameworks/"
+			COMMAND codesign --force --sign -
+				"$<TARGET_BUNDLE_CONTENT_DIR:${TARGET_NAME}>/Frameworks/$<TARGET_FILE_NAME:${MODULE_LIB}>"
+			COMMENT "Embedding and signing ${MODULE_LIB} in ${TARGET_NAME}.app/Contents/Frameworks"
+		)
+	endforeach ()
+endfunction()
+
+# ce_configure_application(), the one call an executable built on the engine needs after add_executable()
+include("${CMAKE_CURRENT_LIST_DIR}/CEApplication.cmake")

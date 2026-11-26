@@ -1,0 +1,40 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Core/Render/Camera/Controller
+// File: CameraControllerFactory.cpp
+// Created by: Catalin Chirosca
+// Created: 2026-09-07
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#include "Core/Render/Camera/Controller/Controller.hpp"
+#include "Tools/Tools.hpp"
+
+#include <format>
+#include <stdexcept>
+
+
+namespace CE::Core {
+
+std::unique_ptr<I_CameraController> I_CameraController::MakeCameraController(const CameraControllerDescriptor& descriptor) {
+	const auto type = descriptor.GetController();
+	std::string error{};
+	switch (type) {
+		case Types::CameraController::None: {
+			error = "I_CameraController::MakeCameraController: The camera controller type is None!";
+			break;
+		}
+		case Types::CameraController::Static:
+			return std::make_unique<StaticCameraController>(descriptor);
+		case Types::CameraController::Free:
+			return std::make_unique<FreeCameraController>(descriptor);
+		default: {
+			error = std::format("I_CameraController::MakeCameraController: The {} camera controller type has not yet been implemented!", type);
+			break;
+		}
+	}
+	CE_CORE_ERROR(error);
+	throw std::runtime_error(error);
+}
+
+}

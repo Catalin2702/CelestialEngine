@@ -1,0 +1,73 @@
+#
+# Module: CelestialEngine/Engine/Source/Runtime/Events
+# File: CMakeLists.txt
+# Created by: Catalin Chirosca
+# Created: 2026-02-16
+# Updated by: Catalin Chirosca
+# Updated: 2026-11-26
+#
+
+set(HEADERS
+	src/include/Events/ApplicationEvent.hpp
+	src/include/Events/EventMacros.hpp
+	src/include/Events/Events.hpp
+	src/include/Events/GenericEvent.hpp
+	src/include/Events/KeyEvent.hpp
+	src/include/Events/MouseEvent.hpp
+	src/include/Events/RenderEvent.hpp
+	src/include/Events/WindowEvent.hpp
+)
+
+set(INTERFACES
+	src/interface/Events/I_Event.hpp
+)
+
+set(SOURCES
+	src/source/Events/ApplicationEvent.cpp
+	src/source/Events/GenericEvent.cpp
+	src/source/Events/KeyEvent.cpp
+	src/source/Events/MouseEvent.cpp
+	src/source/Events/RenderEvent.cpp
+	src/source/Events/WindowEvent.cpp
+)
+
+add_library(CE_Events SHARED
+	${HEADERS}
+	${INTERFACES}
+	${SOURCES}
+)
+
+set_target_properties(CE_Events PROPERTIES
+	LINKER_LANGUAGE CXX
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_VERSION}
+)
+
+# Keeps Out/<config>/ down to just executables: the library goes to its DLL/ subfolder on Windows and Linux, and to
+# <build>/Modules/<config>/ on macOS (see ce_set_module_library_output)
+ce_set_module_library_output(CE_Events)
+
+# Lets it find its own sibling module libraries wherever it ends up (DLL/, beside a Tests/*.exe, or
+# CelestialEngine.app/Contents/Frameworks)
+ce_configure_module_library_rpath(CE_Events)
+
+# Modules
+target_link_libraries(CE_Events PUBLIC
+	CE_Config
+	CE_Define
+	CE_Types
+)
+
+target_include_directories(CE_Events PUBLIC
+	src/include
+	src/interface
+)
+
+# Engine-internal: unlocks the CE_CORE_* logging macros (see CE_Internal in CelestialEngineMacros.cmake)
+target_link_libraries(CE_Events PRIVATE
+	CE_Internal
+)
+
+target_compile_definitions(CE_Events PRIVATE
+	CE_EVENTS_EXPORTS
+)

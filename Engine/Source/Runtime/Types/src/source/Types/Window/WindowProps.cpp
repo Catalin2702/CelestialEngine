@@ -1,0 +1,81 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Types/Window
+// File: WindowProps.cpp
+// Created by: Catalin Chirosca
+// Created: 2026-02-21
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#include "Types/Window/WindowProps.hpp"
+
+
+namespace CE::Types {
+
+WindowProps::WindowProps(const std::string& title, const unsigned int width, const unsigned int height, const bool VSync, const unsigned int refreshRate, const GraphicsApi graphicsApi, const WindowApi windowApi): // NOLINT(*-pass-by-value)
+	title(title), width(width), height(height), refreshRate(refreshRate), VSync(VSync), graphicsApi(graphicsApi), windowApi(windowApi) {}
+
+bool IsWindowApiSupported(const WindowApi& api) {
+	if (api == WindowApi::None) [[unlikely]]
+		return false;
+
+	if (api == WindowApi::GLFW)
+		return true;
+
+	if constexpr (CE_PLATFORM_MACOS)
+		if (api == WindowApi::Cocoa)
+			return true;
+	if constexpr (CE_PLATFORM_WINDOWS)
+		if (api == WindowApi::Win32)
+			return true;
+	if constexpr (CE_PLATFORM_LINUX)
+		if (HasAnyFlags(api, WindowApi::X11 | WindowApi::Wayland))
+			return true;
+
+	return false;
+}
+
+bool IsGraphicsApiCompatible(const GraphicsApi& graphicsApi, const WindowApi& windowApi) {
+	if (windowApi == WindowApi::None or graphicsApi == GraphicsApi::None) [[unlikely]]
+		return false;
+
+	if (windowApi == WindowApi::GLFW and graphicsApi == GraphicsApi::OpenGL)
+		return true;
+
+	if constexpr (CE_PLATFORM_MACOS)
+		if (windowApi == WindowApi::Cocoa and HasAnyFlags(graphicsApi, GraphicsApi::Metal | GraphicsApi::Vulkan))
+			return true;
+	if constexpr (CE_PLATFORM_WINDOWS)
+		if (windowApi == WindowApi::Win32 and HasAnyFlags(graphicsApi, GraphicsApi::DirectX11 | GraphicsApi::DirectX12 | GraphicsApi::Vulkan))
+			return true;
+	if constexpr (CE_PLATFORM_LINUX)
+		if (HasAnyFlags(windowApi, WindowApi::X11 | WindowApi::Wayland) and graphicsApi == GraphicsApi::Vulkan)
+			return true;
+
+	return false;
+}
+
+bool IsWindowApiCompiled(const WindowApi api) {
+	// Comparisons rather than a switch, for the reason given in IsGraphicsApiCompiled. Win32, X11 and Wayland have no
+	// backend yet, whatever the selection.
+	return (CE_WINDOW_GLFW and api == WindowApi::GLFW) or (CE_WINDOW_COCOA and api == WindowApi::Cocoa);
+}
+
+WindowApi GetDefaultWindowApi(const GraphicsApi graphicsApi) {
+	switch (graphicsApi) {
+		case GraphicsApi::OpenGL:
+		case GraphicsApi::Vulkan:
+			return WindowApi::GLFW;
+		case GraphicsApi::Metal:
+			return WindowApi::Cocoa;
+		case GraphicsApi::DirectX11:
+		case GraphicsApi::DirectX12:
+			return WindowApi::Win32;
+		case GraphicsApi::None:
+			return WindowApi::None;
+	}
+
+	return WindowApi::None;
+}
+
+}

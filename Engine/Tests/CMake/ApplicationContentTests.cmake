@@ -7,7 +7,7 @@
 # Updated: 2026-11-26
 #
 
-# ce_collect_application_content (Engine/cmake/CEApplication.cmake), run as a script: builds a fake content folder and
+# ce_collect_application_content (Engine/CMake/CEApplication.cmake), run as a script: builds a fake content folder and
 # checks which of its files the function keeps. A failed check stops with FATAL_ERROR, which is what fails the test.
 
 include("${CE_ENGINE_CMAKE_DIR}/CEApplication.cmake")

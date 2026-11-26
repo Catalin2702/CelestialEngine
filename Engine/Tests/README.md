@@ -5,7 +5,7 @@ se viene incluso da un altro progetto, e si disattivano con `-DCE_BUILD_TESTS=OF
 
 ## Struttura
 
-L'albero dei test rispecchia quello di `Engine/Modules/`: ogni modulo del motore ha la sua directory con lo stesso
+L'albero dei test rispecchia quello di `Engine/Source/Runtime/`: ogni modulo del motore ha la sua directory con lo stesso
 percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 
 ```
@@ -13,7 +13,7 @@ Engine/Tests/
 ├── CMake/          # Test delle funzioni CMake (script cmake -P): ce_collect_application_content
 ├── Programs/
 │   └── ShaderCompiler/  # Test di CE_ShaderCompiler, eseguito come lo esegue la build (data/: shader di prova)
-└── Modules/
+└── Runtime/
     ├── Core/       # Test per CE_Core (CMD, Config, Input, Layers e helper ImGui, bridge ImGui-Metal, Hub e codici tasto GLFW/Cocoa,
     │               #   camera, ForwardRenderer con un RHI finto)
     ├── Define/     # Test per CE_Define (BIND_FN_*)
@@ -132,7 +132,7 @@ degli eventi, gestione dello stato) sono però testate attraverso gli hub e i mo
 
 ## Aggiungere Nuovi Test
 
-1. Crea il file di test in `Engine/Tests/Modules/<Modulo>/src/...`, rispecchiando il percorso del sorgente testato.
+1. Crea il file di test in `Engine/Tests/Runtime/<Modulo>/src/...`, rispecchiando il percorso del sorgente testato.
 2. Aggiungilo alla lista `SOURCES` del `CMakeLists.txt` del modulo (i file specifici per macOS vanno nel blocco
    `$<$<PLATFORM_ID:Darwin>:...>`).
 3. Se si tratta di un modulo nuovo, crea il suo `CMakeLists.txt`:
@@ -167,4 +167,4 @@ ce_set_dll_search_rpath(CE_TestsMyModule "../DLL")
 ce_embed_apple_modules_beside(CE_TestsMyModule Tests)
 ```
 
-4. Aggiungi la subdirectory in `Engine/Tests/CMakeLists.txt`: `add_subdirectory(Modules/MyModule)`.
+4. Aggiungi la subdirectory in `Engine/Tests/CMakeLists.txt`: `add_subdirectory(Runtime/MyModule)`.

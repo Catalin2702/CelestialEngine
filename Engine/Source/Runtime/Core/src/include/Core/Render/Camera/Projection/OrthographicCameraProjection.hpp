@@ -1,0 +1,73 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Core/Render/Camera/Projection
+// File: OrthographicCameraProjection.hpp
+// Created by: Catalin Chirosca
+// Created: 2026-09-07
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#pragma once
+
+#ifndef CE_CORE_RENDER_CAMERA_PROJECTION_ORTHOGRAPHICCAMERAPROJECTION_HPP
+#define CE_CORE_RENDER_CAMERA_PROJECTION_ORTHOGRAPHICCAMERAPROJECTION_HPP
+
+#include "Core/Render/Camera/Projection/I_CameraProjection.hpp"
+
+
+namespace CE::Core {
+
+class CE_CORE_API OrthographicCameraProjection final: public I_CameraProjection {
+public:
+	explicit OrthographicCameraProjection(const CameraProjectionDescriptor& descriptor);
+
+	OrthographicCameraProjection(const OrthographicCameraProjection&) = delete;
+	OrthographicCameraProjection(OrthographicCameraProjection&&) noexcept = default;
+
+public:
+	void SetViewportSize(const u32 width, const u32 height) override {
+		_width = width;
+		_height = height;
+		_dirty = true;
+	}
+	void SetNearClip(const f32 nearClip) override {
+		_nearClip = nearClip;
+		_dirty = true;
+	}
+	void SetFarClip(const f32 farClip) override {
+		_farClip = farClip;
+		_dirty = true;
+	}
+	void SetClipConvention(const Types::ClipConvention convention) override {
+		_convention = convention;
+		_dirty = true;
+	}
+
+public:
+	[[nodiscard]] Types::CameraProjection GetProjection() const override { return Types::CameraProjection::Orthographic; }
+	[[nodiscard]] const glm::mat4& GetProjectionMatrix() const override;
+	[[nodiscard]] f32 GetAspectRatio() const override;
+	[[nodiscard]] f32 GetNearClip() const override { return _nearClip; }
+	[[nodiscard]] f32 GetFarClip() const override { return _farClip; }
+
+private:
+	void _Recalculate() const;
+
+private:
+	Types::ClipConvention _convention = Types::ClipConvention::None;
+	mutable bool _dirty = true;
+
+	f32 _nearClip = 0.0_f32;
+	f32 _farClip = 0.0_f32;
+
+	u32 _width = 0;
+	u32 _height = 0;
+
+	f32 _orthographicSize = 0.0_f32;
+
+	mutable glm::mat4 _projection{1.0_f32};
+};
+
+}
+
+#endif //CE_CORE_RENDER_CAMERA_PROJECTION_ORTHOGRAPHICCAMERAPROJECTION_HPP

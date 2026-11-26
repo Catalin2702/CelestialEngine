@@ -66,7 +66,7 @@ print_usage() {
 	echo "  ${SCRIPT_NAME}                          # every changed file"
 	echo "  ${SCRIPT_NAME} --staged                 # only what is about to be committed"
 	echo "  ${SCRIPT_NAME} -n                       # preview"
-	echo "  ${SCRIPT_NAME} Engine/src/source/EntryPoint.cpp"
+	echo "  ${SCRIPT_NAME} Engine/Source/Launch/source/EntryPoint.cpp"
 }
 
 while [[ $# -gt 0 ]]; do

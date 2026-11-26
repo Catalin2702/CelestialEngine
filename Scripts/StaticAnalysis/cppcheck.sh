@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-26
 #
 
 # Runs cppcheck over the project's own C++ sources.
@@ -115,7 +115,7 @@ CPPCHECK_ARGS=(
 	--suppressions-list="${SUPPRESSIONS}"
 	# Third-party code is parsed for the types it declares but never reported.
 	--suppress="*:${PROJECT_DIR}/.exclude/build/*"
-	--suppress="*:${PROJECT_DIR}/Engine/Submodules/*"
+	--suppress="*:${PROJECT_DIR}/Engine/ThirdParty/*"
 	--suppress="*:${PROJECT_DIR}/vcpkg_link/*"
 	--check-level="$([ "${EXHAUSTIVE}" = true ] && echo exhaustive || echo normal)"
 	--quiet

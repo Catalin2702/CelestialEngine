@@ -1,0 +1,47 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Core/Render/Camera/Controller
+// File: I_CameraController.hpp
+// Created by: Catalin Chirosca
+// Created: 2026-09-07
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#pragma once
+
+#ifndef CE_CORE_RENDER_CAMERA_CONTROLLER_I_CAMERACONTROLLER_HPP
+#define CE_CORE_RENDER_CAMERA_CONTROLLER_I_CAMERACONTROLLER_HPP
+
+#include "Types/Types.hpp"
+
+#include <memory>
+
+namespace CE::Events {
+class I_Event;
+}
+
+namespace CE::Core {
+
+struct CameraControllerDescriptor;
+class Camera;
+
+class I_CameraController {
+public:
+	virtual ~I_CameraController() = default;
+
+public:
+	[[nodiscard]] static std::unique_ptr<I_CameraController> MakeCameraController(const CameraControllerDescriptor& descriptor);
+
+public:
+	virtual void OnAttach(Camera& camera) = 0;
+	virtual void OnDetach() = 0;
+	virtual void OnUpdate(Camera& camera, f32 deltaTime) = 0;
+	virtual bool OnEvent(Events::I_Event& event) = 0;
+
+public:
+	[[nodiscard]] virtual Types::CameraController GetController() const = 0;
+};
+
+}
+
+#endif //CE_CORE_RENDER_CAMERA_CONTROLLER_I_CAMERACONTROLLER_HPP

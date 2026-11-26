@@ -1,0 +1,57 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Events
+// File: MouseEvent.cpp
+// Created by: Catalin Chirosca
+// Created: 2026-02-16
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#include "Events/MouseEvent.hpp"
+
+#include <format>
+
+namespace CE::Events {
+
+I_MouseMovedEvent::I_MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
+	I_Event(isMutable), _x(x), _y(y) {}
+
+MouseMovedEvent::MouseMovedEvent(const f32 x, const f32 y, const bool isMutable):
+	I_MouseMovedEvent(x, y, isMutable) {}
+
+std::string MouseMovedEvent::ToString() const {
+	return std::format("{0}: {1}, {2}", GetName(), _x, _y);
+}
+
+MouseWheelScrolledEvent::MouseWheelScrolledEvent(const f32 xOffset, const f32 yOffset, const bool isMutable):
+	I_Event(isMutable), _xOffset(xOffset), _yOffset(yOffset) {}
+
+std::string MouseWheelScrolledEvent::ToString() const {
+	return std::format("{0}: {1}, {2}", GetName(), _xOffset, _yOffset);
+}
+
+I_MouseButtonEvent::I_MouseButtonEvent(const Types::MouseButtonCode button, const bool isMutable):
+	I_Event(isMutable), _button(button) {}
+
+MouseButtonPressedEvent::MouseButtonPressedEvent(const Types::MouseButtonCode button, const bool isMutable):
+	I_MouseButtonEvent(button, isMutable) {}
+
+std::string MouseButtonPressedEvent::ToString() const {
+	return std::format("{0}: {1}", GetName(), _button);
+}
+
+MouseButtonReleasedEvent::MouseButtonReleasedEvent(const Types::MouseButtonCode button, const bool isMutable):
+	I_MouseButtonEvent(button, isMutable) {}
+
+std::string MouseButtonReleasedEvent::ToString() const {
+	return std::format("{0}: {1}", GetName(), _button);
+}
+
+MouseDraggedEvent::MouseDraggedEvent(const Types::MouseButtonCode button, const f32 x, const f32 y, const bool isMutable):
+	I_MouseMovedEvent(x, y, isMutable), _button(button) {}
+
+std::string MouseDraggedEvent::ToString() const {
+	return std::format("{0}: {1}, {2} with button {3}", GetName(), _x, _y, _button);
+}
+
+}

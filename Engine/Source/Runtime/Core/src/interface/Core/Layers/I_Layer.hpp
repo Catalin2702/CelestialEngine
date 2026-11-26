@@ -1,0 +1,114 @@
+//
+// Module: CelestialEngine/Engine/Source/Runtime/Core/Layers
+// File: I_Layer.hpp
+// Created by: Catalin Chirosca
+// Created: 2026-02-19
+// Updated by: Catalin Chirosca
+// Updated: 2026-11-26
+//
+
+#pragma once
+
+#ifndef CE_CORE_LAYERS_I_LAYER_HPP
+#define CE_CORE_LAYERS_I_LAYER_HPP
+
+#include "Define/DynamicLinker.hpp"
+#include "Types/Var/Vars.hpp"
+
+#include <string>
+#include <utility>
+
+
+namespace CE::Core {
+
+class I_EventHubDispatcher;
+class I_Renderer;
+
+/**
+ * @class I_Layer
+ * @brief Abstract base class for application layers
+ * @details Layers are stackable components that can handle events, update logic, and rendering.
+ *			The layer system allows for organizing application logic into separate, manageable units.
+ *			Layers are updated and rendered in order, and events propagate through the layer stack.
+ */
+class CE_CORE_API I_Layer {
+protected:
+	/**
+	 * @brief Constructor
+	 * @param name Name for the layer
+	 * @details Creates a layer with an optional name for identification
+	 */
+	explicit I_Layer(std::string name = "Layer"): _name(std::move(name)) {}
+
+public:
+	/**
+	 * @brief Virtual destructor
+	 * @details Ensures proper cleanup of derived layer classes
+	 */
+	virtual ~I_Layer() = default;
+
+public:
+	/**
+	 * @brief Called when the layer is attached to the layer stack
+	 * @details Pure virtual method for layer initialization. Called once when the layer
+	 *			is added to the application. Use this for setting up resources.
+	 */
+	virtual void OnAttach() = 0;
+
+	/**
+	 * @brief Called when the layer is detached from the layer stack
+	 * @details Pure virtual method for layer cleanup. Called once when the layer
+	 *			is removed from the application. Use this for releasing resources.
+	 */
+	virtual void OnDetach() = 0;
+
+	/**
+	 * @brief Called every frame to update the layer
+	 * @details Pure virtual method for per-frame update logic. Called once per frame
+	 *			for all active layers. Use this for game logic, animations, etc.
+	 */
+	virtual void OnUpdate() = 0;
+
+	/**
+	 * @brief Pure virtual method for handling rendering logic
+	 */
+	virtual void OnRender() const = 0;
+
+	/**
+	 * @brief Records this layer's draws into the frame's main pass (no-op by default)
+	 * @param renderer The renderer whose pass is open: Submit what the layer draws, and nothing else
+	 * @details Called between BeginPass and EndPass, for every layer from the bottom of the stack to the top, overlays
+	 *			last. Distinct from OnRender, which runs later, inside the ImGui frame, where only UI belongs. Const for
+	 *			the same reason OnRender is: drawing reads the layer's state, and the state changes in OnUpdate.
+	 */
+	virtual void OnRenderScene([[maybe_unused]] I_Renderer& renderer) const {}
+
+	/**
+	 * @brief Subscribes the layer's handlers to the event hub (no-op by default)
+	 *			unsubscribes, so the hub must outlive the subscription
+	 * @details Handed the hub rather than reaching for Application::Get(): a layer that is given the hub it should
+	 *			subscribe to needs no application at all, which is what makes one testable on its own.
+	 */
+	virtual void SubscribeToEventHub(I_EventHubDispatcher&) {}
+	/**
+	 * @brief Removes the layer's handlers from the event hub (no-op by default)
+	 * @details Takes no hub, and needs none: an implementation holds Utility::Subscription tokens, each of which
+	 *			already knows the dispatcher it came from. Releasing them is the whole of the work, which is also why
+	 *			forgetting to call this at all is no longer fatal - the tokens die with the layer.
+	 */
+	virtual void UnsubscribeFromEventHub() {}
+
+public:
+	/**
+	 * @brief Gets the name of the layer
+	 * @return const std::string& Reference to the layer's name
+	 */
+	[[nodiscard]] const std::string& GetName() const { return _name; }
+
+protected:
+	std::string _name;       ///< Name for the layer
+};
+
+}
+
+#endif //CE_CORE_LAYERS_I_LAYER_HPP

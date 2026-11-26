@@ -19,24 +19,27 @@
 
 ## 📂 Project Structure
 ```text
-├── CMakeLists.txt          # Top level: resolves the backends, includes Engine/cmake, adds the engine and the apps
+├── CMakeLists.txt          # Top level: resolves the backends, includes Engine/CMake, adds the engine and the apps
 ├── CMakePresets.json       # Shared presets, one per toolchain (CMakeUserPresets.json: local variants)
 ├── Apps/
 │   └── Sandbox/            # The engine's test bed: add_executable() + one ce_configure_application() call
 │       └── Content/        # Its own files, shipped in Resources/Content (resources://)
 ├── Engine/
-│   ├── cmake/              # Build machinery: CE_Config, output layout, ce_configure_application, backend selection
+│   ├── CMake/              # Build machinery: CE_Config, output layout, ce_configure_application, backend selection
 │   │   └── templates/      # Default Info.plist and entitlements of every application
-│   ├── Modules/            # Core, Define, Events, IO, Native, RHI, Tools, Types, Utility
-│   ├── Programs/
-│   │   └── ShaderCompiler/ # CE_ShaderCompiler: build-time tool, GLSL -> SPIR-V -> MSL / GLSL 4.10 + reflection
+│   ├── Source/
+│   │   ├── Runtime/        # The modules every application links: Core, Define, Events, IO, Native, RHI, Tools, Types, Utility
+│   │   ├── Launch/         # CelestialEngine.hpp (include/) and EntryPoint.cpp (source/): main(), added to each app by
+│   │   │                   #   ce_configure_application - do NOT define your own
+│   │   └── Programs/       # Build-time tools, linked into no application
+│   │       └── ShaderCompiler/  # CE_ShaderCompiler: GLSL -> SPIR-V -> MSL / GLSL 4.10 + reflection
 │   ├── Shaders/            # The shaders, written once (src/source/*.vert, *.frag); outputs in <build>/.../Generated
-│   ├── src/
-│   │   ├── include/        # CelestialEngine.hpp, the header an application includes
-│   │   └── source/         # EntryPoint.cpp - main(), added to each app by ce_configure_application: do NOT define your own
-│   ├── Tests/              # GoogleTest suites, one per module, plus CMake and shader compiler tests (CE_BUILD_TESTS)
-│   ├── Vendor/             # CMake wrappers of the third-party libraries (glslang, SPIRV-Cross: compiler only)
-│   └── Submodules/         # ImGui, metal-cpp
-├── Scripts/                # Build-all, static analysis, Xcode project, maintenance (bump_updated_dates.sh)
+│   ├── Tests/              # GoogleTest suites (Runtime/<Module>), plus CMake and shader compiler tests (CE_BUILD_TESTS)
+│   └── ThirdParty/         # One folder per library: its CMake wrapper (CE_Vendor_*), plus the git submodule for
+│                           #   ImGui (ImGui/imgui) and metal-cpp (MetalCpp/metal-cpp); submodules.txt pins them
+├── Scripts/
+│   ├── Build/              # build_all.sh (every toolchain x configuration, with tests), create_xcode_proj.sh
+│   ├── Maintenance/        # bump_updated_dates.sh, update_submodules.sh
+│   └── StaticAnalysis/     # clang-tidy, cppcheck
 └── .exclude/               # Everything generated, git-ignored: build/<preset> (outputs in Out/<config>), tmp/
 ```

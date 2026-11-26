@@ -11,52 +11,52 @@ cmake_minimum_required(VERSION 4.1)
 
 # Normally already included by the top-level CMakeLists.txt (it has to be, for the applications to see its variables);
 # included here too for a project that only adds this directory. The include guard makes the second inclusion free.
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/CelestialEngineMacros.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/CMake/CelestialEngineMacros.cmake")
 
 project(CE_Engine LANGUAGES CXX VERSION 0.3.0)
 
 set(HEADERS
-	src/include/CelestialEngine.hpp
+	Source/Launch/include/CelestialEngine.hpp
 )
 
-# Not a header and not part of CE_Engine: src/source/EntryPoint.cpp (main) is compiled into each application by
+# Not a header and not part of CE_Engine: Source/Launch/source/EntryPoint.cpp (main) is compiled into each application by
 # ce_configure_application, see CEApplication.cmake.
 
-# Vendor libraries. The backend-specific ones are added only when their backend is compiled in (CE_RENDER_BACKENDS), so
+# Third-party libraries (CMake wrappers; ImGui and metal-cpp also hold their git submodule). The backend-specific ones are added only when their backend is compiled in (CE_RENDER_BACKENDS), so
 # a build without OpenGL does not even look for glad, and one without a GLFW window does not look for GLFW.
 if (CE_RENDER_OPENGL)
-	add_subdirectory(Vendor/Glad)
+	add_subdirectory(ThirdParty/Glad)
 endif ()
 
 if (CE_WINDOW_GLFW)
-	add_subdirectory(Vendor/Glfw)
+	add_subdirectory(ThirdParty/Glfw)
 endif ()
 
-add_subdirectory(Vendor/Glm)
-add_subdirectory(Vendor/Glslang)
-add_subdirectory(Vendor/ImGui)
-add_subdirectory(Vendor/SpdLog)
-add_subdirectory(Vendor/SpirvCross)
-add_subdirectory(Vendor/Stb)
+add_subdirectory(ThirdParty/Glm)
+add_subdirectory(ThirdParty/Glslang)
+add_subdirectory(ThirdParty/ImGui)
+add_subdirectory(ThirdParty/SpdLog)
+add_subdirectory(ThirdParty/SpirvCross)
+add_subdirectory(ThirdParty/Stb)
 
-# Apple vendor libraries
+# Apple third-party libraries
 if (APPLE)
-	add_subdirectory(Vendor/MetalCpp)
+	add_subdirectory(ThirdParty/MetalCpp)
 endif ()
 
-# Module libraries
-add_subdirectory(Modules/Core)
-add_subdirectory(Modules/Define)
-add_subdirectory(Modules/Events)
-add_subdirectory(Modules/IO)
-add_subdirectory(Modules/Native)
-add_subdirectory(Modules/RHI)
-add_subdirectory(Modules/Tools)
-add_subdirectory(Modules/Types)
-add_subdirectory(Modules/Utility)
+# Runtime: the module libraries every application links
+add_subdirectory(Source/Runtime/Core)
+add_subdirectory(Source/Runtime/Define)
+add_subdirectory(Source/Runtime/Events)
+add_subdirectory(Source/Runtime/IO)
+add_subdirectory(Source/Runtime/Native)
+add_subdirectory(Source/Runtime/RHI)
+add_subdirectory(Source/Runtime/Tools)
+add_subdirectory(Source/Runtime/Types)
+add_subdirectory(Source/Runtime/Utility)
 
-# Programs
-add_subdirectory(Programs/ShaderCompiler)
+# Programs: build-time tools, linked into no application
+add_subdirectory(Source/Programs/ShaderCompiler)
 
 # Shaders
 add_subdirectory(Shaders)
@@ -98,7 +98,7 @@ target_link_libraries(CE_Engine INTERFACE
 )
 
 target_include_directories(CE_Engine INTERFACE
-	src/include
+	Source/Launch/include
 )
 
 # The engine's tests live with it (Engine/Tests) and come last, once every module target they link exists. They build
