@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-15
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 // The main() of every engine application. Not part of any engine library: ce_configure_application adds this file to
@@ -19,6 +19,11 @@
 // Missing means the file reached a target some other way, and the application's settings would have nowhere to go.
 #ifndef CE_APPLICATION_NAME
 	#error "CE_APPLICATION_NAME is not defined: EntryPoint.cpp is added by ce_configure_application(), not by hand"
+#endif
+
+// Defined alongside it: the application's display name (BUNDLE_NAME), which is also its window's title.
+#ifndef CE_APPLICATION_DISPLAY_NAME
+	#error "CE_APPLICATION_DISPLAY_NAME is not defined: EntryPoint.cpp is added by ce_configure_application(), not by hand"
 #endif
 
 #include <exception>
@@ -94,8 +99,8 @@ int main(const int argc, const char* argv[]) {
 		const CE::Utility::Chronometer chronometer;
 #endif
 		// Window options into Config - validated first, so a backend this build lacks (CE_RENDER_BACKENDS) is reported
-		// here with the list of what is available - and the FileSystem root from argv[0].
-		CE::Core::InitFromCommandLine(argc, argv);
+		// here with the list of what is available. The title is not an option: it is the application's display name.
+		CE::Core::InitFromCommandLine(argc, argv, CE_APPLICATION_DISPLAY_NAME);
 
 		// The standard mounts, located from argv[0]: before the Application, whose renderer loads its shaders through
 		// them, and before GLFW, which changes the working directory a relative argv[0] is resolved against. The name

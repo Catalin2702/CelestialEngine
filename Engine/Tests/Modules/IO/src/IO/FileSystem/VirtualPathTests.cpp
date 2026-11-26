@@ -4,14 +4,17 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-26
 //
 
 #include <IO/FileSystem/FileSystem.hpp>
 
 #include <gtest/gtest.h>
 
+#include <format>
+
 using CE::IO::FileSystemError;
+using CE::IO::Mount;
 using CE::IO::VirtualPath;
 
 // ============================================================================
@@ -64,4 +67,41 @@ TEST(VirtualPathTest, Parse_DotsInsideAName_IsValid) {
 
 	ASSERT_TRUE(parsed.has_value());
 	EXPECT_EQ(parsed->relative, "Textures/logo..v2.png");
+}
+
+// ============================================================================
+// Mount and Compose Tests
+// ============================================================================
+
+/**
+ * @brief Test that every standard mount is spelled as the constant FileSystem mounts it under
+ */
+TEST(VirtualPathTest, Mount_FormatAs_MatchesMountConstants) {
+	EXPECT_EQ(format_as(Mount::Engine), CE::IO::ENGINE_MOUNT);
+	EXPECT_EQ(format_as(Mount::Resources), CE::IO::RESOURCES_MOUNT);
+	EXPECT_EQ(format_as(Mount::Config), CE::IO::CONFIG_MOUNT);
+	EXPECT_EQ(format_as(Mount::Cache), CE::IO::CACHE_MOUNT);
+	EXPECT_EQ(std::format("{}", Mount::Resources), "resources");
+}
+
+/**
+ * @brief Test that Compose builds the "<mount>://<path>" form Parse reads back
+ */
+TEST(VirtualPathTest, Compose_StandardMount_RoundTripsThroughParse) {
+	const auto composed = VirtualPath::Compose(Mount::Resources, "Textures/logo.png");
+	EXPECT_EQ(composed, "resources://Textures/logo.png");
+
+	const auto parsed = VirtualPath::Parse(composed);
+	ASSERT_TRUE(parsed.has_value());
+	EXPECT_EQ(parsed->mount, "resources");
+	EXPECT_EQ(parsed->relative, "Textures/logo.png");
+}
+
+/**
+ * @brief Test that a path composed from no mount is one Parse refuses
+ * @details Compose does not validate: Mount::None spells as "", so the result has no mount, and the error surfaces
+ *			where the path is used (any FileSystem call parses it).
+ */
+TEST(VirtualPathTest, Compose_NoneMount_IsInvalidPath) {
+	EXPECT_EQ(VirtualPath::Parse(VirtualPath::Compose(Mount::None, "imgui.ini")).error(), FileSystemError::InvalidPath);
 }

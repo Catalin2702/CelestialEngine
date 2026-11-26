@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 #include <Core/CMD/Window.hpp>
@@ -47,7 +47,7 @@ TEST_F(WindowCMDTest, ParseWindowArgs_NoArguments_ReturnsDefaults) {
 
 	const WindowProps props = ParseWindowArgs(argc, argv);
 
-	EXPECT_EQ(props.title, "CelestialEngine");
+	EXPECT_TRUE(props.title.empty());
 	EXPECT_EQ(props.width, 1280);
 	EXPECT_EQ(props.height, 720);
 	EXPECT_TRUE(props.VSync);
@@ -56,35 +56,26 @@ TEST_F(WindowCMDTest, ParseWindowArgs_NoArguments_ReturnsDefaults) {
 }
 
 /**
- * @brief Test title argument with long form
+ * @brief Test that the title is no longer an option
+ * @details The title is the application's display name (InitFromCommandLine sets it). "--title" / "-t" and their value
+ *			are reported as unsupported and skipped, and the options after them are still parsed.
  */
-TEST_F(WindowCMDTest, ParseWindowArgs_TitleLongForm_SetsTitle) {
+TEST_F(WindowCMDTest, ParseWindowArgs_TitleOption_IsIgnored) {
 	const char* argv[] = {
 		"program",
 		"--title",
-		"MyWindow"
-	};
-	constexpr int argc = 3;
-
-	const WindowProps props = ParseWindowArgs(argc, argv);
-
-	EXPECT_EQ(props.title, "MyWindow");
-}
-
-/**
- * @brief Test title argument with short form
- */
-TEST_F(WindowCMDTest, ParseWindowArgs_TitleShortForm_SetsTitle) {
-	const char* argv[] = {
-		"program",
+		"MyWindow",
 		"-t",
-		"GameEngine"
+		"GameEngine",
+		"-w",
+		"800"
 	};
-	constexpr int argc = 3;
+	constexpr int argc = 7;
 
 	const WindowProps props = ParseWindowArgs(argc, argv);
 
-	EXPECT_EQ(props.title, "GameEngine");
+	EXPECT_TRUE(props.title.empty());
+	EXPECT_EQ(props.width, 800);
 }
 
 /**
@@ -484,8 +475,6 @@ TEST_F(WindowCMDTest, ParseWindowArgs_WindowApiUppercase_ParsesCorrectly) {
 TEST_F(WindowCMDTest, ParseWindowArgs_MultipleArguments_SetsAllProperties) {
 	const char* argv[] = {
 		"program",
-		"--title",
-		"TestWindow",
 		"-w",
 		"1920",
 		"-h",
@@ -497,11 +486,10 @@ TEST_F(WindowCMDTest, ParseWindowArgs_MultipleArguments_SetsAllProperties) {
 		"-wa",
 		"cocoa"
 	};
-	constexpr int argc = 13;
+	constexpr int argc = 11;
 
 	const WindowProps props = ParseWindowArgs(argc, argv);
 
-	EXPECT_EQ(props.title, "TestWindow");
 	EXPECT_EQ(props.width, 1920);
 	EXPECT_EQ(props.height, 1080);
 	EXPECT_FALSE(props.VSync);
@@ -515,8 +503,8 @@ TEST_F(WindowCMDTest, ParseWindowArgs_MultipleArguments_SetsAllProperties) {
 TEST_F(WindowCMDTest, ParseWindowArgs_UppercaseArguments_ParsesCorrectly) {
 	const char* argv[] = {
 		"program",
-		"--TITLE",
-		"UpperCase",
+		"--HEIGHT",
+		"600",
 		"--WIDTH",
 		"800"
 	};
@@ -524,7 +512,7 @@ TEST_F(WindowCMDTest, ParseWindowArgs_UppercaseArguments_ParsesCorrectly) {
 
 	const WindowProps props = ParseWindowArgs(argc, argv);
 
-	EXPECT_EQ(props.title, "UpperCase");
+	EXPECT_EQ(props.height, 600);
 	EXPECT_EQ(props.width, 800);
 }
 

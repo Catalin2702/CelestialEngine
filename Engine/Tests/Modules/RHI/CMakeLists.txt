@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-24
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-24
+# Updated: 2026-11-26
 #
 
 enable_testing()
@@ -26,6 +26,9 @@ set(SOURCES
 
 	# Pipeline
 	src/RHI/Pipeline/PipelineDescriptorTests.cpp
+
+	# Shader: what the compiled shaders declare against the slots and layouts of the C++ side
+	src/RHI/Shader/ShaderReflectionTests.cpp
 )
 
 add_executable(CE_TestsRHI
@@ -56,6 +59,16 @@ endif ()
 # Third-party
 target_link_libraries(CE_TestsRHI PRIVATE
 	GTest::gtest_main
+)
+
+# The reflection tests read what CE_ShaderCompiler generated (Engine/Shaders): built first, and found where Engine/Shaders
+# put it.
+add_dependencies(CE_TestsRHI
+	CE_Shaders
+)
+
+target_compile_definitions(CE_TestsRHI PRIVATE
+	CE_SHADERS_GENERATED_DIR="${CE_SHADERS_GENERATED_DIR}"
 )
 
 add_test(NAME RHITests

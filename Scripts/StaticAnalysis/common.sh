@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-26
 #
 
 # Shared helpers for the static analysis scripts. Sourced, never executed directly.
@@ -78,7 +78,7 @@ import json, os, shlex, sys
 
 raw, out, root, with_objcxx = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] == "true"
 extensions = (".cpp", ".cc", ".cxx") + ((".mm",) if with_objcxx else ())
-owned = tuple(os.path.join(root, d) + os.sep for d in ("Engine/Modules", "Engine/Tests", "Apps"))
+owned = tuple(os.path.join(root, d) + os.sep for d in ("Engine/Modules", "Engine/Programs", "Engine/src", "Engine/Tests", "Apps"))
 
 entries = []
 for entry in json.load(open(raw)):

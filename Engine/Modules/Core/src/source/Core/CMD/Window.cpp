@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 #include "Core/CMD/Window.hpp"
@@ -107,7 +107,6 @@ std::string CompiledWindowApis() {
 }
 
 Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
-	std::string title = "CelestialEngine";
 	unsigned int width = 1280;
 	unsigned int height = 720;
 	auto VSync = true;
@@ -123,10 +122,7 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 		// Every supported option takes a value, so an option in last position is as unsupported as an unknown one.
 		const bool hasValue = i + 1 < argc;
 
-		if ((arg == "--title" or arg == "-t") and hasValue) {
-			title = argv[++i];
-		}
-		else if ((arg == "--width" or arg == "-w") and hasValue) {
+		if ((arg == "--width" or arg == "-w") and hasValue) {
 			width = ParseUnsigned(arg, argv[++i], "width");
 		}
 		else if ((arg == "--height" or arg == "-h") and hasValue) {
@@ -151,7 +147,8 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 	}
 	const auto windowApi = windowApiArg ? ParseWindowApi(windowApiArg, graphicsApi) : Types::GetDefaultWindowApi(graphicsApi);
 
-	return {title, width, height, VSync, refreshRate, graphicsApi, windowApi};
+	// No title: it is the application's (its BUNDLE_NAME), not the user's to choose. InitFromCommandLine sets it.
+	return {std::string{}, width, height, VSync, refreshRate, graphicsApi, windowApi};
 }
 
 void ValidateWindowProps(const Types::WindowProps& windowProps) {

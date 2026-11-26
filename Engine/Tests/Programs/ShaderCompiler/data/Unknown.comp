@@ -1,0 +1,5 @@
+#version 450
+
+// Test input of CE_ShaderCompiler: a compute shader, a stage the compiler does not accept.
+void main() {
+}

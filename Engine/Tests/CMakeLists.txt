@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-25
+# Updated: 2026-11-26
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -29,6 +29,10 @@ add_subdirectory(Modules/RHI)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
+
+# Not modules: the engine's CMake functions, and the programs the build runs
+add_subdirectory(CMake)
+add_subdirectory(Programs/ShaderCompiler)
 
 # Runs every engine test (each one carries the "Engine" label next to its module's)
 add_custom_target(RunEngineTests

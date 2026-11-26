@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-25
+# Updated: 2026-11-26
 #
 
 # ce_configure_application(<target>
@@ -41,7 +41,8 @@
 #     Resources/Content, which FileSystem mounts as resources:// - bundle resources on macOS, a copy next to the
 #     executable elsewhere;
 #   - defines CE_APPLICATION_NAME (the OUTPUT_NAME) for the executable's sources: EntryPoint.cpp hands it to the file
-#     system, which keeps this application's user data (config://) in a folder of that name;
+#     system, which keeps this application's user data (config://) in a folder of that name; and
+#     CE_APPLICATION_DISPLAY_NAME (the BUNDLE_NAME), which EntryPoint.cpp makes the window's title;
 #   - Windows/Linux: DLL/ search path for the module libraries;
 #   - the result stays where it is built, <build>/Out/<config>/ (no copy elsewhere; distribution is a separate step).
 #
@@ -266,8 +267,15 @@ function(ce_configure_application target)
 		message(FATAL_ERROR "ce_configure_application(${target}): OUTPUT_NAME '${ARG_OUTPUT_NAME}' cannot contain '/', '\\' or ':'")
 	endif ()
 
+	# The display name (BUNDLE_NAME, what Finder and the menu bar show) is also the window's title: EntryPoint.cpp
+	# hands it to InitFromCommandLine. A '"' or '\' would end or escape the string literal it becomes.
+	if (ARG_BUNDLE_NAME MATCHES "[\"\\\\]")
+		message(FATAL_ERROR "ce_configure_application(${target}): BUNDLE_NAME '${ARG_BUNDLE_NAME}' cannot contain '\"' or '\\'")
+	endif ()
+
 	target_compile_definitions(${target} PRIVATE
 		CE_APPLICATION_NAME="${ARG_OUTPUT_NAME}"
+		CE_APPLICATION_DISPLAY_NAME="${ARG_BUNDLE_NAME}"
 	)
 
 	# main() belongs in the executable - macOS takes the entry point from the main binary only, never from a dylib - so

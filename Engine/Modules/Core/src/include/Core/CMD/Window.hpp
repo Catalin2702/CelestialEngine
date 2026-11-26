@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 #pragma once
@@ -22,9 +22,8 @@ namespace CE::Core {
  * @brief Parses the window options out of the command-line arguments
  * @param argc Number of command-line arguments
  * @param argv Array of command-line argument strings
- * @return Types::WindowProps Window configuration extracted from arguments
+ * @return Types::WindowProps Window configuration extracted from arguments, with an empty title
  * @details Each flag takes its value as the NEXT argument (e.g. "-w 1280"). Supported flags (long / short form):
- *			- --title / -t : Window title
  *			- --width / -w : Window width in pixels
  *			- --height / -h : Window height in pixels
  *			- --vsync / -v : Enables/disables vertical synchronization
@@ -32,6 +31,9 @@ namespace CE::Core {
  *			- --graphics-api / -g : Graphics API (e.g. metal, opengl)
  *			- --window-api / -wa : Windowing API (e.g. cocoa, glfw)
  *			Unrecognized or valueless flags are ignored and the corresponding defaults are kept.
+ *
+ *			The title is not an option: it is the application's display name (BUNDLE_NAME in ce_configure_application),
+ *			which InitFromCommandLine stores in the parsed properties. A "--title" / "-t" is reported as unsupported.
  *
  *			Without -g the graphics API is the build's default (Types::GetDefaultGraphicsApi, the first entry of
  *			CE_RENDER_BACKENDS); without -wa the window API is the one that API is paired with

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 #include <Core/CMD/CommandLine.hpp>
@@ -41,15 +41,15 @@ protected:
 }
 
 /**
- * @brief Test that the parsed window options end up in Config
+ * @brief Test that the parsed window options end up in Config, titled with the name main() passes
  */
 TEST_F(CommandLineTest, InitFromCommandLine_ValidArguments_StoresWindowPropsInConfig) {
-	const char* argv[] = {"program", "-t", "FromArgs", "-w", "800", "-h", "600"};
+	const char* argv[] = {"program", "-w", "800", "-h", "600"};
 
-	InitFromCommandLine(7, argv);
+	InitFromCommandLine(5, argv, "Application Name");
 
-	const auto& props = Config::GetWindowProps();
-	EXPECT_EQ(props.title, "FromArgs");
+	const auto props = Config::GetWindowProps();
+	EXPECT_EQ(props.title, "Application Name");
 	EXPECT_EQ(props.width, 800);
 	EXPECT_EQ(props.height, 600);
 	EXPECT_EQ(props.graphicsApi, GetDefaultGraphicsApi());
@@ -60,9 +60,9 @@ TEST_F(CommandLineTest, InitFromCommandLine_ValidArguments_StoresWindowPropsInCo
  * @details Vulkan is not implemented yet, so no build compiles it in (CERenderBackends.cmake refuses it).
  */
 TEST_F(CommandLineTest, InitFromCommandLine_GraphicsApiNotCompiled_ThrowsAndStoresNothing) {
-	const char* argv[] = {"program", "-t", "Rejected", "-g", "vulkan"};
+	const char* argv[] = {"program", "-g", "vulkan"};
 
-	EXPECT_THROW(InitFromCommandLine(5, argv), std::runtime_error);
+	EXPECT_THROW(InitFromCommandLine(3, argv, "Rejected"), std::runtime_error);
 	EXPECT_EQ(Config::GetWindowProps().title, "Before");
 }
 
@@ -72,6 +72,18 @@ TEST_F(CommandLineTest, InitFromCommandLine_GraphicsApiNotCompiled_ThrowsAndStor
 TEST_F(CommandLineTest, InitFromCommandLine_InvalidValue_ThrowsAndStoresNothing) {
 	const char* argv[] = {"program", "-w", "wide"};
 
-	EXPECT_THROW(InitFromCommandLine(3, argv), std::runtime_error);
+	EXPECT_THROW(InitFromCommandLine(3, argv, "Rejected"), std::runtime_error);
 	EXPECT_EQ(Config::GetWindowProps().width, 640);
+}
+
+/**
+ * @brief Test that the command line cannot change the title
+ * @details "-t" is no longer an option: the window is always titled with the application's display name.
+ */
+TEST_F(CommandLineTest, InitFromCommandLine_TitleOnCommandLine_KeepsApplicationName) {
+	const char* argv[] = {"program", "-t", "FromArgs"};
+
+	InitFromCommandLine(3, argv, "Application Name");
+
+	EXPECT_EQ(Config::GetWindowProps().title, "Application Name");
 }

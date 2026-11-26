@@ -6,14 +6,14 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-18
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-26
 #
 
 # Runs clang-tidy over the project's own sources, with the checks listed in the root .clang-tidy.
 #
 # The clang-analyzer-* family is part of that list, so this is also the Clang Static Analyzer run: path-sensitive
 # checks for null dereferences, leaks, use-after-move and the like. Headers are reported only when they belong to the
-# project (Engine/Modules, Engine/Tests, Apps); vendored code and vcpkg dependencies are compiled but never reported.
+# project (Engine/Modules, Engine/Programs, Engine/src, Engine/Tests, Apps); vendored code and vcpkg dependencies are compiled but never reported.
 
 source "${0:A:h}/common.sh"
 

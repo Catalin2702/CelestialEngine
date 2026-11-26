@@ -10,14 +10,17 @@ percorso interno dei sorgenti (`src/<Modulo>/<Area>/Platforms/<OS>/<API>/`).
 
 ```
 Engine/Tests/
+├── CMake/          # Test delle funzioni CMake (script cmake -P): ce_collect_application_content
+├── Programs/
+│   └── ShaderCompiler/  # Test di CE_ShaderCompiler, eseguito come lo esegue la build (data/: shader di prova)
 └── Modules/
     ├── Core/       # Test per CE_Core (CMD, Config, Input, Layers e helper ImGui, bridge ImGui-Metal, Hub e codici tasto GLFW/Cocoa,
     │               #   camera, ForwardRenderer con un RHI finto)
     ├── Define/     # Test per CE_Define (BIND_FN_*)
     ├── Events/     # Test per CE_Events (eventi e macro EVENT_CLASS_*)
-    ├── IO/         # Test per CE_IO (VirtualPath, FileSystem su cartelle temporanee)
+    ├── IO/         # Test per CE_IO (VirtualPath: Parse, Compose, Mount; FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (dispatcher AppKit/MetalKit)
-    ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL)
+    ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL, riflessione degli shader)
     ├── Tools/      # Test per CE_Tools (logging)
     ├── Types/      # Test per CE_Types (BIT, key code, render, window, build) - niente conversioni verso i backend
     └── Utility/    # Test per CE_Utility (Delegate, Dispatcher, String, Time; che l'umbrella non porti dentro ImGui o Core)
@@ -55,6 +58,8 @@ ctest -C Debug -L RHI --output-on-failure      # Solo test RHI
 ctest -C Debug -L Tools --output-on-failure    # Solo test Tools
 ctest -C Debug -L Types --output-on-failure    # Solo test Types
 ctest -C Debug -L Utility --output-on-failure  # Solo test Utility
+ctest -C Debug -L CMake --output-on-failure    # Solo test delle funzioni CMake
+ctest -C Debug -L ShaderCompiler --output-on-failure  # Solo test di CE_ShaderCompiler
 ```
 
 ### Test con output verbose
@@ -90,6 +95,8 @@ Gli eseguibili stanno nella cartella di build, in `Out/<config>/Tests/`, e accet
 | `CE_TestsTools`    | `ToolsTests`  | `Engine;Tools`     |
 | `CE_TestsTypes`    | `TypesTests`  | `Engine;Types`     |
 | `CE_TestsUtility`  | `UtilityTests`| `Engine;Utility`   |
+| `cmake -P`         | `ApplicationContentTests` | `Engine;CMake` |
+| `CE_ShaderCompiler`| `ShaderCompiler.ValidShader`, `.BrokenShader`, `.UnknownStage` | `Engine;ShaderCompiler` |
 
 ## Cosa viene testato (e cosa no)
 
@@ -102,7 +109,15 @@ girare anche senza display. Questo determina cosa è coperto:
   `ForwardRenderer` su device e swapchain finti, e che le finestre siano superfici dell'RHI (`RHI::I_Surface`).
 - **RHI**: le parti che non toccano la GPU - `BufferLayout`, descrittori di pass e pipeline, `Viewport`, conversioni
   verso OpenGL - e che ogni umbrella dell'RHI compili da solo, senza header di Core. `CE_TestsRHI` linka `CE_RHI` e
-  non `CE_Core`: se l'RHI tornasse a dipendere da Core, il test non linkerebbe più.
+  non `CE_Core`: se l'RHI tornasse a dipendere da Core, il test non linkerebbe più. Legge anche i file generati dalla
+  build degli shader (`CE_SHADERS_GENERATED_DIR`): la riflessione deve avere i blocchi di costanti agli slot e con le
+  dimensioni di `ShaderConstants.hpp`, gli ingressi del vertex shader nell'ordine di `BufferLayout`, le uscite del
+  vertex uguali agli ingressi del fragment; il GLSL deve essere 4.10 senza `binding`, l'MSL deve avere gli entry point
+  e gli indici `buffer(1)`, `buffer(2)`, `texture(0)`.
+- **CMake**: `ce_collect_application_content` su una cartella finta (file annidati, ordine, `.DS_Store` e `.git/`
+  esclusi), eseguita come script senza configurare un'applicazione.
+- **ShaderCompiler**: il programma su uno shader valido (tutte le uscite), uno con un errore (il messaggio indica
+  `file:riga`) e un'estensione sconosciuta.
 - **Native**: i dispatcher AppKit/MetalKit, verificati sull'inoltro dei callback nativi (i
   puntatori `NS::Event` / `MTK::View` non vengono mai dereferenziati dai dispatcher, quindi bastano indirizzi finti).
 - **Events / Types / Define / Tools / Utility**: interamente coperti, non dipendono dalla piattaforma.
@@ -111,8 +126,8 @@ girare anche senza display. Questo determina cosa è coperto:
 
 Non sono coperti da test automatici i componenti che richiedono una finestra o una GPU reale: `GlfwWindow`,
 `CocoaWindow`, `Application`, le piattaforme (`GlfwPlatform`, `CocoaPlatform`), i device e le swapchain
-(`OpenGlGraphicDevice`, `MetalGraphicDevice`, `OpenGlSwapchain`, `MetalSwapchain`), gli shader e i layer ImGui
-concreti. Le parti *logiche* di quei percorsi (conversione dei codici tasto, creazione e instradamento
+(`OpenGlGraphicDevice`, `MetalGraphicDevice`, `OpenGlSwapchain`, `MetalSwapchain`), l'esecuzione degli shader sulla
+GPU e i layer ImGui concreti. Le parti *logiche* di quei percorsi (conversione dei codici tasto, creazione e instradamento
 degli eventi, gestione dello stato) sono però testate attraverso gli hub e i moduli Types/Native.
 
 ## Aggiungere Nuovi Test

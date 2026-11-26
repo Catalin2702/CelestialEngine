@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-25
+// Updated: 2026-11-26
 //
 
 #include "Core/CMD/CommandLine.hpp"
@@ -17,9 +17,10 @@
 
 namespace CE::Core {
 
-void InitFromCommandLine(const int argc, const char* argv[]) {
+void InitFromCommandLine(const int argc, const char* argv[], const std::string_view windowTitle) {
 	// Validated before it is stored: Config never holds a window this build cannot open.
 	auto windowProps = ParseWindowArgs(argc, argv);
+	windowProps.title = windowTitle;
 	ValidateWindowProps(windowProps);
 	Config::SetWindowProps(std::move(windowProps));
 }
