@@ -160,9 +160,11 @@ function(ce_configure_application target)
 	endif ()
 
 	if (CE_RENDER_OPENGL)
-		# GLSL is loaded and compiled at runtime, so the .glsl files are bundled as-is.
+		# GLSL is compiled by the driver at run time, so the .glsl files CE_ShaderCompiler generated are bundled as they
+		# are. GENERATED, like the Metal library: they do not exist until the build has run the shader compiler.
 		if (APPLE)
 			set_source_files_properties(${CE_OPENGL_SHADERS_SOURCES} PROPERTIES
+				GENERATED TRUE
 				MACOSX_PACKAGE_LOCATION "Resources/Engine/Shaders/OpenGL"
 			)
 		endif ()

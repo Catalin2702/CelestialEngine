@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-25
+# Updated: 2026-11-26
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -29,9 +29,9 @@ target_include_directories(CE_Sandbox PRIVATE
 )
 
 ce_configure_application(CE_Sandbox
-	OUTPUT_NAME "CelestialEngine"
-	BUNDLE_NAME "Celestial Engine"
-	BUNDLE_ID "com.celestialengine.app"
+	OUTPUT_NAME "CelestialSandbox"
+	BUNDLE_NAME "Celestial Sandbox"
+	BUNDLE_ID "com.celestialsandbox.app"
 	ASSET_CATALOG "Resources/Assets.xcassets"
 	CONTENT "Content"
 )

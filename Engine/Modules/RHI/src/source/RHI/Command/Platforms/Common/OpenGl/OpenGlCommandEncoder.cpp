@@ -147,9 +147,10 @@ void OpenGlCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& t
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, static_cast<const OpenGlTexture&>(texture).GetTexture());
 
-	// GLSL 330 has no binding layout qualifier for samplers, so the uniform has to be told which unit to read. The
-	// composite shader declares exactly one, and its location is looked up by name once per bind - cheap enough at
-	// one call per frame, and it keeps the encoder from having to know the program's uniform table.
+	// GLSL 4.10 has no binding layout qualifier for samplers (CE_ShaderCompiler drops the source's binding = 0), so
+	// the uniform has to be told which unit to read. The composite shader declares exactly one, and its location is
+	// looked up by name once per bind - cheap enough at one call per frame, and it keeps the encoder from having to
+	// know the program's uniform table.
 	GLint program = 0;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &program);
 	if (program != 0) {

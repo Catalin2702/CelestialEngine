@@ -77,8 +77,8 @@ u32 ResolveStage(const std::shared_ptr<I_ShaderModule>& module, const Types::Sha
 
 void BindConstantsBlocks(const u32 programID) {
 	// GLSL 4.10 has no layout(binding = N) for blocks - that arrives with 4.20, past what macOS offers - so the
-	// program is told from here instead. The names are the ones Common.h gives the same structs: the one convention
-	// the backends share, as with the shader names.
+	// program is told from here instead. The names are the block names of the shaders in Engine/Shaders/src, which
+	// the generated GLSL keeps, and the names of the C++ structs: ShaderReflectionTests checks the three agree.
 	constexpr std::array<std::pair<const char*, u32>, 2> blocks{{
 		{"CameraConstants", Types::CAMERA_CONSTANTS_SLOT},
 		{"ObjectConstants", Types::OBJECT_CONSTANTS_SLOT},

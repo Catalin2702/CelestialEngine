@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-24
+// Updated: 2026-11-26
 //
 
 #pragma once
@@ -30,8 +30,8 @@ namespace CE::RHI {
  *			is the device's job.
  *
  *			The convention every backend resolves the name through is the same shape: `<Name>` in PascalCase, one
- *			name per stage. Adding a shader means adding it under that name to every backend that must run it, and
- *			nothing else changes.
+ *			name per stage. The name is the file's in Engine/Shaders/src (`<Name>.vert`, `<Name>.frag`): adding a
+ *			shader means adding that one file, and CE_ShaderCompiler produces what every backend loads under it.
  *
  *			The strings are borrowed for the duration of the CreateShaderModule call only - a module copies whatever
  *			it needs to keep.

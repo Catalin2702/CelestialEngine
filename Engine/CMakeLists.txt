@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-25
+# Updated: 2026-11-26
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -33,8 +33,10 @@ if (CE_WINDOW_GLFW)
 endif ()
 
 add_subdirectory(Vendor/Glm)
+add_subdirectory(Vendor/Glslang)
 add_subdirectory(Vendor/ImGui)
 add_subdirectory(Vendor/SpdLog)
+add_subdirectory(Vendor/SpirvCross)
 add_subdirectory(Vendor/Stb)
 
 # Apple vendor libraries
@@ -52,6 +54,9 @@ add_subdirectory(Modules/RHI)
 add_subdirectory(Modules/Tools)
 add_subdirectory(Modules/Types)
 add_subdirectory(Modules/Utility)
+
+# Programs
+add_subdirectory(Programs/ShaderCompiler)
 
 # Shaders
 add_subdirectory(Shaders)

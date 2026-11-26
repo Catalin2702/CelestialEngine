@@ -1,12 +1,14 @@
 {
 	"name": "celestial-engine",
 	"version-string": "0.2.5",
-	"description": "A course project for learning game engine",
+	"description": "An amateur game engine",
 	"builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
 	"dependencies": [
 		"glm",
+		"glslang",
 		"gtest",
 		"spdlog",
+		"spirv-cross",
 		"stb"
 	],
 	"features": {
@@ -37,12 +39,20 @@
 			"version": "1.0.3"
 		},
 		{
+			"name": "glslang",
+			"version": "16.1.0"
+		},
+		{
 			"name": "gtest",
 			"version": "1.17.0#2"
 		},
 		{
 			"name": "spdlog",
 			"version": "1.17.0"
+		},
+		{
+			"name": "spirv-cross",
+			"version": "1.4.335.0"
 		},
 		{
 			"name": "stb",

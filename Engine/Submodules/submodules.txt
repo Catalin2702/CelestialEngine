@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-09-06
 # Updated by: Catalin Chirosca
-# Updated: 2026-09-06
+# Updated: 2026-11-26
 #
 
 # Pinned revision of every git submodule, one per line, requirements.txt style:
@@ -31,4 +31,4 @@
 
 ImGui==v1.92.9-docking
 
-MetalCpp==v27.0.3
+MetalCpp==v27.0.1.0

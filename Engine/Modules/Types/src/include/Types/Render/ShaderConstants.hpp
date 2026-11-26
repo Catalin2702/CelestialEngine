@@ -35,9 +35,9 @@ struct alignas(16) ObjectConstants {
 static_assert(CAMERA_CONSTANTS_SLOT < MAX_CONSTANT_SLOTS and OBJECT_CONSTANTS_SLOT < MAX_CONSTANT_SLOTS,
 	"A constant slot is past the last one every backend reserves!");
 
-static_assert(sizeof(CameraConstants) == 64, "CameraConstants must match its twins in the shader files!");
+static_assert(sizeof(CameraConstants) == 64, "CameraConstants must match its block in Engine/Shaders/src/Vertex.vert!");
 
-static_assert(sizeof(ObjectConstants) == 64, "ObjectConstants must match its twins in the shader files!");
+static_assert(sizeof(ObjectConstants) == 64, "ObjectConstants must match its block in Engine/Shaders/src/Vertex.vert!");
 
 }
 
