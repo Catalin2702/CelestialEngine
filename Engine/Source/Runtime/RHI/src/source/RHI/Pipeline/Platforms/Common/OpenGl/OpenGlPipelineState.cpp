@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
@@ -90,6 +90,23 @@ void BindConstantsBlocks(const u32 programID) {
 	}
 }
 
+void BindTextureUnits(const u32 programID) {
+	// The same story for the samplers: CE_ShaderCompiler drops the source's binding = N, so each sampler2D is told its
+	// texture unit from here, once, by name. The names are the sampler names of the shaders in Engine/Shaders/src,
+	// which the generated GLSL keeps; a name the program does not declare is skipped.
+	constexpr std::array<std::pair<const char*, u32>, 2> samplers{{
+		{"sceneColor", Types::SCENE_COLOR_TEXTURE_SLOT},
+		{"baseColorTexture", Types::BASE_COLOR_TEXTURE_SLOT},
+	}};
+
+	for (const auto& [name, unit]: samplers) {
+		// glProgramUniform, not glUniform: GL 4.1 can write a program's uniform without making it current, so linking a
+		// pipeline mid-pass cannot change which program the pass is drawing with.
+		if (const auto location = glGetUniformLocation(programID, name); location >= 0)
+			glProgramUniform1i(programID, location, static_cast<GLint>(unit));
+	}
+}
+
 }
 
 OpenGlPipelineState::OpenGlPipelineState(PipelineDescriptor descriptor): _descriptor(std::move(descriptor)) {
@@ -130,6 +147,7 @@ OpenGlPipelineState::OpenGlPipelineState(PipelineDescriptor descriptor): _descri
 	}
 
 	BindConstantsBlocks(_programID);
+	BindTextureUnits(_programID);
 }
 
 OpenGlPipelineState::OpenGlPipelineState(OpenGlPipelineState&& other) noexcept:

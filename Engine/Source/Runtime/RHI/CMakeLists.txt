@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-24
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 # The Render Hardware Interface: devices, buffers, textures, pipelines, shaders, command encoders and swapchains, with
@@ -109,10 +109,12 @@ set(SWAPCHAIN_HEADERS
 set(TEXTURE_HEADERS
 	src/include/RHI/Texture/Texture.hpp
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/include/RHI/Texture/Platforms/Common/OpenGl/OpenGlSampler.hpp
 		src/include/RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp
 	>
 
 	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/include/RHI/Texture/Platforms/Mac/Metal/MetalSampler.hpp
 		src/include/RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp
 	>
 )
@@ -158,6 +160,7 @@ set(SWAPCHAIN_INTERFACES
 )
 
 set(TEXTURE_INTERFACES
+	src/interface/RHI/Texture/I_Sampler.hpp
 	src/interface/RHI/Texture/I_Texture.hpp
 )
 
@@ -243,10 +246,12 @@ set(SWAPCHAIN_SOURCES
 
 set(TEXTURE_SOURCES
 	$<$<BOOL:${CE_RENDER_OPENGL}>:
+		src/source/RHI/Texture/Platforms/Common/OpenGl/OpenGlSampler.cpp
 		src/source/RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.cpp
 	>
 
 	$<$<BOOL:${CE_RENDER_METAL}>:
+		src/source/RHI/Texture/Platforms/Mac/Metal/MetalSampler.cpp
 		src/source/RHI/Texture/Platforms/Mac/Metal/MetalTexture.cpp
 	>
 )

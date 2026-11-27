@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
@@ -17,13 +17,7 @@ static_assert(std::is_same_v<GLenum, u32>, "Glad changed the type of GLenum; the
 
 namespace CE::RHI {
 
-using Types::BlendFactor;
-using Types::CompareFunc;
-using Types::CullMode;
-using Types::FrontFace;
-using Types::PixelFormat;
-using Types::PrimitiveTopology;
-using Types::ShaderType;
+using namespace Types;
 
 int ToInt(BufferBit bit) {
 	return static_cast<int>(bit);
@@ -110,6 +104,25 @@ u32 ToOpenGl(const PrimitiveTopology topology) {
 		case PrimitiveTopology::TriangleList:
 		default:
 			return GL_TRIANGLES;
+	}
+}
+
+u32 ToOpenGl(const FilterMode filterMode) {
+	switch (filterMode) {
+		case FilterMode::Nearest: return GL_NEAREST;
+		case FilterMode::Linear:
+		default:
+			return GL_LINEAR; // The default filter, as on Metal: never 0, which glSamplerParameteri rejects
+	}
+}
+
+u32 ToOpenGl(const AddressMode addressMode) {
+	switch (addressMode) {
+		case AddressMode::Repeat: return GL_REPEAT;
+		case AddressMode::MirrorRepeat: return GL_MIRRORED_REPEAT;
+		case AddressMode::ClampToEdge:
+		default:
+			return GL_CLAMP_TO_EDGE; // The default address mode, as on Metal
 	}
 }
 

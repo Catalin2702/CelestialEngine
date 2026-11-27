@@ -15,12 +15,12 @@ Engine/Tests/
 │   └── ShaderCompiler/  # Test di CE_ShaderCompiler, eseguito come lo esegue la build (data/: shader di prova)
 └── Runtime/
     ├── Core/       # Test per CE_Core (CMD, Config, Input, Layers e helper ImGui, bridge ImGui-Metal, Hub e codici tasto GLFW/Cocoa,
-    │               #   camera, ForwardRenderer con un RHI finto)
+    │               #   camera, ForwardRenderer con un RHI finto, decodifica delle immagini)
     ├── Define/     # Test per CE_Define (BIND_FN_*)
     ├── Events/     # Test per CE_Events (eventi e macro EVENT_CLASS_*)
     ├── IO/         # Test per CE_IO (VirtualPath: Parse, Compose, Mount; FileSystem su cartelle temporanee)
     ├── Native/     # Test per CE_Native (dispatcher AppKit/MetalKit)
-    ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL, riflessione degli shader)
+    ├── RHI/        # Test per CE_RHI (header, BufferLayout, descrittori, Viewport, conversioni OpenGL dei sampler e degli altri tipi, riflessione degli shader)
     ├── Tools/      # Test per CE_Tools (logging)
     ├── Types/      # Test per CE_Types (BIT, key code, render, window, build) - niente conversioni verso i backend
     └── Utility/    # Test per CE_Utility (Delegate, Dispatcher, String, Time; che l'umbrella non porti dentro ImGui o Core)
@@ -103,17 +103,22 @@ Gli eseguibili stanno nella cartella di build, in `Out/<config>/Tests/`, e accet
 I test sono **headless**: nessuno di essi apre una finestra, inizializza GLFW o crea un device Metal, così possono
 girare anche senza display. Questo determina cosa è coperto:
 
-- **Core**: il parsing della riga di comando e `Config`, lo stato dell'input (guidato dagli eventi dell'hub, non
+- **Core**: il parsing della riga di comando (compreso il valore di un'opzione sconosciuta, saltato con lei) e `Config`, lo stato dell'input (guidato dagli eventi dell'hub, non
   dal polling del sistema operativo), lo stack dei layer, la conversione dei tasti verso ImGui e il bridge verso il
   backend Metal di ImGui (solo che le funzioni esistano e linkino), la traduzione degli eventi degli hub (`GlfwEventHubDispatcher`, `CocoaEventHubDispatcher`), il
-  `ForwardRenderer` su device e swapchain finti, e che le finestre siano superfici dell'RHI (`RHI::I_Surface`).
+  `ForwardRenderer` su device e swapchain finti (texture e sampler di un comando legati a `BASE_COLOR_TEXTURE_SLOT`,
+  niente per un comando senza texture), `Image::Load` attraverso il file system (un PNG su un mount temporaneo diventa
+  RGBA8, riga in alto per prima; file non immagine, mancante o mount sconosciuto danno `nullopt`), e che le finestre
+  siano superfici dell'RHI (`RHI::I_Surface`).
 - **RHI**: le parti che non toccano la GPU - `BufferLayout`, descrittori di pass e pipeline, `Viewport`, conversioni
-  verso OpenGL - e che ogni umbrella dell'RHI compili da solo, senza header di Core. `CE_TestsRHI` linka `CE_RHI` e
+  verso OpenGL (filtri dei sampler senza mipmap, modalità di indirizzamento, un `SamplerDescriptor` vuoto lineare e
+  clampato) e i default di `SamplerDescriptor` - e che ogni umbrella dell'RHI compili da solo, senza header di Core. `CE_TestsRHI` linka `CE_RHI` e
   non `CE_Core`: se l'RHI tornasse a dipendere da Core, il test non linkerebbe più. Legge anche i file generati dalla
   build degli shader (`CE_SHADERS_GENERATED_DIR`): la riflessione deve avere i blocchi di costanti agli slot e con le
   dimensioni di `ShaderConstants.hpp`, gli ingressi del vertex shader nell'ordine di `BufferLayout`, le uscite del
   vertex uguali agli ingressi del fragment; il GLSL deve essere 4.10 senza `binding`, l'MSL deve avere gli entry point
-  e gli indici `buffer(1)`, `buffer(2)`, `texture(0)`.
+  e gli indici `buffer(1)`, `buffer(2)`, `texture(0)`; per `TexturedFragment` `baseColorTexture` è l'unica
+  immagine campionata, a `BASE_COLOR_TEXTURE_SLOT`, con `texture(0)` e `sampler(0)` nell'MSL.
 - **CMake**: `ce_collect_application_content` su una cartella finta (file annidati, ordine, `.DS_Store` e `.git/`
   esclusi), eseguita come script senza configurare un'applicazione.
 - **ShaderCompiler**: il programma su uno shader valido (tutte le uscite), uno con un errore (il messaggio indica

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include <Types/Render/ShaderConstants.hpp>
@@ -108,10 +108,12 @@ std::optional<Entry> AtLocation(const std::vector<Entry>& entries, const std::st
 }
 
 /// Every shader Engine/Shaders compiles, with its stage. constexpr: nothing to construct, so nothing can throw before main.
-constexpr std::array<std::pair<std::string_view, std::string_view>, 4> Shaders{{
+constexpr std::array<std::pair<std::string_view, std::string_view>, 6> Shaders{{
 	{"CompositeFragment", "Fragment"},
 	{"CompositeVertex", "Vertex"},
 	{"Fragment", "Fragment"},
+	{"TexturedFragment", "Fragment"},
+	{"TexturedVertex", "Vertex"},
 	{"Vertex", "Vertex"},
 }};
 
@@ -190,30 +192,64 @@ TEST(ShaderReflectionTest, VertexShaders_ReadPositionThenColour) {
 }
 
 /**
- * @brief What Fragment reads is what Vertex writes, location by location
+ * @brief What each fragment shader reads is what its vertex shader writes, location by location
  * @details The two are compiled separately; nothing but this check links the vertex output to the fragment input.
  */
 TEST(ShaderReflectionTest, Fragment_Inputs_MatchVertexOutputs) {
-	const auto vertex = ReadReflection("Vertex");
-	const auto fragment = ReadReflection("Fragment");
+	for (const auto& [vertexName, fragmentName]: {std::pair{"Vertex", "Fragment"}, std::pair{"TexturedVertex", "TexturedFragment"}}) {
+		const auto vertex = ReadReflection(vertexName);
+		const auto fragment = ReadReflection(fragmentName);
 
-	for (const auto& input: All(fragment, "input")) {
-		const auto output = AtLocation(vertex, "output", input.Number("location"));
-		ASSERT_TRUE(output.has_value()) << "no vertex output at location " << input.Get("location");
-		EXPECT_EQ(output->Get("type"), input.Get("type")) << "location " << input.Get("location");
+		for (const auto& input: All(fragment, "input")) {
+			const auto output = AtLocation(vertex, "output", input.Number("location"));
+			ASSERT_TRUE(output.has_value()) << fragmentName << ": no vertex output at location " << input.Get("location");
+			EXPECT_EQ(output->Get("type"), input.Get("type")) << fragmentName << ": location " << input.Get("location");
+		}
 	}
 }
 
 /**
- * @brief The composite pass reads the scene texture at slot 0, under the name OpenGL binds it by
- * @details ForwardRenderer::Composite calls SetFragmentTexture(0, ...); OpenGlCommandEncoder looks the sampler up as
- *			"sceneColor".
+ * @brief The textured vertex shader reads position then texture coordinate
+ * @details SandboxLayer builds its quad from {Float3 inputPosition, Float2 inputTexCoord}: element i is location i.
  */
-TEST(ShaderReflectionTest, CompositeFragment_ReadsSceneColorAtSlotZero) {
+TEST(ShaderReflectionTest, TexturedVertex_ReadsPositionThenTexCoord) {
+	const auto entries = ReadReflection("TexturedVertex");
+
+	const auto position = AtLocation(entries, "input", 0);
+	ASSERT_TRUE(position.has_value());
+	EXPECT_EQ(position->Get("type"), "float3");
+
+	const auto texCoord = AtLocation(entries, "input", 1);
+	ASSERT_TRUE(texCoord.has_value());
+	EXPECT_EQ(texCoord->Get("type"), "float2");
+}
+
+/**
+ * @brief The composite pass reads the scene texture at its slot, under the name OpenGL binds it by
+ * @details ForwardRenderer::_Composite calls SetFragmentTexture(SCENE_COLOR_TEXTURE_SLOT, ...); OpenGlPipelineState
+ *			points the sampler named "sceneColor" at that unit when the program links.
+ */
+TEST(ShaderReflectionTest, CompositeFragment_ReadsSceneColorAtItsSlot) {
 	const auto texture = Named(ReadReflection("CompositeFragment"), "sampled_image", "sceneColor");
 	ASSERT_TRUE(texture.has_value());
 	EXPECT_EQ(texture->Number("set"), 0u);
-	EXPECT_EQ(texture->Number("binding"), 0u);
+	EXPECT_EQ(texture->Number("binding"), CE::Types::SCENE_COLOR_TEXTURE_SLOT);
+}
+
+/**
+ * @brief The textured fragment shader samples the base colour at its slot, under the name OpenGL binds it by
+ * @details ForwardRenderer::Submit binds a command's texture and sampler at BASE_COLOR_TEXTURE_SLOT; OpenGlPipelineState
+ *			points the sampler named "baseColorTexture" at that unit. A renamed sampler2D would read unit 0 by default and
+ *			only work while the slot happens to be 0.
+ */
+TEST(ShaderReflectionTest, TexturedFragment_SamplesBaseColorAtItsSlot) {
+	const auto entries = ReadReflection("TexturedFragment");
+	EXPECT_EQ(All(entries, "sampled_image").size(), 1u);
+
+	const auto texture = Named(entries, "sampled_image", "baseColorTexture");
+	ASSERT_TRUE(texture.has_value());
+	EXPECT_EQ(texture->Number("set"), 0u);
+	EXPECT_EQ(texture->Number("binding"), CE::Types::BASE_COLOR_TEXTURE_SLOT);
 }
 
 // ============================================================================
@@ -249,6 +285,13 @@ TEST(ShaderReflectionTest, GeneratedMsl_FollowsEntryPointAndSlotConventions) {
 
 	const auto composite = ReadFile(GeneratedDirectory() / "Metal" / "CompositeFragment.metal");
 	EXPECT_NE(composite.find("compositeFragmentMain("), std::string::npos);
-	EXPECT_NE(composite.find("[[texture(0)]]"), std::string::npos);
+	EXPECT_NE(composite.find("[[texture(" + std::to_string(CE::Types::SCENE_COLOR_TEXTURE_SLOT) + ")]]"), std::string::npos);
+
+	// One combined sampler2D becomes a texture and a sampler at the same index: what SetFragmentTexture and
+	// SetFragmentSampler bind with the same slot.
+	const auto textured = ReadFile(GeneratedDirectory() / "Metal" / "TexturedFragment.metal");
+	EXPECT_NE(textured.find("texturedFragmentMain("), std::string::npos);
+	EXPECT_NE(textured.find("[[texture(" + std::to_string(CE::Types::BASE_COLOR_TEXTURE_SLOT) + ")]]"), std::string::npos);
+	EXPECT_NE(textured.find("[[sampler(" + std::to_string(CE::Types::BASE_COLOR_TEXTURE_SLOT) + ")]]"), std::string::npos);
 }
 #endif

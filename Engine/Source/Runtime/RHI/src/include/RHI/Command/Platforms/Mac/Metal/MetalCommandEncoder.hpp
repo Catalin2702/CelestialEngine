@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -106,6 +106,8 @@ public:
 	void SetViewport(const Viewport& viewport) override;
 
 	void SetFragmentTexture(u32 slot, const I_Texture& texture) override;
+
+	void SetFragmentSampler(u32 slot, const I_Sampler& sampler) override;
 
 	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override;
 

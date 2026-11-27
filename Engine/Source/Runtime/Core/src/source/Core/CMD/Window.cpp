@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-02-21
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "Core/CMD/Window.hpp"
@@ -14,7 +14,6 @@
 #include "Utility/Manipulation/String.hpp"
 
 #include <array>
-#include <cctype>
 #include <format>
 #include <stdexcept>
 #include <string>
@@ -120,9 +119,8 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 	for (int i = 1; i < argc; ++i) {
 		const std::string arg = Utility::ToLowerCase(argv[i]);
 		// Every supported option takes a value, so an option in last position is as unsupported as an unknown one.
-		const bool hasValue = i + 1 < argc;
 
-		if ((arg == "--width" or arg == "-w") and hasValue) {
+		if (const bool hasValue = i + 1 < argc; (arg == "--width" or arg == "-w") and hasValue) {
 			width = ParseUnsigned(arg, argv[++i], "width");
 		}
 		else if ((arg == "--height" or arg == "-h") and hasValue) {
@@ -143,6 +141,9 @@ Types::WindowProps ParseWindowArgs(const int argc, const char* argv[]) {
 		}
 		else {
 			CE_CORE_WARN("The parameter: ({0}) is not supported", argv[i]);
+			// Skips the parameter value
+			if (hasValue and not std::string(argv[i + 1]).starts_with('-'))
+				++i;
 		}
 	}
 	const auto windowApi = windowApiArg ? ParseWindowApi(windowApiArg, graphicsApi) : Types::GetDefaultWindowApi(graphicsApi);

@@ -4,16 +4,21 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include <Core/CMD/Window.hpp>
+
+#include <Define/Config.hpp>
 
 #include <Tools/Tools.hpp>
 #include <Types/Window/WindowProps.hpp>
 
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
+
+#include <format>
+#include <string>
 
 using namespace CE::Core;
 using namespace CE::Tools;
@@ -589,6 +594,128 @@ TEST_F(WindowCMDTest, ParseWindowArgs_UnrecognizedArguments_Ignored) {
 	const WindowProps props = ParseWindowArgs(argc, argv);
 
 	EXPECT_EQ(props.width, 1024);
+}
+
+// ============================================================================
+// Unsupported Option Value Tests
+// ============================================================================
+
+namespace {
+
+/// What ParseWindowArgs returned, and what the loggers wrote while it ran.
+struct ParsedWithLog {
+	WindowProps props;
+	std::string log;
+};
+
+/**
+ * @brief Runs ParseWindowArgs capturing stdout, where the Debug/Release loggers write
+ * @details Captured at the file-descriptor level (gtest), not with an extra spdlog sink: a sink built in this executable
+ *			instantiates spdlog's templates here too, and the second copy of its registry makes the next Log::Init throw
+ *			"logger with name 'CoreLogger' already exists".
+ */
+ParsedWithLog ParseCapturingLog(const int argc, const char* argv[]) {
+	::testing::internal::CaptureStdout();
+	auto props = ParseWindowArgs(argc, argv);
+	Log::Flush();
+	return {std::move(props), ::testing::internal::GetCapturedStdout()};
+}
+
+/// How many "is not supported" warnings the log holds.
+int UnsupportedWarnings(const std::string_view log) {
+	int count = 0;
+	for (auto at = log.find("is not supported"); at != std::string_view::npos; at = log.find("is not supported", at + 1))
+		++count;
+	return count;
+}
+
+/// Whether a warning named this argument as the unsupported one.
+bool Reported(const std::string_view log, const std::string_view argument) {
+	return log.contains(std::format("({}) is not supported", argument));
+}
+
+}
+
+/**
+ * @brief Test that the value of an unsupported option is skipped with it
+ * @details One warning, for the option: its value is not reported as a second unsupported parameter. The warning is
+ *			compiled out in Dist, so there only the parsing after it is checked.
+ */
+TEST_F(WindowCMDTest, ParseWindowArgs_UnsupportedOption_SkipsItsValue) {
+	const char* argv[] = {"program", "--unknown", "value", "-w", "1024"};
+
+	const auto [props, log] = ParseCapturingLog(5, argv);
+
+	EXPECT_EQ(props.width, 1024);
+#if not CE_DIST
+	EXPECT_EQ(UnsupportedWarnings(log), 1);
+	EXPECT_TRUE(Reported(log, "--unknown"));
+	EXPECT_FALSE(Reported(log, "value"));
+#endif
+}
+
+/**
+ * @brief Test that an option right after an unsupported one is not taken for its value
+ * @details "-w" starts with '-', so it is parsed as an option: the width is set, whatever the configuration.
+ */
+TEST_F(WindowCMDTest, ParseWindowArgs_UnsupportedOptionFollowedByAnOption_DoesNotSkipIt) {
+	const char* argv[] = {"program", "--unknown", "-w", "1024"};
+
+	const auto [props, log] = ParseCapturingLog(4, argv);
+
+	EXPECT_EQ(props.width, 1024);
+#if not CE_DIST
+	EXPECT_EQ(UnsupportedWarnings(log), 1);
+#endif
+}
+
+/**
+ * @brief Test that two unsupported options in a row are both reported, neither taken for the other's value
+ */
+TEST_F(WindowCMDTest, ParseWindowArgs_TwoUnsupportedOptions_ReportsBoth) {
+	const char* argv[] = {"program", "--first", "--second", "value", "-h", "600"};
+
+	const auto [props, log] = ParseCapturingLog(6, argv);
+
+	EXPECT_EQ(props.height, 600);
+#if not CE_DIST
+	EXPECT_EQ(UnsupportedWarnings(log), 2);
+	EXPECT_TRUE(Reported(log, "--first"));
+	EXPECT_TRUE(Reported(log, "--second"));
+	EXPECT_FALSE(Reported(log, "value"));
+#endif
+}
+
+/**
+ * @brief Test that an unsupported option in last position has nothing to skip and does not read past argv
+ */
+TEST_F(WindowCMDTest, ParseWindowArgs_UnsupportedOptionInLastPosition_IsReportedAlone) {
+	const char* argv[] = {"program", "-w", "800", "--unknown"};
+
+	const auto [props, log] = ParseCapturingLog(4, argv);
+
+	EXPECT_EQ(props.width, 800);
+#if not CE_DIST
+	EXPECT_EQ(UnsupportedWarnings(log), 1);
+	EXPECT_TRUE(Reported(log, "--unknown"));
+#endif
+}
+
+/**
+ * @brief Test that a supported option without its value (last position) is reported and leaves the default
+ * @details It takes the unsupported path too: nothing follows it, so nothing is skipped.
+ */
+TEST_F(WindowCMDTest, ParseWindowArgs_SupportedOptionWithoutValue_IsReportedAsUnsupported) {
+	const char* argv[] = {"program", "-h", "600", "-w"};
+
+	const auto [props, log] = ParseCapturingLog(4, argv);
+
+	EXPECT_EQ(props.height, 600);
+	EXPECT_EQ(props.width, 1280);
+#if not CE_DIST
+	EXPECT_EQ(UnsupportedWarnings(log), 1);
+	EXPECT_TRUE(Reported(log, "-w"));
+#endif
 }
 
 // ============================================================================

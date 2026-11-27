@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Command/Platforms/Common/OpenGl/OpenGlCommandEncoder.hpp"
 #include "RHI/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "RHI/Buffer/Platforms/Common/OpenGl/OpenGlBuffer.hpp"
 #include "RHI/Command/Viewport.hpp"
+#include "RHI/Texture/Platforms/Common/OpenGl/OpenGlSampler.hpp"
 #include "RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #include "Tools/Tools.hpp"
 
@@ -21,6 +22,8 @@
 
 
 namespace CE::RHI {
+
+static_assert(Types::MAX_TEXTURE_SLOTS <= 32, "OpenGlCommandEncoder::_boundSamplerSlots keeps one bit per texture slot in a u32!");
 
 Viewport ToOpenGlViewport(const Viewport& viewport, const u32 targetHeight) {
 	// Without the target's height there is nothing to measure against, and the only choices are a wrong answer and
@@ -51,7 +54,7 @@ OpenGlCommandEncoder::OpenGlCommandEncoder(const u32 width, const u32 height, co
 
 OpenGlCommandEncoder::OpenGlCommandEncoder(OpenGlCommandEncoder&& other) noexcept:
 	_topology(other._topology), _ended(other._ended), _vaoID(other._vaoID), _targetHeight(other._targetHeight),
-	_indexCount(other._indexCount), _uniformBuffers(other._uniformBuffers) {
+	_indexCount(other._indexCount), _boundSamplerSlots(other._boundSamplerSlots), _uniformBuffers(other._uniformBuffers) {
 	// The moved-from encoder must forget the name, otherwise its destructor deletes the vertex array we just took.
 	other._vaoID = 0;
 	other._ended = true;
@@ -68,6 +71,7 @@ OpenGlCommandEncoder& OpenGlCommandEncoder::operator = (OpenGlCommandEncoder&& o
 	_vaoID = other._vaoID;
 	_targetHeight = other._targetHeight;
 	_indexCount = other._indexCount;
+	_boundSamplerSlots = other._boundSamplerSlots;
 	_ended = other._ended;
 	_uniformBuffers = other._uniformBuffers;
 
@@ -142,21 +146,25 @@ void OpenGlCommandEncoder::SetViewport(const Viewport& viewport) {
 }
 
 void OpenGlCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& texture) {
+	assert(not _ended and "OpenGlCommandEncoder::SetFragmentTexture: The pass has already been ended!");
+	assert(slot < Types::MAX_TEXTURE_SLOTS and "OpenGlCommandEncoder::SetFragmentTexture: The slot is past the last texture slot!");
 	assert(texture.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetFragmentTexture: The texture is not OpenGl based!");
 
+	// A unit and a texture, nothing more. Which sampler2D reads this unit was settled when the program was linked
+	// (OpenGlPipelineState), the same way the constant blocks were.
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, static_cast<const OpenGlTexture&>(texture).GetTexture());
+}
 
-	// GLSL 4.10 has no binding layout qualifier for samplers (CE_ShaderCompiler drops the source's binding = 0), so
-	// the uniform has to be told which unit to read. The composite shader declares exactly one, and its location is
-	// looked up by name once per bind - cheap enough at one call per frame, and it keeps the encoder from having to
-	// know the program's uniform table.
-	GLint program = 0;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &program);
-	if (program != 0) {
-		if (const auto location = glGetUniformLocation(program, "sceneColor"); location >= 0)
-			glUniform1i(location, static_cast<GLint>(slot));
-	}
+void OpenGlCommandEncoder::SetFragmentSampler(u32 slot, const I_Sampler& sampler) {
+	assert(not _ended and "OpenGlCommandEncoder::SetFragmentSampler: The pass has already been ended!");
+	assert(slot < Types::MAX_TEXTURE_SLOTS and "OpenGlCommandEncoder::SetFragmentSampler: The slot is past the last texture slot!");
+	assert(sampler.GetGraphicApi() == Types::GraphicsApi::OpenGL and "OpenGlCommandEncoder::SetFragmentSampler: The sampler is not OpenGL based!");
+
+	// A unit, not a uniform: the sampler object attaches to texture unit `slot`, the one SetFragmentTexture bound the
+	// texture to, and the shader's sampler2D reads that unit.
+	glBindSampler(slot, static_cast<const OpenGlSampler&>(sampler).GetSampler());
+	_boundSamplerSlots |= 1u << slot;
 }
 
 void OpenGlCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
@@ -201,6 +209,13 @@ void OpenGlCommandEncoder::End() {
 	// vertex array or program bound would silently become its starting state.
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	// The same for the samplers: one left on a unit overrides the filtering of every texture bound there later.
+	for (u32 slot = 0; slot < Types::MAX_TEXTURE_SLOTS; ++slot) {
+		if (_boundSamplerSlots & (1u << slot))
+			glBindSampler(slot, 0);
+	}
+	_boundSamplerSlots = 0;
 
 	_ended = true;
 }

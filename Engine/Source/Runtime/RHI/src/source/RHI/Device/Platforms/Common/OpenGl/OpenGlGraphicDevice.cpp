@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Device/Platforms/Common/OpenGl/OpenGlGraphicDevice.hpp"
@@ -13,6 +13,7 @@
 #include "RHI/Command/Command.hpp"
 #include "RHI/Pipeline/Platforms/Common/OpenGl/OpenGlPipelineState.hpp"
 #include "RHI/Shader/Platforms/Common/OpenGl/OpenGlShaderModule.hpp"
+#include "RHI/Texture/Platforms/Common/OpenGl/OpenGlSampler.hpp"
 #include "RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #include "Tools/Tools.hpp"
 
@@ -91,6 +92,10 @@ std::shared_ptr<I_VertexBuffer> OpenGlGraphicDevice::CreateVertexBuffer(const st
 
 std::shared_ptr<I_Texture> OpenGlGraphicDevice::CreateTexture(const TextureDescriptor& descriptor) {
 	return std::make_shared<OpenGlTexture>(descriptor);
+}
+
+std::shared_ptr<I_Sampler> OpenGlGraphicDevice::CreateSampler(const SamplerDescriptor& descriptor) {
+	return std::make_shared<OpenGlSampler>(descriptor);
 }
 
 std::unique_ptr<I_CommandEncoder> OpenGlGraphicDevice::BeginRenderPass(const RenderPassDescriptor& descriptor) {

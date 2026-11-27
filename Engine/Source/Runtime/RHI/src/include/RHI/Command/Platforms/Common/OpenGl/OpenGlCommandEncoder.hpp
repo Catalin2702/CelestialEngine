@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -102,6 +102,13 @@ public:
 
 	void SetFragmentTexture(u32 slot, const I_Texture& texture) override;
 
+	/**
+	 * @brief Binds the sampler object to texture unit `slot`, overriding the bound texture's own parameters
+	 * @details Remembered so End() can unbind it: a sampler left on a unit would silently re-filter whatever the next
+	 *			pass - or the ImGui backend - binds there.
+	 */
+	void SetFragmentSampler(u32 slot, const I_Sampler& sampler) override;
+
 	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override;
 
 	void SetFragmentConstants(u32 slot, std::span<const std::byte> data) override;
@@ -135,6 +142,8 @@ private:
 	u32 _targetHeight = 0;
 
 	size_t _indexCount = 0; ///< Indices held by the bound element buffer, to bounds-check the draws in Debug
+
+	u32 _boundSamplerSlots = 0; ///< One bit per texture unit a sampler was bound to, unbound again at End()
 
 	std::span<const u32> _uniformBuffers;
 };

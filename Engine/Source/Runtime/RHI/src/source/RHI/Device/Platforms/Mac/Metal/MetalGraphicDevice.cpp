@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Buffer/Platforms/Mac/Metal/MetalBuffer.hpp"
@@ -104,6 +104,10 @@ std::shared_ptr<I_VertexBuffer> MetalGraphicDevice::CreateVertexBuffer(const std
 
 std::shared_ptr<I_Texture> MetalGraphicDevice::CreateTexture(const TextureDescriptor& descriptor) {
 	return std::make_shared<MetalTexture>(_nativeDevice.get(), descriptor);
+}
+
+std::shared_ptr<I_Sampler> MetalGraphicDevice::CreateSampler(const SamplerDescriptor& descriptor) {
+	return std::make_shared<MetalSampler>(_nativeDevice.get(), descriptor);
 }
 
 std::unique_ptr<I_CommandEncoder> MetalGraphicDevice::BeginRenderPass(const RenderPassDescriptor& descriptor) {

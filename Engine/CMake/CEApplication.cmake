@@ -188,10 +188,10 @@ function(ce_configure_application target)
 		# Each content file becomes a bundle resource at its own subfolder of Resources/Content. HEADER_FILE_ONLY so a
 		# .c or .metal among them is shipped as data, never compiled as one of the application's sources.
 		foreach (_ce_file IN LISTS _ce_content_files)
-			get_filename_component(_ce_subdir "${_ce_files}" DIRECTORY)
+			get_filename_component(_ce_subdir "${_ce_file}" DIRECTORY)
 			set(_ce_location "Resources/Content")
 			if (_ce_subdir)
-				string(APPEND _ce_location "${_ce_subdir}")
+				string(APPEND _ce_location "/${_ce_subdir}")
 			endif ()
 
 			set_source_files_properties("${ARG_CONTENT}/${_ce_file}" PROPERTIES
@@ -333,6 +333,9 @@ function(ce_configure_application target)
 			MACOSX_BUNDLE_EXECUTABLE_NAME "${ARG_OUTPUT_NAME}"
 			MACOSX_BUNDLE_GUI_IDENTIFIER "${ARG_BUNDLE_ID}"
 			MACOSX_BUNDLE_INFO_PLIST "${_ce_info_plist}"
+			# The Xcode generator's own copy of the identifier: Xcode checks the plist's CFBundleIdentifier against it
+			# (and signs with it), and warns on every build while it is empty. Ignored by the Ninja generators.
+			XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${ARG_BUNDLE_ID}"
 		)
 
 		# Same reasoning as the shaders above: the plists are only ever installed by a POST_BUILD step, and POST_BUILD

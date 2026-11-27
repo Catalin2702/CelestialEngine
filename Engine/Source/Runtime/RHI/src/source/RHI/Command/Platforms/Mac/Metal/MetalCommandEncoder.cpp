@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-04
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Command/Platforms/Mac/Metal/MetalCommandEncoder.hpp"
@@ -141,9 +141,20 @@ void MetalCommandEncoder::SetViewport(const Viewport& viewport) {
 }
 
 void MetalCommandEncoder::SetFragmentTexture(const u32 slot, const I_Texture& texture) {
+	assert(not _ended and "MetalCommandEncoder::SetFragmentTexture: The pass has already been ended!");
+	assert(slot < Types::MAX_TEXTURE_SLOTS and "MetalCommandEncoder::SetFragmentTexture: The slot is past the last texture slot!");
 	assert(texture.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetFragmentTexture: The texture is not Metal based!");
 
 	_nativeCommandEncoder->setFragmentTexture(static_cast<const MetalTexture&>(texture).GetTexture(), slot);
+}
+
+void MetalCommandEncoder::SetFragmentSampler(u32 slot, const I_Sampler& sampler) {
+	assert(not _ended and "MetalCommandEncoder::SetFragmentSampler: The pass has already been ended!");
+	assert(slot < Types::MAX_TEXTURE_SLOTS and "MetalCommandEncoder::SetFragmentSampler: The slot is past the last texture slot!");
+	assert(sampler.GetGraphicApi() == Types::GraphicsApi::Metal and "MetalCommandEncoder::SetFragmentSampler: The sampler is not Metal based!");
+
+	// Its own table: [[sampler(slot)]] in the shader, independent of the texture and buffer slots of the same number.
+	_nativeCommandEncoder->setFragmentSamplerState(static_cast<const MetalSampler&>(sampler).GetSamplerState(), slot);
 }
 
 void MetalCommandEncoder::SetVertexConstants(const u32 slot, const std::span<const std::byte> data) {
@@ -168,6 +179,7 @@ void MetalCommandEncoder::SetFragmentConstants(const u32 slot, const std::span<c
 	// geometry and there is nothing to check against.
 	if (const auto [nativeBuffer, offset] = _graphicDevice->AllocateFrameConstants(data); nativeBuffer) [[likely]] {
 		_nativeCommandEncoder->setFragmentBuffer(nativeBuffer, offset, slot);
+		return;
 	}
 
 	assert(data.size() <= 4096 and "MetalCommandEncoder::SetFragmentConstants: The ring is full and setFragmentBytes takes at most 4 KB!");

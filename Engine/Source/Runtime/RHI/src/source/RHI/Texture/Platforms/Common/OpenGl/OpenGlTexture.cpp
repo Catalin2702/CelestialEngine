@@ -4,13 +4,14 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #include "RHI/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp"
 #include "Tools/Tools.hpp"
 
+#include <span>
 #include <glad/glad.h>
 
 #include <stdexcept>
@@ -28,10 +29,22 @@ OpenGlTexture::OpenGlTexture(const TextureDescriptor& descriptor):
 		throw std::runtime_error(error);
 	}
 
+	if (not descriptor.IsEmptyOrValidInitialData()) [[unlikely]] {
+		const auto error = std::format("OpenGlTexture::OpenGlTexture: {} bytes of initial data do not fill a {}x{} {} texture!",
+			descriptor.initialData.size(), _width, _height, _format);
+		CE_CORE_ERROR(error);
+		throw std::runtime_error(error);
+	}
+
 	glGenTextures(1, &_nativeTexture);
 	glBindTexture(GL_TEXTURE_2D, _nativeTexture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, static_cast<GLsizei>(_width), static_cast<GLsizei>(_height), 0, format, type, nullptr);
+	// Rows arrive tightly packed. GL assumes 4-byte aligned rows by default, which a three-texel R8 row is not; the
+	// default is put back afterwards because the unpack state is global and the ImGui backend uploads after us.
+	const void* const pixels = descriptor.initialData.empty() ? nullptr : descriptor.initialData.data();
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, static_cast<GLsizei>(_width), static_cast<GLsizei>(_height), 0, format, type, pixels);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	// One level, no filtering, no wrapping: see the class comment.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);

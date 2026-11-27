@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-30
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -33,6 +33,8 @@ public:
 	[[nodiscard]] std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> data, const BufferLayout& layout) override;
 
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override;
+
+	[[nodiscard]] std::shared_ptr<I_Sampler> CreateSampler(const SamplerDescriptor& descriptor) override;
 
 	[[nodiscard]] std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) override;
 

@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -21,11 +21,10 @@ namespace CE::RHI {
 
 /**
  * @class OpenGlTexture
- * @brief A GL texture object, allocated with no contents
- * @details Storage only: glTexImage2D with a null pixel pointer, which is how a render target is declared in GL. The
- *			filters are set to nearest and the wrap to clamp because the one thing that reads this is a full-screen
- *			composite at a 1:1 ratio - and GL_LINEAR on an incomplete mip chain is the classic way to get a black
- *			texture with no error reported.
+ * @brief A GL texture object: a render target allocated empty, or an image uploaded at creation
+ * @details One glTexImage2D either way, with a null pointer for a render target and the descriptor's texels for an
+ *			image. The filters stay nearest and the wrap clamp, which is what the composite's texelFetch wants; a draw
+ *			that samples binds an OpenGlSampler, and a sampler object bound to the unit overrides these parameters.
  */
 class CE_RHI_API OpenGlTexture: public I_TextureBase<Types::GraphicsApi::OpenGL> {
 public:

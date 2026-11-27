@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-29
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -37,6 +37,9 @@ class BufferLayout;
 struct TextureDescriptor;
 class I_Texture;
 
+struct SamplerDescriptor;
+class I_Sampler;
+
 class I_GraphicDevice {
 public:
 	virtual ~I_GraphicDevice() = default;
@@ -57,11 +60,19 @@ public:
 	[[nodiscard]] virtual std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> data, const BufferLayout& layout) = 0;
 
 	/**
-	 * @brief Allocates a texture, today only ever a render target
+	 * @brief Allocates a texture: a render target, or an image filled from the descriptor's initial data
 	 * @details Shared like the other resources: a texture outlives the pass that writes it and the one that reads it,
-	 *			and the renderer's scene target is held across frames.
+	 *			and the renderer's scene target is held across frames. Throws std::runtime_error when the descriptor
+	 *			cannot be honoured - a zero size, or initial data that does not fill the texture exactly.
 	 */
 	[[nodiscard]] virtual std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) = 0;
+
+	/**
+	 * @brief Creates an immutable sampler state
+	 * @details Created once, at load time, and bound as often as needed: every backend builds the native object up
+	 *			front, so there is nothing to gain from creating one per draw and a driver call to lose.
+	 */
+	[[nodiscard]] virtual std::shared_ptr<I_Sampler> CreateSampler(const SamplerDescriptor& descriptor) = 0;
 
 	[[nodiscard]] virtual std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) = 0;
 

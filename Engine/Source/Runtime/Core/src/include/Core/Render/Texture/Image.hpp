@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-23
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -35,7 +35,7 @@ struct CE_CORE_API Image {
 	u32 height = 0;
 	Types::PixelFormat format = Types::PixelFormat::None;
 
-	std::vector<std::byte> pixels;
+	std::vector<std::byte> pixels{};
 
 	/**
 	 * @brief Decodes a PNG, JPEG, TGA or BMP file into RGBA8 texels

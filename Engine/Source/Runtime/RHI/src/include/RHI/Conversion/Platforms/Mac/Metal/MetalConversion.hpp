@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -14,15 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Metal/MTLPixelFormat.hpp"
-#include "Types/Render/AttachmentAction.hpp"
-#include "Types/Render/BlendFactor.hpp"
-#include "Types/Render/Compare.hpp"
-#include "Types/Render/CullMode.hpp"
-#include "Types/Render/PixelFormat.hpp"
-#include "Types/Render/PrimitiveTopology.hpp"
-#include "Types/Render/ShaderConstants.hpp"
-#include "Types/Render/ShaderDataType.hpp"
-#include "Types/Render/TextureUsage.hpp"
+#include "Types/Render/Render.hpp"
 #include "Types/Var/Vars.hpp"
 
 namespace NS {
@@ -41,6 +33,8 @@ enum PrimitiveType: std::uintptr_t;
 enum PrimitiveTopologyClass: std::uintptr_t;
 using TextureUsage = NS::UInteger;
 enum VertexFormat: std::uintptr_t;
+enum SamplerMinMagFilter: std::uintptr_t;
+enum SamplerAddressMode: std::uintptr_t;
 }
 
 // Temporarily in Core: these tables belong to the RHI backends, and move with them when the RHI becomes a module of
@@ -116,6 +110,16 @@ inline constexpr u32 METAL_VERTEX_BUFFER_INDEX = 0;
 [[nodiscard]] CE_RHI_API MTL::VertexFormat ToMetal(Types::ShaderDataType shaderDataType);
 
 [[nodiscard]] CE_RHI_API MTL::TextureUsage ToMetal(Types::TextureUsage textureUsage);
+
+/**
+ * @brief Converts a filter mode into the Metal min/mag filter
+ */
+[[nodiscard]] CE_RHI_API MTL::SamplerMinMagFilter ToMetal(Types::FilterMode filterMode);
+
+/**
+ * @brief Converts an address mode into the Metal one
+ */
+[[nodiscard]] CE_RHI_API MTL::SamplerAddressMode ToMetal(Types::AddressMode addressMode);
 
 static_assert(Types::CAMERA_CONSTANTS_SLOT != METAL_VERTEX_BUFFER_INDEX and Types::OBJECT_CONSTANTS_SLOT != METAL_VERTEX_BUFFER_INDEX,
 	"A constant slot collides with the vertex buffer!");

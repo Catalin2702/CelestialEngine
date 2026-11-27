@@ -20,6 +20,8 @@ set(SOURCES
 	src/source/CompositeFragment.frag
 	src/source/CompositeVertex.vert
 	src/source/Fragment.frag
+	src/source/TexturedFragment.frag
+	src/source/TexturedVertex.vert
 	src/source/Vertex.vert
 )
 

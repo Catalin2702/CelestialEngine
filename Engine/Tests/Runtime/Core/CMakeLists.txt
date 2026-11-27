@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-03
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 set(CORE_SOURCES
@@ -59,6 +59,9 @@ set(RENDER_SOURCES
 	# Renderer
 	src/Core/Render/Renderer/ForwardRendererTests.cpp
 	src/Core/Render/Renderer/RenderStatsTests.cpp
+
+	# Texture
+	src/Core/Render/Texture/ImageTests.cpp
 )
 
 add_executable(CE_TestsCore
@@ -85,6 +88,8 @@ target_link_libraries(CE_TestsCore PRIVATE
 	CE_Config
 	CE_TestConfig
 	CE_Core
+	# ImageTests mounts a temporary directory: CE_Core links CE_IO privately, so the test brings it itself.
+	CE_IO
 	CE_Vendor_SpdLog
 )
 

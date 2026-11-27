@@ -4,13 +4,13 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #version 450
 
-// The scene texture, at the slot ForwardRenderer binds it to (SetFragmentTexture(0, ...)). In OpenGL the name is what
-// OpenGlCommandEncoder::SetFragmentTexture looks up, so it stays "sceneColor".
+// The scene texture: binding = Types::SCENE_COLOR_TEXTURE_SLOT, where ForwardRenderer binds it. In OpenGL the name is
+// what OpenGlPipelineState points at that unit when the program links, so it stays "sceneColor".
 layout(set = 0, binding = 0) uniform sampler2D sceneColor;
 
 layout(location = 0) out vec4 outputColor;

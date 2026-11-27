@@ -38,6 +38,7 @@ set(RENDER_HEADERS
 	src/include/Types/Render/PixelFormat.hpp
 	src/include/Types/Render/PrimitiveTopology.hpp
 	src/include/Types/Render/Render.hpp
+	src/include/Types/Render/Sampler.hpp
 	src/include/Types/Render/Shader.hpp
 	src/include/Types/Render/ShaderConstants.hpp
 	src/include/Types/Render/ShaderDataType.hpp

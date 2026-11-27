@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include <Core/Render/Render.hpp>
@@ -32,12 +32,14 @@ using RHI::I_CommandEncoder;
 using RHI::I_GraphicDevice;
 using RHI::I_IndexBuffer;
 using RHI::I_PipelineState;
+using RHI::I_Sampler;
 using RHI::I_ShaderModule;
 using RHI::I_Swapchain;
 using RHI::I_Texture;
 using RHI::I_VertexBuffer;
 using RHI::PipelineDescriptor;
 using RHI::RenderPassDescriptor;
+using RHI::SamplerDescriptor;
 using RHI::ShaderModuleDescriptor;
 using RHI::TextureDescriptor;
 using RHI::Viewport;
@@ -98,6 +100,7 @@ struct PassRecord {
 	RenderPassDescriptor descriptor{};
 
 	std::vector<std::pair<u32, const I_Texture*>> fragmentTextures;
+	std::vector<std::pair<u32, const I_Sampler*>> fragmentSamplers;
 	std::vector<Viewport> viewports;
 	std::vector<ConstantsRecord> vertexConstants;
 	std::vector<ConstantsRecord> fragmentConstants;
@@ -160,6 +163,11 @@ private:
 	u32 _height;
 	Types::PixelFormat _format;
 	Types::TextureUsage _usage;
+};
+
+class FakeSampler final: public I_Sampler {
+public:
+	[[nodiscard]] Types::GraphicsApi GetGraphicApi() const override { return FakeApi; }
 };
 
 /// Resolves the descriptor's name into its entry point by keeping it as it is - a real backend maps it onto whatever
@@ -245,6 +253,10 @@ public:
 		_recorder->passes[_passIndex].fragmentTextures.emplace_back(slot, &texture);
 	}
 
+	void SetFragmentSampler(const u32 slot, const I_Sampler& sampler) override {
+		_recorder->passes[_passIndex].fragmentSamplers.emplace_back(slot, &sampler);
+	}
+
 	void SetVertexConstants(u32 slot, std::span<const std::byte> data) override {
 		auto& pass = _recorder->passes[_passIndex];
 		pass.vertexConstants.push_back({.slot = slot, .bytes = {data.begin(), data.end()}, .drawsBefore = pass.drawIndexedCalls});
@@ -299,6 +311,10 @@ public:
 			throw std::runtime_error("FakeGraphicDevice::CreateTexture: refused by the test.");
 
 		return std::make_shared<FakeTexture>(descriptor);
+	}
+
+	[[nodiscard]] std::shared_ptr<I_Sampler> CreateSampler(const SamplerDescriptor&) override {
+		return std::make_shared<FakeSampler>();
 	}
 
 	[[nodiscard]] std::unique_ptr<I_CommandEncoder> BeginRenderPass(const RenderPassDescriptor& descriptor) override {
@@ -717,9 +733,9 @@ TEST_F(ForwardRendererTest, EndFrame_CompositeLoadsNothingAndHasNoDepth) {
 }
 
 /**
- * @brief Test that the composite reads the scene colour from slot 0 and draws the quad
- * @details Slot 0 is what both composite shaders declare - texture(0) on Metal, the sceneColor sampler on OpenGL -
- *			and six indices are the two triangles of the full-screen quad.
+ * @brief Test that the composite reads the scene colour from its slot and draws the quad
+ * @details SCENE_COLOR_TEXTURE_SLOT is the binding CompositeFragment.frag declares - texture(0) on Metal, the unit
+ *			OpenGlPipelineState points sceneColor at on OpenGL - and six indices are the two triangles of the quad.
  */
 TEST_F(ForwardRendererTest, EndFrame_CompositeReadsTheSceneColour) {
 	const auto renderer = MakeRenderer();
@@ -731,7 +747,7 @@ TEST_F(ForwardRendererTest, EndFrame_CompositeReadsTheSceneColour) {
 	const auto& composite = CompositePass();
 
 	ASSERT_EQ(composite.fragmentTextures.size(), 1u);
-	EXPECT_EQ(composite.fragmentTextures.front().first, 0u);
+	EXPECT_EQ(composite.fragmentTextures.front().first, Types::SCENE_COLOR_TEXTURE_SLOT);
 	EXPECT_EQ(composite.fragmentTextures.front().second, sceneColor);
 
 	EXPECT_EQ(composite.drawIndexedCalls, 1u);
@@ -935,4 +951,66 @@ TEST_F(ForwardRendererTest, EndFrame_CompositeUploadsNoConstants) {
 	ASSERT_EQ(recorder.passes.size(), 2u);
 	EXPECT_TRUE(CompositePass().vertexConstants.empty());
 	EXPECT_TRUE(CompositePass().fragmentConstants.empty());
+}
+
+/**
+ * @brief Test that a textured command binds its texture and its sampler at the base colour slot
+ * @details The slot is the binding TexturedFragment.frag declares for baseColorTexture. Bound anywhere else, the draw
+ *			would sample whatever was left at that slot - on OpenGL often the scene colour of the previous composite.
+ */
+TEST_F(ForwardRendererTest, Submit_BindsTheTextureAndSamplerAtTheBaseColourSlot) {
+	const auto renderer = MakeRenderer();
+
+	const FakePipelineState pipeline{PipelineDescriptor{}};
+	const FakeVertexBuffer vertexBuffer{BufferLayout{}};
+	const FakeIndexBuffer indexBuffer{6};
+	const FakeTexture texture{TextureDescriptor{}};
+	const FakeSampler sampler{};
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+	renderer->Submit(DrawCommand{
+		.pipelineState = &pipeline,
+		.vertexBuffer = &vertexBuffer,
+		.indexBuffer = &indexBuffer,
+		.texture = &texture,
+		.sampler = &sampler
+	});
+
+	ASSERT_FALSE(recorder.passes.empty());
+	const auto& pass = recorder.passes.front();
+
+	ASSERT_EQ(pass.fragmentTextures.size(), 1u);
+	EXPECT_EQ(pass.fragmentTextures.front().first, Types::BASE_COLOR_TEXTURE_SLOT);
+	EXPECT_EQ(pass.fragmentTextures.front().second, &texture);
+
+	ASSERT_EQ(pass.fragmentSamplers.size(), 1u);
+	EXPECT_EQ(pass.fragmentSamplers.front().first, Types::BASE_COLOR_TEXTURE_SLOT);
+	EXPECT_EQ(pass.fragmentSamplers.front().second, &sampler);
+
+	EXPECT_EQ(pass.drawIndexedCalls, 1u);
+}
+
+/**
+ * @brief Test that an untextured command binds no texture and no sampler
+ * @details Binding is a call per draw; an untextured shader reads neither, so the renderer must not pay for it.
+ */
+TEST_F(ForwardRendererTest, Submit_WithoutATextureBindsNothing) {
+	const auto renderer = MakeRenderer();
+
+	const FakePipelineState pipeline{PipelineDescriptor{}};
+	const FakeVertexBuffer vertexBuffer{BufferLayout{}};
+	const FakeIndexBuffer indexBuffer{6};
+
+	ASSERT_TRUE(renderer->BeginFrame());
+	renderer->BeginPass();
+	renderer->Submit(DrawCommand{
+		.pipelineState = &pipeline,
+		.vertexBuffer = &vertexBuffer,
+		.indexBuffer = &indexBuffer
+	});
+
+	ASSERT_FALSE(recorder.passes.empty());
+	EXPECT_TRUE(recorder.passes.front().fragmentTextures.empty());
+	EXPECT_TRUE(recorder.passes.front().fragmentSamplers.empty());
 }

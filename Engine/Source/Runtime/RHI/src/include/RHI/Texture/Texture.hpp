@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 /**
@@ -23,13 +23,16 @@
 
 #include "Define/Config.hpp"
 
+#include "RHI/Texture/I_Sampler.hpp"
 #include "RHI/Texture/I_Texture.hpp"
 
 #if CE_RENDER_OPENGL
+#include "RHI/Texture/Platforms/Common/OpenGl/OpenGlSampler.hpp"
 #include "RHI/Texture/Platforms/Common/OpenGl/OpenGlTexture.hpp"
 #endif
 
 #if CE_RENDER_METAL
+#include "RHI/Texture/Platforms/Mac/Metal/MetalSampler.hpp"
 #include "RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #endif
 

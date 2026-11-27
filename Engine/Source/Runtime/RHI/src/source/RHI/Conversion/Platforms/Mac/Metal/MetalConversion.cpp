@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Conversion/Platforms/Mac/Metal/MetalConversion.hpp"
@@ -16,16 +16,7 @@ static_assert(std::is_same_v<std::underlying_type_t<MTL::PixelFormat>, std::uint
 
 namespace CE::RHI {
 
-using Types::BlendFactor;
-using Types::CompareFunc;
-using Types::CullMode;
-using Types::FrontFace;
-using Types::LoadAction;
-using Types::PixelFormat;
-using Types::PrimitiveTopology;
-using Types::ShaderDataType;
-using Types::StoreAction;
-using Types::TextureUsage;
+using namespace Types;
 
 MTL::PixelFormat ToMetal(const PixelFormat pixelFormat) {
 	switch (pixelFormat) {
@@ -234,6 +225,25 @@ MTL::TextureUsage ToMetal(const TextureUsage textureUsage) {
 		nativeUsage |= MTL::TextureUsageShaderWrite;
 
 	return nativeUsage;
+}
+
+MTL::SamplerMinMagFilter ToMetal(const FilterMode filterMode) {
+	switch (filterMode) {
+		case FilterMode::Nearest: return MTL::SamplerMinMagFilterNearest;
+		case FilterMode::Linear:
+		default:
+			return MTL::SamplerMinMagFilterLinear;
+	}
+}
+
+MTL::SamplerAddressMode ToMetal(const AddressMode addressMode) {
+	switch (addressMode) {
+		case AddressMode::Repeat: return MTL::SamplerAddressModeRepeat;
+		case AddressMode::MirrorRepeat: return MTL::SamplerAddressModeMirrorRepeat;
+		case AddressMode::ClampToEdge:
+		default:
+			return MTL::SamplerAddressModeClampToEdge;
+	}
 }
 
 }

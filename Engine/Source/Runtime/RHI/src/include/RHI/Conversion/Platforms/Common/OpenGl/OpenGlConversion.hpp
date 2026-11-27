@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-03-24
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -14,13 +14,7 @@
 
 #include "Define/DynamicLinker.hpp"
 #include "Types/Var/Vars.hpp"
-#include "Types/Render/BlendFactor.hpp"
-#include "Types/Render/Compare.hpp"
-#include "Types/Render/CullMode.hpp"
-#include "Types/Render/PixelFormat.hpp"
-#include "Types/Render/PrimitiveTopology.hpp"
-#include "Types/Render/Shader.hpp"
-#include "Types/Render/ShaderConstants.hpp"
+#include "Types/Render/Render.hpp"
 
 #include <format>
 #include <string>
@@ -94,6 +88,17 @@ CE_RHI_API u32 ToOpenGl(Types::FrontFace frontFace);
  *			draw call, so the pipeline only exposes it and the command encoder passes it on.
  */
 CE_RHI_API u32 ToOpenGl(Types::PrimitiveTopology topology);
+
+/**
+ * @brief Converts a FilterMode to the value glSamplerParameteri takes for GL_TEXTURE_MIN_FILTER / MAG_FILTER
+ * @details Never a *_MIPMAP_* value: the engine's textures have one level, and a mipmapped filter on them samples black.
+ */
+CE_RHI_API u32 ToOpenGl(Types::FilterMode filterMode);
+
+/**
+ * @brief Converts an AddressMode to the value glSamplerParameteri takes for GL_TEXTURE_WRAP_S / WRAP_T
+ */
+CE_RHI_API u32 ToOpenGl(Types::AddressMode addressMode);
 
 /**
  * @brief Converts a ShaderType enum value to the corresponding OpenGL shader type constant

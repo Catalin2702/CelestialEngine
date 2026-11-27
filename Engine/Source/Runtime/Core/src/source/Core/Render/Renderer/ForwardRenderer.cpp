@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "RHI/Buffer/I_Buffer.hpp"
@@ -15,6 +15,7 @@
 #include "Core/Render/Renderer/DrawCommand.hpp"
 #include "RHI/Shader/ShaderModuleDescriptor.hpp"
 #include "RHI/Swapchain/I_Swapchain.hpp"
+#include "RHI/Texture/I_Sampler.hpp"
 #include "RHI/Texture/I_Texture.hpp"
 #include "Tools/Tools.hpp"
 
@@ -197,9 +198,18 @@ void ForwardRenderer::Submit(const DrawCommand& command) {
 
 	const auto indexCount = command.indexCount != 0 ? command.indexCount : availableIndices - command.firstIndex;
 
+	assert((command.texture == nullptr) == (command.sampler == nullptr) and "ForwardRenderer::Submit: A texture and its sampler come together, or not at all!");
+
 	_commandEncoder->SetPipelineState(*command.pipelineState);
 	_commandEncoder->SetVertexBuffer(*command.vertexBuffer);
 	_commandEncoder->SetIndexBuffer(*command.indexBuffer);
+
+	// Only for a textured command. An untextured draw binds nothing: whatever an earlier draw left at the slot is never
+	// read by a shader that declares no texture, so clearing it would be a call per draw for nothing.
+	if (command.texture and command.sampler) {
+		_commandEncoder->SetFragmentTexture(Types::BASE_COLOR_TEXTURE_SLOT, *command.texture);
+		_commandEncoder->SetFragmentSampler(Types::BASE_COLOR_TEXTURE_SLOT, *command.sampler);
+	}
 
 	const Types::ObjectConstants object{.transform = command.transform};
 	_commandEncoder->SetVertexConstants(Types::OBJECT_CONSTANTS_SLOT, std::as_bytes(std::span{&object, 1}));
@@ -307,7 +317,7 @@ void ForwardRenderer::_Composite() {
 
 	// After the pipeline, not before: a texture binding belongs to the pipeline it is read through, and there is no
 	// pipeline to bind it against until one is set.
-	_commandEncoder->SetFragmentTexture(0, *_sceneColor);
+	_commandEncoder->SetFragmentTexture(BASE_COLOR_TEXTURE_SLOT, *_sceneColor);
 
 	_commandEncoder->DrawIndexed(6, 0, 0);
 

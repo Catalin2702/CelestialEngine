@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 
+#include <span>
 #include <utility>
 #include <string_view>
 
@@ -38,6 +39,16 @@ struct CE_RHI_API TextureDescriptor {
 
 	/// Borrowed for the duration of the call only - it becomes the object's label in a GPU capture.
 	std::string_view debugName;
+
+	/// The texels the texture starts with: rows top to bottom, tightly packed, width * GetBytesPerPixel(format) bytes
+	/// each. Empty for a texture the GPU fills - a render target. Borrowed for the duration of the call only: the
+	/// backend has copied it by the time CreateTexture returns.
+	std::span<const std::byte> initialData{};
+
+	// True when there is no initial data, or exactly enough of it for the whole texture - nothing in between.
+	[[nodiscard]] bool IsEmptyOrValidInitialData() const {
+		return initialData.empty() or initialData.size() == static_cast<size_t>(width) * height * Types::GetBytesPerPixel(format);
+	}
 };
 
 /**

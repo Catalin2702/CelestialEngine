@@ -4,10 +4,11 @@
 // Created by: Catalin Chirosca
 // Created: 2026-08-13
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include <RHI/Conversion/Platforms/Common/OpenGl/OpenGlConversion.hpp>
+#include <RHI/Texture/I_Sampler.hpp>
 
 #include <glad/glad.h>
 #include <gtest/gtest.h>
@@ -64,4 +65,37 @@ TEST_F(OpenGlTypesTest, ToOpenGlShaderType_MapsCompilableStages) {
 TEST_F(OpenGlTypesTest, ToOpenGlShaderType_UnmappedStage_ReturnsInvalid) {
 	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Mesh), -1);
 	EXPECT_EQ(ToOpenGlShaderType(ShaderType::Unknown), -1);
+}
+
+/**
+ * @brief Test that the sampler filters map onto the GL filters, never onto a mipmapped one
+ * @details The engine's textures have a single level: a *_MIPMAP_* minification filter on them makes the texture
+ *			incomplete, and OpenGL then samples black without reporting any error.
+ */
+TEST_F(OpenGlTypesTest, ToOpenGl_MapsSamplerFilters) {
+	EXPECT_EQ(ToOpenGl(FilterMode::Nearest), static_cast<u32>(GL_NEAREST));
+	EXPECT_EQ(ToOpenGl(FilterMode::Linear), static_cast<u32>(GL_LINEAR));
+}
+
+/**
+ * @brief Test that the address modes map onto the GL wrap modes
+ */
+TEST_F(OpenGlTypesTest, ToOpenGl_MapsSamplerAddressModes) {
+	EXPECT_EQ(ToOpenGl(AddressMode::ClampToEdge), static_cast<u32>(GL_CLAMP_TO_EDGE));
+	EXPECT_EQ(ToOpenGl(AddressMode::Repeat), static_cast<u32>(GL_REPEAT));
+	EXPECT_EQ(ToOpenGl(AddressMode::MirrorRepeat), static_cast<u32>(GL_MIRRORED_REPEAT));
+}
+
+/**
+ * @brief Test that an empty sampler descriptor converts to values glSamplerParameteri accepts
+ * @details A field left out used to convert to 0: GL_INVALID_ENUM, and the sampler kept OpenGL's own mipmapped default
+ *			filter, which makes a one-level texture sample black.
+ */
+TEST_F(OpenGlTypesTest, ToOpenGl_DefaultSamplerDescriptor_IsLinearAndClamped) {
+	constexpr CE::RHI::SamplerDescriptor descriptor{};
+
+	EXPECT_EQ(ToOpenGl(descriptor.minFilter), static_cast<u32>(GL_LINEAR));
+	EXPECT_EQ(ToOpenGl(descriptor.magFilter), static_cast<u32>(GL_LINEAR));
+	EXPECT_EQ(ToOpenGl(descriptor.addressU), static_cast<u32>(GL_CLAMP_TO_EDGE));
+	EXPECT_EQ(ToOpenGl(descriptor.addressV), static_cast<u32>(GL_CLAMP_TO_EDGE));
 }

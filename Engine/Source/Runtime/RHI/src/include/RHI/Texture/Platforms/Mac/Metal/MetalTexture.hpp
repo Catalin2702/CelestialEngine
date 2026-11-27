@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-06
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -25,10 +25,12 @@ class Texture;
 
 /**
  * @class MetalTexture
- * @brief An MTL::Texture allocated in device-private memory
- * @details Private storage always, even on unified memory: shared would mean the CPU could map it, and nothing ever
- *			wants to. Private is what lets the driver pick the layout the GPU reads fastest, which for a render target
- *			read back by a full-screen pass is the whole point.
+ * @brief An MTL::Texture: private for what the GPU fills, CPU-visible for an image uploaded at creation
+ * @details Private whenever nothing is uploaded: shared would mean the CPU could map it, and nothing ever wants to.
+ *			Private is what lets the driver pick the layout the GPU reads fastest, which for a render target read back
+ *			by a full-screen pass is the whole point. A texture created with initial data cannot be private - the CPU
+ *			writes it - so it takes the storage mode the device lets the CPU reach: shared on unified memory, managed
+ *			on a discrete GPU.
  */
 namespace CE::RHI {
 
@@ -36,8 +38,8 @@ class CE_RHI_API MetalTexture: public I_TextureBase<Types::GraphicsApi::Metal> {
 public:
 	/**
 	 * @brief Allocates the texture described by the descriptor
-	 * @details Throws std::runtime_error when the allocation fails: at render-target sizes that only happens when the
-	 *			device is out of memory, and there is nothing sensible to draw into afterwards.
+	 * @details Throws std::runtime_error when the allocation fails - at render-target sizes that only happens when the
+	 *			device is out of memory - or when the initial data does not fill the texture exactly.
 	 */
 	MetalTexture(MTL::Device* nativeDevice, const TextureDescriptor& descriptor);
 

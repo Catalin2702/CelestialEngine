@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-24
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 enable_testing()
@@ -29,6 +29,9 @@ set(SOURCES
 
 	# Shader: what the compiled shaders declare against the slots and layouts of the C++ side
 	src/RHI/Shader/ShaderReflectionTests.cpp
+
+	# Texture
+	src/RHI/Texture/SamplerDescriptorTests.cpp
 )
 
 add_executable(CE_TestsRHI

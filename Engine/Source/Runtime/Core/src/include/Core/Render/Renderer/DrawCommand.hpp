@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-02
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -20,6 +20,8 @@
 namespace CE::RHI {
 class I_IndexBuffer;
 class I_PipelineState;
+class I_Sampler;
+class I_Texture;
 class I_VertexBuffer;
 }
 
@@ -31,7 +33,8 @@ namespace CE::Core {
  * @brief One indexed draw, and the state it is drawn with
  * @details Everything a renderer needs to turn a submission into encoder calls, and nothing more: no material, no
  *			sort key. Those belong to the scene layer that will eventually build these, not to the draw itself. The
- *			transform is the exception, because the vertex stage cannot place the mesh without it.
+ *			transform is the exception, because the vertex stage cannot place the mesh without it - and so is the
+ *			base colour texture, the one material input a draw needs today.
  *
  *			The pointers are borrowed for the duration of the Submit call, the same contract the encoder's setters
  *			carry: the caller owns the resources and must keep them alive until the pass ends. Shared ownership would
@@ -58,6 +61,14 @@ struct CE_CORE_API DrawCommand {
 	u32 baseVertex = 0;
 
 	glm::mat4 transform{1.0_f32};
+
+	/// The base colour the fragment stage samples, bound at BASE_COLOR_TEXTURE_SLOT; null for an untextured draw. The
+	/// first piece of what a material will be, and the only one a draw needs today. Borrowed, like the buffers.
+	const RHI::I_Texture* texture = nullptr;
+
+	/// How that texture is read. Set together with it: a shader that samples with no sampler bound reads the
+	/// texture's own parameters on OpenGL and undefined values on Metal.
+	const RHI::I_Sampler* sampler = nullptr;
 };
 
 }

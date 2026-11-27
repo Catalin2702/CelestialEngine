@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-09-03
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #pragma once
@@ -14,6 +14,8 @@
 
 #include "RHI/Device/I_GraphicDevice.hpp"
 #include "RHI/Shader/Platforms/Mac/Metal/MetalShaderLibrary.hpp"
+#include "RHI/Texture/Platforms/Mac/Metal/MetalSampler.hpp"
+#include "RHI/Texture/Platforms/Mac/Metal/MetalTexture.hpp"
 #include "Define/DynamicLinker.hpp"
 #include "Types/Types.hpp"
 
@@ -111,6 +113,8 @@ public:
 	[[nodiscard]] std::shared_ptr<I_VertexBuffer> CreateVertexBuffer(std::span<const f32> vertices, const BufferLayout& layout) override;
 
 	[[nodiscard]] std::shared_ptr<I_Texture> CreateTexture(const TextureDescriptor& descriptor) override;
+
+	[[nodiscard]] std::shared_ptr<I_Sampler> CreateSampler(const SamplerDescriptor& descriptor) override;
 
 	/**
 	 * @brief Builds the Metal render pass descriptor and opens an encoder on it
