@@ -6,7 +6,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-24
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 # Sets the 'Updated:' line of the file banner to today's date (YYYY-MM-DD) in every file git sees as changed.
@@ -66,7 +66,7 @@ print_usage() {
 	echo "  ${SCRIPT_NAME}                          # every changed file"
 	echo "  ${SCRIPT_NAME} --staged                 # only what is about to be committed"
 	echo "  ${SCRIPT_NAME} -n                       # preview"
-	echo "  ${SCRIPT_NAME} Engine/Source/Launch/source/EntryPoint.cpp"
+	echo "  ${SCRIPT_NAME} Engine/Source/Launch/src/source/EntryPoint.cpp"
 }
 
 while [[ $# -gt 0 ]]; do

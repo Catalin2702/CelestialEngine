@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -16,10 +16,10 @@ include("${CMAKE_CURRENT_LIST_DIR}/CMake/CelestialEngineMacros.cmake")
 project(CE_Engine LANGUAGES CXX VERSION 0.4.0)
 
 set(HEADERS
-	Source/Launch/include/CelestialEngine.hpp
+	Source/Launch/src/include/CelestialEngine.hpp
 )
 
-# Not a header and not part of CE_Engine: Source/Launch/source/EntryPoint.cpp (main) is compiled into each application by
+# Not a header and not part of CE_Engine: Source/Launch/src/source/EntryPoint.cpp (main) is compiled into each application by
 # ce_configure_application, see CEApplication.cmake.
 
 # Third-party libraries (CMake wrappers; ImGui and metal-cpp also hold their git submodule). The backend-specific ones are added only when their backend is compiled in (CE_RENDER_BACKENDS), so
@@ -98,7 +98,7 @@ target_link_libraries(CE_Engine INTERFACE
 )
 
 target_include_directories(CE_Engine INTERFACE
-	Source/Launch/include
+	Source/Launch/src/include
 )
 
 # The engine's tests live with it (Engine/Tests) and come last, once every module target they link exists. They build

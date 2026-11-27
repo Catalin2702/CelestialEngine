@@ -29,7 +29,7 @@
 │   │   └── templates/      # Default Info.plist and entitlements of every application
 │   ├── Source/
 │   │   ├── Runtime/        # The modules every application links: Core, Define, Events, IO, Native, RHI, Tools, Types, Utility
-│   │   ├── Launch/         # CelestialEngine.hpp (include/) and EntryPoint.cpp (source/): main(), added to each app by
+│   │   ├── Launch/         # CelestialEngine.hpp (src/include/) and EntryPoint.cpp (src/source/): main(), added to each app by
 │   │   │                   #   ce_configure_application - do NOT define your own
 │   │   └── Programs/       # Build-time tools, linked into no application
 │   │       └── ShaderCompiler/  # CE_ShaderCompiler: GLSL -> SPIR-V -> MSL / GLSL 4.10 + reflection

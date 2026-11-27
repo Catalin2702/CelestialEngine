@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 # region Headers
@@ -44,9 +44,9 @@ set(RENDER_HEADERS
 	src/include/Types/Render/TextureUsage.hpp
 )
 
-# Not CE_Types' own: CE_Vars (below) carries it, from a folder of its own.
+# Not CE_Types' own: CE_Vars (below) carries it.
 set(VAR_HEADERS
-	Vars/include/Types/Var/Vars.hpp
+	src/include/Types/Var/Vars.hpp
 )
 
 set(WINDOW_HEADERS
@@ -100,14 +100,15 @@ set(SOURCES
 
 # CE_Vars: the integer aliases, literals, float comparisons and BIT (Types/Var/Vars.hpp), header-only and dependency-
 # free, for a target that must not load the CE_Types dylib - a build-time program such as CE_ShaderCompiler, which runs
-# before any application folder holds the engine's dylibs. Its own include root (Vars/include) exposes that one header
-# and nothing else of Types. CE_Types links it PUBLIC, so every user of CE_Types keeps including Types/Var/Vars.hpp.
+# before any application folder holds the engine's dylibs. It shares CE_Types' include root (src/include): only
+# Types/Var/Vars.hpp may be included through it, the other headers need glm or the dylib. CE_Types links it PUBLIC, so
+# every user of CE_Types keeps including Types/Var/Vars.hpp.
 add_library(CE_Vars INTERFACE
 	${VAR_HEADERS}
 )
 
 target_include_directories(CE_Vars INTERFACE
-	Vars/include
+	src/include
 )
 
 add_library(CE_Types SHARED

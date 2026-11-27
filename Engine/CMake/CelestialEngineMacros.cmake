@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-02-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 # The engine's build entry point: CE_Config and CE_Internal, the output layout (Out/, Modules/), the module
@@ -254,7 +254,7 @@ set(CE_MODULE_DLL_NAMES
 	CE_Utility
 )
 
-# macOS also builds CE_Apple (the Cocoa/Metal native bridge, Source/Runtime/Native/Platforms/Apple) as
+# macOS also builds CE_Apple (the Cocoa/Metal native bridge, Source/Runtime/Native/src/*/Platforms/Apple) as
 # its own SHARED library. It is embedded into CelestialEngine.app/Contents/Frameworks alongside the others
 # (see ce_bundle_apple_frameworks) but kept out of CE_MODULE_DLL_NAMES itself, since that list also
 # drives ce_enable_dll_bootstrap's /DELAYLOAD flags on Windows, where CE_Apple does not exist.
@@ -450,7 +450,7 @@ function(ce_enable_dll_bootstrap TARGET_NAME)
 	endif ()
 
 	target_sources(${TARGET_NAME} PRIVATE
-		"${CE_ENGINE_ROOT_DIR}/Source/Runtime/Native/Platforms/Windows/src/source/Windows/DllSearchBootstrap.cpp"
+		"${CE_ENGINE_ROOT_DIR}/Source/Runtime/Native/src/source/Platforms/Windows/DllSearchBootstrap.cpp"
 	)
 
 	target_link_options(${TARGET_NAME} PRIVATE

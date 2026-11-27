@@ -29,7 +29,7 @@
 #   ce_configure_application(MyGame OUTPUT_NAME "My Game" ...)
 #
 #   - links CE_Engine (and CE_Config);
-#   - adds the engine's main() (Engine/Source/Launch/source/EntryPoint.cpp) to the executable's sources, unless NO_ENTRY_POINT:
+#   - adds the engine's main() (Engine/Source/Launch/src/source/EntryPoint.cpp) to the executable's sources, unless NO_ENTRY_POINT:
 #     the application only defines CE::CreateApplicationClient();
 #   - macOS: makes the target a MACOSX_BUNDLE - a self-contained .app with Info.plist (two variants, Dist without the
 #     Metal tooling keys), asset catalog, embedded module dylibs in Contents/Frameworks, ad-hoc signature with the
@@ -283,7 +283,7 @@ function(ce_configure_application target)
 	# this application's CE_APPLICATION_NAME, which a library compiled once for every application could not have.
 	if (NOT ARG_NO_ENTRY_POINT)
 		target_sources(${target} PRIVATE
-			"${CE_ENGINE_ROOT_DIR}/Source/Launch/source/EntryPoint.cpp"
+			"${CE_ENGINE_ROOT_DIR}/Source/Launch/src/source/EntryPoint.cpp"
 		)
 	endif ()
 
