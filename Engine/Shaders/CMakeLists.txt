@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-05-15
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-02
+# Updated: 2026-11-27
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -94,6 +94,11 @@ if (CE_RENDER_METAL)
 		)
 	endif ()
 
+	# The language standard and the minimum macOS every .air is compiled for. Left out, xcrun metal compiles for the
+	# machine it runs on (the newest standard, this Mac's macOS), whatever the application declares. The standard is
+	# the one CE_ShaderCompiler writes (MslMajorVersion/MslMinorVersion in CrossCompiler.cpp): change both together.
+	set(METAL_FLAGS -std=metal4.1 "-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+
 	set(METAL_LIB "Main.metallib")
 	set(METAL_LIB_PATH "${GENERATED_DIR}/${METAL_LIB}")
 
@@ -104,7 +109,7 @@ if (CE_RENDER_METAL)
 
 		add_custom_command(
 			OUTPUT "${AIR}"
-			COMMAND xcrun -sdk macosx metal -c "${MSL}" -o "${AIR}"
+			COMMAND xcrun -sdk macosx metal ${METAL_FLAGS} -c "${MSL}" -o "${AIR}"
 			DEPENDS "${MSL}"
 			COMMENT "Compiling ${NAME}.metal"
 			VERBATIM

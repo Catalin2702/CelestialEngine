@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-11-02
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 # ce_configure_application(<target>
@@ -301,7 +301,7 @@ function(ce_configure_application target)
 
 	if (APPLE)
 		# Values the Info.plist template reads (@CE_APP_...@ / @PROJECT_VERSION@ - PROJECT_VERSION is the calling
-		# project's). Configured once, into the build tree, and THAT is the bundle's Info.plist source everywhere below.
+		# project's - and @CMAKE_OSX_DEPLOYMENT_TARGET@, the minimum macOS of the top-level CMakeLists.txt). Configured once, into the build tree, and THAT is the bundle's Info.plist source everywhere below.
 		set(CE_APP_OUTPUT_NAME "${ARG_OUTPUT_NAME}")
 		set(CE_APP_BUNDLE_NAME "${ARG_BUNDLE_NAME}")
 		set(CE_APP_BUNDLE_ID "${ARG_BUNDLE_ID}")
@@ -362,7 +362,7 @@ function(ce_configure_application target)
 				COMMAND xcrun actool "${ARG_ASSET_CATALOG}"
 					--compile "$<TARGET_BUNDLE_CONTENT_DIR:${target}>/Resources"
 					--platform macosx
-					--minimum-deployment-target 10.15
+					--minimum-deployment-target "${CMAKE_OSX_DEPLOYMENT_TARGET}"
 					--app-icon AppIcon
 					--output-partial-info-plist "${CMAKE_CURRENT_BINARY_DIR}/${target}.AppIcon-Info.plist"
 				COMMENT "Compiling the ${target} asset catalog"

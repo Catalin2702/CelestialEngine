@@ -4,7 +4,7 @@
 // Created by: Catalin Chirosca
 // Created: 2026-11-26
 // Updated by: Catalin Chirosca
-// Updated: 2026-11-26
+// Updated: 2026-11-27
 //
 
 #include "ShaderCompiler/CrossCompiler.hpp"
@@ -17,9 +17,11 @@ namespace CE::ShaderCompiler {
 
 namespace {
 
-/// The version of the Metal Shading Language the output is written for (macOS 11 and later).
-constexpr u32 MslMajorVersion = 2;
-constexpr u32 MslMinorVersion = 3;
+/// The version of the Metal Shading Language the output is written for: MSL 4.1, the newest the macOS 27 SDK knows,
+/// for the engine's minimum macOS (CMAKE_OSX_DEPLOYMENT_TARGET, 27.0). Engine/Shaders compiles the .metal with the same
+/// standard (-std=metal4.1): change both together.
+constexpr u32 MslMajorVersion = 4;
+constexpr u32 MslMinorVersion = 1;
 
 /// GLSL 4.10: what macOS's OpenGL 4.1 core profile compiles.
 constexpr u32 GlslVersion = 410;

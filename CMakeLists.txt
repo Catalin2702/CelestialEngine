@@ -4,7 +4,7 @@
 # Created by: Catalin Chirosca
 # Created: 2026-03-22
 # Updated by: Catalin Chirosca
-# Updated: 2026-11-26
+# Updated: 2026-11-27
 #
 
 cmake_minimum_required(VERSION 4.1)
@@ -15,6 +15,10 @@ cmake_minimum_required(VERSION 4.1)
 if(APPLE AND NOT CMAKE_OSX_SYSROOT)
 	set(CMAKE_OSX_SYSROOT "macosx" CACHE STRING "")
 endif()
+
+# The oldest macOS the engine runs on (CMAKE_OSX_DEPLOYMENT_TARGET), for the engine's own targets and for the vcpkg
+# dependencies. BEFORE project(), which sets up the compilers from it and runs vcpkg install.
+include("${CMAKE_CURRENT_LIST_DIR}/Engine/CMake/CEMinimumMacOS.cmake")
 
 # Configure vcpkg triplet based on build type BEFORE project()
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "Dist")

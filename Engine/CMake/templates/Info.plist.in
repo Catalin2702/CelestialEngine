@@ -2,7 +2,8 @@
 <!--
 	Default Info.plist of every application configured with ce_configure_application (Engine/CMake/CEApplication.cmake);
 	pass INFO_PLIST to use another. It is configured with @ONLY, from the CE_APP_OUTPUT_NAME, CE_APP_BUNDLE_NAME,
-	CE_APP_BUNDLE_ID, PROJECT_VERSION and CE_APP_METAL_TOOLING_KEYS variables that function sets.
+	CE_APP_BUNDLE_ID, PROJECT_VERSION and CE_APP_METAL_TOOLING_KEYS variables that function sets, and from
+	CMAKE_OSX_DEPLOYMENT_TARGET (the minimum macOS, set by the top-level CMakeLists.txt).
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -26,7 +27,7 @@
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.15</string>
+	<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
